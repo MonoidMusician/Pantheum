@@ -1,0 +1,14 @@
+0 = admin
+1 = purchase creation large # tournaments 
+2 = purchase creation medium
+3 = purchase creation small
+4 = purchase creation x-small
+1 = purchase following large # parents
+2 = purchase following medium
+3 = purchase following small
+4 = non-purchase following x-small 
+b = banned
+n = not-approved
+
+admin, banned, not-approved: single digit rank
+users: double digit rank

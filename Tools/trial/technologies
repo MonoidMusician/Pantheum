@@ -1,0 +1,9 @@
+* Brackets
+    - Iterating through bracket spaces
+        - Averaging function, numbering by odd
+    - Storage of brackets as flat data structures
+        - key ==> value, team ids
+    - Allowing multiple brackets simultaneously
+        - Store as cell, not as entire table
+* Users
+    - 

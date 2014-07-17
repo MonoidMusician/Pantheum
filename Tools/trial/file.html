@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trial Bracket Generator</title>
+        <style type="text/css">
+            html {
+                width: 99%;
+                height: 98%;
+            }
+            body {
+                width: 99%;
+                height: 98%;
+            }
+            div#content {
+                top: 25px;
+                width: 99%;
+                height: 97%;
+                
+                margin-top: 5px;
+                z-index: 0;
+            }
+            div.clear {
+                clear: both;
+            }
+            div#choices {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                
+                height: 22px;
+                
+                z-index: 99;
+            }
+            span {
+                padding-left: 4px;
+            }
+        </style>
+        <script type="text/javascript" src="/lib/jquery.js"></script>
+        <script type="text/javascript">
+            pwidth = false;
+            pheight = false;
+            maxwidth = 400;
+            maxheight= 100;
+            minwidth = 100;
+            minheight= 25;
+            color = '#000000';
+            
+            function generate() {
+                teams = parseInt($('#teams').val()) || 8;
+                bracket = $('#bracket').val() || 'single';
+                
+                pwidth = $('#content').width();
+                pheight = $('#content').height();
+                
+                $('#content').html('');
+                $('#content').css('position', 'relative');
+                $('#clear').remove();
+                
+                switch (bracket) {
+                    case 'single':
+                        divsingle(teams);
+                        break;
+                    case 'double':
+                        divdouble(teams);
+                        break;
+                    case 'consolation':
+                        divconsolation(teams);
+                        break;
+                }
+            }
+            
+            function divsingle(teams) {
+                var gamecount = (Math.log(teams) / Math.log(2)) +1;
+                ewidth = Math.floor(pwidth / ((gamecount)+2));
+                eheight = Math.floor(pheight / (teams+1));
+                if (ewidth > maxwidth) {
+                    ewidth = maxwidth;
+                } else if (ewidth < minwidth) {
+                    ewidth = minwidth;
+                }
+                if (eheight > maxheight) {
+                    eheight = maxheight;
+                } else if (eheight < minheight) {
+                    eheight = minheight;
+                }
+                
+                increment = new Array();
+                for (id = 1; id < teams*2; id++) {
+                    if ((id % 2) == 1) {
+                        var game = 0;
+                        if (increment[game]===undefined) {
+                            increment[game] = 0;
+                        }
+                        $('#content').append('<div id="dT' + id + '"><span id="sT' + id + '">Team&nbsp;' + id + '</span></div>');
+                        $('#dT' + id).css('height', eheight - 2 + 'px');
+                        $('#dT' + id).css('border-bottom', color + ' solid 2px');
+                        $('#dT' + id).css('position', 'absolute');
+                        $('#dT' + id).css('left', ewidth + 'px');
+                        $('#dT' + id).css('top', (eheight * increment[game]) + 'px');
+                        $('#sT' + id).css('position', 'absolute');
+                        $('#sT' + id).css('bottom', '0px');
+                        if (((id+1) % 4) == 0) {
+                            $('#dT' + id).css('width', ewidth - 2);
+                            $('#dT' + id).css('border-right', color + ' solid 2px');
+                        } else {
+                            $('#dT' + id).css('width', ewidth);
+                        }
+                        increment[game] += 1;
+                    } else {
+                        var game = 0;
+                        for (x = 0; x < gamecount+2; x++) {
+                            if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                game = x;
+                                break;
+                            }
+                        }
+                        
+                        if (increment[game]===undefined) {
+                            increment[game] = 0;
+                        }
+                        
+                        $('#content').append('<div id="dG' + id + '"><span id="sG' + id + '">Game&nbsp;' + id + '</span></div>');
+                        $('#dG' + id).css('border-bottom', color + ' solid 2px');
+                        $('#dG' + id).css('position', 'absolute');
+                        
+                        var zheight = (eheight * Math.pow(2, game));
+                        var pvheight = zheight * (increment[game]);
+                        var offset = (eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight;
+                        
+                        $('#dG' + id).css('height', (zheight - 2) + 'px');
+                        $('#dG' + id).css('top', (offset + pvheight) + 'px');
+                        $('#dG' + id).css('left', (ewidth*(game+1)) + 'px');
+                        $('#sG' + id).css('position', 'absolute');
+                        $('#sG' + id).css('bottom', '0px');
+                        $('#dG' + id).css('width', ewidth);
+                        if ((increment[game] % 2) == 1) {
+                            $('#dG' + id).css('width', ewidth - 2);
+                            $('#dG' + id).css('border-right', color + ' solid 2px');
+                        }
+                        
+                        increment[game] += 1;
+                    }
+                }
+                
+                if (eheight == minheight) {
+                    $('body').append('<div id="clear">&nbsp;<br></div>');
+                    $('#clear').css('position', 'absolute');
+                    $('#clear').css('top', eheight * (teams+1));
+                }
+            }
+            
+            function divdouble(teams) {
+                var gamecount = (((Math.log(teams) / Math.log(2))*3))+1;
+                ewidth = Math.floor(pwidth / ((gamecount)+2));
+                eheight = Math.floor(pheight / (teams+1));
+                if (ewidth > maxwidth) {
+                    ewidth = maxwidth;
+                } else if (ewidth < minwidth) {
+                
+                    ewidth = minwidth;
+                }
+                if (eheight > maxheight) {
+                    eheight = maxheight;
+                } else if (eheight < minheight) {
+                    eheight = minheight;
+                }
+                
+                increment = new Array();
+                for (id = 1; id < teams*2; id++) {
+                    if ((id % 2) == 1) {
+                        var game = 0;
+                        var rgame = ((gamecount-1) - (Math.log(teams) / Math.log(2))) + (game);
+                        
+                        if (increment[rgame]===undefined) {
+                            increment[rgame] = 0;
+                        }
+                        
+                        $('#content').append('<div id="dT' + id + '"><span id="sT' + id + '">Team&nbsp;' + id + '</span></div>');
+                        $('#dT' + id).css('height', eheight - 2 + 'px');
+                        $('#dT' + id).css('border-bottom', color + ' solid 2px');
+                        $('#dT' + id).css('position', 'absolute');
+                        $('#dT' + id).css('left', (ewidth * rgame) + 'px');
+                        $('#dT' + id).css('top', (eheight * increment[rgame]) + 'px');
+                        $('#sT' + id).css('position', 'absolute');
+                        $('#sT' + id).css('bottom', '0px');
+                        if (((id+1) % 4) == 0) {
+                            $('#dT' + id).css('width', ewidth - 4);
+                            $('#dT' + id).css('border-right', color + ' solid 2px');
+                            $('#dT' + id).css('border-left', color + ' solid 2px');
+                        } else {
+                            $('#dT' + id).css('width', ewidth);
+                        }
+                        increment[rgame] += 1;
+                    } else {
+                        if (1 == 1) {
+                            var game = 0;
+                            for (x = 0; x < ((gamecount/2)+2); x++) {
+                                if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                    game = x;
+                                    break;
+                                }
+                            }
+                            var rgame = (gamecount - (Math.log(teams) / Math.log(2))) + (game)-1;
+                            
+                            if (increment[rgame]===undefined) {
+                                increment[rgame] = 0;
+                            }
+                            
+                            $('#content').append('<div id="dRG' + id + '"><span id="sRG' + id + '">Game&nbsp;' + id + '</span></div>');
+                            $('#dRG' + id).css('border-bottom', color + ' solid 2px');
+                            $('#dRG' + id).css('position', 'absolute');
+                            
+                            var zheight = (eheight * Math.pow(2, game));
+                            var pvheight = zheight * (increment[rgame]);
+                            var offset = (eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight;
+                            
+                            $('#dRG' + id).css('height', (zheight - 2) + 'px');
+                            $('#dRG' + id).css('top', (offset + pvheight) + 'px');
+                            $('#dRG' + id).css('left', (ewidth*rgame) + 'px');
+                            $('#sRG' + id).css('position', 'absolute');
+                            $('#sRG' + id).css('bottom', '0px');
+                            $('#dRG' + id).css('width', ewidth);
+                            if ((increment[rgame] % 2) == 1) {
+                                $('#dRG' + id).css('width', ewidth - 2);
+                                $('#dRG' + id).css('border-right', color + ' solid 2px');
+                            }
+                            
+                            increment[rgame] += 1;
+                        }
+                        
+                        if (id == teams) {
+                            if (2 == 2) {
+                                var game = 0;
+                                for (x = 0; x < ((gamecount/2)+2); x++) {
+                                    if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                        game = x;
+                                        break;
+                                    }
+                                }
+                                var rgame = (gamecount - (Math.log(teams) / Math.log(2))) + (game)-1;
+                                
+                                if (increment[rgame]===undefined) {
+                                    increment[rgame] = 0;
+                                }
+                                
+                                $('#content').append('<div id="dSG' + id + '"><span id="sSG' + id + '">Game&nbsp;' + id + '</span></div>');
+                                $('#dSG' + id).css('border-bottom', color + ' solid 2px');
+                                $('#dSG' + id).css('position', 'absolute');
+                                
+                                var zheight = (eheight * Math.pow(2, game-1));
+                                var pvheight = zheight * (increment[rgame]);
+                                var offset = (eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight;
+                                
+                                $('#dSG' + id).css('height', (zheight - 2) + 'px');
+                                $('#dSG' + id).css('top', (offset + pvheight) + 'px');
+                                $('#dSG' + id).css('left', (ewidth*rgame) + 'px');
+                                $('#sSG' + id).css('position', 'absolute');
+                                $('#sSG' + id).css('bottom', '0px');
+                                $('#dSG' + id).css('width', ewidth);
+                                if ((increment[rgame] % 2) == 1) {
+                                    $('#dSG' + id).css('width', ewidth - 2);
+                                    $('#dSG' + id).css('border-right', color + ' solid 2px');
+                                }
+                            }
+                            if (3 == 3) {
+                                var game = 0;
+                                for (x = 0; x < ((gamecount/2)+2); x++) {
+                                    if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                        game = x;
+                                        break;
+                                    }
+                                }
+                                game += 1;
+                                var rgame = (gamecount - (Math.log(teams) / Math.log(2))) + (game) - 1;
+                                
+                                if (increment[rgame]===undefined) {
+                                    increment[rgame] = 0;
+                                }
+                                
+                                $('#content').append('<div id="dCG' + id + '"><span id="sCG' + id + '">Game&nbsp;' + id + '</span></div>');
+                                $('#dCG' + id).css('border-bottom', color + ' solid 2px');
+                                $('#dCG' + id).css('position', 'absolute');
+                                
+                                var zheight = (eheight * Math.pow(2, game-1));
+                                var pvheight = zheight * (increment[rgame]);
+                                var offset = ((eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight) - ((eheight * Math.pow(2, game-2)/2));
+                                
+                                $('#dCG' + id).css('height', (zheight - 2) + 'px');
+                                $('#dCG' + id).css('top', (offset + pvheight) + 'px');
+                                $('#dCG' + id).css('left', (ewidth*rgame) + 'px');
+                                $('#sCG' + id).css('position', 'absolute');
+                                $('#sCG' + id).css('bottom', '0px');
+                                $('#dCG' + id).css('width', ewidth);
+                            }
+                        }
+                        
+                        if (4 == 4) {
+                            if (5 == 5) {
+                                var game = 0;
+                                for (x = 0; x < ((gamecount/2)+2); x++) {
+                                    if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                        game = x;
+                                        break;
+                                    }
+                                }
+                                var rgame = (Math.log(teams) / Math.log(2)*2) - ((2*game)+1);
+                                rgame += 2;
+                                
+                                if (increment[rgame]===undefined) {
+                                    increment[rgame] = 0;
+                                }
+                                
+                                $('#content').append('<div id="dLG' + id + '"><span id="sLG' + id + '">Lose&nbsp;' + id + '</span></div>');
+                                $('#dLG' + id).css('border-bottom', color + ' solid 2px');
+                                $('#dLG' + id).css('position', 'absolute');
+                                
+                                var zheight = (eheight * Math.pow(2, game));
+                                var pvheight = zheight * (increment[rgame]);
+                                var offset = (eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight;
+                                
+                                if (game >= 2) {
+                                    offset += (eheight * Math.pow(2, game-1))/2;
+                                }
+                                
+                                $('#dLG' + id).css('height', (zheight - 2) + 'px');
+                                $('#dLG' + id).css('top', (offset + pvheight) + 'px');
+                                $('#dLG' + id).css('left', (ewidth*rgame) + 'px');
+                                $('#sLG' + id).css('position', 'absolute');
+                                $('#sLG' + id).css('bottom', '0px');
+                                $('#dLG' + id).css('width', ewidth);
+                                if ((increment[rgame] % 2) == 1) {
+                                    $('#dLG' + id).css('width', ewidth - 2);
+                                    $('#dLG' + id).css('border-left', color + ' solid 2px');
+                                }
+                                
+                                increment[rgame] += 1;
+                            }
+                            if ((id % 4) == 0) {
+                                if (6 == 6) {
+                                    var game = 0;
+                                    for (x = 0; x < ((gamecount/2)+2); x++) {
+                                        if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                            game = x;
+                                            break;
+                                        }
+                                    }
+                                    var rgame = (Math.log(teams) / Math.log(2)*2) - ((2*game));
+                                    rgame += 2;
+                                    
+                                    if (increment[rgame]===undefined) {
+                                        increment[rgame] = 0;
+                                    }
+                                    
+                                    $('#content').append('<div id="dGG' + id + '"><span id="sGG' + id + '">Ghost&nbsp;' + id + '</span></div>');
+                                    $('#dGG' + id).css('border-bottom', color + ' solid 2px');
+                                    $('#dGG' + id).css('position', 'absolute');
+                                    
+                                    var zheight = (eheight * Math.pow(2, game-1));
+                                    var pvheight = zheight * (increment[rgame]);
+                                    var offset = (eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight;
+                                    
+                                    $('#dGG' + id).css('height', (zheight - 2) + 'px');
+                                    $('#dGG' + id).css('top', (offset + pvheight) + 'px');
+                                    $('#dGG' + id).css('left', (ewidth*rgame) + 'px');
+                                    $('#sGG' + id).css('position', 'absolute');
+                                    $('#sGG' + id).css('bottom', '0px');
+                                    $('#dGG' + id).css('width', ewidth);
+                                    
+                                    increment[rgame] += 1;
+                                }
+                                if (7 == 7) {
+                                    var game = 0;
+                                    for (x = 0; x < ((gamecount/2)+2); x++) {
+                                        if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                            game = x;
+                                            break;
+                                        }
+                                    }
+                                    var rgame = (Math.log(teams) / Math.log(2)*2) - ((2*game));
+                                    rgame += 2;
+                                    
+                                    if (increment[rgame]===undefined) {
+                                        increment[rgame] = 0;
+                                    }
+                                    
+                                    var tid = id;
+                                    if (game < (Math.log(teams) / Math.log(2))) {
+                                        if ((game % 2) == 1) {
+                                            tid = teams-id;
+                                            if (tid < 0) {
+                                                tid += (teams*2);
+                                            }
+                                        } else {
+                                            tid = (teams*2) - id;
+                                        }
+                                    }
+                                    
+                                    $('#content').append('<div id="dPG' + tid + '"><span id="sPG' + tid + '">Pull&nbsp;' + tid + '</span></div>');
+                                    $('#dPG' + tid).css('border-bottom', color + ' solid 2px');
+                                    $('#dPG' + tid).css('position', 'absolute');
+                                    
+                                    var zheight = (eheight * Math.pow(2, game-1));
+                                    var pvheight = zheight * (increment[rgame]);
+                                    var offset = (eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight;
+                                    
+                                    $('#dPG' + tid).css('height', (zheight - 2) + 'px');
+                                    $('#dPG' + tid).css('top', (offset + pvheight) + 'px');
+                                    $('#dPG' + tid).css('left', (ewidth*rgame) + 'px');
+                                    $('#sPG' + tid).css('position', 'absolute');
+                                    $('#sPG' + tid).css('bottom', '0px');
+                                    $('#dPG' + tid).css('width', ewidth);
+                                    if ((increment[rgame] % 2) == 1) {
+                                        $('#dPG' + tid).css('width', ewidth - 2);
+                                        $('#dPG' + tid).css('border-left', color + ' solid 2px');
+                                    }
+                                    
+                                    increment[rgame] += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (eheight == minheight) {
+                    $('body').append('<div id="clear">&nbsp;<br></div>');
+                    $('#clear').css('position', 'absolute');
+                    $('#clear').css('top', eheight * (teams+1));
+                }
+            }
+            
+            function divconsolation(teams) {
+                var gamecount = (((Math.log(teams) / Math.log(2))*2)+1);
+                ewidth = Math.floor(pwidth / ((gamecount)+2));
+                eheight = Math.floor(pheight / (teams+1));
+                if (ewidth > maxwidth) {
+                    ewidth = maxwidth;
+                } else if (ewidth < minwidth) {
+                    ewidth = minwidth;
+                }
+                if (eheight > maxheight) {
+                    eheight = maxheight;
+                } else if (eheight < minheight) {
+                    eheight = minheight;
+                }
+                
+                increment = new Array();
+                for (id = 1; id < teams*2; id++) {
+                    if ((id % 2) == 1) {
+                        var game = ((Math.log(teams) / Math.log(2))+1);
+                        if (increment[game]===undefined) {
+                            increment[game] = 0;
+                        }
+                        $('#content').append('<div id="dT' + id + '"><span id="sT' + id + '">Team&nbsp;' + id + '</span></div>');
+                        $('#dT' + id).css('height', eheight - 2 + 'px');
+                        $('#dT' + id).css('border-bottom', color + ' solid 2px');
+                        $('#dT' + id).css('position', 'absolute');
+                        $('#dT' + id).css('left', (ewidth * game) + 'px');
+                        $('#dT' + id).css('top', (eheight * increment[game]) + 'px');
+                        $('#sT' + id).css('position', 'absolute');
+                        $('#sT' + id).css('bottom', '0px');
+                        if (((id+1) % 4) == 0) {
+                            $('#dT' + id).css('width', ewidth - 4);
+                            $('#dT' + id).css('border-right', color + ' solid 2px');
+                            $('#dT' + id).css('border-left', color + ' solid 2px');
+                        } else {
+                            $('#dT' + id).css('width', ewidth);
+                        }
+                        increment[game] += 1;
+                    } else {
+                        if (1==1) {
+                            var game = 0;
+                            for (x = 0; x < ((gamecount/2)+2); x++) {
+                                if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                    game = x;
+                                    break;
+                                }
+                            }
+                            var rgame = ((Math.log(teams) / Math.log(2))+1) + (game);
+                            
+                            if (increment[rgame]===undefined) {
+                                increment[rgame] = 0;
+                            }
+                            
+                            $('#content').append('<div id="dWG' + id + '"><span id="sWG' + id + '">Game&nbsp;' + id + '</span></div>');
+                            $('#dWG' + id).css('border-bottom', color + ' solid 2px');
+                            $('#dWG' + id).css('position', 'absolute');
+                            
+                            var zheight = (eheight * Math.pow(2, game));
+                            var pvheight = zheight * (increment[rgame]);
+                            var offset = (eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight;
+                            
+                            $('#dWG' + id).css('height', (zheight - 2) + 'px');
+                            $('#dWG' + id).css('top', (offset + pvheight) + 'px');
+                            $('#dWG' + id).css('left', (ewidth*rgame) + 'px');
+                            $('#sWG' + id).css('position', 'absolute');
+                            $('#sWG' + id).css('bottom', '0px');
+                            $('#dWG' + id).css('width', ewidth);
+                            if ((increment[rgame] % 2) == 1) {
+                                $('#dWG' + id).css('width', ewidth - 2);
+                                $('#dWG' + id).css('border-right', color + ' solid 2px');
+                            }
+                            
+                            increment[rgame] += 1;
+                        }
+                        
+                        if (2==2) {
+                            var game = 0;
+                            for (x = 0; x < ((gamecount/2)+2); x++) {
+                                if ((id+Math.pow(2, x)) % Math.pow(2, (x + 1)) == 0) {
+                                    game = x;
+                                    break;
+                                }
+                            }
+                            var rgame = (Math.log(teams) / Math.log(2)) - game;
+                            rgame += 1;
+                            
+                            if (increment[rgame]===undefined) {
+                                increment[rgame] = 0;
+                            }
+                            
+                            $('#content').append('<div id="dLG' + id + '"><span id="sLG' + id + '">Game&nbsp;' + id + '</span></div>');
+                            $('#dLG' + id).css('border-bottom', color + ' solid 2px');
+                            $('#dLG' + id).css('position', 'absolute');
+                            
+                            var zheight = (eheight * Math.pow(2, game));
+                            var pvheight = zheight * (increment[rgame]);
+                            var offset = (eheight * Math.pow(2, game-1)) + 0.5 * eheight - zheight;
+                            
+                            $('#dLG' + id).css('height', (zheight - 2) + 'px');
+                            $('#dLG' + id).css('top', (offset + pvheight) + 'px');
+                            $('#dLG' + id).css('left', (ewidth*rgame) + 'px');
+                            $('#sLG' + id).css('position', 'absolute');
+                            $('#sLG' + id).css('bottom', '0px');
+                            $('#dLG' + id).css('width', ewidth);
+                            if ((increment[rgame] % 2) == 1) {
+                                $('#dLG' + id).css('width', ewidth - 2);
+                                $('#dLG' + id).css('border-left', color + ' solid 2px');
+                            }
+                            
+                            increment[rgame] += 1;
+                        }
+                    }
+                }
+                
+                if (eheight == minheight) {
+                    $('body').append('<div id="clear">&nbsp;<br></div>');
+                    $('#clear').css('position', 'absolute');
+                    $('#clear').css('top', eheight * (teams+1));
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="content">
+            &nbsp;
+        </div>
+        <div id="choices">
+            <select id="teams"><option value="4">4 Teams</option><option value="8">8 Teams</option><option value="16">16 Teams</option><option value="32">32 Teams</option><option value="64">64 Teams</option><option value="128">128 Teams</option><option value="256">256 Teams</option><option value="512">512 Teams</option><option value="1024">1024 Teams</option><option value="2048">2048 Teams</option></select>
+            <select id="bracket"><option value="single">Single Elimination</option><option value="double">Double Elimination</option><option value="consolation">Consolation Bracket</option></select>
+            <button onclick="generate();">Go</button>
+        </div>
+    </body>
+</html>
