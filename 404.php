@@ -7,23 +7,17 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <?php
-            sro('/Includes/head.php');
-            sro('/Includes/css.php');
-        ?>
-        <?php
-            sro('/Includes/js.php');
-        ?>
-        
+        <?php sro('/Includes/head.php'); ?>
+        <title>Dictionary | Latin</title>
+        <?php sro('/Includes/css.php'); ?>
+        <?php sro('/Includes/js.php'); ?>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
-        <div id="content">
-            <h2>404</h2>
-            <p>
-                Error! File not found.
-            </p>
-        </div>
+        <section id="content">
+            <h1>404</h1>
+            <p>Error: file not found.</p>
+        </section>
         <?php sro('/Includes/footer.php'); ?>
     </body>
 </html>

@@ -4,7 +4,7 @@
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
     
-    requireRank('0');
+    requireRank('1');
     
     print_r($_GET);
     print_r($_POST);

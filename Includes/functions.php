@@ -7,29 +7,24 @@
     sro('/Includes/functions/email.php');
     sro('/Includes/functions/users.php');
 
-    function requireRank($rank) {
+    function requireRank($rank, $die=TRUE) {
         global $srank;
-        if ($srank != $rank) {
+        
+        if (!requireLoggedIn($die)) return FALSE;;
+        
+        if ($die and $srank > $rank) {
             sro('/Pages/restricted/admin.php');
             die("");
-        }
+        } else return $srank <= $rank;
     }
     
-    function requireLoggedIn() {
+    function requireLoggedIn($die) {
         global $sli;
         
-        if ($sli != 'true') {
+        if ($die and $sli != 'true') {
             sro('/Pages/restricted/logged-out.php');
             die("");
-        }
-    }
-    
-    function canCreate() {
-        global $srank;
-        if ($srank <= 2) {
-            return true;
-        }
-        return false;
+        } else return $sli == 'true';
     }
     
     function requireCreate() {

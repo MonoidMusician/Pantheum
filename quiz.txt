@@ -1,0 +1,17 @@
+/PHP5/quiz/getNext.php
+[
+    ["type" => text, input, select],
+    ["text", "ldkasjflasdjf ljdaslfk sfalskdfja lslsadkfj asldkfj asdfkjas ldf. <br><br>What is the noun in your sentence?"],
+    ["input", "word1", "Please enter the latin noun in the sentence.", "Noun"],
+    ["text", "asdlkfjalsdkfj asldkfja sldfkjas ldfkjas ldfkajsdflasjkdf asd"],
+    ["select", "quizpart2", "alt text", [["option1", "a"], "option2", "not correct", "correct"]],
+]
+
+/PHP5/quiz/checkAnswer.php
+$_POST['word1'] = "";
+    User logged in:
+        Update settings with quiz status
+    Else:
+        Continue;
+Return: 
+    "message"

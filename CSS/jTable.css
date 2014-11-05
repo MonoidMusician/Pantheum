@@ -1,0 +1,111 @@
+/**
+ * jTable v1.2 - A HTML5/jQuery Table library with Canvas support
+ * Depends: jQuery >= v1.5 ; could be replaced if needed
+ * Depends: jCavnas v2.0 ; canvas support, optional if not using canvases
+ * 
+ * Copyright (C) 2012, 2013 Alex Scheel
+ * All rights reserved.
+ * Licensed under BSD 2 Clause License:
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ * - Redistributions in binary form must reproduce the above copyright notice, 
+ *   this list of conditions and the following disclaimer in the documentation 
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+**/
+
+/**
+ * Sample style sheet. 
+**/
+
+.jTableHeadTdCheckbox, .jTableHeadTdCanvas, .jTableHeadTd {
+    border-bottom: 2px solid #4466AA;
+}
+
+.jTableHeadTd {
+    cursor: pointer;
+}
+
+.jTableFootTdCheckbox, .jTableFootTdCanvas, .jTableFootTd {
+    border-top: 2px solid #4466AA;
+}
+
+.jTableFootTd {
+    cursor: pointer;
+}
+
+.jTableBodyCanvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 20px;
+}
+
+.jTableEditing input {
+    width: 200px;
+    height: 20px;
+    
+    border: 1px solid #e0e0e0;
+    margin: 1px;
+    
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.jTableEditing input:focus {
+    border: 1px solid #4466AA !important;
+}
+
+.jTableInputInvalid {
+    border: 1px solid #EE3333 !important;
+}
+
+.jTableUControlsButton, .jTableLControlsButton {
+    height: 30px;
+    
+    border: 1px solid #e0e0e0;
+    margin: 1px;
+    
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    
+    background-color: #4466AA;
+    color: #ffffff;
+    
+    font-weight: bold;
+}
+
+.jTableUControlsInput, .jTableLControlsInput {
+    width: 200px;
+    height: 30px;
+    
+    border: 1px solid #e0e0e0;
+    margin: 1px;
+    
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.jTableUControlsInput:focus, .jTableLControlsInput:focus {
+    border: 1px solid #4466AA;
+}
+
+
+

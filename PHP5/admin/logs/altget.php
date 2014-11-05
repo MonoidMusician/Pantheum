@@ -6,7 +6,7 @@
     
     global $mysqli;
     
-    requireRank('0');
+    requireRank('1');
     
     $M_query = "SELECT * FROM logs;";
     $M_result = $mysqli->query($M_query);

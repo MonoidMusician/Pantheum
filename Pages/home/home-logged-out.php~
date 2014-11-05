@@ -1,0 +1,19 @@
+<?php
+    require_once('/var/www/latin/config.php');
+    sro('/Includes/mysql.php');
+    sro('/Includes/session.php');
+    sro('/Includes/functions.php');
+?>
+<header>
+    <h1>Welcome</h1>
+</header>
+<article>
+    <p>
+        Welcome to Sassy's Online Latin Quiz. Created by Nick Scheel. Website by Alex Scheel.<br><br>
+        <button class="large" onclick="window.location.href='/latin/playground.php';">Playground</button><br>
+        <button class="large" onclick="window.location.href='/latin/dictionary.php';">Dictionary</button><br>
+        <button class="large" onclick="window.location.href='/latin/raw_forms.php';">DB editing</button><br><br>
+
+        Please <a href="/latin/login.php">log in</a> to save scores.
+    </p>
+</article>

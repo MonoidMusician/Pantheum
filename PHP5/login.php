@@ -34,16 +34,34 @@
                 die ('3');
             }
             
+                
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $current = $ip;
+            
+            if ($M_row['multisession'] == 'f') {
+                setForceLogout($M_row['id']);
+            } else {
+                $current = json_decode($M_row['currentip'] ? $M_row['currentip'] : '[]', true);
+                $current[] = $ip;
+                $current = json_encode($current);
+            }
+            
             if ($M_row['password'] == $password) {
                 $_SESSION['li'] = 'true';
                 $_SESSION['username'] = $username;
                 $_SESSION['uid'] = $M_row['id'];
                 $_SESSION['rank'] = $M_row['rank'];
-                $_SESSION['gtitle'] = '';
-                $_SESSION['gid'] = '';
-                $_SESSION['gtype'] = '';
-                logEvent('login', 'success', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}"));
-                print "success";
+                
+                $M_query6 = "UPDATE users SET currentip='$current' WHERE id='" . $M_row['id'] . "';";
+                $M_result6 = $mysqli->query($M_query6);
+                
+                if ($M_result6) {
+                    logEvent('login', 'success', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}, M_query6: `$M_query6`"));
+                    print "success";
+                } else {
+                    logEvent('login', 'ip-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}, M_query6: `$M_query6`"));
+                    die('1');
+                }
             } else {
                 logEvent('login', 'bad-password', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, password: `$password`, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}"));
                 die('2');

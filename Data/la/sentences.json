@@ -1,0 +1,166 @@
+{
+  "Salvius, quī mercātor dīves in Brittaniā erat, multā pecuniā vīllam splendidam ēmit.":{
+    "sentence":{
+      "0":{
+        "value":"Salvius",
+        "desc":" (n): subject of <i>\u0113mit<\/i>, nominative singular",
+        "modifies":[
+          "\u0113mit"
+        ],
+        "role":"subject"
+      },
+      "-1":{
+        "space_after":1,
+        "text":",",
+        "space_before":0
+      },
+      "1":{
+        "value":"qu\u012b",
+        "desc":" (pro): modifier of <i>Salvius<\/i>, nominative masculine singular",
+        "modifies":[
+          "Salvius"
+        ],
+        "role":"relative phrase",
+        "link":"\/latin\/dictionary2.php?name=relative pronoun&lang=la&spart=pronoun"
+      },
+      "2":{
+        "value":"merc\u0101tor",
+        "desc":" (n): predicative nominative of <i>erat<\/i>, nominative singular",
+        "modifies":[
+          "erat"
+        ],
+        "role":"predicate"
+      },
+      "3":{
+        "value":"d\u012bves",
+        "desc":" (adj): modifier of <i>merc\u0101tor<\/i>, nominative singular",
+        "modifies":[
+          "merc\u0101tor"
+        ],
+        "role":"adjective"
+      },
+      "100":{
+        "value":"in",
+        "desc":" (prep): locative modifier of <i>erat<\/i>",
+        "modifies":[
+          "erat"
+        ],
+        "role":"location"
+      },
+      "101":{
+        "value":"Brittani\u0101",
+        "desc":" (n): object of <i>in<\/i>, feminine ablative singular",
+        "modifies":[
+          "in"
+        ],
+        "role":"object"
+      },
+      "4":{
+        "value":"erat",
+        "desc":" (v): verb of <i>qu\u012b<\/i>, 3rd person singular imperfect indicative",
+        "modifies":[
+          "qu\u012b"
+        ],
+        "role":"verb",
+        "link":"\/latin\/dictionary2.php?name=sum&lang=la&spart=verb"
+      },
+      "-2":{
+        "space_after":1,
+        "text":",",
+        "space_before":0
+      },
+      "5":{
+        "value":"mult\u0101",
+        "desc":" (adj): modifier of <i>pecuni\u0101<\/i>, ablative singular",
+        "modifies":[
+          "pecuni\u0101"
+        ],
+        "role":"adjective",
+        "link":"\/latin\/dictionary2.php?name=multus&lang=la&spart=adjective"
+      },
+      "6":{
+        "value":"pecuni\u0101",
+        "desc":" (n): modifier of <i>\u0113mit<\/i>, ablative singular",
+        "modifies":[
+          "\u0113mit"
+        ],
+        "role":"instrument"
+      },
+      "7":{
+        "value":"v\u012bllam",
+        "desc":" (n): object of <i>\u0113mit<\/i>, accusative singular",
+        "modifies":[
+          "\u0113mit"
+        ],
+        "role":"direct object",
+        "link":"\/latin\/dictionary2.php?name=villa&lang=la&spart=adjective"
+      },
+      "8":{
+        "value":"splendidam",
+        "desc":" (adj): modifier of <i>v\u012bllam<\/i>, accusative singular",
+        "modifies":[
+          "v\u012bllam"
+        ],
+        "role":"adjective"
+      },
+      "9":{
+        "value":"\u0113mit",
+        "desc":" (v): root of sentence, indicative active perfect 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+        "link":"\/latin\/dictionary2.php?name=emo&lang=la&spart=verb",
+        "role":"verb/root"
+      }
+    },
+    "phrases":[
+      [
+        0,
+        -1,
+        1,
+        2,
+        3,
+        100,
+        101,
+        4,
+        -2,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      [
+        1,
+        2,
+        3,
+        4,
+        100,
+        101
+      ],
+      [
+        100,
+        101
+      ]
+    ],
+    "tree":{
+      "9":{
+        "0":{
+          "1":{
+            "4":{
+              "2":[
+                3
+              ],
+              "100":[
+                101
+              ]
+            }
+          }
+        },
+        "7":[
+          8
+        ],
+        "6":[
+          5
+        ]
+      }
+    }
+  }
+}

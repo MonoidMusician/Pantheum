@@ -1,0 +1,349 @@
+.node circle {
+  cursor: pointer;
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  cursor: pointer;
+}
+
+path.link {
+  fill: none;
+  stroke: #DDD;
+  stroke-width: 1.5px;
+}
+
+
+.description {
+    position: relative;
+    top: 0; left: 0;
+}
+.description-parent {
+    position: relative;
+}
+.description > .selected {
+    font-weight: bold;
+}
+.sentence > .word.selected {
+    border-width: 1px;
+    border-style: solid;
+    border-radius:30px;
+    -webkit-border-radius:30px;
+    -moz-border-radius:30px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.sentence > .word.selected2 {
+    font-style: italic;
+    text-decoration: underline;
+}
+.sentence > .word.phrase0 {
+    /*color: #913D3D;*/
+    color: #A04343;
+}
+.sentence > .word.phrase0.selected {
+    border-color: red;
+    /*color: #DE9797;*/
+    color: #E06363;
+}
+.sentence > .word.phrase0.selected2 {
+    color: #E06363;
+}
+.sentence > .word.phrase1 {
+    /*color: #3D1391;*/
+    color: #3D3D91;
+}
+.sentence > .word.phrase1.selected {
+    border-color: blue;
+    /*color: #A689E0;*/
+    color: #6363E0;
+}
+.sentence > .word.phrase1.selected2 {
+    color: #6363E0;
+}
+.sentence > .word.phrase2 {
+    /*color: #13913D;*/
+    color: #3D913D;
+    color: #357D34;
+}
+.sentence > .word.phrase2.selected {
+    border-color: green;
+    /*color: #89E0A6;*/
+    color: #63E063;
+    color: #5BCC5A;
+}
+.sentence > .word.phrase2.selected2 {
+    color: #63E063;
+    color: #5BCC5A;
+}
+
+.sentence > .word {
+    margin-left: 1px;
+    margin-right: 1px;
+}
+.sentence > * {
+    color: #666;
+}
+
+.tree .word.selected2 {
+    font-style: italic;
+}
+.tree .word.phrase0 {
+    /*border-color: #DE9797;*/
+    border-color: #E06363;
+}
+.tree .word.phrase0.selected {
+    border-color: #913D3D;
+}
+.tree .word.phrase0.selected2 {
+    border-color: #913D3D;
+}
+.tree .word.phrase1 {
+    border-color: #6363E0;
+}
+.tree .word.phrase1.selected {
+    border-color: #3D3D91;
+}
+.tree .word.phrase1.selected2 {
+    border-color: #3D3D91;
+}
+.tree .word.phrase2 {
+    border-color: #63E063;
+}
+.tree .word.phrase2.selected {
+    border-color: #3D913D;
+}
+.tree .word.phrase2.selected2 {
+    border-color: #3D913D;
+}
+
+.tree .role {
+    font-size: 60%;
+}
+.tree .role.phrase0 {
+    color: #913D13;
+}
+.tree .role.phrase1 {
+    color: #3D1391;
+}
+.tree .role.phrase2 {
+    color: #13913D;
+}
+
+.sentence a {
+    color: inherit !important;
+}
+.tree a {
+    color: inherit !important;
+}
+
+/*
+ * test
+ */
+/*
+.tree *
+{
+    margin: 0;
+    padding: 0;
+}
+.tree ul
+{
+    display: inline-block;
+    moz-transition: all 0.5s;
+    padding: 2px;
+    position: relative;
+    transition: all 0.5s;
+    vertical-align: top;
+    webkit-transition: all 0.5s;
+}
+.tree li
+{
+    border-left: 1px solid;
+    left: 0px;
+    list-style-type: none;
+    moz-transition: all 0.5s;
+    padding: 2px;
+    padding-left: 20px;
+    position: relative;
+    top: 0px;
+    transition: all 0.5s;
+    webkit-transition: all 0.5s;
+}
+.tree > ul > li, .tree li:only-child
+{
+    border-left: none;
+    padding: 2px;
+}
+.tree li:first-child
+{
+    border-radius: 20px 0px 0px 0px;
+}
+.tree li:last-child
+{
+    border-radius: 0px 0px 0px 20px;
+}
+.tree li span
+{
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #656565;
+    display: inline-block;
+    moz-border-radius: 5px;
+    padding: 5px 10px;
+    text-decoration: none;
+    webkit-border-radius: 5px;
+}
+.tree li span.selected
+{
+    border: 1px solid #b09400;
+    color: #000;
+}
+.tree li span.selected2
+{
+    border: 1px solid #94a0d4;
+    color: #000;
+}
+.tree li span.selected+ul li::after, 
+.tree li span.selected+ul li::before, 
+.tree li span.selected+ul::before, 
+.tree li span.selected+ul ul::before
+{
+    border-color: #b09400;
+}*/
+
+/*
+ * START
+ */
+
+/*Now the CSS*/
+
+.tree * {
+    margin: 0; padding: 0;
+    
+    /*transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;*/
+}
+
+.tree ul {
+    padding-top: 20px; position: relative;
+    
+    /*transition: all 0.5s;
+    -webkit-transition: all0.5s;
+    -moz-transition: all 0.5s;*/
+}
+
+.tree li {
+    float: left; text-align: center;
+    list-style-type: none;
+    position: relative;
+    padding: 20px 5px 0 5px;
+    
+    /*transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;*/
+}
+
+/*We will use ::before and ::after to draw the connectors*/
+
+.tree li::before, .tree li::after{
+    content: '';
+    position: absolute; top: 0; right: 50%;
+    border-top: 1px solid #ccc;
+    width: 50%; height: 20px;
+}
+.tree li::after{
+    right: auto; left: 50%;
+    border-left: 1px solid #ccc;
+}
+
+/*We need to remove left-right connectors from elements without 
+any siblings*/
+.tree li:only-child::after, .tree li:only-child::before {
+    display: none;
+}
+
+/*Remove space from the top of single children*/
+.tree li:only-child{ padding-top: 0;}
+
+/*Remove left connector from first child and 
+right connector from last child*/
+.tree li:first-child::before, .tree li:last-child::after{
+    border: 0 none;
+}
+/*Adding back the vertical connector to the last nodes*/
+.tree li:last-child::before{
+    border-right: 1px solid #ccc;
+    border-radius: 0 5px 0 0;
+    -webkit-border-radius: 0 5px 0 0;
+    -moz-border-radius: 0 5px 0 0;
+}
+.tree li:first-child::after{
+    border-radius: 5px 0 0 0;
+    -webkit-border-radius: 5px 0 0 0;
+    -moz-border-radius: 5px 0 0 0;
+}
+
+/*Time to add downward connectors from parents*/
+.tree ul ul::before{
+    content: '';
+    position: absolute; top: 0; left: 50%;
+    border-left: 1px solid #ccc;
+    width: 0; height: 20px;
+}
+
+.tree li span{
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #656565;
+    display: inline-block;
+    
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+/*Time for some hover effects*/
+/*We will apply the hover effect the the lineage of the element also*/
+/*
+.tree li a:hover, .tree li a:hover+ul li a {
+    background: #c8e4f8; color: #000; border: 1px solid #94a0b4;
+}
+Time for some hover effects*/
+/*We will apply the hover effect the the lineage of the element also*/
+.tree li span.selected {
+    /*background: #eee0e0;*/
+    color: #000;
+    border-width: 2px;
+    padding: 4px 9px;
+}
+.tree li span.selected2 {
+    /*background: #eee0e0;*/
+    color: #000;
+    /*border-width: 2px;
+    padding: 4px 9px;*/
+}
+/*Connector styles on hover*/
+.tree li span.selected+ul li::after, 
+.tree li span.selected+ul li::before, 
+.tree li span.selected+ul::before, 
+.tree li span.selected+ul ul::before
+/*.tree li span.selected2+ul li::after*/
+{
+    /*border-color: #94a0b4;*/
+    /*border-color: #D1A5AD;*/
+    /*border-color: #CCBF7A;*/
+    /*border-color: #b09400;*/
+    border-color: #666;
+}
+
+/*Thats all. I hope you enjoyed it.
+Thanks :)*/
+
+/*
+ * END
+ */
+

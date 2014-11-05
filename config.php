@@ -11,7 +11,7 @@
         if (file_exists($SDIR . $path)) {
             require_once($SDIR . $path);
         } else {
-            print "File ($SDIR$path) not found!";
+            error_log("File ($SDIR$path) not found!");
         }
     }
     

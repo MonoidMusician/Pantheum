@@ -4,7 +4,7 @@
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
     
-    requireRank('0');
+    requireRank('1');
     
     global $suid, $mysqli;
     
@@ -13,10 +13,13 @@
         logEvent("audelete", "current-user", encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'} : $uid == $suid"));
         die("Cannot delete current user.");
     } else {
-        if ($uid != 1) {
+        if ($uid == '1') {
+            logEvent("audelete", "admin-user", encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'} : $uid, $suid"));
+            die("Cannot delete user.");
+        } else {
             $M_query = "SELECT * FROM users WHERE id='$uid';";
-            $M_result = $mysqli->query($M_query);
-            $M_count = $M_result->num_rows();
+            $M_result = $mysqli->query($M_query) or die("error");
+            $M_count = $M_result->num_rows;
             if ($M_count == 1) {
                 $M_row = $M_result->fetch_assoc();
                 $toAdd = encodeHex("users: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}");
@@ -30,9 +33,6 @@
                 logEvent("audelete", "no-user", encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'} : $uid,  $suid, M_query: `$M_query`, M_count: `$M_count`"));
                 die("No such user");
             }
-        } else {
-            logEvent("audelete", "admin-user", encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'} : $uid, $suid"));
-            die("Cannot delete user.");
         }
     }
 ?>

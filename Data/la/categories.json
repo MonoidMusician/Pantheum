@@ -1,0 +1,14 @@
+{
+	"verb": {
+		
+	},
+	"nouns": {
+		"verbal": [
+			"agent", "action",
+		],
+		"substantive-from-adjective": null,
+	},
+	"adjective": {
+		"attributive-from-noun":
+	},
+}

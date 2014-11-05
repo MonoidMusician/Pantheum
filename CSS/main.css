@@ -1,0 +1,383 @@
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/latin/Fonts/LinLibertine_R.woff);
+}
+
+html,body {
+    border: none;
+    padding: 0;
+    margin: 0;
+
+    width: 100%;
+    
+    overflow-x: hidden;
+    
+    background-color: #fafafa;
+    
+    font-size: 1.05em;
+    font-family: "Linux Libertine" !important;
+}
+
+header.global-nav {
+    border: none;
+    padding: 0;
+    margin: 0;
+    
+    width: 100%;
+    
+    font-size: 0.9em;
+}
+
+nav.global-nav {
+    border: none;
+    padding: 0;
+    margin: 0;
+    
+    width: 100%;
+    height: 2.25em;
+    
+    background-color: #cc3333;
+    
+    position: relative;
+}
+
+nav.global-nav a {
+    color: #efefef;
+    
+    text-decoration: none;
+}
+
+nav.global-nav ul {
+    border: none;
+    
+    padding: 0;
+    margin: 0;
+    
+    width: 100%;
+    
+    list-style: none;
+    
+    position: absolute;
+    
+    bottom: 0px;
+}
+
+nav.global-nav li {
+    display: inline-block;
+    
+    padding-top: 2.5px;
+    padding-bottom: 2.5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    
+    min-width: calc(14.285714285714% - 12px);
+    max-width: calc(33.3333333% - 12px);
+    
+    background-color: #aa0000;
+    border: 1px solid #CC3333;
+    
+    margin-top: 5px;
+    
+    text-align: center;
+    font-size: 1.3em;
+}
+
+nav.global-nav li:hover {
+    background-color: #BB2222;
+}
+
+section#content {
+    display: block !important;
+    
+    width: 85% !important;
+    margin: 0 auto;
+    padding: 15px;
+    
+    margin-top: 15px;
+    margin-bottom: 15px;
+    
+    background-color: #efefef;
+}
+
+section#content a {
+    color: #4466aa;
+    text-decoration: none;
+}
+
+input:not([type="checkbox"]):not([type="radio"]), button {
+    border: 1px solid #aaaaaa;
+    height: 1.5em;
+    margin: 1px;
+    border-radius: 2px;
+    
+    padding-left: 5px;
+    padding-right: 5px;
+    
+    font-size: 1.1em;
+    font-family: "Linux Libertine" !important;
+    
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+input:not([type="checkbox"]):not([type="radio"]) {
+    width: 300px;
+}
+
+input.small {
+    width: 50px !important;
+    text-align: center;
+}
+
+input:focus, input:active, button:focus, button:active {
+    border: 1px solid #4466aa;
+}
+
+button.large {
+    width: 354px;
+}
+
+footer {
+    display: block !important;
+    
+    width: 85% !important;
+    margin: 0 auto;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    
+    background-color: #CC3333;
+    color: #efefef;
+    
+    font-style: italic;
+}
+
+hr {
+    color: #CC3333;
+    background-color: #CC3333;
+    border: none;
+}
+
+.select {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    
+    font-size: 1.1em;
+}
+
+.select-bordered {
+    border: 1px solid;
+    padding-bottom: 10px;
+    padding-right: 7px;
+    padding-top: -3px;
+}
+
+.select label {
+    display: inline-block;
+}
+
+input[type=checkbox], input[type=radio] {
+    border: 1px solid #aaaaaa;
+    height: 35px;
+    margin: 1px;
+    border-radius: 2px;
+    
+    font-size: 1.1em;
+    font-family: "Linux Libertine" !important;
+    
+    position: relative;
+    top: 0.5em;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.center {
+    margin: 0 auto;
+}
+
+.auto-width {
+    width: intrinsic;           /* Safari/WebKit uses a non-standard name */
+    width: -moz-max-content;    /* Firefox/Gecko */
+    width: -webkit-max-content; /* Chrome */
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.jquiz-incorrect, #login-error {
+    color: #cc3333;
+    font-weight: bold;
+}
+
+.jquiz-correct {
+    color: rgba(34, 50, 138, 1);
+}
+
+.jquiz-matching {
+    border-collapse: collapse;
+}
+.jquiz-matching td, .jquiz-matching th {
+    vertical-align: middle;
+    border: 1px solid black;
+    padding: 0px 8px;
+}
+
+span.help {
+    color: #ee6622;
+}
+
+table.inflection {
+    border-spacing: 10px 1px;
+    border-collapse: collapse;
+}
+table.inflection td {
+    padding: 1px 6px;
+    white-space: nowrap;
+}
+table.inflection th {
+    padding: 1px 4px;
+    white-space: nowrap;
+}
+table.inflection td {
+    border-bottom: 1px dashed #aaa;
+    border-top: 1px dashed #aaa;
+}
+th.greatest {
+    font-weight: bold;
+    font-style: italic;
+}
+th.major {
+    font-weight: bold;
+}
+th.minor {
+    font-weight: normal;
+}
+th.top {
+    padding-top: 5px;
+}
+
+.leftline {
+    border-left: 1px solid #888;
+}
+.rightline {
+    border-right: 1px solid #888;
+}
+/*.topline {
+    border-top: 1px solid #888;
+}
+.bottomline {
+    border-bottom: 1px solid #888;
+}*/
+
+div.word-more-info {
+    padding-left: 30px;
+}
+
+.jsettings-label {
+    display: inline-block;
+    
+    width: 150px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+p.signup {
+    font-size: 1.2em;
+}
+
+.scrollable {
+     overflow-x: auto;
+     padding-bottom: 5px;
+     -webkit-overflow-scrolling: touch;
+}
+
+div.floater-message {
+    position: fixed;
+    width: 30%;
+    top: calc(4% + 2.25em);
+    left: 35%;
+    background-color: rgba(204, 136, 51, 0.7); /* #CC8833 */
+    border-radius: 5px;
+    text-align: center;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+div.floater-message a {
+    color: #EFEFEF !important;
+}
+
+.container { width: 800px; margin: 0 auto; }
+
+.autocomplete-suggestions {
+    background: #FFF;
+    border: 1px solid #aaaaaa;
+    margin: 1px;
+    border-radius: 2px;
+    
+    padding-left: 5px;
+    padding-right: 5px;
+    
+    font-size: 1.1em;
+    font-family: "Linux Libertine" !important;
+    cursor: default;
+    overflow: auto;
+    /*border: 1px solid #999; background: #FFF; cursor: default; overflow: auto; -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);*/
+}
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+.autocomplete-no-suggestion { padding: 2px 5px;}
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+
+.word-name {
+    font-weight: bold;
+}
+
+sup.ordinal {font-size: 65%;}
+
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+    html,body {
+        font-size: 1.1em;
+    }
+
+    button.large {
+        width: 230px;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]) {
+        width: 240px;
+    }
+
+    nav.global-nav li {
+        font-size: 1.12em;
+    
+        padding-top: 1.5px;
+        padding-bottom: 1.5px;
+        padding-left: 2px;
+        padding-right: 2px;
+        
+        min-width: calc(14.285714285714% - 12px);
+        max-width: calc(33.3333333% - 12px);
+    }
+
+    .scrollable {
+         overflow-x: scroll;
+         -webkit-overflow-scrolling: touch;
+    }
+
+    table.inflection-small {
+        margin: 0 auto;
+        width: 100px;
+    }
+}

@@ -1,16 +1,21 @@
 function adminLoadUser(event) {
     cpage.setStorage('id', event.data.id);
-    cpage.toPageByHash('#user');
+    window.location.href = '#user';
+}
+
+function adminLoadWord(event) {
+    cpage.setStorage('id', event.data.id);
+    window.location.href = '#word';
 }
 
 function ahDoHex() {
-    $('#ahHex').val(
+    $('#ahhex').val(
         hex(
-            $('#ahPlain').val()
+            $('#ahplain').val()
         )
     );
 }
 
 function ahDoUnHex() {
-    $('#ahPlain').val(unhex($('#ahHex').val()));
+    $('#ahplain').val(unhex($('#ahhex').val()));
 }

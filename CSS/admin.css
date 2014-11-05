@@ -1,0 +1,74 @@
+div#apage {
+    position: relative;
+}
+
+nav#anav {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+ul.jpage-ul {
+    border: none;
+    margin: 0 0;
+    padding: 0;
+}
+
+li.jpage-li {
+    list-style-type: none;
+    border: none;
+    margin: 0 0;
+    padding: 0;
+}
+
+a.jpage-anchor {
+    color: #232323;
+    text-decoration: none;
+}
+
+a.jpage-anchor:hover {
+    color: #4466FA;
+    text-decoration: none;
+}
+
+#acontent {
+    word-wrap: break-word;
+    position: relative;
+    top: 0px;
+    left: 150px;
+}
+
+#alTable-tbody tr td {
+    border-bottom: 1px dotted #4466AA;
+    border-left: 1px dotted #4466AA;
+}
+
+#alTable-tbody tr td {
+    max-width: 500px;
+}
+
+#atTable-tbody tr td {
+    max-width: 500px;
+}
+
+#adTable-tbody tr td {
+    border-bottom: 1px dotted #4466AA;
+    border-left: 1px dotted #4466AA;
+}
+
+#adTable-tbody tr td {
+    max-width: 500px;
+}
+
+#adTable-tbody tr td {
+    max-width: 500px;
+}
+
+.jTableBodyInputEditing {
+    width: 250px !important;
+    height: 30px !important;
+}
+
+.jTableBodyInputEditing[type="number"] {
+    width: 50px !important;
+}

@@ -1,0 +1,35 @@
+<?php
+    require_once('/var/www/latin/config.php');
+    sro('/Includes/mysql.php');
+    sro('/Includes/session.php');
+    sro('/Includes/functions.php');
+    
+    global $mysqli;
+    
+    global $sli, $suid, $suname, $srank;
+    
+    $M_query = "UPDATE users SET currentip='' WHERE id='" . $suid . "';";
+    $M_result = $mysqli->query($M_query);
+
+
+    $_SESSION = array();
+
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
+    
+
+    $sli = "";
+    $suid = "";
+    $suname = "";
+    $srank = "";
+    
+    session_destroy();
+    
+    header("Location: /latin/index.php");
+?>
+

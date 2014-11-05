@@ -1,26 +1,30 @@
 <?php
     session_start();
-    global $sli, $sgtitle, $sgid, $sgtype,$suid, $suname, $srank;
+    global $sli, $suid, $suname, $srank;
     $sli = false;
-    $sgid = '';
-    $sgtitle = 'Tourney Host';
-    $sgtype = '';
     $suid = '';
     $suname = 'error';
     $srank = '';
     
     if ((isset($_SESSION['li'])) && ($_SESSION['li'] == 'true')) {
         $sli = true;
-        $sgid = $_SESSION['gid'];
-        if ((isset($_SESSION['gtitle'])) && ($_SESSION['gtitle'] != '')) {
-            $sgtitle = $_SESSION['gtitle'];
-        }
-        if ((isset($_SESSION['gtype'])) && ($_SESSION['gtype'] != ''))  {
-            $sgtype = $_SESSION['gtype'];
-        }
         $suid = $_SESSION['uid'];
         $suname = $_SESSION['username'];
         $srank = $_SESSION['rank'];
+    }
+    
+    if ($sli == true) {
+        global $mysqli;
+        $M_query = "SELECT forcelogout FROM users WHERE id='$suid';";
+        $M_result = $mysqli->query($M_query);
+        $M_row = $M_result->fetch_array();
         
+        if ($M_row[0] != '') {
+            $result = explode(',', $M_row[0]);
+            if (($result[1] == '*') || ($result[1] != $_SERVER['REMOTE_ADDR'])) {
+                header("Location: /latin/PHP5/logout.php");
+                die('');
+            }
+        }
     }
 ?>
