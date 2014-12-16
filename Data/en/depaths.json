@@ -1,1 +1,15 @@
-{"parts":{},"depaths":{}}
+{
+	"parts":[{
+		"number":{
+			"sg":"singular",
+			"pl":"plural"
+		},
+		"gender":{
+			"fem":"feminine",
+			"masc":"masculine"
+		}
+	}],
+	"depaths":{
+		"noun":["number","gender"]
+	}
+}

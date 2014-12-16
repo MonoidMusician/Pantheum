@@ -197,13 +197,24 @@ function jWord() {
 		});
 	};
 	this.word_add_def = function(id) {
-		if (!this.word_user_def(id)) return;
+		var def = this.word_user_def(id,false);
+		if (!def) return;
+		var lang = "";
+		var re = /^\[([a-z]{1,3})\]\s*(.*)$/;
+		var matched = re.exec(def);
+		if (matched !== null) {
+			lang = "&lang="+matched[1];
+			def = matched[2];
+		}
+		if (!def) return;
+		def = encodeURIComponent(def);
 		messageTip("Trying to add definition...");
 		var my = this;
 		$.get('/latin/PHP5/dictionary/add-definition.php',
 		      'path='+this.path(id)+
 		      '&id='+id+
-		      '&val='+this.word_user_def(id))
+		      '&val='+def+
+		      lang)
 		.done(function(data){
 			if (data == "success") {
 				messageTip("Successfully added definition");
@@ -286,9 +297,17 @@ function jWord() {
 			alert("Could not delete word: "+data);
 		});
 	};
-	this.word_rename = function(id) {
+	this.word_refresh = function(id) {
 		var my = this;
-		var old_name = $('#word'+id+'_name').text();
+		$.get('/latin/PHP5/dictionary/clear-cache.php','id='+id)
+		.done(function(data){
+			if (data == "success") return my.refreshEntry(id);
+			alert("Could not refresh word: "+data);
+		});
+	};
+	this.word_rename = function(id, old_name) {
+		var my = this;
+		//var old_name = $('#word'+id+'_name').text();
 		$('#word'+id+'_name').replaceWith(
 			'<input style="width: 100px;" id="word'+id+'_name" type="text"'+
 			' placeholder="name" value="'+old_name+
@@ -298,6 +317,7 @@ function jWord() {
 			$('#word'+id+'_name').replaceWith(
 				'<span class="word-name" id="word'+id+'_name">'+new_name+'</span>'
 			);
+			return my.refreshEntry(id);
 			$('#word'+id+'_rename').on("click.rename", function() {
 				dict.word_rename(id);
 			});
@@ -333,11 +353,11 @@ function jWord() {
 		var val = $('#word'+id+'_value_templ').val().split(":");
 		arg = val[0].split("?").slice(1).join("?");
 		val[0] = val[0].split("?")[0];
-		var re = /^(?:(?:overwrite=true)|(?:ignore)=([_a-zA-Z0-9-]+[,;]?)+|(?:change-to)=([_a-zA-Z0-9-]+,[_a-zA-Z0-9-]+;?)+)*$/;
+		var re = /^(?:(?:(?:overwrite=true)|(?:ignore)=([_a-zA-Z0-9-]+[,;]?)+|(?:change)=([_a-zA-Z0-9-]+,[_a-zA-Z0-9-]+;?)+)[&]?)*$/;
 		if (!re.test(arg)) return alert("Bad template argument syntax: "+arg);
 		//return alert(arg);
 		val = [val[0],val.slice(1).join(":")];
-		if (arg) arg+='&';
+		if (arg && arg.slice(-1) != "&") arg+='&';
 		arg += 'template='+encodeURIComponent(val[0].trim());
 		$.each(val[1].split(";"), function(i,argi) {
 			arg += '&'+i+'='+encodeURIComponent(argi.trim());
@@ -361,7 +381,7 @@ function jWord() {
 	};
 	
 	this.refreshEntries = function() {
-		messageTip("Loading entries...");
+		messageTip("Loading entries...", null);
 		var my = this;
 		var loc = this.searcher();
 		if (loc === undefined) return messageTip("Empty loc");
@@ -404,7 +424,11 @@ function jWord() {
 		function handle1Response(data) {
 			var $html = $('<section>'+data+'</section>');
 			var selector = $html.find('#word'+id);
-			$('#word'+id).html(selector.html());
+			//$('#word'+id).html(selector.html());
+			$('#word'+id).replaceWith(selector);
+			$html.find('script').each(function() {
+				$.globalEval($(this).text());
+			});
 		}
 		$.get('/latin/PHP5/dictionary/get-entries.php', 'id='+id)
 		.done(handle1Response)

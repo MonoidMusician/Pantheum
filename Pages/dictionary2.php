@@ -82,8 +82,9 @@
 
 <article id="dictionary"/>
 <script type="text/javascript">
-	$(document).on('keyup', '#enter-names, #enter-attrs', function(event) {
-		if (event.which == 13) {
+	$(document).on('keyup', '#enter-names, #enter-attrs, #enter-ids', function(event) {
+		var val = $('#enter-attrs').val();
+		if (event.which == 13 && val[val.length-1] !== "=") {
 			$(this).blur();
 			dict.refreshEntries();
 		}
@@ -91,7 +92,8 @@
 	$(function(){
 		var lock=false;
 		var splitter = /,\s*/;
-		var last = $('#enter-names').val().split(splitter);
+		var last1 = $('#enter-names').val().split(splitter);
+		var last2 = $('#enter-attrs').val().split(splitter);
 		function getcheckbox(name) {
 			var ret=[];
 			$('input:checkbox[name="'+name+'"]:checked:visible').each(function() {
@@ -107,10 +109,10 @@
 			onSelect: function(selection) {
 				if (lock) return; lock=true;
 				var el = $('#enter-names');
-				if ($.inArray(selection.value, last) === -1) {
+				if ($.inArray(selection.value, last1) === -1) {
 					el.val(el.val()+", ");
 				}
-				last = el.val().split(splitter);
+				last1 = el.val().split(splitter);
 				el.focus();
 				lock=false;
 			},
@@ -118,6 +120,45 @@
 			deferRequestBy: 150,
 			onSearchStart: function(query) {
 				$(this).autocomplete().options.params["attr"] = $('#enter-attrs').val();
+				$(this).autocomplete().options.params["lang"] = getcheckbox('enter-lang');
+				$(this).autocomplete().options.params["spart"] = getcheckbox('enter-spart');
+			},
+			transformResult: function(response) {
+				response = JSON.parse(response);
+				return {suggestions: response};
+			},
+			minChars: 0,
+		});
+		$('#enter-attrs').autocomplete({
+			//lookup: names,
+			serviceUrl: '/latin/PHP5/dictionary/get-attributes-json.php',
+			params: {},
+			delimiter: splitter,
+			onSelect: function(selection) {
+				if (lock) return; lock=true;
+				var el = $('#enter-attrs');
+				if ($.inArray(selection.value, last2) === -1) {
+					if (selection.value.indexOf("={") === -1) {
+						el.val(el.val()+", ");
+					} else {
+						var prev = /^(.*?,?)(?:[^{,}]|\{[^{}]*\})+$/.exec(el.val())[1];
+						console.log(prev);
+						var re = /\{([^,]+)\}$/;
+						var matched = re.exec(selection.value);
+						console.log(matched);
+						if (matched !== null)
+							el.val(prev+selection.value.split("=")[0]+"="+matched[1]);
+						else el.val(prev+selection.value.split("=")[0]+"=");
+					}
+				}
+				last2 = el.val().split(splitter);
+				el.focus();
+				lock=false;
+			},
+			paramName: "attr",
+			deferRequestBy: 150,
+			onSearchStart: function(query) {
+				$(this).autocomplete().options.params["name"] = $('#enter-names').val();
 				$(this).autocomplete().options.params["lang"] = getcheckbox('enter-lang');
 				$(this).autocomplete().options.params["spart"] = getcheckbox('enter-spart');
 			},

@@ -125,6 +125,8 @@ function choose_n_unique($arr, $n, $rand=NULL) {
 			$key = array_rand($arr, 1);
 		$selected = $arr[$key];
 		unset($arr[$key]);
+		if (is_array($rand))
+			unset($rand[$key]);
 		$ret[] = $selected;
 	}
 	return $ret;

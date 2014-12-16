@@ -350,48 +350,18 @@ file_put_contents("$dir/stmts.csv", implode("\n", $list));
 // Execute a prepared (and handle it)
 function &sql_getN($stmt, &$result, $params, $n) {
 	$result = NULL;
-	if (count($params) <= 1) {}
-	elseif (count($params) == 2) {
-		if (!$stmt->bind_param($params[0], $params[1])) {
+	if ($params) {
+		$bind_names[] = $params[0];
+		for ($i=1; $i<count($params);$i++) {
+			$bind_name = 'bind' . $i;
+			$$bind_name = $params[$i];
+			$bind_names[] = &$$bind_name;
+		}
+		if (!call_user_func_array(array($stmt,"bind_param"), $bind_names)) {
 			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
 			return $result;
 		}
-	} elseif (count($params) == 3) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 4) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 5) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 6) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 7) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 8) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6], $params[7])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 9) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6], $params[7], $params[8])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} else _die("bad parameters");
+	}
 	if (!$stmt->execute()) {
 		echo "Execute failed (".__FILE__."@".__LINE__."): (" . $stmt->errno . ") " . $stmt->error;
 		return $result;
@@ -417,48 +387,18 @@ function &sql_getN($stmt, &$result, $params, $n) {
 // Same, minus &$result and $n
 function &sql_exec($stmt, $params) {
 	$result = NULL;
-	if (count($params) <= 1) {}
-	elseif (count($params) == 2) {
-		if (!$stmt->bind_param($params[0], $params[1])) {
+	if ($params) {
+		$bind_names[] = $params[0];
+		for ($i=1; $i<count($params);$i++) {
+			$bind_name = 'bind' . $i;
+			$$bind_name = $params[$i];
+			$bind_names[] = &$$bind_name;
+		}
+		if (!call_user_func_array(array($stmt,"bind_param"), $bind_names)) {
 			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
 			return $result;
 		}
-	} elseif (count($params) == 3) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 4) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 5) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 6) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 7) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 8) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6], $params[7])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} elseif (count($params) == 9) {
-		if (!$stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6], $params[7], $params[8])) {
-			echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
-			return $result;
-		}
-	} else _die("bad parameters");
+	}
 	if (!$stmt->execute()) {
 		_die("Execute failed (".__FILE__."@".__LINE__."): (" . $stmt->errno . ") " . $stmt->error);
 		return $result;

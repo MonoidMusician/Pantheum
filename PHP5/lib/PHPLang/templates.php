@@ -59,13 +59,19 @@ function run_template($w, $p, $t, $arg, $ignore, $change, $overwrite=FALSE) {
 		// Evaluate the template
 		$value = $l($arg);
 		if ($value === NULL) return "Missing variable";
-		#error_log($p2 . $value);
-		#error_log(var_export($w->path_storage,1));
-		$p2->set($value);
-		#error_log(var_export($w->path_storage,1));
-		#error_log(var_export($p2->get(),1));
-		$p2 = $w->add_path($p2);
-		#error_log(var_export($p2->id(),1));
+		if (!$p2->hasvalue()) {
+			#error_log($p2 . $value);
+			#error_log(var_export($w->path_storage,1));
+			$p2->set($value);
+			#error_log(var_export($w->path_storage,1));
+			#error_log(var_export($p2->get(),1));
+			$p2 = $w->add_path($p2);
+			#error_log(var_export($p2->id(),1));
+		} else {
+			$p2 = $w->get_path($p2);
+			$p2->set_value($value);
+			$p2->set($value);
+		}
 	}
 	return NULL;
 }

@@ -133,12 +133,23 @@ function jQuiz() {
                     //result += '</select>';
                 }
             } else {
-                if (this.results[this.current][part[1]][1] == true) {
-                    result += '<span class="jquiz-correct">' + this.results[this.current][part[1]][0] + ' </span>';
+                var intro = "try"; var conj = "or";
+                if (this.results[this.current][part[1]][0]) {
+                    result += '<span class="jquiz-correct">' + this.results[this.current][part[1]][1] + '</span>';
+                    var intro = "also";
+                    var conj = "and";
                 } else {
-                    result += '<span class="jquiz-incorrect">' + this.results[this.current][part[1]][0] + ' </span>';
-                    result += '<span class="jquiz-correct">(' + this.results[this.current][part[1]][1] + ') </span>';
+                    result += '<span class="jquiz-incorrect">' + this.results[this.current][part[1]][1] + '</span>';
                 }
+                for (var i=2;i<this.results[this.current][part[1]].length;i++) {
+                    if (i == 2) result += '<span class="jquiz-correct"> ('+intro+': ';
+                    else if (i == this.results[this.current][part[1]].length-1)
+                        if (i == 3) result += " "+conj+" ";
+                        else result += ", "+conj+" ";
+                    else result += ", ";
+                    result += this.results[this.current][part[1]][2];
+                }
+                if (i > 2) result += ')</span>';
             }
         }
         

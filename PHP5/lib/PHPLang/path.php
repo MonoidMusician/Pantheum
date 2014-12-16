@@ -29,6 +29,7 @@ class _PATH implements Countable
 			#$path = array_merge($init->df_path_values, $path);
 			$this->add2($init->df_path_values);
 		} elseif (ISPATH($init)) {
+			$this->issql = $init->issql;
 			$this->_mgr = $init->mgr();
 			$this->map = array_of_size($init->map);
 		} else {
@@ -79,6 +80,8 @@ class _PATH implements Countable
 	function set_value($value) {
 		global $sql_stmts;
 		$this->_value = $value;
+		if ($this->issql and $this->_id !== NULL)
+			error_log($this->_id." -> $value");
 		if ($this->issql and $this->_id !== NULL)
 			sql_set($sql_stmts["form_id->form_value="], $this->_value, ["i", &$this->_id]);
 	}
@@ -329,6 +332,7 @@ class _PATH implements Countable
 	}
 	function hasvalue($hash=NULL) { return $this->get($hash) !== NULL; } # habesne valorem in tabula assocativa?
 	function remove($hash=NULL) {
+		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
 			sql_exec($sql_stmts["form_id->delete from forms"], ["i", &$this->_id]);
 		$hash = &$this->resolve_hash($hash);

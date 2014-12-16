@@ -38,7 +38,7 @@
 			))
 			{ $ids = NULL; }
 
-		$inflection = (!array_key_exists("no_inflection",$_GET) or $_GET["no_inflection"] !== "true");
+		$inflection = !(safe_get("no_inflection",$_GET) === "true");
 
 		if ($ids === NULL) {
 			$searcher = $db->searcher();
@@ -84,7 +84,7 @@
 			display_definitions($w, $editor);
 			if ($inflection) display_inflection($w);
 
-			if ($editor and $inflection) {
+			if ($editor) {
 				$_level = array_merge($w->mgr()->simple_keys, $w->mgr()->recursive_keys);
 				foreach ($w->mgr()->all_sub_keys as $k) {
 					$first_level = in_array($k, $_level);
@@ -188,7 +188,7 @@
 			}
 			$id2vals .= "],";
 			$dependencies .= "},";
-			?><br><?php
+			if ($inflection) { ?><br><?php }
 			display_connections($w,$editor);
 			?></section><hr><?php
 		}

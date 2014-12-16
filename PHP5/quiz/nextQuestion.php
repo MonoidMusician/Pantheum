@@ -9,20 +9,30 @@ sro('/PHP5/lib/PHPLang/display.php');
 include_once('quiz_types.php');
 global $quiz_types;
 
-const QUIZ_MAX_RECURSE = 10;
+const QUIZ_MAX_RECURSE = 1;
 
 $type = $quiz_types[$_SESSION["quiz_type"]];
 $options = []; foreach ($type["options"] as $opt)
 	if (!array_key_exists("condition", $opt) or $opt["condition"]())
 		$options[] = $opt;
-$quiz = choose_one($options);
+//$quiz = choose_one($options);
+$idx = NULL; $i=0;
+while ($idx === NULL or !array_key_exists($idx, $options)) {
+	if (!safe_get("options_n",$_SESSION) or $_SESSION["options_n"] === true) {
+		$_SESSION["options_n"] = array_keys($options);
+		shuffle($_SESSION["options_n"]);
+	}
+	$idx = array_pop($_SESSION["options_n"]);
+	if ($i++ > 12) exit("ran out of indices");
+}
+$quiz = $options[$idx];
 $try = NULL; $recurse=0; $reason=NULL;
 $try = function() use($quiz,&$try,&$recurse,&$reason) {
 	global $OP_MATCHING_CHOICES;
 	global $OP_MULTIPLE_CHOICE;
 	global $OP_MATCHING;
 	global $OP_USER_INPUT;
-	if ($recurse >= QUIZ_MAX_RECURSE) {echo json_encode([['text', '<span class="jquiz-incorrect">could not complete sentence '.$reason.'</span>']]); return;}
+	if ($recurse >= QUIZ_MAX_RECURSE) {echo json_encode([['text', '<span class="jquiz-incorrect" style="font-size: 7px">could not complete sentence '.$reason.'</span>']]); return;}
 	$recurse += 1;
 	$selections = $quiz["selections"];
 	$sentence = do_template($quiz["sentence"], NULL, $selections, $reason);
@@ -38,22 +48,22 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 		$result_json[] = ["text", "<span class='help'>$help</span><br><br>"];
 	}
 	$answers = [];
-	$_mini = [];
+	$_mini = []; $allow_space = FALSE;
 	$n = 0;
 	$_SESSION["current_answer"] = [];
+	$refresh = function($finish=false) use(&$result_json,&$_mini,&$allow_space) {
+		if ($_mini) {
+			$result_json[] = ["text", serialize_sentence_part($_mini,$allow_space).(($finish and $allow_space)?" ":"")];
+			$_mini = [];
+		}
+	};
 	foreach ($sentence as $word) {
 		if (ISHTML($word)) {
-			if ($_mini) {
-				$result_json[] = ["text", " ".serialize_sentence_part($_mini)." "];
-				$_mini = [];
-			}
+			$refresh();
 			$result_json[] = ["html", $word->text];
 		} elseif ($word === $OP_MULTIPLE_CHOICE or $word === $OP_MATCHING_CHOICES) {
+			$refresh(1);
 			$shuffle = true;
-			if ($_mini) {
-				$result_json[] = ["text", " ".serialize_sentence_part($_mini)." "];
-				$_mini = [];
-			}
 			$stop = FALSE;
 			$correct = [];
 			$choices = $quiz["choices$n"];
@@ -64,7 +74,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				$reason = "choices were not in an array (".gettype($choices).")";
 				return $try();
 			}
-			if (safe_get("no_shuffle",$choices)) {
+			if (safe_get("choices$n-no-shuffle",$quiz) or safe_get("no_shuffle",$choices)) {
 				$shuffle = false;
 				unset($choices["no_shuffle"]);
 			}
@@ -106,11 +116,8 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			}
 			$n += 1;
 		} elseif ($word === $OP_MATCHING) {
+			$refresh(1);
 			$shuffle = true;
-			if ($_mini) {
-				$result_json[] = ["text", " ".serialize_sentence_part($_mini)." "];
-				$_mini = [];
-			}
 			$stop = FALSE;
 			$choices = $quiz["matching$n"];
 			if (is_callable($choices)) {
@@ -151,10 +158,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			$result_json[] = ["matching", "answer$n", $quiz["matching$n-tooltip"], $left, $answers];
 			$n += 1;
 		} elseif ($word === $OP_USER_INPUT) {
-			if ($_mini) {
-				$result_json[] = ["text", " ".serialize_sentence_part($_mini)." "];
-				$_mini = [];
-			}
+			$refresh(1);
 			$stop = FALSE;
 			$answers = $quiz["answer$n"];
 			if (is_callable($answers)) {
@@ -197,7 +201,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			$n += 1;
 		} else $_mini[] = $word;
 	}
-	$result_json[] = ["text", " ".serialize_sentence_part($_mini)];
+	$refresh();
 	#var_dump($selections, $result_json, $answers);
 	echo json_encode($result_json);
 };

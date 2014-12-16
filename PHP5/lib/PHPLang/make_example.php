@@ -10,14 +10,15 @@ sro('/PHP5/lib/PHPLang/display.php');
 function serialize_sentence($vector) {
 	return serialize_sentence_part($vector).".";
 };
-function serialize_sentence_part($vector) {
+function serialize_sentence_part($vector,&$allow_space=NULL) {
 	$r = "";
-	$allow_space = 0;
+	if ($allow_space === NULL)
+		$allow_space = FALSE;
 	foreach ($vector as $w) {
 		if (ISOP($w)) $n=$w;
 		else $n=OP(format_word($w));
 		if ($n->space_before and $allow_space) $r .= " ";
-		$allow_space = $n->space_after;
+		$allow_space = !!$n->space_after;
 		$r .= $n->text;
 	}
 	return $r;
@@ -72,8 +73,8 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 	}
 	elseif (array_key_exists("condition", $t) and !$t["condition"]($pick_db, $db))
 		return FALSE;
-	elseif (array_key_exists("literal", $t))
-		return $t["literal"];
+	elseif (array_key_exists("value", $t))
+		return _process_value($t["value"],$pick_db,$db);
 	$searcher = $db->searcher();
 	#var_dump(array_keys($searcher->master));
 	if (array_key_exists("name", $t))
@@ -90,14 +91,20 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 	if (array_key_exists("attr", $t))
 		foreach ($t["attr"] as $k=>$v) {
 			$v = _process_value($v,$pick_db,$db);
-			$searcher = $searcher->only_with_attr(ATTR($k,$v));
+			if ($reverse = (substr($k, 0, 1) === "!")) {
+				$k = substr($k, 1);
+				$m = "only_without_attr";
+			} else $m = "only_with_attr";
+			$searcher = $searcher->$m($v!==NULL?ATTR($k,$v):ATTR($k));
 		}
 
 	$word = $searcher->rand();
 	if (!ISWORD($word)) {
-		$reason = "could not find a word with suitable attrs";
+		$reason = "could not find a word with name ".$t["name"]." and attrs ".var_export(safe_get("attr",$t),1);
 		return;
 	}
+	if (array_key_exists("store_word", $t))
+		$pick_db[$t["store_word"]] = $word;
 	$word->read_paths();
 
 	$path = PATH($word);
@@ -119,7 +126,10 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 	}
 
 	if ($path->hasvalue()) {
-		return $path->get();
+		$ret = $path->get();
+		if (array_key_exists("store", $t))
+			$pick_db[$t["store"]] = $ret;
+		return $ret;
 	} else {
 		$reason = "path $path didn't exist in word with id ".$word->id()." or was NULL";
 		return;
@@ -165,13 +175,18 @@ function do_template($temp, $db=NULL, &$pick_db=NULL, &$reason=NULL) {
 	$sentence = NULL;
 	$reason = NULL;
 	$ignore = NULL;
-	$pick_db = _process_value($pick_db,$ignore,$db);
-	if ($pick_db === NULL) $reset = [];
-	else $reset = &$pick_db;
-	while ($repeats < 10 and $sentence === NULL) {
+	$reset = [];
+	if (!is_array($pick_db) and $pick_db !== NULL)
+		$pick_db = _process_value($pick_db);
+	if (is_array($pick_db)) {
+		$reset = [];
+		foreach ($pick_db as $k=>$_)
+			$reset[$k] = _process_value($_,$reset,$db);
+	}
+	while ($repeats < 1 and $sentence === NULL) {
 		$repeats += 1;
 		$sentence = [];
-		$pick_db = &$reset;
+		$pick_db = $reset;
 		foreach ($temp as $k=>$t) {
 			$res = do_pick($t, $db, $pick_db, $reason);
 			if ($res === NULL)

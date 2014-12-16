@@ -24,7 +24,6 @@
     <div class="floater-message">
     <a>Javascript did not successfully load. Some/all functionality may not be available.</a>
     </div>
-    <div class="floater-message"><a></div>
     <script type="text/javascript">
         $('.floater-message').hide();
         messageTip = (function() {
@@ -34,11 +33,13 @@
                 if (timer !== null)
                     clearTimeout(timer);
             }
-            function messageTip(msg) {
+            function messageTip(msg, delay) {
+                if (delay === undefined) delay = 2300;
                 callback();
                 $('.floater-message').show();
                 $('.floater-message a').text(msg);
-                timer = setTimeout(callback, 2300);
+                if (delay !== null)
+                    timer = setTimeout(callback, delay);
             }
             $('.floater-message').on("click", callback);
             return messageTip;

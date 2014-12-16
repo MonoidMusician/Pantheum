@@ -18,6 +18,11 @@ $sql_stmts['word_id->word_name']= "SELECT word_name FROM words WHERE word_id = (
 $sql_stmts['word_name->word_id']= "SELECT word_id FROM words WHERE word_name = (?)";
 
 /*
+ * Find the word's inflection cache
+ */
+$sql_stmts['word_id->inflection_cache']= "SELECT inflection_cache FROM words WHERE word_id = (?)";
+
+/*
  * Find the word's language
  */
 $sql_stmts['word_id->word_lang']= "SELECT word_lang FROM words WHERE word_id = (?)";
@@ -57,6 +62,7 @@ $sql_stmts['word_spart,word_lang,word_name->word_id']= "SELECT word_id FROM word
 $sql_stmts['word_id->delete from words']= "DELETE FROM words WHERE (word_id = (?))";
 
 $sql_stmts['word_id->word_name=']= "UPDATE words SET word_name = (?) WHERE word_id = (?)";
+$sql_stmts['word_id->inflection_cache=']= "UPDATE words SET inflection_cache = (?) WHERE word_id = (?)";
 
 /************************
  * FORMS

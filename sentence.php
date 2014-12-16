@@ -13,6 +13,7 @@
         <link rel="stylesheet" type="text/css" href="/latin/CSS/sentence.css">
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+        <script type="text/javascript" src="/latin/JS/lib/jquery.autocomplete.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>

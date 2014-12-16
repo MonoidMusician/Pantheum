@@ -13,7 +13,9 @@
         <button class="large" onclick="window.location.href='/latin/links.php';">Latin websites</button><br>
         <button class="large" onclick="window.location.href='/latin/dictionary2.php';">Dictionary</button><br>
         <button class="large" onclick="window.location.href='/latin/sentence.php';">Sentence Viewer</button><br>
-        <button class="large" onclick="window.location.href='/latin/raw_forms.php';">DB editing</button><br><br>
+        <?php if (requireRank(3, FALSE)) { ?>
+        <button class="large" onclick="window.location.href='/latin/add_word.php';">Add words</button><br>
+        <?php } ?><br>
 
         Thanks for logging in, your scores will be saved.
     </p>

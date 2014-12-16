@@ -230,6 +230,11 @@ input[type=checkbox], input[type=radio] {
     padding: 0px 8px;
 }
 
+a.word-ref {
+    /*font-weight: bold;*/
+    font-style: italic;
+}
+
 span.help {
     color: #ee6622;
 }
@@ -304,7 +309,8 @@ div.floater-message {
     width: 30%;
     top: calc(4% + 2.25em);
     left: 35%;
-    background-color: rgba(204, 136, 51, 0.7); /* #CC8833 */
+    /*background-color: rgba(204, 136, 51, 0.7); /-* #CC8833 *-/*/
+    background-color: rgba(204, 108, 0, 0.7); /* #D69347 */
     border-radius: 5px;
     text-align: center;
     padding-left: 6px;

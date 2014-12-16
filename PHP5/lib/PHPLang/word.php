@@ -54,6 +54,19 @@ class _WORD
 		if ($this->issql and $this->_id !== NULL)
 			sql_set($sql_stmts["word_id->word_name="], $this->_name, ["i", &$this->_id]);
 	}
+	private $_cached = NULL;
+	function cached() {
+		global $sql_stmts;
+		if ($this->issql and $this->_id !== NULL)
+			sql_getone($sql_stmts["word_id->inflection_cache"], $this->_cached, ["i", &$this->_id]); # still NULL if not found
+		return $this->_cached;
+	}
+	function set_cached($cached) {
+		global $sql_stmts;
+		$this->_cached = $cached;
+		if ($this->issql and $this->_id !== NULL)
+			sql_set($sql_stmts["word_id->inflection_cache="], $this->_cached, ["i", &$this->_id]);
+	}
 	private $_speechpart = NULL;
 	function speechpart() {
 		global $sql_stmts;

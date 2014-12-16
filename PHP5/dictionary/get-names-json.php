@@ -70,6 +70,7 @@ if ($ids === NULL) {
 		$list[] = WORD(defaultDB(), intval($id));
 }
 $res = array_map(function($e) {
+	if (no_format($e)) return $e->name();
 	return format_word($e->name());
 }, $list);
 echo json_encode($res);

@@ -8,7 +8,7 @@
     <h1>Quiz</h1>
 </header>
 <article id="quiz">
-    Type of quiz: 
+    Quiz me on:
     <?php
         sro('/PHP5/quiz/showQuizTypes.php');
     ?>

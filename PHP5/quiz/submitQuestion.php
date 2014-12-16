@@ -15,9 +15,9 @@
         and is_array($values["correct"])
         and is_array($values["acceptable"])) {
             $also = $values["correct"];
-            $correct = $values["correct"] ? "“".implode("” or “", $values["correct"])."”" : "";
+            $correct = $values["correct"];
             $values = $values["acceptable"];
-        } else $correct = ($also=$values) ? "“".implode("” or “", $values)."”" : "";
+        } else $correct = ($also=$values);
         $score = FALSE;
         foreach ($values as $value) {
             if (!$score and $answer2 == ($_val=unformat_word($value))) {
@@ -39,13 +39,16 @@
                 if ($paren !== 0 and (!$new or !ctype_space($definition[$i]))) $new .= $definition[$i];
             }
         }
+        /*
         if (!$score) {
+            $correct = $correct ? "“".implode("” or “", $correct)."”" : "";
             $result[$name] = [$answer, $correct];
         } else {
             if ($also) $also = " (also: “".implode("” or “", $also)."”)";
             else $also = "";
             $result[$name] = [$value.$also, true];
-        }
+        }*/
+        $result[$name] = array_merge([$score, $score?$value:$answer], $score?$also:$correct);
     }
     
     $_SESSION["current_answer"] = NULL;

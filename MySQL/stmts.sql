@@ -16,6 +16,13 @@
 }}};
 
 /*
+ * Find the word's inflection cache
+ */
+{{{defineselect|
+    table=words&to=inflection_cache&from=word_id
+}}};
+
+/*
  * Find the word's language
  */
 {{{defineselect|
@@ -57,6 +64,8 @@
 
 {{{defineupdate|
     table=words&from=word_id&to=word_name}}};
+{{{defineupdate|
+    table=words&from=word_id&to=inflection_cache}}};
 
 /************************
  * FORMS

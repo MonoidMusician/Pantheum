@@ -109,6 +109,7 @@ function PICK() {
 			elseif ($id === NULL)
 				$id = $a;
 			else _die("extra scalar passed to PICK()");
+		elseif ($a === NULL) ;
 		else _die("bad type '".gettype($a)."' passed to PICK()");
 	}
 	if ($key === NULL) _die("bad parameters to PICK()");

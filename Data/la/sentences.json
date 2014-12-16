@@ -20,7 +20,7 @@
         "modifies":[
           "Salvius"
         ],
-        "role":"relative phrase",
+        "role":"relative phrase/subject",
         "link":"\/latin\/dictionary2.php?name=relative pronoun&lang=la&spart=pronoun"
       },
       "2":{
@@ -110,6 +110,54 @@
         "role":"verb/root"
       }
     },
+    "translation":{
+      "0":{
+        "value":"Salvius"
+      },
+      "-1":{
+        "space_after":1,
+        "text":",",
+        "space_before":0
+      },
+      "1":{
+        "value":"who"
+      },
+      "4":{
+        "value":"was"
+      },
+      "3":{
+        "value":"a rich"
+      },
+      "2":{
+        "value":"merchant"
+      },
+      "100":{
+        "value":"in"
+      },
+      "101":{
+        "value":"Britain"
+      },
+      "-2":{
+        "space_after":1,
+        "text":",",
+        "space_before":0
+      },
+      "9":{
+        "value":"bought"
+      },
+      "8":{
+        "value":"a splendid"
+      },
+      "7":{
+        "value":"house"
+      },
+      "5":{
+        "value":"with much"
+      },
+      "6":{
+        "value":"money"
+      }
+    },
     "phrases":[
       [
         0,
@@ -160,6 +208,383 @@
         "6":[
           5
         ]
+      }
+    }
+  },
+  "nauta, cui pecuniam d\u0113b\u0113s, ad \u012atalia revenit.":{
+    "sentence":{
+      "0":{
+        "value":"nauta",
+        "desc":" (n): subject of <i>revenit<\/i>, nominative singular",
+        "modifies":[
+          "revenit"
+        ],
+        "role":"subject"
+      },
+      "-1":{
+        "space_after":1,
+        "text":",",
+        "space_before":0
+      },
+      "1":{
+        "value":"cui",
+        "desc":" (pro): modifier of <i>nauta<\/i>, dative masculine singular",
+        "modifies":[
+          "nauta"
+        ],
+        "role":"relative phrase/indirect object",
+        "link":"\/latin\/dictionary2.php?name=relative pronoun&lang=la&spart=pronoun"
+      },
+      "3":{
+        "value":"pecuniam",
+        "desc":" (n): object of <i>d\u0113b\u0113s<\/i>, accusative singular",
+        "modifies":[
+          "d\u0113b\u0113s"
+        ],
+        "role":"object"
+      },
+      "4":{
+        "value":"d\u0113b\u0113s",
+        "desc":" (v): verb of <i>qu\u012b<\/i>, 3rd person singular imperfect indicative",
+        "modifies":[
+          "cui"
+        ],
+        "role":"verb",
+        "link":"\/latin\/dictionary2.php?name=sum&lang=la&spart=verb"
+      },
+      "-2":{
+        "space_after":1,
+        "text":",",
+        "space_before":0
+      },
+      "5":{
+        "value":"ad",
+        "desc":" (prep): location for <i>revenit<\/i>",
+        "modifies":[
+          "revenit"
+        ],
+        "role":"preposition",
+        "link":"\/latin\/dictionary2.php?name=multus&lang=la&spart=adjective"
+      },
+      "6":{
+        "value":"\u012ataliam",
+        "desc":" (n): object of <i>ad<\/i>, accusative singular",
+        "modifies":[
+          "ad"
+        ],
+        "role":"object"
+      },
+      "9":{
+        "value":"revenit",
+        "desc":" (v): root of sentence, indicative active present 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+        "link":"\/latin\/dictionary2.php?name=revenio&lang=la&spart=verb",
+        "role":"verb/root"
+      }
+    },
+    "translation":{
+      "0":{
+        "value":"The sailor"
+      },
+      "-1":{
+        "space_after":1,
+        "text":",",
+        "space_before":0
+      },
+      "1":{
+        "value":"to whom"
+      },
+      "4":{
+        "value":"you owe"
+      },
+      "3":{
+        "value":"money"
+      },
+      "-2":{
+        "space_after":1,
+        "text":",",
+        "space_before":0
+      },
+      "9":{
+        "value":"is returning"
+      },
+      "5":{
+        "value":"to"
+      },
+      "6":{
+        "value":"Italy"
+      }
+    },
+    "phrases":[
+      [
+        0,
+        -1,
+        1,
+        3,
+        4,
+        -2,
+        5,
+        6,
+        9
+      ],
+      [
+        1,
+        3,
+        4
+      ],
+      [6,5]
+    ],
+    "tree":{
+      "9":{
+        "0":{
+          "1":{
+            "4":[
+              3
+            ]
+          }
+        },
+        "5":[
+          6
+        ]
+      }
+    }
+  },
+  "necesse est mihi hoc tibi dare.":{
+    "sentence":{
+      "0":{
+        "value":"necesse",
+        "desc":" (adj): predicate of <i>est<\/i>, neuter nominative singular",
+        "modifies":[
+          "est"
+        ],
+        "role":"predicate"
+      },
+      "1":{
+        "value":"est",
+        "desc":" (v): root of sentence, indicative active present 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+        "modifies":[],
+        "role":"verb/root",
+        "link":"\/latin\/dictionary2.php?name=sum&lang=la&spart=verb"
+      },
+      "3":{
+        "value":"mihi",
+        "desc":" (pro): subject of <i>dare<\/i>, dative singular",
+        "modifies":[
+          "dare"
+        ],
+        "role":"subject"
+      },
+      "4":{
+        "value":"hoc",
+        "desc":" (pro): direct object of <i>dare<\/i>",
+        "modifies":[
+          "dare"
+        ],
+        "role":"direct object",
+        "link":"\/latin\/dictionary2.php?name=hic&lang=la&spart=pronoun"
+      },
+      "5":{
+        "value":"tibi",
+        "desc":" (pro): indirect object of <i>dare<\/i>",
+        "modifies":[
+          "dare"
+        ],
+        "role":"indirect object",
+        "link":"\/latin\/dictionary2.php?name=tu&lang=la&spart=pronoun"
+      },
+      "6":{
+        "value":"dare",
+        "desc":" (v): subject of <i>est<\/i>, present active infinitive",
+        "modifies":[
+          "est"
+        ],
+        "role":"subject/verb"
+      }
+    },
+    "translation":{
+      "1":{
+        "value":"It is"
+      },
+      "0":{
+        "value":"necessary"
+      },
+      "3":{
+        "value":"for me"
+      },
+      "6":{
+        "value":"to give"
+      },
+      "4":{
+        "value":"this"
+      },
+      "5":{
+        "value":"to you"
+      }
+    },
+    "phrases":[
+      [
+        0,
+        1,
+        3,
+        4,
+        5,
+        6
+      ],
+      [
+        6,
+        4,
+        5
+      ]
+    ],
+    "tree":{
+      "1":{
+        "6":[
+          3,
+          4,
+          5
+        ],
+        "0":null
+      }
+    }
+  },
+  "d\u0101 mihi statuam!":{
+    "sentence":{
+      "0":{
+        "value":"d\u0101",
+        "desc":" (v): root of sentence, imperative active present 2<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+        "modifies":[],
+        "role":"verb/root",
+        "link":"\/latin\/dictionary2.php?name=do&lang=la&spart=verb"
+      },
+      "1":{
+        "value":"mihi",
+        "desc":" (pro): indirect object of <i>d\u0101<\/i>, dative singular",
+        "modifies":[
+          0
+        ],
+        "role":"indirect object",
+        "link":"\/latin\/dictionary2.php?name=ego&lang=la&spart=pronoun"
+      },
+      "2":{
+        "value":"statuam",
+        "desc":" (n): direct object of <i>d\u0101<\/i>",
+        "modifies":[
+          0
+        ],
+        "role":"direct object",
+        "link":"\/latin\/dictionary2.php?name=statua&lang=la&spart=noun"
+      }
+    },
+    "translation":{
+      "0":{
+        "value":"Give"
+      },
+      "1":{
+        "value":"me"
+      },
+      "2":{
+        "value":"the statue!"
+      }
+    },
+    "phrases":[
+      [
+        0,
+        1,
+        2
+      ]
+    ],
+    "tree":{
+      "0":[
+        1,
+        2
+      ]
+    }
+  },
+  "cr\u0113de quod hab\u0113s, et hab\u0113s.":{
+    "sentence":{
+      "0":{
+        "value":"cr\u0113de",
+        "desc":" (v): root of clause, imperative active present 2<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+        "modifies":["et"],
+        "role":"verb/root",
+        "link":"\/latin\/dictionary2.php?name=do&lang=la&spart=verb"
+      },
+      "1":{
+        "value":"quod",
+        "desc":" (pro): direct object of <i>cr\u0113de<\/i> and <i>hab\u0113s<\/i>, dative singular",
+        "modifies":[
+          0,2
+        ],
+        "role":"indirect object",
+        "link":"\/latin\/dictionary2.php?name=qui&lang=la&spart=pronoun"
+      },
+      "2":{
+        "value":"hab\u0113s",
+        "desc":" (n): verb of <i>quod<\/i>",
+        "modifies":[
+          1
+        ],
+        "role":"verb",
+        "link":"\/latin\/dictionary2.php?name=habeo&lang=la&spart=verb"
+      },
+      "-1":{
+        "space_before":0,
+        "text":",",
+        "space_after":1
+      },
+      "3":{
+        "value":"et",
+        "desc":" (conj): root of sentence",
+        "modifies":[],
+        "role":"conj/root",
+        "link":"\/latin\/dictionary2.php?name=et&lang=la&spart=conjunction"
+      },
+      "4":{
+        "value":"hab\u0113s",
+        "desc":" (n): root of clause",
+        "modifies":["et"],
+        "role":"verb/root",
+        "link":"\/latin\/dictionary2.php?name=habeo&lang=la&spart=verb"
+      }
+    },
+    "translation":{
+      "0":{
+        "value":"Believe that"
+      },
+      "2":{
+        "value":"you have"
+      },
+      "1":{
+        "value":"it"
+      },
+      "-1":{
+        "space_before":0,
+        "text":",",
+        "space_after":1
+      },
+      "3":{
+        "value":"and"
+      },
+      "4":{
+        "value":"you do [have it]"
+      }
+    },
+    "phrases":[
+      [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      [0,1,2],
+      [4]
+    ],
+    "tree":{
+      "3":{
+        "0":{
+          "1":["2"]
+        },
+        "4":null
       }
     }
   }

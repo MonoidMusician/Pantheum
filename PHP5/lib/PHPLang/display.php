@@ -25,20 +25,27 @@ function display_word_entry($w, $inflection_hidden=TRUE) {
 	display_inflection($w, $inflection_hidden);
 }
 
+function no_format($w) {
+	$w->read_attrs();
+	return safe_get("template",$w->attr_storage) === "true";
+}
 // Format word for displaying based upon replacements
 // TODO: user settings, DB encoding
 function format_word($w, $replacements=NULL) {
 	if (!strlen($w)) return "—"; # em-dash
+	$w = normalizer_normalize($w, Normalizer::FORM_C);
 	if ($replacements === NULL)
 		$replacements = [
-			"ae" => "aë","oe" => "oë","Ae" => "Aë","Oe" => "Oë",
-			#"æ" => "ae","œ" => "oe","Æ" => "Ae","Œ" => "Oe",
+			"ā"=>"ā"/*aa*/,"ī"=>"ī"/*ii*/,"ē"=>"ē"/*ee*/,"ō"=>"ō"/*oo*/,"ū"=>"ū"/*uu*/,
+			#"ae" => "aë","oe" => "oë","Ae" => "Aë","Oe" => "Oë",
+			"æ" => "ae","œ" => "oe","Æ" => "Ae","Œ" => "Oe",
 			#"æ" => "ai","œ" => "oi","Æ" => "Ai","Œ" => "Oi",
-			#"x"=>"cs",
+			"cs"=>"x","gs"=>"x",
 			#"no_specials",
 			#function($s) {return mb_strtoupper($s,"utf-8");},
 			#"ī"=>"ii","ā"=>"aa","ē"=>"ee","ō"=>"oo","ū"=>"uu",
-			"j" => "i", "J" => "I",
+			#"c"=>"k",
+			#"j" => "i", "J" => "I",
 			#"v" => "u",#"U" => "V",
 			#"<" => "&lt;",">" => "&gt;", "{HTMLLT}"=>"<","{HTMLGT}"=>">",
 			"\n" => "<br>",
@@ -67,13 +74,13 @@ function format_pron($w, $replacements=NULL) {
 	return $w;
 }
 
-function no_specials($w) {
+function no_specials($w,$extras="1-9/; ,\\n") {
 	$w = normalizer_normalize($w, Normalizer::FORM_D);
 	$w = str_replace("æ", "ae", $w);
 	$w = str_replace("œ", "oe", $w);
 	$w = str_replace("Æ", "ae", $w);
 	$w = str_replace("Œ", "oe", $w);
-	$w = preg_replace("#[^A-Za-z1-9 \\n]#","", $w);
+	$w = preg_replace("#[^A-Za-z$extras]#","", $w);
 	return $w;
 }
 
@@ -82,6 +89,11 @@ function unformat_word($w) {
 	$w = mb_strtolower(no_specials($w), "utf-8");
 	$w = str_replace("j", "i", $w);
 	$w = str_replace("u", "v", $w);
+	$w = str_replace("aa", "a", $w);
+	$w = str_replace("ee", "e", $w);
+	$w = str_replace("ii", "i", $w);
+	$w = str_replace("oo", "o", $w);
+	$w = str_replace("uu", "u", $w);
 	return normalize_spaces($w);
 }
 
@@ -130,25 +142,131 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "conj-2") return "2nd Conjugation";
 		elseif ($value === "conj-3") return "3rd Conjugation";
 		elseif ($value === "conj-4") return "4th Conjugation";
+	if ($tag === "clc-stage") {
+		$sp = explode("-", $value);
+		if (count($sp) === 1)
+			return "Stage $value (CLC)";
+		elseif (count($sp) === 1)
+			return "Stages ".$sp[0]." and ".$sp[1]." (CLC)";
+		$value = "";
+		for ($i=0;$i<count($sp)-1;$i++) {
+			if ($value) $value .= ", ";
+			$value .= $sp[$i];
+		}
+		$value .= ", and ".$sp[$i];
+		return "Stages $value (CLC)";
+	}
 	return $value !== NULL ? "$tag=$value" : "$tag";
+}
+function format_path($c) {
+	return implode(" ", array_map("format_value", array_reverse(explode("/",$c))));
+}
+
+function word_link($w,$hide_lang=false) {
+	if (!$hide_lang) display_lang($w);
+	?><a class="word-ref" href="dictionary2.php?id=<?= $w->id() ?>"><?= $w->name() ?></a><?php
+	?><script type="text/javascript">
+		$(function() {
+			$('a[href="dictionary2.php?id=<?= $w->id() ?>"]').on("click", function() {
+				$('#enter-attrs,#enter-names').val('');$('[name=enter-spart], [name=enter-lang]').prop('checked', false);
+				$('#enter-ids').val(<?= $w->id() ?>);
+				$('[name=enter-lang][value=<?= $w->lang() ?>]').prop('checked', true);
+				dict.refreshEntries();
+				return false;
+			});
+		});
+	</script><?php
+}
+
+function display_lang($lang) {
+	if (ISWORD($lang)) $lang = $lang->lang();
+	?><sup>[<?= $lang ?>]</sup><?php
+}
+
+function modify_options($w) {
+	$s = explode("\n", $w);
+	if (count($s) <= 1) return $w;
+	return $s[0]." (".implode(", ", array_slice($s,1)).")";
 }
 
 function display_word_info($w, $can_edit=FALSE) {
 	$id = $w->id();
-	?>
-	<sup>[<?= $w->lang() ?>]</sup><span class="word-name" id="word<?= $w->id() ?>_name"><?= format_word($w->name()) ?></span>
+	$lang = $w->lang();
+	$spart = $w->speechpart();
+	$w->clear_connections();
+	$connections = $w->connections();
+	$w->read_paths();
+	$w->read_attrs();
+	$name = NULL;
+	if ($lang === "la" and $spart === "noun") {
+		if ($genders = $w->path()->iterate("gender")) {
+			$name = "";
+			if ($name !== NULL and in_array($g = "masculine",$genders)) {
+				$key = PATH($w, "nominative/singular/$g");
+				if (!$key->hasvalue()) $name = NULL;
+				else {
+					$name .= ($name?", ":"") . modify_options($key->get());
+					$key = PATH($w, "genitive/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else $name .= ($name?", ":"") . modify_options($key->get());
+				}
+			}
+			if ($name !== NULL and in_array($g = "feminine",$genders)) {
+				$key = PATH($w, "nominative/singular/$g");
+				if (!$key->hasvalue()) $name = NULL;
+				else {
+					$name .= ($name?", ":"") . modify_options($key->get());
+					$key = PATH($w, "genitive/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else $name .= ($name?", ":"") . modify_options($key->get());
+				}
+			}
+			if ($name !== NULL and in_array($g = "neuter",$genders)) {
+				$key = PATH($w, "nominative/singular/$g");
+				if (!$key->hasvalue()) $name = NULL;
+				else {
+					$name .= ($name?", ":"") . modify_options($key->get());
+					$key = PATH($w, "genitive/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else $name .= ($name?", ":"") . modify_options($key->get());
+				}
+			}
+		}
+	} elseif ($lang === "la" and $spart === "verb") {
+		$name = "";
+		foreach (["indicative/active/present/person-1/singular",
+		          "infinitive/active/present",
+		          "indicative/active/perfect/person-1/singular",
+		          "supine/supine-1"] as $_=>$key) {
+			$key = PATH($w,$key);
+			if (!$key->hasvalue()) {
+				if ($_ <= 1) {$name = NULL; break;}
+				else continue;
+			}
+			$name .= ($name?", ":"") . modify_options($key->get());
+		}
+	}
+	if ($name === NULL) $name = $w->name();
+	if (no_format($w)) {
+		$name = $w->name();
+	} else $name = format_word($name);
+	display_lang($w);
+	?><span class="word-name" id="word<?= $w->id() ?>_name"><?= $name ?></span>
 	<?php
 	$infos = [];
-	$w->read_paths();
+	if ($lang === "la" and $spart === "noun" and ($genders = $w->path()->iterate("gender"))) {
+		$genders = array_map(function($a){return $a[0];}, $genders);
+		echo implode(".", $genders).". ";
+	}
 	$stem = $w->path();
-	if ($stem->hasvalue())
-		$infos[] = implode(", ", explode("\n", $stem->get()));
-	$infos[] = $w->speechpart();
+	/*if ($stem->hasvalue())
+		$infos[] = format_word(str_replace("\n", ", ", $stem->get()));
+	*/
+	$infos[] = $spart;
 	foreach ($w->read_attrs() as $attr) {
 		$infos[] = format_attr($attr->tag(), $attr->value());
 	}
-	?>(<?php echo implode("; ", $infos); ?>) <?php
-	?>[<a href="dictionary2.php?id=<?= $id ?>">hardlink</a>]<?php
+	?>(<?php echo implode("; ", $infos); ?>) [<a href="dictionary2.php?id=<?= $id ?>">hardlink</a>]<?php
 	if ($can_edit) {
 ?>
 		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_delete">del</a>]
@@ -165,7 +283,16 @@ function display_word_info($w, $can_edit=FALSE) {
 			$(function() {
 				var id = <?= $id ?>;
 				$('#word'+id+'_rename').on("click.rename", function() {
-					dict.word_rename(id);
+					dict.word_rename(id, "<?= $w->name() ?>");
+				});
+			});
+		</script>
+		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_refresh">refresh</a>]
+		<script type="text/javascript">
+			$(function() {
+				var id = <?= $id ?>;
+				$('#word'+id+'_refresh').on("click.refresh", function() {
+					dict.word_refresh(id);
 				});
 			});
 		</script>
@@ -174,6 +301,40 @@ function display_word_info($w, $can_edit=FALSE) {
 	$made_div = FALSE;
 	$first = TRUE;
 	$last_type = NULL;
+	$r = "From ";
+	$using = [];
+	$from = [];
+	foreach ($connections as $c) {
+		if (!$made_div) {
+			?><div class="word-more-info"><?php
+			$made_div = TRUE;
+		}
+		if ($c->type() === "etymon")
+		{echo$r;word_link($c->to());$r=", from ";}
+		elseif ($c->type() === "derived using")
+			$using[] = $c->to();
+		elseif ($c->type() === "derived from")
+			$from[] = $c->to();
+	}
+	if ($from) {
+		if (!$made_div) {
+			?><div class="word-more-info"><?php
+			$made_div = TRUE;
+		}
+		echo "From ";
+		foreach ($using as $u) {
+			word_link($u,true);
+			echo " + ";
+		}
+		$sep = "";
+		foreach ($from as $u) {
+			word_link($u,true);
+			echo $sep;
+			$sep = " and ";
+		}
+		?><br><?php
+	}
+	if ($r===", from ") { ?><br><?php }
 	foreach ($w->pronunciations() as $pron) {
 		if ((string)$pron->path()) continue;
 		if (!$pron->value()) continue;
@@ -190,9 +351,9 @@ function display_word_info($w, $can_edit=FALSE) {
 		if ($pron->sublang()) {
 			?><sup>[<?= $pron->sublang() ?>]</sup><?php
 		}
-		?>/<?=
+		?>[<?=
 		format_pron($pron->value())
-		?>/<?php
+		?>]<?php
 		$first = FALSE;
 	}
 	if ($made_div) {
@@ -209,6 +370,53 @@ function display_word_info($w, $can_edit=FALSE) {
 		$(function() {
 			var id = <?= $id ?>;
 			$('#word'+id+'_value_attr').keypress(function(e){if (e.which == 13)dict.word_add_attr(<?= $id ?>)});
+			var lock=false;
+			var splitter = /,\s*/;
+			var last1 = $('#enter-names').val().split(splitter);
+			var last2 = $('#enter-attrs').val().split(splitter);
+			function getcheckbox(name) {
+				var ret=[];
+				$('input:checkbox[name="'+name+'"]:checked:visible').each(function() {
+					ret.push($(this).val());
+				});
+				return ret.join();
+			}
+			$('#word'+id+'_value_attr').autocomplete({
+				serviceUrl: '/latin/PHP5/dictionary/get-attributes-json.php',
+				params: {
+					"lang": '<?= $lang ?>',
+					"spart": '<?= $spart ?>',
+				},
+				delimiter: splitter,
+				onSelect: function(selection) {
+					if (lock) return; lock=true;
+					var el = $('#enter-attrs');
+					if ($.inArray(selection.value, last2) === -1) {
+						if (selection.value.indexOf("={") === -1) {
+							el.val(el.val()+", ");
+						} else {
+							var prev = /^(.*?,?)(?:[^{,}]|\{[^{}]*\})+$/.exec(el.val())[1];
+							console.log(prev);
+							var re = /\{([^,]+)\}$/;
+							var matched = re.exec(selection.value);
+							console.log(matched);
+							if (matched !== null)
+								el.val(prev+selection.value.split("=")[0]+"="+matched[1]);
+							else el.val(prev+selection.value.split("=")[0]+"=");
+						}
+					}
+					last2 = el.val().split(splitter);
+					el.focus();
+					lock=false;
+				},
+				paramName: "attr",
+				deferRequestBy: 150,
+				transformResult: function(response) {
+					response = JSON.parse(response);
+					return {suggestions: response};
+				},
+				minChars: 0,
+			});
 		});
 		</script>
 <?php
@@ -216,22 +424,32 @@ function display_word_info($w, $can_edit=FALSE) {
 }
 
 function display_definitions($w, $can_edit=FALSE) {
-	?>
-	<ol id="word<?= $w->id() ?>_definitions">
-<?php
+	?><ol id="word<?= $w->id() ?>_definitions"><?php
 	foreach ($w->definitions() as $d) {
 		?><li><?php
 		$value = $d->value();
 		$value = str_replace("\n", ", ", $value);
-		if ((string)$d->path()) {
-?>
-			<sup>[<?= $d->lang() ?>]</sup>(<?= $d->path() ?>) <?= $value ?>
-<?php
-		} else {
-?>
-			<sup>[<?= $d->lang() ?>]</sup><?= $value ?>
-<?php
+		?><sup>[<?= $d->lang() ?>]</sup><?php
+		if ($d->src()) {
+			?><sup>[<a href="<?= $d->src() ?>">src</a>]</sup><?php
 		}
+		if ((string)$d->path()) {
+			if ($d->path()->get()) {
+				?>(<?= format_path($d->path()) ?> “<?= $d->path()->get() ?>”) <?php
+			} else {
+				?>(<?= format_path($d->path()) ?>) <?php
+			}
+		}
+		echo $value;
+		/*/
+		if ((string)$d->path()) {
+			?>(<?= $d->path() ?>) <?php
+		}
+		if ($d->src()) {
+			$value = "<a href='".$d->src()."'>$value</a>";
+		}
+		echo $value;
+		/**/
 		if ($can_edit) {
 ?>
 			[<a href="javascript:void(0)" id="definition<?= $d->id() ?>_delete">del</a>]
@@ -248,18 +466,14 @@ function display_definitions($w, $can_edit=FALSE) {
 		}
 		?></li><?php
 	}
-?>
-	</ol>
-<?php
+	?></ol><?php
 	echo "<br>";
 }
 
-function display_inflection($w, $hidden=TRUE) {
+function word_table_values($w) {
 	$w->read_paths();
+	$lang = $w->lang();
 	$spart = $w->speechpart();
-	$pronunciations = $w->pronunciations();
-	$w->clear_connections();
-	$connections = $w->connections();
 	$values4 =
 	$values3 =
 	$values2 =
@@ -270,21 +484,54 @@ function display_inflection($w, $hidden=TRUE) {
 	// values2 : major horizontal
 	// values3 : minor horizontal
 	// values4 : minor vertical
-	if (($spart === "noun") or
-		($spart === "adjective") or
-		($spart === "pronoun")) {
-		$values4 = $w->path()->iterate("case");
-		$values3 = $w->path()->iterate("gender");
-		$values2 = $w->path()->iterate("number");
-		if ($spart === "adjective")
+	if ($lang === "la" or $lang === "grc") {
+		if (($spart === "noun") or
+			($spart === "adjective") or
+			($spart === "pronoun")) {
+			$values4 = $w->path()->iterate("case");
+			$values3 = $w->path()->iterate("gender");
+			$values2 = $w->path()->iterate("number");
+			if ($spart === "adjective")
+				$values1 = $w->path()->iterate("degree");
+			else $values1 = [];
+			$values0 = [];
+		} elseif ($spart === "verb") {
+			$values0 = $w->path()->iterate("mood");
+		} elseif ($spart === "adverb") {
 			$values1 = $w->path()->iterate("degree");
-		else $values1 = [];
-		$values0 = [];
-	} elseif ($spart === "verb") {
-		$values0 = $w->path()->iterate("mood");
-	} elseif ($spart === "adverb") {
-		$values1 = $w->path()->iterate("degree");
+		}
 	}
+	if ($lang === "fr") {
+		if (($spart === "noun") or
+			($spart === "adjective") or
+			($spart === "pronoun")) {
+			$values3 = $w->path()->iterate("gender");
+			$values2 = $w->path()->iterate("number");
+			if ($spart === "adjective")
+				$values1 = $w->path()->iterate("degree");
+			else $values1 = [];
+			$values0 = [];
+		}
+	}
+	return [$values0, $values1, $values2, $values3, $values4];
+}
+
+function display_inflection($w, $hidden=TRUE) {
+	if ($c = $w->cached()) {
+		if (($_ = json_decode($c,true)) === NULL) {echo$c;return;}
+		else $c = $_;
+		for ($i=0;$i<count($c);$i++) {
+			if($i===0)echo$c[$i];
+			else echo format_word($c[$i]);
+		}
+		return;
+	} else
+	ob_start();
+	$pronunciations = $w->pronunciations();
+	//error_log($pronunciations);
+	$w->clear_connections();
+	$connections = $w->connections();
+	list ($values0, $values1, $values2, $values3, $values4) = word_table_values($w);
 	if (!$values0 and !$values1 and !$values2
 	and !$values3 and !$values4) {
 		?><p id="word<?= $w->id() ?>_forms">(No inflection for this word)</p><?php
@@ -304,15 +551,10 @@ function display_inflection($w, $hidden=TRUE) {
 		"format_value",
 		"format_word1",
 		function($p) use($connections) {
-			$m = $p->mgr();
-			if ($m->is_key("mood") and $m->is_key("tense") and $m->is_key("voice")) {
-				$_0 = $p->key_value("mood");
-				$_4 = $p->key_value("tense");
-				$_2 = $p->key_value("voice");
-				if ($_0 == "participle")
-					foreach ($connections as $connect)
-						if ($connect->type() === "Participle: $_4/$_2")
-							return "dictionary2.php?id=".$connect->to()->id();
+			$p = (string)$p;
+			foreach ($connections as $connect) {
+				if ($connect->type() === $p)
+					return $connect->to();
 			}
 		},
 		function($p) use($pronunciations,$w) {
@@ -332,9 +574,9 @@ function display_inflection($w, $hidden=TRUE) {
 				if ($pron->sublang()) {
 					?><sup>[<?= $pron->sublang() ?>]</sup><?php
 				}
-				?>/<?=
+				?>[<?=
 				format_pron($pron->value())
-				?>/<?php
+				?>]<?php
 				$first = FALSE;
 			}
 			if ($made_div) {
@@ -344,7 +586,7 @@ function display_inflection($w, $hidden=TRUE) {
 	);
 	?>
 	<script type="text/javascript">
-		(function(){
+		$(function(){
 			var c = "<?= $w->id() ?>";
 			var selector = $('#word'+c+'_forms, #toggle-pronunciations'+c+'_outer');
 			$('#toggle-forms'+c).click(function () {
@@ -363,9 +605,11 @@ function display_inflection($w, $hidden=TRUE) {
 				$('#toggle-pronunciations'+c).text($('.word'+c+'_pronunciation').is(':visible') ? 'hide IPA' : 'show IPA');
 			});
 			$('.word'+c+'_pronunciation, #toggle-pronunciations').hide();
-		})();
+		});
 	</script>
 	<?php
+	$w->set_cached(ob_get_contents());
+	ob_end_flush();
 }
 
 function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,$format_word,$get_link=NULL,$extras=NULL,$optimization=3) {
@@ -527,7 +771,10 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 						if ($get_link !== NULL)
 							$link = $get_link($p);
 						else $link = NULL;
-						if ($link) { ?><a href="<?= $link ?>"><?php }
+						if (ISWORD($link)) {
+							$link = "dictionary2.php?id=".$link->id();
+						}
+						if ($link) { ?><a class="word-ref" href="<?= $link ?>"><?php }
 						$val = $format_word($p->get(),$p);
 						if (count($val_group) > 1) {
 							$val = ""
@@ -557,30 +804,14 @@ function display_connections($w, $can_edit) {
 	$w->clear_connections();
 	$connections = $w->connections();
 	if (!$connections and !$can_edit) return;
-	?>
-	Related words:
-	<ul>
-	<?php
+	?>Related words:
+	<ul><?php
 		$c_id = 0;
 		foreach ($connections as $c) {
 			?><li>
-			<a href="dictionary2.php?id=<?= $c->to()->id() ?>">
-			<?= $c->to()->name() ?>
-			</a> (<?= $c->type() ?>)
-			<script type="text/javascript">
-				$(function() {
-					$('a[href="dictionary2.php?id=<?= $c->to()->id() ?>"]').on("click", function() {
-						$('#enter-attrs,#enter-names').val('');$('[name=enter-spart], [name=enter-lang]').prop('checked', false);
-						$('#enter-ids').val(<?= $c->to()->id() ?>);
-						$('[name=enter-lang][value=<?= $c->to()->lang() ?>]').prop('checked', true);
-						dict.refreshEntries();
-						return false;
-					});
-				});
-			</script>
-			<?php
+			<?= format_path($c->type()) ?>: <?php word_link($c->to());
 			if ($can_edit) {
-?>
+				?>
 				[<a href="javascript:void(0)" id="connection<?= $id.'_'.$c_id ?>_delete">del</a>]
 				<script type="text/javascript">
 					$(function() {
@@ -593,13 +824,11 @@ function display_connections($w, $can_edit) {
 						});
 					});
 				</script>
-<?php
-			$c_id += 1;
+				<?php
+				$c_id += 1;
 			}
 		}
-	?>
-	</ul>
-	<?php
+	?></ul><?php
 	if (!$can_edit) return;
 	?>
 	<input id="word<?= $id ?>_connection_to" type="text" placeholder="link" required>

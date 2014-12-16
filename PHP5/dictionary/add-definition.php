@@ -14,7 +14,9 @@
 	    is_numeric($_GET["id"])) {
 		$w = WORD(defaultDB(), intval($_GET["id"]));
 		$d = DEFINITION(defaultDB(), NULL, $w);
-		$d->set_lang("en");
+		if (array_key_exists("lang",$_GET))
+			$d->set_lang($_GET["lang"]);
+		else $d->set_lang("en");
 		$d->set_value($_GET["val"]);
 		if ($_GET["path"]) {
 			$p = PATH($w, $_GET["path"]);

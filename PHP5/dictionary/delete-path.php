@@ -16,11 +16,11 @@
 		$p = PATH($w, $_GET["path"]);
 		foreach ($w->paths() as $_)
 			if ((string)$_ === (string)$p) $p=$_;
-		if ($p->id() !== NULL and $p->valid()) {
-			$p->remove();
-			exit("success");
-		} else {
+		if ($p->id() === NULL)
+			exit("Path $p did not exist");
+		if (!$p->valid())
 			exit("Path $p was invalid");
-		}
+		$p->remove();
+		exit("success");
 	} else exit("\$_GET was invalid");
 ?>
