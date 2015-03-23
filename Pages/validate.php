@@ -21,7 +21,7 @@
                         if ((code != '') && (code != 'undefined') && (code != undefined)) {
                             if (email.search(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i) != -1) {
                                 $('#validationperror').html('Sending&nbsp;request...');
-                                $.post("/latin/PHP5/validation.php", { u: username, e: email, s: code, v: value }, function(data) {
+                                $.post("/PHP5/validation.php", { u: username, e: email, s: code, v: value }, function(data) {
                                     if (data == 'success') {
                                         $('#validationerror').html('Account&nbsp;validated.<br>Please&nbsp;sign&nbsp;in&nbsp;now.');
                                     } else {
@@ -41,7 +41,7 @@
                     $('#validationerror').html('Missing&nbsp;username.');
                 }
             } else {
-                $.get('/latin/PHP5/getcode.php', function(data) {
+                $.get('/PHP5/getcode.php', function(data) {
                     value = data;
                 });
                 
@@ -57,7 +57,7 @@
         
         value = 'xx';
         
-        $.get('/latin/PHP5/getcode.php', function(data) {
+        $.get('/PHP5/getcode.php', function(data) {
             value = data;
         });
         

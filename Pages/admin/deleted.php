@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
@@ -11,7 +11,7 @@
 <script type="text/javascript">
     $(function() {
         var adtable = new jTable();
-        adtable.init('adTable', '/latin/PHP5/admin/deleted/adtget.php', false, false, true);
+        adtable.init('adTable', '/PHP5/admin/deleted/adtget.php', false, false, true);
         adtable.setSplits('{[,]}', '{(,)}');
         adtable.setControlIDs('adUControls', 'adLControls');
         adtable.setUControls(['refresh', 'search']);

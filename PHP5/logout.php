@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     session_start();
     
     sro('/Includes/mysql.php');
@@ -56,6 +56,6 @@
     
     session_destroy();
     
-    header("Location: /latin/logged-out.php");
+    header("Location: /logged-out.php");
 ?>
 

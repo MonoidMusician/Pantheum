@@ -1,5 +1,5 @@
 <?php
-	require_once('/var/www/latin/config.php');
+	require_once('/var/www/config.php');
 	sro('/Includes/mysql.php');
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
@@ -11,7 +11,6 @@
 	if (!requireRank(3, FALSE)) echo "Insufficient permissions";
 	else
 	if (array_key_exists("id",$_GET) and
-	    array_key_exists("path",$_GET) and
 	    array_key_exists("template",$_GET) and
 	    is_numeric($_GET["id"])) {
 		$n=0; $arg=[];
@@ -20,7 +19,11 @@
 			$n+=1;
 		}
 		if (array_key_exists("ignore", $_GET)) {
-			$ignore = explode(",", implode(",", explode(";", $_GET["ignore"])));
+			$ignore = explode(",", str_replace([";"," ","+"], ",", $_GET["ignore"]));
+			$ignore = array_map(function($a) {
+				return explode("/", $a);
+			}, $ignore);
+			error_log(var_export($ignore,1));
 		} else $ignore = [];
 		$change = [];
 		if (array_key_exists("change", $_GET)) {
@@ -36,7 +39,7 @@
 		// Word as passed by id
 		$w = WORD(defaultDB(),intval($_GET["id"]));
 		// Path as passed as string
-		$p = PATH($w, $_GET["path"]);
+		$p = PATH($w, safe_get("path",$_GET));
 		// Template: passed by name, spart from word, attr template=true
 		$t = defaultDB()->searcher();
 		$t = $t->spart($w->speechpart());

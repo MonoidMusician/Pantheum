@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -193,4 +193,6 @@ function array_key_exists_r($needle, $haystack)
 	}
 	return FALSE;
 }
+
+
 ?>

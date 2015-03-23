@@ -1,7 +1,7 @@
 <?php
     $M_host = 'localhost';
     $M_user = 'root';
-    $M_password = 'v2ddsjru17';
+    $M_password = 'latinpassword';
     $M_database = 'latin';
     
     global $mysqli;

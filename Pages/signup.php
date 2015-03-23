@@ -28,7 +28,7 @@
                                         $('#signuperror').html('Sending&nbsp;request...');
                                         password = loginHash(username, password);
                                         cpassword = loginHash(username, cpassword);
-                                        $.post("/latin/PHP5/signup.php", { u: username, p: password, c: cpassword, e: email, v: value }, function(data) {
+                                        $.post("/PHP5/signup.php", { u: username, p: password, c: cpassword, e: email, v: value }, function(data) {
                                             if (data == 'success') {
                                                 $('#signuperror').html('Account&nbsp;created.<br>Please&nbsp;check&nbsp;your&nbsp;email.');
                                             } else {
@@ -63,7 +63,7 @@
                                                     default: 
                                                         $('#signuperror').html('Error:&nbsp;Unknown&nbsp;error&nbsp('+data+').');
                                                 }
-                                                $.get('/latin/PHP5/getcode.php', function(data) {
+                                                $.get('/PHP5/getcode.php', function(data) {
                                                     value = data;
                                                 });
                                             }
@@ -87,7 +87,7 @@
                     $('#signuperror').html('Missing&nbsp;username.');
                 }
             } else {
-                $.get('/latin/PHP5/getcode.php', function(data) {
+                $.get('/PHP5/getcode.php', function(data) {
                     value = data;
                 });
                 
@@ -103,7 +103,7 @@
         
         value = 'xx';
         
-        $.get('/latin/PHP5/getcode.php', function(data) {
+        $.get('/PHP5/getcode.php', function(data) {
             value = data;
         });
     </script>

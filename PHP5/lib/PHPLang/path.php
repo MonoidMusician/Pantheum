@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -33,7 +33,7 @@ class _PATH implements Countable
 			$this->_mgr = $init->mgr();
 			$this->map = array_of_size($init->map);
 		} else {
-			if (!ISDEPATH($init)) _die("bad init object ".var_export($init,1));
+			if (!ISDEPATH($init)) _die("");#_die("bad init object ".var_export($init,1));
 			$this->_mgr = &$init;
 			$this->map = array_of_size($init->all_sub_keys);
 		}
@@ -187,7 +187,7 @@ class _PATH implements Countable
 			$cpy = $hash;
 			echo "--start\n";
 			echo "\$h:";
-			var_export($hash); echo "\n";
+			#var_export($hash); echo "\n";
 		}
 		foreach ($this->map as $p) {
 			if ($hash === NULL) break;
@@ -196,12 +196,12 @@ class _PATH implements Countable
 			$hash = &$hash[$p];
 			if ($dbg and 0) {
 				echo "[$p]:";
-				var_export($hash); echo "\n";
+				#var_export($hash); echo "\n";
 			}
 		}
 		if ($dbg) {
 			echo "\$cpy:";
-			var_export($cpy); echo "\n";
+			#var_export($cpy); echo "\n";
 			echo "--done\n";
 		}
 		return $hash;
@@ -310,25 +310,43 @@ class _PATH implements Countable
 			foreach ($vals[$k] as $i=>$k) {
 				$found = FALSE;
 				foreach (array_keys($h) as $_) {
+					if (!PATH($this->_mgr, $_)->issub($this)) continue;
 					foreach (explode("/",$_) as $__) {
 						if ($__ === $k)
 						{ $found = TRUE; break; }
 					}
 					if ($found) break;
 				}
-				if (!$found)
+				if (!$found) {
+					//error_log("$k does not exist under ".$this);
 					unset($ret[$i]);
+				}
+				//else error_log("$k exists under ".$this);
 			}
 			return array_values($ret);
 		}
 		if ($h !== NULL)
 		foreach (array_values($ret) as $i=>$k) {
-			if (!array_key_exists_r($k, $h))
+			if (!array_key_exists_r($k, $h)) {
 				unset($ret[$i]);
+			}
 		}
 		#echo "\$ret:";
 		#var_dump($ret);
 		return array_values($ret);
+	}
+	function issub($other) {
+		$ret = FALSE;
+		foreach ($this->mgr()->all_sub_keys as $k) {
+			if ($other->key_value($k) != "" AND $this->key_value($k) != $other->key_value($k)) {
+				//error_log("!$this issub $other");
+				return FALSE;
+			} elseif ($this->key_value($k) != "") {
+				$ret = TRUE;
+			}
+		}
+		//error_log("$this issub $other ? $ret");
+		return $ret;
 	}
 	function hasvalue($hash=NULL) { return $this->get($hash) !== NULL; } # habesne valorem in tabula assocativa?
 	function remove($hash=NULL) {

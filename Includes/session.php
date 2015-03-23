@@ -22,7 +22,7 @@
         if ($M_row[0] != '') {
             $result = explode(',', $M_row[0]);
             if (($result[1] == '*') || ($result[1] != $_SERVER['REMOTE_ADDR'])) {
-                header("Location: /latin/PHP5/logout.php");
+                header("Location: /PHP5/logout.php");
                 die('');
             }
         }

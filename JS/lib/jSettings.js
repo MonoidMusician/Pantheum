@@ -1,8 +1,8 @@
 /**
- * jPage v1.2 - A dynamic settings library with jQuery
+ * jSettings v1.3 - A dynamic settings library with jQuery
  * Depends: jQuery >= 1.5
  * 
- * Copyright (C) 2013 Alex Scheel
+ * Copyright (C) 2013,2014 Alex Scheel
  * All rights reserved.
  * Licensed under BSD 2 Clause License:
  *
@@ -59,6 +59,12 @@
  *     setSuccess(value) - Result of successful save
  *     
  *     setLabels(true|false) - Show labels?
+ *     
+ *     setBindHandler(handler) - Called before binds
+ *     
+ *     setUnbindHandler(handler) - Called before unbinds
+ *     
+ *     showSettings(),hideSettings() - Show/hide settings
  *     
  *   Internal:
  *     Data loading:
@@ -227,7 +233,7 @@ function jSettings() {
             var type = setting[3];
             var handle = setting[4];
             
-            if (this.labels) {
+            if (this.labels && type != 'hidden') {
                 result += '<label id="' + this.selement + '-' + id + '-label" class="jsettings-label">' + text + '</label>';
             }
             
@@ -249,7 +255,7 @@ function jSettings() {
             } else {
                 result += '<input id="' + this.selement + '-' + id + '" placeholder="' + text + '" type="' + type + '" title="' + text + '" class="jsettings-input">';
             }
-            if (this.labels) {
+            if (this.labels && type != 'hidden') {
                 result += "<br>";
             }
         } else if (setting[0] == "jsettings-space") {

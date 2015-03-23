@@ -49,6 +49,13 @@
 }}};
 
 /*
+ * When was the word updated last?
+ */
+{{{defineselect|
+    table=words&to=last_changed&from=word_id
+}}};
+
+/*
  * Make a new word
  */
 {{{defineinsert|

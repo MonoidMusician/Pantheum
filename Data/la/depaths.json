@@ -94,8 +94,8 @@
 					"voice",
 					{
 						"tense":[
-							"perfect",
 							"present",
+							"perfect",
 							"future"
 						]
 					}
@@ -104,8 +104,8 @@
 					"voice",
 					{
 						"tense":[
-							"perfect",
 							"present",
+							"perfect",
 							"future"
 						]
 					},
@@ -124,10 +124,10 @@
 					"voice",
 					{
 						"tense":[
-							"pluperfect",
-							"perfect",
+							"present",
 							"imperfect",
-							"present"
+							"perfect",
+							"pluperfect"
 						]
 					},
 					"number",

@@ -1,5 +1,5 @@
 <?php
-	require_once('/var/www/latin/config.php');
+	require_once('/var/www/config.php');
 	sro('/Includes/mysql.php');
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
@@ -15,7 +15,7 @@
 </header>
 <article>
 <?php
-	$dir = "/var/www/latin/Data/";
+	$dir = "/var/www/Data/";
 	function get_id($value,$sentence) {
 		foreach ($sentence as $_ => $__) {
 			if (ISOP($__)) continue;

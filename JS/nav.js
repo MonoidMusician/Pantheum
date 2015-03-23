@@ -1,7 +1,7 @@
 $(document).on('dblclick', '#navdropdown', function() {
     if ($('#navlogin').is("*")) {
         touch = true;
-        window.location.href = '/latin/login.php';
+        window.location.href = '/login.php';
     }
 });
 

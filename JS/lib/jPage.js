@@ -1,8 +1,8 @@
 /**
- * jPage v1.0 - A dynamic jQuery multi-page library
+ * jPage v1.1 - A dynamic jQuery multi-page library
  * Depends: jQuery >= 1.5
  * 
- * Copyright (C) 2011, 2013 Alex Scheel
+ * Copyright (C) 2011, 2013, 2014 Alex Scheel
  * All rights reserved.
  * Licensed under BSD 2 Clause License:
  *
@@ -32,7 +32,7 @@
  * Usage:
  *   var page = new jPage();
  *   page.init('div-page-id');
- *   page.setPages(['#hash', 'name', 'title', '/url/to/page', true], '#hash');
+ *   page.setPages(['#hash', 'name', 'title', ['/url/to/page', false], true], '#hash');
  *   page.setNavigation('anav', 'ul');
  *   page.setBasepath('/containing/folder');
  *   page.load();
@@ -44,7 +44,7 @@
  *     load() - Starts jPage, loads data, displays
  *     
  *   Config:
- *     setPages(pages-as-array, starting-hash) - Sets pages, starting hash
+ *     setPages(pages-as-array, starting-hash) - Sets pages, starting hash. To include get, set ['/url/to/page', true]
  *     
  *     setNavigation(nelement, navtype) - Sets navigation element, type
  *     
@@ -65,14 +65,11 @@
  *     
  *   Internal:
  *     setPage()
- *     
  *     showPage()
- *     
  *     hidePage()
- *     
  *     toPageByHash(hash)
- *     
  *     toPageById(hash)
+ *     returnGET()
  *     
  *     Events:
  *       eventChangePage(event)
@@ -84,6 +81,7 @@ function jPage() {
     this.pages = [];
     this.pelement = "";
     this.cpage = 0;
+    this.opage = 0;
     this.navtype = "";
     this.nelement = "";
     this.basepath = "";
@@ -145,12 +143,23 @@ function jPage() {
         var data = "";
         if (url.constructor == Array) {
             url = url[0];
-            for (var pos in this.pages[this.cpage][3][1]) {
-                var npos = this.pages[this.cpage][3][1][pos];
-                if (data == "") {
-                    data = "?" + npos + "=" + this.storage[npos];
-                } else {
-                    data += "&" + npos + "=" + this.storage[npos];
+            if (typeof this.pages[this.cpage][3][1] == "object") {
+                for (var pos in this.pages[this.cpage][3][1]) {
+                    var npos = this.pages[this.cpage][3][1][pos];
+                    if (data == "") {
+                        data = "?" + npos + "=" + this.storage[npos];
+                    } else {
+                        data += "&" + npos + "=" + this.storage[npos];
+                    }
+                }
+            } else if (this.pages[this.cpage][3][1] == true) {
+                var get = this.returnGET();
+                for (var index in get) {
+                    if (data == '') {
+                        data = "?" + index + "=" + get[index];
+                    } else {
+                        data += "&" + index + "=" + get[index];
+                    }
                 }
             }
         }
@@ -187,7 +196,16 @@ function jPage() {
         $('#' + this.pelement).html(data);
     }
     
+    this.returnGET = function() {
+	    var vars = {};
+	    var parts = window.location.href.replace('#[a-zA-Z0-9-]*', '').replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+		    vars[key] = value;
+	    });
+	    return vars;
+    }
+    
     this.toPageByHash = function(hash) {
+        this.opage = this.cpage;
         if (this.getPositionFromHash(hash) != false) {
             this.cpage = this.getPositionFromHash(hash);
         } else {
@@ -197,6 +215,7 @@ function jPage() {
     }
     
     this.toPageById = function(id) {
+        this.opage = this.cpage;
         this.cpage = id;
         this.setPage();
     }

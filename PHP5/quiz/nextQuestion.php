@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -67,6 +67,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			$stop = FALSE;
 			$correct = [];
 			$choices = $quiz["choices$n"];
+			$lang = safe_get("choices$n-language", $quiz);
 			if (is_callable($choices)) {
 				$choices = $choices($selections, defaultDB());
 			}
@@ -78,7 +79,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				$shuffle = false;
 				unset($choices["no_shuffle"]);
 			}
-			$results = array_map(function($answer,$key) use(&$selections,&$stop,&$reason,&$correct) {
+			$results = array_map(function($answer,$key) use(&$selections,&$stop,&$reason,&$correct,$lang) {
 				if ($stop) return;
 				if (is_callable($answer)) $answer = _process_value($answer,$selections,defaultDB());
 				$ret = do_pick($answer, NULL, $selections, $reason);
@@ -89,7 +90,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 					array_key_exists("correct", $answer) and
 					!!_process_value($answer["correct"], $selections, defaultDB())
 				))
-					$correct[] = format_word($ret);
+					$correct[] = format_word($ret,$lang);
 				return $ret;
 			}, $choices, array_keys($choices));
 			$_SESSION["current_answer"]["answer$n"] = $correct;
@@ -102,7 +103,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				return $try();
 			}
 			foreach ($results as &$r)
-				$r = format_word($r);
+				$r = format_word($r,$lang);
 			$type = ($word === $OP_MULTIPLE_CHOICE) ? "select" : "matching-row";
 			if ($word === $OP_MULTIPLE_CHOICE) {
 				$result_json[] = ["select", "answer$n", $quiz["choices$n-tooltip"], $results];

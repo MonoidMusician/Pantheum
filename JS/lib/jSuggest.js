@@ -102,7 +102,7 @@ function jSuggest() {
         this.sdata = array;
         
         if (this.isSorted(column) == false) {
-            tmp = this.doQuickSort(0, this.sdata.length-1, 1);
+            tmp = this.doQuickSort(0, this.sdata.length-1, column);
         }
         
         return this.sdata;
@@ -154,6 +154,61 @@ function jSuggest() {
         return slocation;
     }
     
+    
+    this.stringDistanceBetween = function(s1, s2) {
+        s1l = s1.length;
+        s2l = s2.length;
+        if (s1l < s2l) {
+            return this.stringDistanceBetween(s2, s1);
+        }
+        
+        if (s1l == 0) {
+            return s2l;
+        }
+        if (s1l == 0) {
+            return s1l;
+        }
+        
+        s1a = s1.split('');
+        s2a = s2.split('');
+        
+        var cost = 0;
+        var array = new Array();
+        var x = 0;
+        var y = 0;
+        
+        for (x = 0; x <= s1l; x++) {
+            array[x] = new Array();
+            array[x][0] = x;
+        }
+        
+        for (y = 0; y <= s2l; y++) {
+            array[0][y] = [y];
+        }
+        
+        for (x = 1; x <= s1l; x++) {
+            for (y = 1; y <= s2l; y++) {
+                if (s1a[x-1] == s2a[y-1]) {
+                    cost = 0;
+                } else {
+                    cost = 1;
+                }
+                array[x][y] = Math.min(array[x-1][y] + 1, array[x][y-1] + 1, array[x-1][y-1] + cost);
+                
+                if ((x > 1) && (y > 1) && (s1a[x-1] == s2a[y-2]) && (s1a[x-2] == s2a[y-1])) {
+                    array[x][y] == Math.min(array[x][y], array[x-2][y-2] + cost);
+                }
+                
+                if (array[x][y] > 2) {
+                    return false;
+                }
+            }
+        }
+        
+        return array[s1l][s2l];
+    }
+    
+    
     this.doSearch = function(term) {
         if (this.filter == 'quick') {
             this.doContainsQuick(term);
@@ -186,40 +241,65 @@ function jSuggest() {
         this.displaying = [];
         var tmp = [];
         var zeros = [];
+        a = 0;
         for (var pos in this.data) {
-            var loc = '';
-            if (this.casing == true) {
+            var ditem = this.data[pos];
+            var rterm = term;
+            if (this.casing == false) {
                 loc = this.data[pos].indexOf(term);
-            } else {
-                loc = this.data[pos].toLowerCase().indexOf(term.toLowerCase());
+                ditem = ditem.toLowerCase();
+                rterm = rterm.toLowerCase();
             }
-            
-            if (loc != -1) {
-                tmp.push([pos, loc]);
-                if (loc == 0) {
-                    zeros.push(pos);
-                    if (zeros.length >= this.display) {
-                        break;
+                       
+            if (ditem == rterm) {
+                a += 1;
+                tmp.push([0, pos]);
+            } else {
+                if (ditem.length - rterm.length > 4) {
+                    continue;
+                }
+                
+                var iof = ditem.indexOf(rterm);
+                if (iof != -1) {
+                    var val = Math.abs(ditem.length - rterm.length);
+                    if (ditem.substr(0, 1) != rterm.substr(0, 1)) {
+                        val *= 3;
+                    }
+                    
+                    if (val < 4) {
+                        tmp.push([val, pos]);
+                    }
+                } else {
+                    var val = this.stringDistanceBetween(rterm, ditem);
+                    if (val != false) {
+                        if (ditem.substr(0, 1) != rterm.substr(0, 1)) {
+                            val *= 2;
+                        }
+                        
+                        if (val < 2) {
+                            if (rterm.length < 3) {
+                                if (ditem.indexOf(rterm) != -1) {
+                                    tmp.push([val, pos]);
+                                }
+                            } else {
+                                tmp.push([val, pos]);
+                            }
+                        }
                     }
                 }
             }
         }
+        console.log(a);
+        tmp = this.sortMatrix(tmp, 0);
+        console.log(tmp);
+            
+        var end = this.display;
+        if (tmp.length < end) {
+            end = tmp.length;
+        }
         
-        if (zeros.length >= this.display) {
-            for (var i = 0; i < this.display; i++) {
-                this.displaying.push(zeros[i]);
-            }
-        } else {
-            tmp = this.sortMatrix(tmp, 1);
-            
-            var end = this.display;
-            if (tmp.length < end) {
-                end = tmp.length;
-            }
-            
-            for (var i = 0; i < end; i++) {
-                this.displaying.push(tmp[i][0]);
-            }
+        for (var i = 0; i < end; i++) {
+            this.displaying.push(tmp[i][1]);
         }
     }
     

@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -261,19 +261,19 @@ function which($lang,$spart,$key,$given=NULL,$rand=NULL,$name=NULL) {
 	$given = PATH($mgr,$given);
 	$paren = [];
 	$_gender = null;
-	$recurse = function($mgr) use(&$_gender,$spart,$given,&$recurse,&$path,&$paren,$rand,$key) {
+	$recurse = function($mgr) use(&$_gender,$spart,$given,&$recurse,&$path,&$paren,$rand,$key,$lang) {
 		global $OP_LPAREN;
 		foreach ($mgr->simple_keys as $k) {
 			if ($given->key_exists($k)) {
 				$path[] = $given->key_value($k);
 			} else {
 				if ($k === "gender" and $spart === "verb")
-					$_gender = make_pick(PICK($k,safe_get($k,$rand)),$k);
+					$_gender = make_pick(PICK($k,safe_get($k,$rand))->l($lang),$k);
 				else {
-					$path[] = make_pick(PICK($k,safe_get($k,$rand)),$k);
+					$path[] = make_pick(PICK($k,safe_get($k,$rand))->l($lang),$k);
 					if ($k !== $key) {
 						if (!$paren) $paren[] = $OP_LPAREN;
-						$paren[] = make_pick(PICK($k,safe_get($k,$rand)),$k);
+						$paren[] = make_pick(PICK($k,safe_get($k,$rand))->l($lang),$k);
 					}
 				}
 			}
@@ -347,14 +347,14 @@ function which2($lang,$spart,$key,$given=NULL,$rand=NULL,$name=NULL) {
 	$mgr = defaultDB()->get_mgr($lang,$spart);
 	$given = PATH($mgr,$given);
 	$_gender = null;
-	$recurse = function($mgr) use(&$_gender,$spart,$given,&$recurse,&$path,$rand,&$selections) {
+	$recurse = function($mgr) use(&$_gender,$spart,$given,&$recurse,&$path,$rand,&$selections,$lang) {
 		foreach ($mgr->simple_keys as $k) {
 			if ($given->key_exists($k)) {
 				$path[] = $given->key_value($k);
 			} else {
 				if ($k === "gender" and $spart === "verb")
-					$_gender = make_pick(PICK($k,safe_get($k,$rand)),$k);
-				else $path[] = make_pick(PICK($k,safe_get($k,$rand)),$k);
+					$_gender = make_pick(PICK($k,safe_get($k,$rand))->l($lang),$k);
+				else $path[] = make_pick(PICK($k,safe_get($k,$rand))->l($lang),$k);
 			}
 		}
 		foreach ($mgr->recursive_keys as $k) {
@@ -435,15 +435,15 @@ function which3($lang,$spart,$key,$N=NULL,$given=NULL,$rand=NULL,$name=NULL) {
 	$_gender = null;
 	if ($N === NULL)
 		$N = count($mgr->key2values[$key]);
-	$selections["answers"] = PICK($N, $key, safe_get($key,$rand));
-	$recurse = function($mgr) use(&$_gender,$spart,$given,&$recurse,&$path,$rand,&$selections) {
+	$selections["answers"] = PICK($N, $key, safe_get($key,$rand))->l($lang);
+	$recurse = function($mgr) use(&$_gender,$spart,$given,&$recurse,&$path,$rand,&$selections,$lang) {
 		foreach ($mgr->simple_keys as $k) {
 			if ($given->key_exists($k)) {
 				$path[] = $given->key_value($k);
 			} else {
 				if ($k === "gender" and $spart === "verb")
-					$_gender = make_pick(PICK($k,safe_get($k,$rand)),$k);
-				else $path[] = make_pick(PICK($k,safe_get($k,$rand)),$k);
+					$_gender = make_pick(PICK($k,safe_get($k,$rand))->l($lang),$k);
+				else $path[] = make_pick(PICK($k,safe_get($k,$rand))->l($lang),$k);
 			}
 		}
 		foreach ($mgr->recursive_keys as $k) {
@@ -456,8 +456,9 @@ function which3($lang,$spart,$key,$N=NULL,$given=NULL,$rand=NULL,$name=NULL) {
 	$recurse($mgr);
 	$answers = [];
 	$selections[$key] = function($pick_db){
-	error_log(var_export($pick_db,1));
-	return $pick_db["answers"][0];};
+		error_log(var_export($pick_db,1));
+		return $pick_db["answers"][0];
+	};
 	for ($v=0;$v<$N;$v++) {
 		$answers[] = [
 			"correct" => function($pick_db) use($v) {
@@ -526,6 +527,7 @@ $GLOBALS["quiz_types"] = [
 	],
 	[
 		"name" => "Nouns: number and case",
+		"lang" => "la",
 		"options" => [
 			which3("la","noun","case",3,NULL,
 			       ["case"=>["vocative"=>0,
@@ -535,7 +537,7 @@ $GLOBALS["quiz_types"] = [
 			                 "dative"=>3,
 			                 "ablative"=>4,
 			                 "accusative"=>2]]),
-			which("la","noun","number",NULL,NULL,
+			which("la","noun","number",NULL,
 			      ["case"=>["vocative"=>0,
 			                "locative"=>0,
 			                "nominative"=>1,
@@ -547,6 +549,7 @@ $GLOBALS["quiz_types"] = [
 	],
 	[
 		"name" => "Verbs: tense and number",
+		"lang" => "la",
 		"options" => [
 			which3("la","verb","tense",3,["indicative"]),
 			which3("la","verb","number",2,["indicative"]),
@@ -554,6 +557,7 @@ $GLOBALS["quiz_types"] = [
 	],
 	[
 		"name" => "Irregular words",
+		"lang" => "la",
 		"options" => [
 			/*make_chart(WORD(defaultDB(), 212)),
 			make_chart(WORD(defaultDB(), 214)),
@@ -565,6 +569,7 @@ $GLOBALS["quiz_types"] = [
 	],
 	[
 		"name" => "Relative clauses",
+		"lang" => "la",
 		"options" => [
 			which("la","pronoun","gender",NULL,[
 			"case"=>["dative" => 0,"ablative"=>1,
@@ -578,13 +583,13 @@ $GLOBALS["quiz_types"] = [
 				"selections" => [
 					0=>NULL,
 					1=>NULL,
-					2=>PICK(2, ["dative","genitive","ablative"]),
+					2=>PICK(2, ["dative","genitive","ablative"])->l("la"),
 				],
 				"sentence" => [
 					[
 						"spart" => "noun",
 						"attr" => ["!template"=>NULL,"!hidden"=>NULL],
-						"path" => [ make_picks(PICK(2,"number"), 1, 0,0), make_picks(PICK(2, "gender"), 1, 1,0), "nominative" ]
+						"path" => [ make_picks(PICK(2,"number")->l("la"), 1, 0,0), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 					],
 					$OP_COMMA,
 					$OP_MULTIPLE_CHOICE,
@@ -592,7 +597,7 @@ $GLOBALS["quiz_types"] = [
 						"spart" => "verb",
 						"attr" => ["transitive"=>"true","!template"=>NULL,"!hidden"=>NULL],
 						"path" => ["indicative", "active", "person-1",
-						           PICK("tense"), PICK("number")],
+						           PICK("tense")->l("la"), PICK("number")->l("la")],
 						"verb-gender" => get_pick(1,0)
 					],
 					$OP_COMMA,
@@ -637,16 +642,17 @@ $GLOBALS["quiz_types"] = [
 	[
 		"name" => "English to Latin: Simple verbs",
 		"category" => "English to Latin",
+		"lang" => "la",
 		"options" => [[
 			"help" => "Translate this into Latin, either the
 			           whole sentence or just the
 			           (inflected) verb. Double check your
 			           spelling! Word order does not matter.",
 			"selections" => [
-				"person" => PICK("person"),
-				"number" => PICK("number"),
-				"prep" => PICK([NULL,"in","ex","prō"]),
-				"tense" => PICK(["present","imperfect"]),
+				"person" => PICK("person")->l("la"),
+				"number" => PICK(["singular","plural"])->l("la"),
+				"prep" => PICK([NULL,"in","ex","prō"])->l("la"),
+				"tense" => PICK(["present","imperfect"])->l("la"),
 			],
 			"sentence" => [
 				/**/function($pick_db) {
@@ -710,6 +716,7 @@ $GLOBALS["quiz_types"] = [
 	],
 	[
 		"name" => "Define random words",
+		"lang" => "la",
 		"options" => [[
 			"help" => "Choose a correct definition for the given word",
 			"selections" => [
@@ -725,6 +732,7 @@ $GLOBALS["quiz_types"] = [
 							SELECT word_id FROM attributes
 							WHERE attr_tag = 'template' OR attr_tag = 'hidden'
 						)";
+					$s->args = [];
 					return $s->rand();
 				},
 			],
@@ -734,10 +742,11 @@ $GLOBALS["quiz_types"] = [
 				$OP_RQUOTE, $OP_COLON,
 				$OP_MULTIPLE_CHOICE,
 			],
+			"choices0-language" => "en",
 			"choices0" => function($pick_db, $db) {
 				global $mysqli;
 				$query = $mysqli->prepare("
-					SELECT def_id FROM definitions
+					SELECT DISTINCT def_id FROM definitions
 					WHERE def_lang = 'en'
 					AND word_id = (?)
 					ORDER BY rand()
@@ -748,8 +757,10 @@ $GLOBALS["quiz_types"] = [
 				$query->close();
 				if (!$res0) return NULL;
 				$query = $mysqli->prepare("
-					SELECT def_id FROM definitions
+					SELECT DISTINCT def_id FROM definitions
 					WHERE def_lang = 'en'
+					AND def_id != (?)
+					AND def_value != ''
 					AND word_id in (
 						SELECT word_id FROM words WHERE word_lang = 'la'
 					)
@@ -759,7 +770,7 @@ $GLOBALS["quiz_types"] = [
 					)
 				");
 				$res1 = NULL;
-				sql_getmany($query, $res1, []);
+				sql_getmany($query, $res1, ["i", $res0[0]]);
 				$query->close();
 				if (!$res1) return NULL;
 				$res1 = choose_n_unique($res1, 4);
@@ -776,6 +787,7 @@ $GLOBALS["quiz_types"] = [
 	],
 	/*[
 		"name" => "Synonyms",
+		"lang" => "la",
 		"options" => [
 			make_matching([
 				"cædō"=>"interficiō",
@@ -792,6 +804,7 @@ $GLOBALS["quiz_types"] = [
 	],*/
 	/*[
 		"name" => "Hic, Haec, Hoc",
+		"lang" => "la",
 		"options" => [[
 			"help" => "Fill in the chart for this irregular pronoun.",
 			"selections" => [
@@ -895,6 +908,7 @@ $GLOBALS["quiz_types"] = [
 		]]
 	],[
 		"name" => "Noun–verb agreement",
+		"lang" => "la",
 		"options" => [[
 			"help" => "Choose the pronoun that correctly 
 			           restates the subject of the verb.
@@ -902,15 +916,15 @@ $GLOBALS["quiz_types"] = [
 			           assume both options are of the same
 			           gender and thus only differ in number.)",
 			"selections" => [
-				#PICK(["true","false"]),
+				#PICK(["true","false"])->l("la"),
 				0=>"true",
-				1=>PICK(3,"person"),
-				2=>PICK(2,"number"),
-				3=>PICK("gender"),
+				1=>PICK(3,"person")->l("la"),
+				2=>PICK(2,"number")->l("la"),
+				3=>PICK("gender")->l("la"),
 				4=>NULL,
-				5=>PICK("voice"),
+				5=>PICK("voice")->l("la"),
 				6=>NULL,
-				"+adj"=>PICK([TRUE,FALSE],[TRUE=>6,FALSE=>2]),
+				"+adj"=>PICK([TRUE,FALSE],[TRUE=>6,FALSE=>2])->l("la"),
 			],
 			"sentence" => [
 				$OP_MULTIPLE_CHOICE,
@@ -928,8 +942,8 @@ $GLOBALS["quiz_types"] = [
 					"lang" => "la",
 					"speechpart" => "noun",
 					"path" => [
-						"accusative", PICK("number"),
-						PICK("gender")
+						"accusative", PICK("number")->l("la"),
+						PICK("gender")->l("la")
 					],
 				],
 				[
@@ -939,10 +953,10 @@ $GLOBALS["quiz_types"] = [
 						"transitive" => get_pick(0),
 					],
 					"path" => [
-						PICK(["indicative","subjunctive"]),
+						PICK(["indicative","subjunctive"])->l("la"),
 						get_pick(1,0),
 						get_pick(2,0),
-						make_pick(PICK("tense"), 4),
+						make_pick(PICK("tense")->l("la"), 4),
 						get_pick(5),
 					],
 					"verb-gender" => get_pick(3)
@@ -1027,6 +1041,7 @@ $GLOBALS["quiz_types"] = [
 	],
 	[
 		"name"=>"Relative Pronouns",
+		"lang" => "la",
 		"options" => [[
 			"help" => "Choose the pronoun that correctly 
 			           fills in the blank.
@@ -1034,12 +1049,12 @@ $GLOBALS["quiz_types"] = [
 			"selections" => [
 				0=>NULL,
 				1=>NULL,
-				2=>PICK(2, ["dative","genitive","ablative"]),
+				2=>PICK(2, ["dative","genitive","ablative"])->l("la"),
 			],
 			"sentence" => [
 				[
 					"spart" => "noun",
-					"path" => [ make_picks(PICK(2,"number"), 1, 0,0), make_picks(PICK(2, "gender"), 1, 1,0), "nominative" ]
+					"path" => [ make_picks(PICK(2,"number"), 1, 0,0)->l("la"), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 				],
 				$OP_COMMA,
 				$OP_MULTIPLE_CHOICE,
@@ -1047,13 +1062,13 @@ $GLOBALS["quiz_types"] = [
 					"spart" => "verb",
 					"attr" => ["transitive"=>"true"],
 					"path" => ["indicative", "active", "person-1",
-					           PICK("tense"), PICK("number")],
+					           PICK("tense")->l("la"), PICK("number")->l("la")],
 					"verb-gender" => get_pick(1,0)
 				],
 				$OP_COMMA,
 				[
 					"name" => "sum",
-					"path" => [get_pick(0,0), "person-3", "indicative", "active", PICK("tense")]
+					"path" => [get_pick(0,0), "person-3", "indicative", "active", PICK("tense")->l("la")]
 				],
 				[
 					"spart" => "adjective",
@@ -1090,12 +1105,12 @@ $GLOBALS["quiz_types"] = [
 			"selections" => [
 				0=>NULL,
 				1=>NULL,
-				2=>PICK(2, ["dative","genitive","ablative"]),
+				2=>PICK(2, ["dative","genitive","ablative"])->l("la"),
 			],
 			"sentence" => [
 				[
 					"spart" => "noun",
-					"path" => [ make_picks(PICK(2,"number"), 1, 0,0), make_picks(PICK(2, "gender"), 1, 1,0), "nominative" ]
+					"path" => [ make_picks(PICK(2,"number")->l("la"), 1, 0,0), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 				],
 				$OP_COMMA,
 				$OP_MULTIPLE_CHOICE,
@@ -1103,7 +1118,7 @@ $GLOBALS["quiz_types"] = [
 					"spart" => "verb",
 					"attr" => ["transitive"=>"false"],
 					"path" => ["indicative/active/person-3",
-					           PICK("tense"), get_pick(0,0)],
+					           PICK("tense")->l("la"), get_pick(0,0)],
 					"verb-gender" => get_pick(1,0),
 				],
 				$OP_COMMA,
@@ -1151,12 +1166,12 @@ $GLOBALS["quiz_types"] = [
 			"selections" => [
 				0=>NULL,
 				1=>NULL,
-				2=>PICK(2, ["dative","genitive","ablative"]),
+				2=>PICK(2, ["dative","genitive","ablative"])->l("la"),
 			],
 			"sentence" => [
 				[
 					"spart" => "noun",
-					"path" => [ make_picks(PICK(2,"number"), 1, 0,0), make_picks(PICK(2, "gender"), 1, 1,0), "nominative" ]
+					"path" => [ make_picks(PICK(2,"number")->l("la"), 1, 0,0), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 				],
 				$OP_COMMA,
 				$OP_USER_INPUT,
@@ -1164,13 +1179,13 @@ $GLOBALS["quiz_types"] = [
 					"spart" => "verb",
 					"attr" => ["transitive"=>"false"],
 					"path" => ["indicative/active/person-3",
-					           PICK("tense"), get_pick(0,0)],
+					           PICK("tense")->l("la"), get_pick(0,0)],
 					"verb-gender" => get_pick(1,0),
 				],
 				$OP_COMMA,
 				[
 					"name" => "sum",
-					"path" => [get_pick(0,0), "person-3/indicative/active", PICK("tense")]
+					"path" => [get_pick(0,0), "person-3/indicative/active", PICK("tense")->l("la")]
 				],
 				[
 					"spart" => "adjective",

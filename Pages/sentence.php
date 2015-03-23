@@ -1,5 +1,5 @@
 <?php
-	require_once('/var/www/latin/config.php');
+	require_once('/var/www/config.php');
 	sro('/Includes/mysql.php');
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
@@ -33,7 +33,7 @@
 		if (loc != last_loc) {
 			window.history.pushState(loc, "", 'sentence.php?'+loc);
 		}
-		$.get('/latin/PHP5/sentence/get_sentence.php', loc)
+		$.get('/PHP5/sentence/get_sentence.php', loc)
 		.done(handleResponse)
 		.fail(function(data) {
 			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText)
@@ -59,7 +59,7 @@
 			return ret.join();
 		}
 		$('#enter-sentence').autocomplete({
-			serviceUrl: '/latin/PHP5/sentence/get_sentence_names.php',
+			serviceUrl: '/PHP5/sentence/get_sentence_names.php',
 			params: {},
 			paramName: "sentence",
 			transformResult: function(response) {

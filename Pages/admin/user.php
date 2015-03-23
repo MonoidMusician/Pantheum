@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
@@ -33,7 +33,7 @@
 <script type="text/javascript">
     $(function() {
         var settings = new jSettings();
-        settings.init('asuEditable', '/latin/PHP5/admin/user/load.php');
+        settings.init('asuEditable', '/PHP5/admin/user/load.php');
         settings.setSettings([
             ["jsettings-element", "Username", "username", "text", "regular"],
             ["jsettings-element", "Email Address", "email", "text", "regular"],
@@ -44,7 +44,7 @@
                 ["jsettings-element", "Confirm Password", "cpassword", "password", "regular"],
             ],
         ]);
-        settings.setSaveURI("/latin/PHP5/admin/user/save.php");
+        settings.setSaveURI("/PHP5/admin/user/save.php");
         settings.setSplit(',');
         settings.setSaveBehavior('button');
         settings.setLabels(true);
@@ -69,7 +69,7 @@
         
         // Misc functions
         $(document).on('click', '#logoff', function() {
-            $.get('/latin/PHP5/admin/user/logoff.php?uid=<?php echo $uid; ?>', function(data) {
+            $.get('/PHP5/admin/user/logoff.php?uid=<?php echo $uid; ?>', function(data) {
                 if (data == 'success') {
                     alert("Successfully logged off <?php echo $user['username']; ?>.");
                 } else {

@@ -1,277 +1,282 @@
 <?php
-require_once('/var/www/latin/config.php');
-sro('/Includes/mysql.php');
-sro('/Includes/session.php');
-sro('/Includes/functions.php');
+	require_once('/var/www/config.php');
+	sro('/Includes/mysql.php');
+	sro('/Includes/session.php');
+	sro('/Includes/functions.php');
 
-sro('/PHP5/lib/PHPLang/make_example.php');
-sro('/PHP5/lib/PHPLang/display.php');
+	sro('/PHP5/lib/PHPLang/common.php');
+	sro('/PHP5/lib/PHPLang/db.php');
+	sro('/PHP5/lib/PHPLang/display.php');
 
-$db = defaultDB();
-$id2vals = "{"; # for JS
-$dependencies = "{";
-if (count($_GET)) {
-    if (!array_key_exists("lang", $_GET) or !(
-        $langs = vec_norm(explode(",", $_GET["lang"]), "trim")
-        ))
-        { $langs = 'la'; }
+	global $sql_stmts;
+	$db = defaultDB();
+	$editor = requireRank(3, FALSE);
+	if (count($_GET)) {
+		if (!array_key_exists("lang", $_GET) or !(
+			$langs = vec_norm(explode(",", $_GET["lang"]), "trim")
+			))
+			{ $langs = ['la']; }
 
-    if (!array_key_exists("name", $_GET) or !(
-        $names = vec_norm(explode(",", $_GET["name"]), "trim")
-        ))
-        { $names = NULL; }
+		if (!array_key_exists("name", $_GET) or !(
+			$names = vec_norm(explode(",", $_GET["name"]), "trim")
+			))
+			{ $names = NULL; }
 
-    if (!array_key_exists("spart", $_GET) or !(
-        $sparts = vec_norm(explode(",", $_GET["spart"]), "trim")
-        ))
-        { $sparts = NULL; }
+		if (!array_key_exists("spart", $_GET) or !(
+			$sparts = vec_norm(explode(",", $_GET["spart"]), "trim")
+			))
+			{ $sparts = NULL; }
 
-    if (!array_key_exists("attr", $_GET) or !(
-        $attrs = vec_norm(explode(",", $_GET["attr"]), "trim")
-        ))
-        { $attrs = []; }
+		if (!array_key_exists("attr", $_GET) or !(
+			$attrs = vec_norm(explode(",", $_GET["attr"]), "trim")
+			))
+			{ $attrs = []; }
 
-    if (array_key_exists("new", $_GET) and $_GET["new"] === "true") {
-        global $sql_stmts;
-        if (count($names) === 1 and count($langs) === 1 and count($sparts) === 1) {
-            $_name = $names[0]; $_lang = $langs[0]; $_spart = $sparts[0];
-            sql_exec($sql_stmts["word_name,word_lang,word_spart->new in words"], ["sss", $_name, $_lang, $_spart]);
-        }
-    }
-
-    $searcher = $db->searcher();
-    if ($names)
-        $searcher = $searcher->name($names);
-    if ($langs)
-        $searcher = $searcher->lang($langs);
-    if ($sparts)
-        $searcher = $searcher->spart($sparts);
-    foreach ($attrs as $attr) {
-        $a = NULL;
-        if (strpos($attr,"=") === FALSE)
-            $a = ATTR($attr);
-        else {
-            list ($name,$value) = explode("=",$attr,2);
-            $a = ATTR($name,$value);
-        }
-        if ($a !== NULL)
-            $searcher = $searcher->only_with_attr($a);
-    }
-    $list = $searcher->all();
-    foreach ($list as $w) {
-        $id = $w->id();
-        $id2vals .= "$id:[";
-        $dependencies .= "$id:[";
-        if (array_key_exists("set_$id", $_GET)) {
-            list ($path,$val) = explode(":",$_GET["set_$id"],2);
-            $path = PATH($w,explode("/", $path));
-            $path->set($val);
-            $w->add_path($path);
-        } else {
-            $path = $w->path();
-            $val = NULL;
-        }
-        display_word_entry($w, !$val);?><br><?php
-        $_level = array_merge($w->mgr()->simple_keys, $w->mgr()->recursive_keys);
-        foreach ($w->mgr()->all_sub_keys as $k) {
-            $first_level = in_array($k, $_level);
-            $isselector = in_array($k, $w->mgr()->recursive_keys);
-            if ($isselector) {
-                $dependencies .= "['$k',{";
-                $depaths = $w->mgr()->level[$k];
-                foreach ($depaths as $_k => $depath) {
-                    $dependencies .= "'$_k':{";
-                    #var_dump($depath->key2values);
-                    $vec = $depath->all_sub_keys;
-                    if (!empty($vec)) {
-                        $vec = array_map(function($k) use($depath,$w) {
-                            $v = $w->mgr()->key2values[$k];
-                            $v2 = array_map(function($v) use($depath) {
-                                return "'$v', ".(array_key_exists($v, $depath->value2key) ? "true":"false");
-                            }, $v);
-                            return "'$k':[[".implode("],[", $v2)."]]";
-                        }, $vec);
-                        $dependencies .= implode(",", $vec);
-                    }
-                    $dependencies .= "},";
-                }
-                $dependencies .= "}],";
-            }
-            $id2vals .= "'$k',";
-            ?><span id="word<?= $id ?>-<?= $k ?>" class="select"><?php
-                $values = [NULL];
-                $values = array_merge($values, $w->mgr()->key2values[$k]);
-                #var_dump($values);
-                foreach ($values as $v) {
-                    ?><div id="word<?= $id ?>-div-<?= $v ?>"><label>
-                    <input class="inputlabel" type="radio"
-                           name="word<?= $id ?>-<?= $k ?>"
-                           id="word<?= $id ?>-div-<?= $v ?>" <?php
-                        if ($path->key_value($k) == $v) { ?>checked<?php }
-                    ?> value="<?= $v ?>" ><?= $v ?></label></div><?php
-                }
-            ?></span><?php
-        }
-        $id2vals .= "],";
-        $dependencies .= "],";
-        ?><input id="word<?= $id ?>_value" type="text" value="<?= $val ?>" placeholder="Value of inflection" required>
-        <button id="word<?= $id ?>_button" onclick="moveloc(<?= $id ?>)">Enter</button>
-        <script type="text/javascript">
-        $(function() {
-            $('#word<?= $id ?>_value').keypress(function(e){if (e.which == 13)moveloc(<?= $id ?>)});
-        });
-        </script>
-        <hr><?php
-    }
-} else {
-    $langs = ["la"]; $names = $sparts = [];
-}
-
-$id2vals .= "}";
-$dependencies .= "}";
-#echo($dependencies);
+		if (!array_key_exists("id", $_GET) or !(
+			$ids = vec_norm(explode(",", $_GET["id"]), "trim")
+			))
+			{ $ids = []; }
+	} else {
+		$langs = ["la"]; $names = $sparts = $ids = [];
+	}
+	$start = intval(safe_get("start",$_GET));
+	$limit = intval(safe_get("limit",$_GET));
+	if ($limit <= 0) $limit = 5;
+	if ($limit > 50) $limit = 50;
 ?>
-Find words:
-    <input id="enter-names" type="text" value="<?= safe_get('name', $_GET) ?>" placeholder="name, ...">
-    <span class="select">
+<header>
+	<h1>Dictionary</h1>
+	<h4>Find words by name, attributes, language, and/or part of speech</h4>
+</header>
+	<div id="search-form">
+	<!--<span class="select">-->
+	<?php $noinfl = (!array_key_exists("no_inflections",$_GET) or $_GET["no_inflections"] !== "true") ? "" : "checked"; ?>
+	<?php $nodefs = (!array_key_exists("no_definitions",$_GET) or $_GET["no_definitions"] !== "true") ? "" : "checked"; ?>
+	<?php $showtmpls = (!array_key_exists("show_templates",$_GET) or $_GET["show_templates"] !== "true") ? "" : "checked"; ?>
+	<!--<div>--><label><input name="no-inflections" type="checkbox" <?= $noinfl ?>>Hide inflection</label><!--</div>-->
+	<!--<div>--><label><input name="show-templates" type="checkbox" <?= $showtmpls ?>>Show declensions/conjugations</label><!--</div>-->
+	<?php if (requireRank(3, FALSE)) { ?>
+		<!--<div>--><label><input name="no-definitions" type="checkbox" <?= $nodefs ?>>Show only words without definitions</label><!--</div>-->
+	<?php } ?>
+	<!--</span>-->
+	<br>
+	<br>Name(s):
+	<input id="enter-names" type="text" value="<?= safe_get('name', $_GET) ?>" placeholder="name, ...">
+	<br>Form(s):
+	<input id="enter-forms" type="text" value="<?= safe_get('form', $_GET) ?>" placeholder="form, ...">
+	<br>Language(s):
+	<span class="select" id="select-langs">
 <?php
-    foreach ($db->langs() as $l) {
-        ?><div><label><input type="checkbox" name="enter-lang" <?php
-        if ($langs !== NULL and in_array($l, $langs)) {
-            ?>checked<?php
-        }
-        ?> value="<?= $l ?>" ><?= $l ?></label></div><?php
-    }
+	$show_more = FALSE;
+	foreach ($db->langs() as $l) {
+		$name = $l;
+		sql_getone($sql_stmts["lang_id->lang_dispname"], $name, ["s", $l]);
+		?><div <?php
+		if (!in_array($l, $langs)) {
+			$show_more = TRUE;
+			?>style="display: none"<?php
+		}
+		?>><label><input type="checkbox" id="lang-<?= $l ?>" name="enter-lang" <?php
+		if (in_array($l, $langs)) {
+			?>checked<?php
+		}
+		?> value="<?= $l ?>" ><?php display_lang($l);echo$name ?></label></div><?php
+	}
 ?>
-    </span>
-    <span class="select">
+	</span>
 <?php
-    foreach ($db->sparts() as $s) {
-        ?><div><label><input type="checkbox" name="enter-spart" <?php
-        if ($sparts !== NULL and in_array($s, $sparts)) {
-            ?>checked<?php
-        }
-        ?> value="<?= $s ?>" ><?= $s ?></label></div><?php
-    }
+	if ($show_more) {
+		?><a href="javascript:void(0)" onclick="$(this).remove();$('#select-langs div').show();">(show all)</a><?php
+	}
 ?>
-    </span>
-    <input id="enter-attrs" type="text" value="<?= safe_get('attr', $_GET) ?>" placeholder="attr[=value], ...">
-    <button onclick="moveloc()">Search</button>
-    <button onclick="moveloc(undefined, true)">Add</button>
+	<br>Attributes:
+	<input id="enter-attrs" type="text" value="<?= safe_get('attr', $_GET) ?>" placeholder="[!]attr[=value], ...">
+	<br>Part(s) of speech:
+	<span class="select" id="select-sparts">
+<?php
+	foreach ($db->sparts() as $s) {
+		?><span><label title="<?= ucfirst($s) ?>"><input type="checkbox" id="spart-<?= $s ?>" name="enter-spart" <?php
+		if ($sparts !== NULL and in_array($s, $sparts)) {
+			?>checked<?php
+		}
+		?> value="<?= $s ?>" ><?= format_spart($s) ?></label></span><?php
+	}
+?>
+	</span>
+	<br>Show <select id="limit">
+	<?php
+		$_ = [5,10,20,50];
+		if (!in_array($limit,$_)) {
+			$_[] = $limit;
+			sort($_);
+		}
+		foreach ($_ as $__) {
+			?><option <?= ($__===$limit?"selected":"") ?>><?= $__ ?></option><?php
+		}
+	?>
+	</select> results from <input placeholder="<?= $start; ?>" value="<?= $start; ?>" id="start-at" style="width: 50px;">
+	<script>$('#start-at').on("keypress", function(event) {
+		if (event.which == 13) {
+			$(this).blur();
+			dict.refreshEntries();
+		}
+	});</script> (out of <span id="number-entries">0</span>).
+	<input id="enter-ids" style="width: 100px;" type="text" value="<?= safe_get('id', $_GET) ?>" placeholder="id, ...">
+	<button onclick="dict.refreshEntries();">Search</button>
+	<?php if ($editor) { ?>
+	<button onclick="dict.addEntry(function(){dict.refreshEntries();});">Add</button>
+	<?php } ?>
+	<button onclick="$('#enter-attrs,#enter-ids,#enter-names,#enter-forms').val('');$('[name=enter-spart], [name=enter-lang]').prop('checked', false);">Clear fields</button>
+	</div>
 
-    <script type="text/javascript">
-    var id2vals = <?= $id2vals ?>;
-    var dependencies = <?= $dependencies ?>;
-    //alert('hi');
-    function getcheckbox(name) {
-        var ret=[];
-        $('input:checkbox[name='+name+']:checked').each(function() {
-            ret.push($(this).val());
-        });
-        return ret.join();
-    }
-    function getradio(name) {
-        var ret=[];
-        $('input:radio[name='+name+']:checked:visible').each(function() {
-            ret.push($(this).val());
-        });
-        return ret ? ret[0] : null;
-    }
-    function getloc(id, makenew) {
-        var loc = "?", op = "", r;
-        if ($('#enter-names').val()) {
-            loc += op + "name=" + encodeURIComponent($('#enter-names').val());
-            op = "&";
-        } else if (makenew) return;
-        if ($('#enter-attrs').val()) {
-            loc += op + "attr=" + encodeURIComponent($('#enter-attrs').val());
-            op = "&";
-        }
-        r = getcheckbox("enter-lang");
-        if (r) {
-            loc += op + "lang=" + encodeURIComponent(r);
-            op = "&";
-        } else if (makenew) return;
-        r = getcheckbox("enter-spart");
-        if (r) {
-            loc += op + "spart=" + encodeURIComponent(r);
-            op = "&";
-        } else if (makenew) return;
-        if (!makenew && (id || id === 0) && $('#word'+id+'_value').val()) {
-            var path = "", sep = "";
-            id2vals[id].forEach(function(key) {
-                var r = getradio('word'+id+'-'+key);
-                if (!r) return;
-                path += sep + r;
-                sep = "/";
-            });
-            loc += op + "set_"+id+"=" + encodeURIComponent(path+":"+$('#word'+id+'_value').val());
-            op = "&";
-        }
-        if (makenew) {
-            loc += op + "new=true";
-            op = "&";
-        }
-        if (loc !== "?")
-            return loc;
-    }
-    function moveloc(id, makenew) {
-        loc = getloc(id, makenew);
-        if (loc)
-            location.href = loc;
-    }
-    $(function(){
-        $.each(dependencies, function(id, vals) { $.each(vals, function(_, val) {
-            //alert(val);
-            var key = val[0];
-            var keys = val[1];
-            var lastkey = null;
-            var ch = false;
-            var first = true;
-            var perkey = function(key, children) {
-                //alert(key);
-                //if (!first) alert(ch+" "+children);
-                //var ch = el.is(':checked') && el.is(':visible');
-                //alert('checked: '+ch+' ('+el.is(':checked')+', '+el.is(':visible')+')');
-                $.each(children, function(key, values) {
-                    var child = $('#word'+id+'-'+key);
-                    if (ch) child.show(); else child.hide();
-                    //alert(values);
-                    $.each(values, function(_, val) {
-                        var child = $('#word'+id+'-div-'+val[0]);
-                        if (ch && val[1]) child.show(); else child.hide();
-                    });
-                });
-            };
-            var callback = function(target) {
-                var key = target.prop('id');
-                key = key.replace('word'+id+'-div-', '');
-                //alert(key);
-                if (key in keys || key === "") {
-                    if (lastkey !== null) {
-                        ch = false;
-                        perkey(lastkey, keys[lastkey]);
-                        lastkey = null;
-                    }
-                    if (key in keys) {
-                        ch = true;
-                        perkey(key, keys[key]);
-                        lastkey = key;
-                    }
-                }
-            };
-            $.each(keys, perkey);
-            first = false;
-            var el = $('input[name="word'+id+'-'+key+'"]');
-            $(document).on("change", el, function(event) {
-                callback($(event.target));
-            });
-            if (el.filter(":checked").length != 0) {
-                callback(el.filter(":checked"));
-            }
-        })});
-        $('#enter-names').keypress(function(e){if (e.which == 13)moveloc()});
-        $('#enter-attrs').keypress(function(e){if (e.which == 13)moveloc()});
-    });
-    </script>
-<?php?>
+<article id="dictionary"/>
+<script type="text/javascript">
+	$(document).on('keyup', '#enter-names, #enter-attrs, #enter-ids, #enter-forms', function(event) {
+		var val = $('#enter-attrs').val();
+		if (event.which == 13 && val[val.length-1] !== "=") {
+			$(this).blur();
+			dict.refreshEntries();
+		}
+	});
+	$(function(){
+		var lock=false;
+		var splitter = /(?:,\s*)/;
+		var last1 = $('#enter-names').val().split(splitter);
+		var last2 = $('#enter-attrs').val().split(splitter);
+		function getcheckbox(name) {
+			var ret=[];
+			$('input:checkbox[name="'+name+'"]:checked:visible').each(function() {
+				ret.push($(this).val());
+			});
+			return ret.join();
+		}
+		$('#select-langs input').on('change', function() {
+			$('#select-sparts > *').hide();
+			var all = !$('#select-langs input:checked:visible').length;
+			<?php foreach ($db->sparts_by_lang as $l=>$sparts) { ?>
+				if (all || $('#select-langs input#lang-<?= $l ?>:checked:visible').length) {
+					$('#select-sparts').find(
+						'<?php $sep=""; foreach ($sparts as $s) { echo "$sep#spart-$s";$sep=",";} ?>'
+					).parent().parent().show();
+				}
+			<?php } ?>
+		}).first().trigger('change');
+		$('#enter-names').autocomplete({
+			//lookup: names,
+			serviceUrl: '/PHP5/dictionary/get-names-json.php',
+			params: {},
+			delimiter: splitter,
+			onSelect: function(selection) {
+				return;
+				if (lock) return; lock=true;
+				var el = $('#enter-names');
+				if ($.inArray(selection.value, last1) === -1) {
+					el.val(el.val()+", ");
+				}
+				last1 = el.val().split(splitter);
+				el.focus();
+				lock=false;
+			},
+			paramName: "name",
+			deferRequestBy: 150,
+			onSearchStart: function(query) {
+				$(this).autocomplete().options.params["attr"] = $('#enter-attrs').val();
+				$(this).autocomplete().options.params["lang"] = getcheckbox('enter-lang');
+				$(this).autocomplete().options.params["spart"] = getcheckbox('enter-spart');
+			},
+			transformResult: function(response) {
+				response = JSON.parse(response);
+				return {suggestions: response};
+			},
+			minChars: 2,
+		});
+		$('#enter-forms').autocomplete({
+			//lookup: names,
+			serviceUrl: '/PHP5/dictionary/get-forms-json.php',
+			params: {},
+			delimiter: splitter,
+			onSelect: function(selection) {
+				return;
+				if (lock) return; lock=true;
+				var el = $('#enter-forms');
+				if ($.inArray(selection.value, last1) === -1) {
+					el.val(el.val()+", ");
+				}
+				last1 = el.val().split(splitter);
+				el.focus();
+				lock=false;
+			},
+			paramName: "form",
+			deferRequestBy: 150,
+			onSearchStart: function(query) {
+				$(this).autocomplete().options.params["attr"] = $('#enter-attrs').val();
+				$(this).autocomplete().options.params["lang"] = getcheckbox('enter-lang');
+				$(this).autocomplete().options.params["spart"] = getcheckbox('enter-spart');
+			},
+			transformResult: function(response) {
+				response = JSON.parse(response);
+				return {suggestions: response};
+			},
+			minChars: 5,
+		});
+		$('#enter-attrs').autocomplete({
+			//lookup: names,
+			serviceUrl: '/PHP5/dictionary/get-attributes-json.php',
+			params: {},
+			delimiter: splitter,
+			onSelect: function(selection) {
+				return;
+				if (lock) return; lock=true;
+				var el = $('#enter-attrs');
+				if ($.inArray(selection.value, last2) === -1) {
+					if (selection.value.indexOf("={") === -1) {
+						el.val(el.val()+", ");
+					} else {
+						var prev = /^(.*?,?)(?:[^{,}]|\{[^{}]*\})+$/.exec(el.val())[1];
+						console.log(prev);
+						var re = /\{([^,]+)\}$/;
+						var matched = re.exec(selection.value);
+						console.log(matched);
+						if (matched !== null)
+							el.val(prev+selection.value.split("=")[0]+"="+matched[1]);
+						else el.val(prev+selection.value.split("=")[0]+"=");
+					}
+				}
+				last2 = el.val().split(splitter);
+				el.focus();
+				lock=false;
+			},
+			paramName: "attr",
+			deferRequestBy: 150,
+			onSearchStart: function(query) {
+				$(this).autocomplete().options.params["name"] = $('#enter-names').val();
+				$(this).autocomplete().options.params["lang"] = getcheckbox('enter-lang');
+				$(this).autocomplete().options.params["spart"] = getcheckbox('enter-spart');
+			},
+			transformResult: function(response) {
+				response = JSON.parse(response);
+				return {suggestions: response};
+			},
+			minChars: 0,
+		});
+		var number_entries = function(e) {
+			$('#number-entries').text(e.max_length); // hint: set in PHP
+		};
+		$('#search-form input, #search-form select').on('change', function() {
+			dict.previewEntries(number_entries);
+		}).trigger('change');
+	});
+	var dict = new jWord();
+	dict.init('dictionary', '/PHP5/quiz/get-entries.php', '/PHP5/quiz/set-path.php', '#enter-names');
+	dict.bindEvents();
+	<?php
+		if (!$langs or $langs == ['la']) {
+			?><?php
+		}
+		if ($_GET) {
+	?>
+			$(function(){dict.refreshEntries();});
+	<?php
+		}
+	?>
+</script>

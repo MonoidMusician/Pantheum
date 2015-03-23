@@ -1,5 +1,5 @@
 <?php
-	require_once('/var/www/latin/config.php');
+	require_once('/var/www/config.php');
 	sro('/Includes/mysql.php');
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
@@ -21,16 +21,18 @@
 				$attr = substr($attr, 1);
 			}
 			if (strpos($attr,"=") === FALSE) {
+				if (!$reverse) exit("invalid format: $attr");
 				$a = ATTR($attr);
 			} else {
+				if ($reverse) exit("invalid format: !$attr");
 				list ($name,$value) = explode("=",$attr,2);
 				$a = ATTR($name,$value);
 			}
 			if ($a !== NULL) {
-				if (!$reverse)
-					$w->add_attr($a);
-				else
+				if ($reverse)
 					$w->remove_attr($a);
+				else
+					$w->add_attr($a);
 			}
 		}
 		exit("success");

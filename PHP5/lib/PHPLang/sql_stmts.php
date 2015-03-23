@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -306,7 +306,7 @@ class StmtsMacros {
 
 // Set up and parse stmts.sql
 $syntax = new StmtsMacros();
-$dir = "/var/www/latin/MySQL/";
+$dir = "/var/www/MySQL/";
 $start = '/*
  * NOTE: this file is auto-generated, PLEASE do NOT edit!
  */

@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -55,14 +55,22 @@ $GLOBALS["OP_USER_INPUT"] = OP("[user-input]");
 class _PICK
 {
 	public $exclude = [];
-	function __construct($key, $id=NULL, $n=NULL, $rand=NULL) {$this->key=$key;$this->id=$id;$this->n=$n;$this->rand=$rand;}
+	function __construct($key, $id=NULL, $n=NULL, $rand=NULL) {$this->key=$key;$this->id=$id;$this->n=$n;$this->rand=$rand;$this->lang=NULL;}
+	function l($l) {
+		$this->lang = $l; return $this;
+	}
 	function rand($path=NULL) {
 		if (is_array($this->key))
 			$possibles = $this->key;
 		elseif (ISPATH($path)) $possibles = $path->iterate($this->key);
 		elseif (ISDB($path)) {
+			#_die("using db for pick of ".$this->key);
 			$possibles = [];
-			foreach ($path->depaths as $lang) foreach ($lang as $d) {
+			foreach ($path->depaths as $l => $lang) foreach ($lang as $d) {
+				if ($this->lang !== NULL) {
+					if (is_array($this->lang)) if (!in_array($l, $this->lang)) continue; else {}
+					elseif ($l !== $this->lang) continue;
+				}
 				#var_dump($d);
 				if (array_key_exists($this->key, $d->key2values))
 					$possibles = array_merge($possibles, $d->key2values[$this->key]);

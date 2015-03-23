@@ -21,7 +21,7 @@
           "Salvius"
         ],
         "role":"relative phrase/subject",
-        "link":"\/latin\/dictionary2.php?name=relative pronoun&lang=la&spart=pronoun"
+        "link":"dictionary.php?name=relative pronoun&lang=la&spart=pronoun"
       },
       "2":{
         "value":"merc\u0101tor",
@@ -62,7 +62,7 @@
           "qu\u012b"
         ],
         "role":"verb",
-        "link":"\/latin\/dictionary2.php?name=sum&lang=la&spart=verb"
+        "link":"dictionary.php?name=sum&lang=la&spart=verb"
       },
       "-2":{
         "space_after":1,
@@ -76,7 +76,7 @@
           "pecuni\u0101"
         ],
         "role":"adjective",
-        "link":"\/latin\/dictionary2.php?name=multus&lang=la&spart=adjective"
+        "link":"dictionary.php?name=multus&lang=la&spart=adjective"
       },
       "6":{
         "value":"pecuni\u0101",
@@ -93,7 +93,7 @@
           "\u0113mit"
         ],
         "role":"direct object",
-        "link":"\/latin\/dictionary2.php?name=villa&lang=la&spart=adjective"
+        "link":"dictionary.php?name=villa&lang=la&spart=adjective"
       },
       "8":{
         "value":"splendidam",
@@ -106,7 +106,7 @@
       "9":{
         "value":"\u0113mit",
         "desc":" (v): root of sentence, indicative active perfect 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
-        "link":"\/latin\/dictionary2.php?name=emo&lang=la&spart=verb",
+        "link":"dictionary.php?name=emo&lang=la&spart=verb",
         "role":"verb/root"
       }
     },
@@ -233,7 +233,7 @@
           "nauta"
         ],
         "role":"relative phrase/indirect object",
-        "link":"\/latin\/dictionary2.php?name=relative pronoun&lang=la&spart=pronoun"
+        "link":"dictionary.php?name=relative pronoun&lang=la&spart=pronoun"
       },
       "3":{
         "value":"pecuniam",
@@ -250,7 +250,7 @@
           "cui"
         ],
         "role":"verb",
-        "link":"\/latin\/dictionary2.php?name=sum&lang=la&spart=verb"
+        "link":"dictionary.php?name=sum&lang=la&spart=verb"
       },
       "-2":{
         "space_after":1,
@@ -264,7 +264,7 @@
           "revenit"
         ],
         "role":"preposition",
-        "link":"\/latin\/dictionary2.php?name=multus&lang=la&spart=adjective"
+        "link":"dictionary.php?name=multus&lang=la&spart=adjective"
       },
       "6":{
         "value":"\u012ataliam",
@@ -277,7 +277,7 @@
       "9":{
         "value":"revenit",
         "desc":" (v): root of sentence, indicative active present 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
-        "link":"\/latin\/dictionary2.php?name=revenio&lang=la&spart=verb",
+        "link":"dictionary.php?name=revenio&lang=la&spart=verb",
         "role":"verb/root"
       }
     },
@@ -363,7 +363,7 @@
         "desc":" (v): root of sentence, indicative active present 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
         "modifies":[],
         "role":"verb/root",
-        "link":"\/latin\/dictionary2.php?name=sum&lang=la&spart=verb"
+        "link":"dictionary.php?name=sum&lang=la&spart=verb"
       },
       "3":{
         "value":"mihi",
@@ -380,7 +380,7 @@
           "dare"
         ],
         "role":"direct object",
-        "link":"\/latin\/dictionary2.php?name=hic&lang=la&spart=pronoun"
+        "link":"dictionary.php?name=hic&lang=la&spart=pronoun"
       },
       "5":{
         "value":"tibi",
@@ -389,7 +389,7 @@
           "dare"
         ],
         "role":"indirect object",
-        "link":"\/latin\/dictionary2.php?name=tu&lang=la&spart=pronoun"
+        "link":"dictionary.php?name=tu&lang=la&spart=pronoun"
       },
       "6":{
         "value":"dare",
@@ -453,7 +453,7 @@
         "desc":" (v): root of sentence, imperative active present 2<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
         "modifies":[],
         "role":"verb/root",
-        "link":"\/latin\/dictionary2.php?name=do&lang=la&spart=verb"
+        "link":"dictionary.php?name=do&lang=la&spart=verb"
       },
       "1":{
         "value":"mihi",
@@ -462,7 +462,7 @@
           0
         ],
         "role":"indirect object",
-        "link":"\/latin\/dictionary2.php?name=ego&lang=la&spart=pronoun"
+        "link":"dictionary.php?name=ego&lang=la&spart=pronoun"
       },
       "2":{
         "value":"statuam",
@@ -471,7 +471,7 @@
           0
         ],
         "role":"direct object",
-        "link":"\/latin\/dictionary2.php?name=statua&lang=la&spart=noun"
+        "link":"dictionary.php?name=statua&lang=la&spart=noun"
       }
     },
     "translation":{
@@ -506,7 +506,7 @@
         "desc":" (v): root of clause, imperative active present 2<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
         "modifies":["et"],
         "role":"verb/root",
-        "link":"\/latin\/dictionary2.php?name=do&lang=la&spart=verb"
+        "link":"dictionary.php?name=do&lang=la&spart=verb"
       },
       "1":{
         "value":"quod",
@@ -515,7 +515,7 @@
           0,2
         ],
         "role":"indirect object",
-        "link":"\/latin\/dictionary2.php?name=qui&lang=la&spart=pronoun"
+        "link":"dictionary.php?name=qui&lang=la&spart=pronoun"
       },
       "2":{
         "value":"hab\u0113s",
@@ -524,7 +524,7 @@
           1
         ],
         "role":"verb",
-        "link":"\/latin\/dictionary2.php?name=habeo&lang=la&spart=verb"
+        "link":"dictionary.php?name=habeo&lang=la&spart=verb"
       },
       "-1":{
         "space_before":0,
@@ -536,14 +536,14 @@
         "desc":" (conj): root of sentence",
         "modifies":[],
         "role":"conj/root",
-        "link":"\/latin\/dictionary2.php?name=et&lang=la&spart=conjunction"
+        "link":"dictionary.php?name=et&lang=la&spart=conjunction"
       },
       "4":{
         "value":"hab\u0113s",
         "desc":" (n): root of clause",
         "modifies":["et"],
         "role":"verb/root",
-        "link":"\/latin\/dictionary2.php?name=habeo&lang=la&spart=verb"
+        "link":"dictionary.php?name=habeo&lang=la&spart=verb"
       }
     },
     "translation":{

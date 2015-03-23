@@ -36,6 +36,7 @@
  *   a  - arc
  *   at - arcTo
  *   b  - beginPath
+ *   bt - bezierCurveTo
  *   c  - closePath
  *   cs - clearRect
  *   cw - clear screen (via resetting width)
@@ -46,8 +47,11 @@
  *   m  - moveTo
  *   q  - quadraticCurveTo
  *   r  - fillRect
+ *   re - restore
  *   ro - rotate
  *   s  - stroke
+ *   sa - save
+ *   sc - scale
  *   ss - strokeStyle
  *   t  - translate
  *   w  - lineWidth
@@ -81,6 +85,8 @@ function jCanvasDraw(canvas, ctx, frame) {
             ctx.arcTo(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
         } else if (command == 'b') {
             ctx.beginPath();
+        } else if (command == 'bt') {
+            ctx.bezierCurveTo(arguments[0],arguments[1],arguments[2],arguments[3],arguments[4],arguments[5]);
         } else if (command == 'c') {
             ctx.closePath();
         } else if (command == 'cs') {
@@ -101,12 +107,18 @@ function jCanvasDraw(canvas, ctx, frame) {
             ctx.quadraticCurveTo(arguments[0], arguments[1], arguments[2], arguments[3]);
         } else if (command == 'r') {
             ctx.fillRect(arguments[0], arguments[1], arguments[2], arguments[3]);
+        } else if (command == 're') {
+            ctx.restore();
         } else if (command == 'ro') {
             ctx.rotate(arguments[0]);
         } else if (command == 'ss') {
             ctx.strokeStyle = arguments[0];
         } else if (command == 's') {
             ctx.stroke();
+        } else if (command == 'sa') {
+            ctx.save();
+        } else if (command == 'sc') {
+            ctx.scale(arguments[0], arguments[1]);
         } else if (command == 't') {
             ctx.translate(arguments[0], arguments[1]);
         } else if (command == 'w') {

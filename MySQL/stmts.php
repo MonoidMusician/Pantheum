@@ -41,6 +41,11 @@ $sql_stmts['word_id->word_spart']= "SELECT word_spart FROM words WHERE word_id =
 $sql_stmts['word_spart->word_id']= "SELECT word_id FROM words WHERE word_spart = (?)";
 
 /*
+ * When was the word updated last?
+ */
+$sql_stmts['word_id->last_changed']= "SELECT last_changed FROM words WHERE word_id = (?)";
+
+/*
  * Make a new word
  */
 $sql_stmts['word_name,word_lang,word_spart->new in words']= "INSERT INTO words (word_name,word_lang,word_spart) VALUES (?, ?, ?)";

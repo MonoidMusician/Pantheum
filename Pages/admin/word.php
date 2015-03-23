@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
@@ -32,12 +32,12 @@
 <script type="text/javascript">
     $(function() {
         var settings = new jSettings();
-        settings.init('aswEditable', '/latin/PHP5/admin/word/load.php');
+        settings.init('aswEditable', '/PHP5/admin/word/load.php');
         settings.setSettings([
             ["jsettings-element", "Name", "name", "text", "regular"],
             ["jsettings-element", "Part of speech", "speech", "text", "regular"],
         ]);
-        settings.setSaveURI("/latin/PHP5/admin/word/save.php");
+        settings.setSaveURI("/PHP5/admin/word/save.php");
         settings.setSplit(',');
         settings.setSaveBehavior('button');
         settings.setLabels(true);
@@ -62,7 +62,7 @@
         
         // Misc functions
         $(document).on('click', '#logoff', function() {
-            $.get('/latin/PHP5/admin/user/logoff.php?uid=<?php echo $uid; ?>', function(data) {
+            $.get('/PHP5/admin/user/logoff.php?uid=<?php echo $uid; ?>', function(data) {
                 if (data == 'success') {
                     alert("Successfully logged off <?php echo $user['username']; ?>.");
                 } else {

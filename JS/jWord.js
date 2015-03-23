@@ -1,6 +1,10 @@
 function jWord() {
 	this.id2vals = {};
 	this.dependencies = {};
+	this.entries = {};
+	this.api_path = '/PHP5/dictionary/';
+	// "Register" dependencies of one path part on another, e.g.
+	// "supine-1" only shows when mood="supine" is selected.
 	this.register = function(id2vals, dependencies) {
 		var my = this;
 		$.each(id2vals, function(id, vals) {
@@ -17,19 +21,13 @@ function jWord() {
 			});
 		});
 		$.each(dependencies, function(id, vals) { $.each(vals, function(key, keys) {
-			//alert(key,keys);
 			var lastkey = null;
 			var ch = false;
 			var first = true;
 			var perkey = function(key, children) {
-				//alert(key);
-				//if (!first) alert(ch+" "+children);
-				//var ch = el.is(':checked') && el.is(':visible');
-				//alert('checked: '+ch+' ('+el.is(':checked')+', '+el.is(':visible')+')');
 				$.each(children, function(key, values) {
 					var child = $('#word'+id+'-'+key);
 					if (ch) child.show(); else child.hide();
-					//alert(values);
 					$.each(values, function(_, val) {
 						var child = $('#word'+id+'-div-'+val[0]);
 						if (ch && val[1]) child.show(); else child.hide();
@@ -39,7 +37,6 @@ function jWord() {
 			var callback = function(target) {
 				var key = target.prop('id');
 				key = key.replace('word'+id+'-div-', '');
-				//alert(key);
 				if (key in keys || key === "") {
 					if (lastkey !== null) {
 						ch = false;
@@ -65,6 +62,7 @@ function jWord() {
 			}
 		});});
 	};
+	// Helper, get a checkbox's value
 	function getcheckbox(name) {
 		var ret=[];
 		$('input:checkbox[name="'+name+'"]:checked:visible').each(function() {
@@ -72,38 +70,36 @@ function jWord() {
 		});
 		return ret.join();
 	}
+	// Helper, get the selected radio button's value
 	function getradio(name) {
 		return $('input:radio[name="'+name+'"]:checked:visible').val();
 	}
+	// Helper: "normalize" list formatting
+	function normlist(val) {
+		return val ? val.trim().replace(/(?:,\s*)+(?=,|$)|^(?:,\s*)+/g, "") : "";
+	}
+	// Get the current URL to go to when user clicks "search"
 	this.searcher = function() {
-		var loc = "", op = "", r;
-		if ($('#enter-ids').val().trim()) {
-			return "id=" + encodeURIComponent($('#enter-ids').val());
+		var r, h;
+		if (r = $('#enter-ids').val().trim()) {
+			return "id=" + encodeURIComponent(r);
+		} else
+		var h = {
+			"name":normlist($('#enter-names').val()),
+			"form":normlist($('#enter-forms').val()),
+			"attr":normlist($('#enter-attrs').val()),
+			"lang":getcheckbox("enter-lang"),
+			"spart":getcheckbox("enter-spart"),
+			"no_inflections":!!getcheckbox("no-inflections"),
+			"no_definitions":!!getcheckbox("no-definitions"),
+			"show_templates":!!getcheckbox("show-templates"),
+			"start":$('#start-at').val(),
+			"limit":$('#limit').val(),
+		};
+		for (var p in h) {
+			if (!h[p]) delete h[p];
 		}
-		if ($('#enter-names').val()) {
-			loc += op + "name=" + encodeURIComponent($('#enter-names').val());
-			op = "&";
-		}
-		if ($('#enter-attrs').val()) {
-			loc += op + "attr=" + encodeURIComponent($('#enter-attrs').val());
-			op = "&";
-		}
-		r = getcheckbox("enter-lang");
-		if (r) {
-			loc += op + "lang=" + encodeURIComponent(r);
-			op = "&";
-		}
-		r = getcheckbox("enter-spart");
-		if (r) {
-			loc += op + "spart=" + encodeURIComponent(r);
-			op = "&";
-		}
-		r = getcheckbox("to-hide-inflection");
-		if (r) {
-			loc += op + "no_inflection=" + true;
-			op = "&";
-		}
-		return loc;
+		return $.param(h);
 	};
 	this.path = function(id, as_uri) {
 		if (as_uri === undefined) as_uri = true;
@@ -144,7 +140,7 @@ function jWord() {
 		return as_uri ? encodeURIComponent(val) : val;
 	};
 	this.word_db_val = function(id, callback) {
-		$.get('/latin/PHP5/dictionary/get-path.php',
+		$.get(this.api_path+'get-path.php',
 		      'path='+this.path(id)+
 		      '&id='+id)
 		.done(callback);
@@ -152,7 +148,7 @@ function jWord() {
 	this.word_set_val = function(id) {
 		var my = this;
 		var path = this.path(id);
-		$.get('/latin/PHP5/dictionary/set-path.php',
+		$.get(this.api_path+'set-path.php',
 		      'path='+path+
 		      '&id='+id+
 		      '&val='+this.word_user_val(id))
@@ -167,7 +163,7 @@ function jWord() {
 	this.word_del_val = function(id) {
 		var my = this;
 		var path = this.path(id);
-		$.get('/latin/PHP5/dictionary/delete-path.php',
+		$.get(this.api_path+'delete-path.php',
 		      'path='+path+
 		      '&id='+id)
 		.done(function(data){
@@ -184,7 +180,7 @@ function jWord() {
 		messageTip("Trying to add pronunciation...");
 		var my = this;
 		var path = this.path(id);
-		$.get('/latin/PHP5/dictionary/add-pronunciation.php',
+		$.get(this.api_path+'add-pronunciation.php',
 		      'path='+path+
 		      '&id='+id+
 		      '&val='+this.word_user_pron(id))
@@ -210,7 +206,7 @@ function jWord() {
 		def = encodeURIComponent(def);
 		messageTip("Trying to add definition...");
 		var my = this;
-		$.get('/latin/PHP5/dictionary/add-definition.php',
+		$.get(this.api_path+'add-definition.php',
 		      'path='+this.path(id)+
 		      '&id='+id+
 		      '&val='+def+
@@ -227,7 +223,7 @@ function jWord() {
 		var attr = encodeURIComponent($('#word'+id+'_value_attr').val());
 		messageTip("Trying to add attribute(s)...");
 		var my = this;
-		$.get('/latin/PHP5/dictionary/add-attributes.php',
+		$.get(this.api_path+'add-attributes.php',
 		      'attr='+attr+'&id='+id)
 		.done(function(data){
 			if (data == "success") {
@@ -240,7 +236,7 @@ function jWord() {
 	this.definition_delete = function(id,word_id) {
 		messageTip("Trying to delete definition...");
 		var my = this;
-		$.get('/latin/PHP5/dictionary/delete-definition.php','id='+id)
+		$.get(this.api_path+'delete-definition.php','id='+id)
 		.done(function(data){
 			if (data == "success") {
 				messageTip("Successfully deleted definition");
@@ -255,7 +251,7 @@ function jWord() {
 		var to_id = $('#word'+from_id+'_connection_to').val();
 		var type = $('#word'+from_id+'_connection_type').val();
 		var mutual = $('#word'+from_id+'_connection_ismutual:checked').length;
-		$.get('/latin/PHP5/dictionary/add-connection.php',
+		$.get(this.api_path+'add-connection.php',
 		      'from='+from_id+
 		      '&to='+to_id+
 		      '&type='+type+
@@ -274,7 +270,7 @@ function jWord() {
 	this.connection_delete = function(from_id, to_id, type) {
 		messageTip("Trying to delete connection...");
 		var my = this;
-		$.get('/latin/PHP5/dictionary/delete-connection.php',
+		$.get(this.api_path+'delete-connection.php',
 		      'from='+from_id+
 		      '&to='+to_id+
 		      '&type='+type)
@@ -291,7 +287,7 @@ function jWord() {
 		if (!test)
 			return;
 		var my = this;
-		$.get('/latin/PHP5/dictionary/delete-word.php','id='+id)
+		$.get(this.api_path+'delete-word.php','id='+id)
 		.done(function(data){
 			if (data == "success") return my.refreshEntries();
 			alert("Could not delete word: "+data);
@@ -299,9 +295,13 @@ function jWord() {
 	};
 	this.word_refresh = function(id) {
 		var my = this;
-		$.get('/latin/PHP5/dictionary/clear-cache.php','id='+id)
+		if ($.jStorage) {
+			$.jStorage.set("word"+id+"_update","");
+			$.jStorage.set("word"+id,"");
+		}
+		$.get(this.api_path+'clear-cache.php','id='+id)
 		.done(function(data){
-			if (data == "success") return my.refreshEntry(id);
+			if (data == "success") return my.getWord(id);
 			alert("Could not refresh word: "+data);
 		});
 	};
@@ -326,7 +326,7 @@ function jWord() {
 			if (new_name == old_name || !new_name) {
 				return show_name(old_name);
 			}
-			$.get('/latin/PHP5/dictionary/rename-word.php','id='+id+'&newname='+new_name)
+			$.get(my.api_path+'rename-word.php','id='+id+'&newname='+new_name)
 			.done(function(data){
 				if (data == "success") {
 					return show_name(new_name);
@@ -362,7 +362,7 @@ function jWord() {
 		$.each(val[1].split(";"), function(i,argi) {
 			arg += '&'+i+'='+encodeURIComponent(argi.trim());
 		});
-		$.get('/latin/PHP5/dictionary/run-template.php',
+		$.get(this.api_path+'run-template.php',
 		      'id='+id+
 		      '&path='+this.path(id)+'&'+arg)
 		.done(function(data){
@@ -380,45 +380,182 @@ function jWord() {
 		this.surl = surl;
 	};
 	
-	this.refreshEntries = function() {
+	this.previewEntries = function(callback) {
+		var my = this, serv = this.previewEntries_service;
+		serv.pending = true;
+		var found = false;
+		for (k in serv.callbacks) {
+			if (callback === serv.callbacks[k])
+			{ found=true;break }
+		}
+		if (!found)
+			serv.callbacks.push(callback);
+		if (serv.deferRequestBy === null) {
+			serv.execute(my);
+		} else {
+			setTimeout(function() {
+				serv.execute(my);
+			}, serv.deferRequestBy);
+		}
+	};
+	this.previewEntries_service = {
+		pending: false,
+		deferRequestBy: 550,
+		callbacks: [],
+		execute: function(my) {
+			if (!this.pending) return;
+			this.pending = false;
+			var callbacks = this.callbacks;
+			this.callbacks = [];
+			var loc = my.searcher();
+			$.get(my.api_path+'search-json.php', loc)
+			.done(function(data) {
+				my.entries = JSON.parse(data);
+				if (my.entries !== undefined)
+					$.each(callbacks, function(k,c) {c(my.entries);})
+			})
+			.fail(function(data) {
+				messageTip('Query failed! The server returned status '+data.status+(data.statusText?": "+data.statusText:""))
+			});
+		}
+	};
+
+	this.refreshEntries_old = function() {
 		messageTip("Loading entries...", null);
 		var my = this;
 		var loc = this.searcher();
 		if (loc === undefined) return messageTip("Empty loc");
 		if (loc != this.last_loc) {
-			window.history.pushState(loc, "", 'dictionary2.php?'+loc);
+			history.pushState(null, "", 'dictionary.php?'+loc);
+			this.last_loc = loc;
 		}
-		$('#'+this.qelement+'-permalink').prop('href', 'dictionary2.php?'+loc);
-		$.get('/latin/PHP5/dictionary/get-entries.php', loc)
+		$('#'+this.qelement+'-permalink').prop('href', 'dictionary.php?'+loc);
+		$.get(this.api_path+'get-entries.php', loc)
 		.done($.proxy(this, "handleResponse"))
 		.fail(function(data) {
-			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText)
+			messageTip('Query failed! The server returned status '+data.status+(data.statusText?": "+data.statusText:""))
 		});
 	};
+	this.handleResponse = function(data) {
+		messageTip("Response succeeded");
+		$('#dictionary').empty();
+		$('#dictionary').html(data);
+	};
+
+	this.refreshEntries = function() {
+		var serv = this.previewEntries_service;
+		var delay = serv.deferRequestBy;
+		serv.deferRequestBy = null;
+		var loc = this.searcher();
+		if (loc === undefined) return messageTip("Empty loc");
+		if (loc != this.last_loc) {
+			history.pushState(loc, "", 'dictionary.php?'+loc);
+			this.last_loc = loc;
+		}
+		$('#'+this.qelement+'-permalink').prop('href', 'dictionary.php?'+loc);
+		$('#dictionary').empty();
+		this.previewEntries($.proxy(this, 'updateContent'));
+		serv.deferRequestBy = delay;
+	};
+
+	this.updateContent = function(entries) {
+		history.replaceState(entries, document.title, document.location.href);
+		if (!entries.sorted) return;
+		var m, n = m = entries.sorted.length, my = this;
+		var start = Date.now();
+		var callback = function() {
+			if (n-=1) return;
+			var time = Date.now() - start;
+			time = time/1000;
+			time = Math.round(time * 100) / 100;
+			if (m === 1) {
+				messageTip("Done loading! Took "+time+" seconds.");
+			} else {
+				var time_per = Math.round(time/m * 100) / 100;
+				messageTip("Done loading! Took "+time+" seconds ("+time_per+" per word, with "+m+" word(s)).");
+			}
+		};
+		var prev = [];
+		$.each(entries.sorted, function(i, id) {
+			if (my.getWord(id, prev.slice(), callback)) n-=1;
+			prev.push(id);
+		});
+		if (n) messageTip("Loading entries...", null);
+	};
+
+	this.getWord = function(id, prev, callback, find) {
+		var my = this, cached = false, data;
+		var done = function(data) {
+			if (!cached) $.jStorage.set("word"+id, data);
+			var $data = $(data);
+			æ.format($data);
+			var s = $('#dictionary section#word'+id);
+			if (find !== undefined) {
+				var ss = s.find(find);
+				if (ss.length)
+					s = ss;
+			}
+			if (s.length) {
+				var d = $data.filter('section');
+				if (find !== undefined) {
+					var dd = d.find(find);
+					if (dd.length)
+						d = dd;
+				}
+				if (d.length) s.replaceWith(d);
+				else s.replaceWith($data);
+			} else {
+				var i = 0, sel = [];
+				// reverse iterate the list, find the last one which has been added already
+				while (i<prev.length && !(sel = $('#dictionary section#word'+prev[prev.length-i-1])).length) {
+					i+=1;
+				}
+				if (sel.length) {
+					// add this word after that one
+					sel.after($data);
+				} else {
+					// or as the first word
+					$('#dictionary').prepend($data);
+				}
+			}
+			if (!cached && callback !== undefined) callback();
+		};
+		if (cached = (data = $.jStorage.get("word"+id))) {
+			done(data);
+			return true;
+		} else {
+			$.get(this.api_path+'get-entries.php', 'id='+id)
+			.done(done);
+			return false;
+		}
+	};
+
 	this.refreshInflection = function(id) {
 		var my = this;
 		function handle1Response(data) {
 			var $html = $(data);
 			$('#word'+id+'_forms').html($html.find('#word'+id+'_forms').html());
 		}
-		$.get('/latin/PHP5/dictionary/get-entries.php', 'id='+id)
+		$.get(this.api_path+'get-entries.php', 'id='+id)
 		.done(handle1Response)
 		.fail(function(data) {
 			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText);
 		});
 	};
+
 	this.refreshDefinitions = function(id) {
 		var my = this;
 		function handle1Response(data) {
 			var $html = $(data);
 			$('#word'+id+'_definitions').html($html.find('#word'+id+'_definitions').html());
 		}
-		$.get('/latin/PHP5/dictionary/get-entries.php', 'id='+id)
+		$.get(this.api_path+'get-entries.php', 'id='+id)
 		.done(handle1Response)
 		.fail(function(data) {
 			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText);
 		});
 	};
+
 	this.refreshEntry = function(id) {
 		var my = this;
 		function handle1Response(data) {
@@ -430,18 +567,33 @@ function jWord() {
 				$.globalEval($(this).text());
 			});
 		}
-		$.get('/latin/PHP5/dictionary/get-entries.php', 'id='+id)
+		$.get(this.api_path+'get-entries.php', 'id='+id)
 		.done(handle1Response)
 		.fail(function(data) {
 			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText);
+		});
+	};
+	this.refreshEntry = function(id) {
+		this.getWord(id);
+	};
+	this.refreshInflection = function(id) {
+		var my = this;
+		if ($.jStorage) {
+			$.jStorage.set("word"+id+"_update","");
+			$.jStorage.set("word"+id,"");
+		}
+		$.get(this.api_path+'clear-cache.php','id='+id)
+		.done(function(data){
+			if (data == "success") return my.getWord(id, undefined, undefined, "#word"+id+"_forms");
+			alert("Could not refresh word: "+data);
 		});
 	};
 	this.addEntry = function(id, callback) {
 		var my = this;
 		var loc = this.searcher();
 		if (loc === undefined) return;
-		$('#'+this.qelement+'-permalink').prop('href', 'dictionary2.php?'+loc);
-		$.get('/latin/PHP5/dictionary/add-word.php', loc)
+		$('#'+this.qelement+'-permalink').prop('href', 'dictionary.php?'+loc);
+		$.get(this.api_path+'add-word.php', loc)
 		.done(function(data) {
 			if (data == "success")
 			{ my.refreshEntries(); messageTip("Word successfully added"); }
@@ -449,29 +601,39 @@ function jWord() {
 			if (callback !== undefined) callback();
 		});
 	};
-	this.handleResponse = function(data) {
-		messageTip("Response succeeded");
-		$('#dictionary').empty();
-		$('#dictionary').html(data);
+
+	this.simple_search = function() {
+		$('#enter-attrs,#enter-ids,#enter-names').val('').hide();
+		$('[name=enter-spart], [name=enter-lang]').prop('checked', false).parent().parent().hide();
 	};
-	
+	this.advanced_search = function() {
+		$('#enter-attrs,#enter-ids,#enter-names').show();
+		$('[name=enter-spart], [name=enter-lang]').parent().parent().show();
+	};
+	this.start_at = function(start) {
+		$('#start-at').val(start);
+		this.refreshEntries();
+	};
+
 	this.bindEvents = function() {
 		this.unbindEvents();
-		
+		var t = this;
+		window.addEventListener('popstate', function(event) {
+			console.log('popstate fired!');
+
+			t.updateContent(event.state);
+		});
+
 		/*$(document).on('click', '#' + this.qelement + '-back', $.proxy(this.handleBack, this));
 		$(document).on('click', '#' + this.qelement + '-submit', $.proxy(this.handleSubmit, this));
 		$(document).on('click', '#' + this.qelement + '-next', $.proxy(this.handleNext, this));*/
 	};
 	
 	this.unbindEvents = function() {
+		window.removeEventListener('popstate');
 		/*$(document).off('click', '#' + this.qelement + '-back');
 		$(document).off('click', '#' + this.qelement + '-submit');
 		$(document).off('click', '#' + this.qelement + '-next');
 		$(document).off('click', '#' + this.qelement + '-finish');*/
-	};
-	
-	this.start = function() {
-		this.getNextQuestion();
-		this.bindEvents();
 	};
 }

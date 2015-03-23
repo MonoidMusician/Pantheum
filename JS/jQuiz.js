@@ -171,8 +171,10 @@ function jQuiz() {
     
     this.displayQuestion = function() {
         var html = this.buildHeader() + this.buildBody();
+        var $html = $(html);
+        æ.format($html);
         
-        $('#' + this.qelement).html(html);
+        $('#' + this.qelement).html($html);
     };
     
     this.handleSubmit = function(data) {

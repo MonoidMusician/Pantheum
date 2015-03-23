@@ -1,0 +1,25 @@
+{
+	"parts":[{
+		"formality":{
+			"inf":"informal",
+			"f":"formal"
+		},
+		"complement":{
+			"r":"regular",
+			"c1":"complementary-1",
+			"c2":"complementary-2"
+		},
+		"stem":{
+			"1":"stem-1",
+			"2":"stem-2",
+			"3":"stem-3"
+		}
+	}],
+	"depaths":{
+		"root":[
+			"formality",
+			"complement",
+			"stem"
+		]
+	}
+}

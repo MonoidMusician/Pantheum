@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -8,8 +8,13 @@ sro('/PHP5/lib/PHPLang/common.php');
 
 function _get_first_last($arr, &$first, &$last) {
 	if (!$arr) return;
-	$first = $arr[0];
-	$last = $arr[count($arr)-1];
+	if (is_vec($arr)) {
+		$first = $arr[0];
+		$last = $arr[count($arr)-1];
+	} else {
+		$first = array_keys($arr)[0];
+		$last = array_keys($arr)[count($arr)-1];
+	}
 }
 
 function display_word_entries($list) {
@@ -33,30 +38,8 @@ function no_format($w) {
 // TODO: user settings, DB encoding
 function format_word($w, $replacements=NULL) {
 	if (!strlen($w)) return "—"; # em-dash
-	$w = normalizer_normalize($w, Normalizer::FORM_C);
-	if ($replacements === NULL)
-		$replacements = [
-			"ā"=>"ā"/*aa*/,"ī"=>"ī"/*ii*/,"ē"=>"ē"/*ee*/,"ō"=>"ō"/*oo*/,"ū"=>"ū"/*uu*/,
-			#"ae" => "aë","oe" => "oë","Ae" => "Aë","Oe" => "Oë",
-			"æ" => "ae","œ" => "oe","Æ" => "Ae","Œ" => "Oe",
-			#"æ" => "ai","œ" => "oi","Æ" => "Ai","Œ" => "Oi",
-			"cs"=>"x","gs"=>"x",
-			#"no_specials",
-			#function($s) {return mb_strtoupper($s,"utf-8");},
-			#"ī"=>"ii","ā"=>"aa","ē"=>"ee","ō"=>"oo","ū"=>"uu",
-			#"c"=>"k",
-			#"j" => "i", "J" => "I",
-			#"v" => "u",#"U" => "V",
-			#"<" => "&lt;",">" => "&gt;", "{HTMLLT}"=>"<","{HTMLGT}"=>">",
-			"\n" => "<br>",
-		];
-	foreach ($replacements as $old => $new) {
-		if (is_int($old) and is_callable($new))
-			$w = $new($w);
-		else
-			$w = str_replace($old, $new, $w);
-	}
-	return $w;
+	if (!is_string($replacements)) $replacements = "la";
+	return "<span class='format-word-$replacements'>$w</span>";
 }
 function format_word1($w) { return format_word($w); }
 function format_pron($w, $replacements=NULL) {
@@ -111,6 +94,10 @@ function format_value ($v) {
 		return "Supine I";
 	if ($v === "supine-2")
 		return "Supine II";
+	if ($v === "complementary-1")
+		return "Comp. L";
+	if ($v === "complementary-2")
+		return "Comp. R";
 	return str_replace("-", " ", ucfirst($v));
 }
 function format_spart($spart) {
@@ -164,10 +151,10 @@ function format_path($c) {
 
 function word_link($w,$hide_lang=false) {
 	if (!$hide_lang) display_lang($w);
-	?><a class="word-ref" href="dictionary2.php?id=<?= $w->id() ?>"><?= $w->name() ?></a><?php
+	?><a class="word-ref" href="dictionary.php?id=<?= $w->id() ?>"><?= $w->name() ?></a><?php
 	?><script type="text/javascript">
 		$(function() {
-			$('a[href="dictionary2.php?id=<?= $w->id() ?>"]').on("click", function() {
+			$('a[href="dictionary.php?id=<?= $w->id() ?>"]').on("click", function() {
 				$('#enter-attrs,#enter-names').val('');$('[name=enter-spart], [name=enter-lang]').prop('checked', false);
 				$('#enter-ids').val(<?= $w->id() ?>);
 				$('[name=enter-lang][value=<?= $w->lang() ?>]').prop('checked', true);
@@ -266,7 +253,7 @@ function display_word_info($w, $can_edit=FALSE) {
 	foreach ($w->read_attrs() as $attr) {
 		$infos[] = format_attr($attr->tag(), $attr->value());
 	}
-	?>(<?php echo implode("; ", $infos); ?>) [<a href="dictionary2.php?id=<?= $id ?>">hardlink</a>]<?php
+	?>(<?php echo implode("; ", $infos); ?>) [<a href="dictionary.php?id=<?= $id ?>">hardlink</a>]<?php
 	if ($can_edit) {
 ?>
 		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_delete">del</a>]
@@ -382,7 +369,7 @@ function display_word_info($w, $can_edit=FALSE) {
 				return ret.join();
 			}
 			$('#word'+id+'_value_attr').autocomplete({
-				serviceUrl: '/latin/PHP5/dictionary/get-attributes-json.php',
+				serviceUrl: '/PHP5/dictionary/get-attributes-json.php',
 				params: {
 					"lang": '<?= $lang ?>',
 					"spart": '<?= $spart ?>',
@@ -390,7 +377,7 @@ function display_word_info($w, $can_edit=FALSE) {
 				delimiter: splitter,
 				onSelect: function(selection) {
 					if (lock) return; lock=true;
-					var el = $('#enter-attrs');
+					var el = $('#word'+id+'_value_attr');
 					if ($.inArray(selection.value, last2) === -1) {
 						if (selection.value.indexOf("={") === -1) {
 							el.val(el.val()+", ");
@@ -496,7 +483,34 @@ function word_table_values($w) {
 			else $values1 = [];
 			$values0 = [];
 		} elseif ($spart === "verb") {
-			$values0 = $w->path()->iterate("mood");
+			$moods = $w->path()->iterate("mood");
+			$values0 = [];
+			foreach ($moods as $_0) {
+				$path = PATH($w,$_0);
+				if ($_0 === "indicative" or
+					$_0 === "subjunctive" or
+					$_0 === "imperative") {
+					$values4 = $path->iterate("tense");
+					$values3 = $path->iterate("person");
+					$values2 = $path->iterate("number");
+					$values1 = $path->iterate("voice");
+					if (!$values1) $values1 = [FALSE];
+				} else if ($_0 === "participle") {
+					$values4 = $path->iterate("tense");
+					$values2 = $path->iterate("voice");
+				} else if ($_0 === "infinitive") {
+					$values4 = $path->iterate("tense");
+					$values2 = $path->iterate("voice");
+					$values3 = [FALSE,FALSE,FALSE];
+					$values1 = [""];
+				} else if ($_0 === "supine") {
+					$values4 = [FALSE];
+					$values2 = $path->iterate("supine-type");
+					$values3 = [FALSE,FALSE,FALSE];
+					$values1 = [""];
+				}
+				$values0[$_0] = [$values1,$values2,$values3,$values4];
+			}
 		} elseif ($spart === "adverb") {
 			$values1 = $w->path()->iterate("degree");
 		}
@@ -511,7 +525,39 @@ function word_table_values($w) {
 				$values1 = $w->path()->iterate("degree");
 			else $values1 = [];
 			$values0 = [];
+		} elseif ($spart === "verb") {
+			$moods = $w->path()->iterate("mood");
+			$values0 = [];
+			foreach ($moods as $_0) {
+				$path = PATH($w,$_0);
+				if ($_0 === "indicative" or
+					$_0 === "subjunctive") {
+					$values4 = $path->iterate("tense");
+					$values3 = $path->iterate("person");
+					$values2 = $path->iterate("number");
+					if (!$values1) $values1 = [FALSE];
+				} else if ($_0 === "infinitive" or
+				           $_0 === "gerund") {
+					$values4 = [""];
+					$values2 = $path->iterate("type");
+					$values3 = [FALSE,FALSE,FALSE];
+					$values1 = [""];
+				} else if ($_0 === "imperative") {
+					$values4 = [""];
+					$values3 = $path->iterate("person");
+					$values2 = $path->iterate("number");
+					$values1 = [""];
+				}
+				$values0[$_0] = [$values1,$values2,$values3,$values4];
+			}
+		} elseif ($spart === "adverb") {
+			$values1 = $w->path()->iterate("degree");
 		}
+	}
+	if ($lang === "ith" && $spart === "root") {
+		$values0 = $w->path()->iterate("complement");
+		$values2 = $w->path()->iterate("formality");
+		$values4 = $w->path()->iterate("stem");
 	}
 	return [$values0, $values1, $values2, $values3, $values4];
 }
@@ -534,7 +580,7 @@ function display_inflection($w, $hidden=TRUE) {
 	list ($values0, $values1, $values2, $values3, $values4) = word_table_values($w);
 	if (!$values0 and !$values1 and !$values2
 	and !$values3 and !$values4) {
-		?><p id="word<?= $w->id() ?>_forms">(No inflection for this word)</p><?php
+		?><span id="word<?= $w->id() ?>_forms">(No inflection for this word)</span><?php
 		return;
 	}
 	?>
@@ -635,35 +681,19 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 		if (!$values0) $values0 = [FALSE];
 		?><table class="text-left inflection" id="word<?= $w->id() ?>_forms"><?php
 		$first0=$last0=NULL; _get_first_last($values0,$first0,$last0);
-		foreach ($values0 as $_0) {
+		foreach ($values0 as $_key=>$_0) {
+			if (is_array($_0)) {
+				$_values = $_0;
+				$values1 = $_values[0];
+				$values2 = $_values[1];
+				$values3 = $_values[2];
+				$values4 = $_values[3];
+				$_0 = $_key;
+			}
 			$path = PATH($w, $_0);
 			if ($_0 !== $first0) {
 				// Blank row to separate sub-tables based on $values0
 				?><tr><th>&nbsp;</th></tr><?php
-			}
-			if ($_0 === "indicative" or
-				$_0 === "subjunctive" or
-				$_0 === "imperative") {
-				$values4 = $path->iterate("tense");
-				$values3 = $path->iterate("person");
-				$values2 = $path->iterate("number");
-				$values1 = $path->iterate("voice");
-				if (!$values1) $values1 = [FALSE];
-			} else if ($_0 === "participle") {
-				$values4 = $path->iterate("tense");
-				$values2 = $path->iterate("voice");
-				$values3 = [FALSE,FALSE,FALSE];
-				$values1 = [""];
-			} else if ($_0 === "infinitive") {
-				$values4 = $path->iterate("tense");
-				$values2 = $path->iterate("voice");
-				$values3 = [FALSE,FALSE,FALSE];
-				$values1 = [""];
-			} else if ($_0 === "supine") {
-				$values4 = [FALSE];
-				$values2 = $path->iterate("supine-type");
-				$values3 = [FALSE,FALSE,FALSE];
-				$values1 = [""];
 			}
 			$first1=$last1=NULL; _get_first_last($values1,$first1,$last1);
 			$first2=$last2=NULL; _get_first_last($values2,$first2,$last2);
@@ -708,7 +738,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 			foreach ($values1 as $_1) {
 				if ($_1 !== FALSE) {
 					?><tr><?php
-					?><th colspan="0" class="major"><?php
+					?><th colspan="2" class="major"><?php
 					echo $format_value($_1);
 					?></th><?php
 					?></tr><?php
@@ -772,7 +802,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 							$link = $get_link($p);
 						else $link = NULL;
 						if (ISWORD($link)) {
-							$link = "dictionary2.php?id=".$link->id();
+							$link = "dictionary.php?id=".$link->id();
 						}
 						if ($link) { ?><a class="word-ref" href="<?= $link ?>"><?php }
 						$val = $format_word($p->get(),$p);

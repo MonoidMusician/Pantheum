@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
@@ -15,8 +15,8 @@ sro('/PHP5/lib/PHPLang/display.php');
         <title>Test | Latin</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
-        <script type="text/javascript" src="/latin/JS/jWord.js"></script>
-        <script type="text/javascript" src="/latin/JS/lib/jquery.autocomplete.js"></script>
+        <script type="text/javascript" src="/JS/jWord.js"></script>
+        <script type="text/javascript" src="/JS/lib/jquery.autocomplete.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>

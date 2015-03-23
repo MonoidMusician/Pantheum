@@ -1,6 +1,22 @@
 @font-face {
     font-family: "Linux Libertine";
-    src: url(/latin/Fonts/LinLibertine_R.woff);
+    src: url(/Fonts/LinLibertine_R.woff);
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RB.woff);
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RI.woff);
+    font-style: italic;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RBI.woff);
+    font-weight: bold;
+    font-style: italic;
 }
 
 html,body {
@@ -157,6 +173,7 @@ hr {
     color: #CC3333;
     background-color: #CC3333;
     border: none;
+    height: 2px;
 }
 
 .select {
@@ -257,7 +274,7 @@ table.inflection td {
 }
 th.greatest {
     font-weight: bold;
-    font-style: italic;
+    /*font-style: italic;*/
 }
 th.major {
     font-weight: bold;
@@ -343,6 +360,10 @@ div.floater-message a {
 .autocomplete-no-suggestion { padding: 2px 5px;}
 .autocomplete-selected { background: #F0F0F0; }
 .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+
+.format-word-la {
+    white-space: pre-line;
+}
 
 .word-name {
     font-weight: bold;

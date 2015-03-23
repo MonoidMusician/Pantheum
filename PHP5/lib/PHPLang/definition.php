@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -87,6 +87,7 @@ class _DEFINITION
 		return $this->_value;
 	}
 	function set_value($value) {
+		$value = preg_replace('/ {2,}/', ' ', trim($value));
 		$this->_value = $value;
 		if ($this->issql and $this->_id !== NULL)
 			sql_set($sql_stmts["def_id->def_value="], $this->_value, ["i", &$this->_id]);

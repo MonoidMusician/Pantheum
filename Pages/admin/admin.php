@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
@@ -40,7 +40,7 @@
             ["#deleted", "Deleted", "Deleted | Admin Control Panel | Latin", "/Pages/admin/deleted.php", true],
         ], dpage);
         cpage.setNavigation('anav', 'ul');
-        cpage.setBasepath('/latin');
+        cpage.setBasepath('');
         cpage.load();
     });
 </script>

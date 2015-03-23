@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
@@ -11,10 +11,10 @@
 <script type="text/javascript">
     $(function() {
         awtable = new jTable();
-        awtable.init('awtable', '/latin/PHP5/admin/words/awtget.php', true, true, true);
-        awtable.setSaveURI(['/latin/PHP5/admin/words/awupdate.php', 'post']);
-        awtable.setCreateURI(['/latin/PHP5/admin/words/awnew.php', 'post']);
-        awtable.setDeleteURI(['/latin/PHP5/admin/words/awdelete.php', 'post']);
+        awtable.init('awtable', '/PHP5/admin/words/awtget.php', true, true, true);
+        awtable.setSaveURI(['/PHP5/admin/words/awupdate.php', 'post']);
+        awtable.setCreateURI(['/PHP5/admin/words/awnew.php', 'post']);
+        awtable.setDeleteURI(['/PHP5/admin/words/awdelete.php', 'post']);
         awtable.setSplits('{[,]}', '{(,)}');
         awtable.setControlIDs('awUControls', 'awLControls');
         awtable.setUControls(['new', 'edit', 'refresh', 'search']);

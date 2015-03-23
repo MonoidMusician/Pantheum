@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -12,8 +12,7 @@ function _subscript($obj, $k) {
 # Three helpers for initializing a depath.
 function register(&$hic, $__k, $__v) {
 	if (!is_string($__k) or !is_string($__v)) {
-		var_dump($__v,$__k);
-		_die("bad key or value");
+		var_dump($__v,$__k); _die("bad key or value");
 	}
 	if (array_key_exists($__v, $hic->key2values))
 		_die("value '$__v' is already present as a key");

@@ -49,9 +49,9 @@ function loginHasher2(text) {
 function loginSubmit(username, password, error) {
     if ((username != '') && (password != '')) {
         password = loginHash(username, password);
-        $.post("/latin/PHP5/login.php", { u: username, p: password }, function(data) {
+        $.post("/PHP5/login.php", { u: username, p: password }, function(data) {
             if (data == 'success') {
-                window.location.href = '/latin/index.php';
+                window.location.href = '/index.php';
             } else {
                 if (data == '1') {
                     $(error).html('Already logged in.');

@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
@@ -10,9 +10,9 @@
         <?php sro('/Includes/head.php'); ?>
         <title>Admin | Latin</title>
         <?php sro('/Includes/css.php'); ?>
-        <link rel="stylesheet" type="text/css" href="/latin/CSS/admin.css">
+        <link rel="stylesheet" type="text/css" href="/CSS/admin.css">
         <?php sro('/Includes/js.php'); ?>
-        <script type="text/javascript" src="/latin/JS/admin.js"></script>
+        <script type="text/javascript" src="/JS/admin.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>

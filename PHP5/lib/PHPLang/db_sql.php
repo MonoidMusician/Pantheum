@@ -25,6 +25,26 @@ class _SQLDB implements _DB
 			}
 		}
 		$stmt->close();
+		$this->sparts_by_lang = [];
+		$stmt = $mysqli->prepare("
+			SELECT DISTINCT word_lang,word_spart FROM words
+		");
+		if (!$stmt) {
+			echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+		} else
+		if (!$stmt->execute()) {
+			echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+		} else {
+			$langid; $spart;
+			$stmt->bind_result($langid,$spart);
+			while ($stmt->fetch())
+			{
+				if (!array_key_exists($langid, $this->sparts_by_lang))
+					$this->sparts_by_lang[$langid] = [];
+				$this->sparts_by_lang[$langid][] = $spart;
+			}
+		}
+		$stmt->close();
 	}
 	function load_language($langid) {
 		global $data_dir;
@@ -105,6 +125,7 @@ class _SQL_searcher
 		$this->stmt = "SELECT word_id FROM words";
 		$this->op = " WHERE ";
 		$this->args = [""];
+		$this->limit_values = NULL;
 	}
 	function dup() {
 		$n = new _SQL_searcher();
@@ -113,26 +134,6 @@ class _SQL_searcher
 	function trim() {
 		$this->map = array_values(array_unique($this->map, SORT_REGULAR));
 		return $this;
-	}
-	function all($order_by=NULL) {
-		global $mysqli;
-		if ($order_by !== NULL) {
-			$this->stmt .= " ORDER BY word_$order_by";
-		}
-		$value = $this->stmt;
-		$this->stmt = $mysqli->prepare($this->stmt);
-		if (!$this->stmt) {
-			echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
-			echo "\nStatement was: " . var_export($value, 1);
-		}
-		sql_getmany($this->stmt, $this->map, $this->args);
-		$this->stmt->close();
-		#var_dump($this->map, $this->args);
-		#echo "\nStatement was: " . var_export($value, 1);
-		if ($this->map)
-		foreach ($this->map as &$w)
-			$w = WORD($this->db, $w);
-		return $this->map;
 	}
 	function partofspeech($spart) {
 		return $this->_spredicate("word_spart",$spart);
@@ -149,10 +150,19 @@ class _SQL_searcher
 	function lang($lang) {
 		return $this->_spredicate("word_lang", $lang);
 	}
+	function limit($start,$limit) {
+		$this->limit_values = [$start,$limit];
+		return $this;
+	}
+	function no_definitions() {
+		$this->stmt .= $this->op . "word_id NOT IN (SELECT word_id FROM definitions)";
+		$this->op = " AND ";
+		return $this;
+	}
 	function _spredicate($name,$val) {
 		if ($val) {
 			if (is_array($val) and count($val) === 1)
-				$val = $val[0];
+				$val = $val[array_keys($val)[0]];
 			if (is_string($val)) {
 				$this->stmt .= $this->op . "$name = (?)";
 				$this->args[0] .= "s";
@@ -175,7 +185,7 @@ class _SQL_searcher
 	function includes_spredicate($name,$val) {
 		if ($val) {
 			if (is_array($val) and count($val) === 1)
-				$val = $val[0];
+				$val = $val[array_keys($val)[0]];
 			if (is_string($val)) {
 				$this->stmt .= $this->op . "$name LIKE CONCAT('%',?,'%')";
 				$this->args[0] .= "s";
@@ -227,7 +237,93 @@ class _SQL_searcher
 		#var_dump($this->map);
 		return $this;
 	}
+	function form($form) {
+		if ($form) {
+			if (is_array($form) and count($form) === 1)
+				$form = $form[array_keys($form)[0]];
+			if (is_string($form)) {
+				$this->stmt .= $this->op . "word_id IN (SELECT word_id FROM forms WHERE form_value = (?))";
+				$this->args[0] .= "s";
+				$this->args[] = $form;
+			} else {
+				$this->stmt .= $this->op . "word_id IN (SELECT word_id FROM forms WHERE ";
+				$op = "";
+				foreach ($form as $v) {
+					$this->stmt .= "${op}form_value = (?)";
+					$this->args[0] .= "s";
+					$this->args[] = $v;
+					$op = " OR ";
+				}
+				$this->stmt .= ")";
+			}
+			$this->op = " AND ";
+		}
+		return $this;
+	}
+	function form_includes($form) {
+		if ($form) {
+			if (is_array($form) and count($form) === 1)
+				$form = $form[array_keys($form)[0]];
+			if (is_string($form)) {
+				$this->stmt .= $this->op . "word_id IN (SELECT word_id FROM forms WHERE form_value LIKE CONCAT('%',?,'%'))";
+				$this->args[0] .= "s";
+				$this->args[] = $form;
+			} else {
+				$this->stmt .= $this->op . "word_id IN (SELECT word_id FROM forms WHERE ";
+				$op = "";
+				foreach ($form as $v) {
+					$this->stmt .= "${op}form_value LIKE CONCAT('%',?,'%')";
+					$this->args[0] .= "s";
+					$this->args[] = $v;
+					$op = " OR ";
+				}
+				$this->stmt .= ")";
+			}
+			$this->op = " AND ";
+		}
+		return $this;
+	}
 
+	function max_size() {
+		global $mysqli;
+		$stmt = $this->stmt;
+		$stmt = str_replace("SELECT word_id FROM words","SELECT count(*) FROM words",$stmt);
+		$value = $stmt;
+		$stmt = $mysqli->prepare($stmt);
+		if (!$stmt) {
+			echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+			echo "\nStatement was: " . var_export($value, 1);
+		}
+		$ret = sql_getone($stmt, $this->map, $this->args);
+		$stmt->close();
+		return $ret;
+	}
+	function all($order_by=NULL) {
+		global $mysqli;
+		if ($order_by !== NULL) {
+			$this->stmt .= " ORDER BY word_$order_by";
+		}
+		if ($this->limit_values !== NULL) {
+			list($start,$limit) = $this->limit_values;
+			$this->stmt .= " LIMIT $start, $limit";
+		}
+		$value = $this->stmt;
+		$this->stmt = $mysqli->prepare($this->stmt);
+		if (!$this->stmt) {
+			echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+			echo "\nStatement was: " . var_export($value, 1);
+			return;
+		}
+		#error_log($value);
+		sql_getmany($this->stmt, $this->map, $this->args);
+		$this->stmt->close();
+		#var_dump($this->map, $this->args);
+		#echo "\nStatement was: " . var_export($value, 1);
+		if ($this->map)
+		foreach ($this->map as &$w)
+			$w = WORD($this->db, $w);
+		return $this->map;
+	}
 	function rand($rand=NULL) {
 		return choose_one($this->all(), $rand);
 	}

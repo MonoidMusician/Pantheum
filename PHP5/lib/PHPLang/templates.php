@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -18,17 +18,24 @@ function TEMPLATE($templ) {
 		} else $interp[$i] .= $char;
 	}
 	return function($arg) use($interp) {
-		$res = "";
+		$res = [""];
 		$raw = TRUE;
 		foreach ($interp as $i) {
 			if ($raw)
-				$res .= $i;
+				foreach ($res as &$r)
+					$r .= $i;
 			elseif (!array_key_exists($i, $arg))
 				return NULL;
-			else $res .= $arg[$i];
+			else {
+				foreach (explode("\n",$arg[$i]) as $a) {
+					foreach ($res as &$r) {
+						$r .= $a;
+					}
+				}
+			}
 			$raw = !$raw;
 		}
-		return $res;
+		return implode("\n", $res);
 	};
 }
 function run_template($w, $p, $t, $arg, $ignore, $change, $overwrite=FALSE) {
@@ -44,9 +51,16 @@ function run_template($w, $p, $t, $arg, $ignore, $change, $overwrite=FALSE) {
 		if (!$overwrite and $p2->hasvalue()) continue;
 		// Don't do if matches an ignore field
 		$cont=FALSE;
-		foreach ($p2->map as $value) {
-			if (in_array($value, $ignore)){$cont=TRUE;break;}
+		foreach ($ignore as $ig) {
+			foreach ($ig as $value) {
+				if (!in_array($value,$p2->map))
+				// If not all of them are present, the ignore failed
+				{ $cont=FALSE;break; }
+				else $cont=TRUE;
+			}
+			if ($cont) break;
 		}
+		#error_log($cont ? "TRUE: $p2" : "FALSE: $p2");
 		if ($cont) continue;
 		// Modify path based on changes
 		foreach ($p2->map as $value) {

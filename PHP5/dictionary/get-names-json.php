@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -36,6 +36,9 @@ if (!array_key_exists("id", $_GET) or !(
 	))
 	{ $ids = NULL; }
 
+$no_definitions = safe_get("no_definitions", $_GET) === "true";
+$no_templates = !(safe_get("show_templates", $_GET) === "true");
+
 if ($ids === NULL) {
 	$searcher = defaultDB()->searcher();
 	if ($names)
@@ -44,6 +47,9 @@ if ($ids === NULL) {
 		$searcher = $searcher->lang($langs);
 	if ($sparts)
 		$searcher = $searcher->spart($sparts);
+	if ($no_definitions)
+		$searcher = $searcher->no_definitions();
+	if ($no_templates) $attrs[] = "!template";
 	foreach ($attrs as $attr) {
 		if (!$attr) continue;
 		$a = NULL;
@@ -63,15 +69,15 @@ if ($ids === NULL) {
 				$searcher = $searcher->only_without_attr($a);
 		}
 	}
-	$list = $searcher->all("name");
+	$list = $searcher->all();
 } else {
 	$list = [];
 	foreach ($ids as $id)
 		$list[] = WORD(defaultDB(), intval($id));
 }
-$res = array_map(function($e) {
-	if (no_format($e)) return $e->name();
-	return format_word($e->name());
-}, $list);
+$res = vec_norm(array_map(function($e) {
+	if (no_format($e)) return ["data"=>$e->name(),"value"=>$e->name()];
+	return ["data"=>$e->name(),"value"=>format_word($e->name())];
+}, $list));
 echo json_encode($res);
 ?>

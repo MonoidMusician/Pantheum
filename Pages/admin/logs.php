@@ -1,5 +1,5 @@
 <?php
-    require_once('/var/www/latin/config.php');
+    require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
@@ -13,7 +13,7 @@
 <script type="text/javascript">
     $(function() {
         var altable = new jTable();
-        altable.init('alTable', '/latin/PHP5/admin/logs/altget.php', false, false, true);
+        altable.init('alTable', '/PHP5/admin/logs/altget.php', false, false, true);
         altable.setSplits('{[,]}', '{(,)}');
         altable.setControlIDs('alUControls', 'alLControls');
         altable.setUControls(['refresh', 'search']);

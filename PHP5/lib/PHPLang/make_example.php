@@ -1,5 +1,5 @@
 <?php
-require_once('/var/www/latin/config.php');
+require_once('/var/www/config.php');
 sro('/Includes/mysql.php');
 sro('/Includes/session.php');
 sro('/Includes/functions.php');
@@ -100,7 +100,7 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 
 	$word = $searcher->rand();
 	if (!ISWORD($word)) {
-		$reason = "could not find a word with name ".$t["name"]." and attrs ".var_export(safe_get("attr",$t),1);
+		$reason = "could not find a word with name ".var_export($t["name"],1)." and attrs ".var_export(safe_get("attr",$t),1);
 		return;
 	}
 	if (array_key_exists("store_word", $t))
@@ -138,7 +138,7 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 
 ##
 # Instantiate a template into a sentence, evaluating choices
-# randomly, e->g-> PICK() or choosing a word from a part of speech->
+# randomly, e.g. PICK() or choosing a word from a part of speech->
 #
 # A template is a form for a sentence, e.g.
 # $example_template = [
@@ -182,6 +182,7 @@ function do_template($temp, $db=NULL, &$pick_db=NULL, &$reason=NULL) {
 		$reset = [];
 		foreach ($pick_db as $k=>$_)
 			$reset[$k] = _process_value($_,$reset,$db);
+			#$reset[$k] = $_;
 	}
 	while ($repeats < 1 and $sentence === NULL) {
 		$repeats += 1;
@@ -190,7 +191,7 @@ function do_template($temp, $db=NULL, &$pick_db=NULL, &$reason=NULL) {
 		foreach ($temp as $k=>$t) {
 			$res = do_pick($t, $db, $pick_db, $reason);
 			if ($res === NULL)
-				{$reason.=" on key $k";$sentence = NULL; break;}
+				{$reason.=" on key $k";$reason.=" (picks were ".dump_pick_db($pick_db).")";$sentence = NULL; break;}
 			elseif ($res !== FALSE)
 				$sentence[$k] = $res;
 		}
@@ -199,6 +200,16 @@ function do_template($temp, $db=NULL, &$pick_db=NULL, &$reason=NULL) {
 	if ($sentence !== NULL)
 		return array_values($sentence);
 };
+function dump_pick_db($pick_db) {
+	$_ = [];
+	foreach ($pick_db as $k => $p) {
+		if (is_scalar($p))
+			$_[$k] = $p;
+		elseif (ISPICK($p))
+			$_[$k] = "PICK(".$p->key.",".$p->id.",".$p->n.",".$p->rand.")";
+	}
+	return var_export($_,1);
+}
 
 function do_quiz_many_rand($temp, $selectors, $db=NULL, &$pick_db=NULL) {
 	if ($pick_db === NULL) $pick_db = [];

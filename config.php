@@ -1,7 +1,7 @@
 <?php
     global $SDIR, $RDIR;
-    $SDIR = '/var/www/latin';
-    $RDIR = '/latin';
+    $SDIR = '/var/www';
+    $RDIR = '';
     
     function sro($path) {
         global $SDIR;
