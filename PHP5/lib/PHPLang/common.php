@@ -179,6 +179,30 @@ function permute_sentence($phrases, $optional=NULL) {
 		pc_permute_optional($phrases, $optional)
 	);
 }
+function pc_permute_choices($items) {
+	if (empty($items)) {
+		$return = array(array());
+	} else {
+		$return = array();
+		$first = $items[0];
+		$newitems = array_splice($items, 1);
+		if (is_string($first)) {
+			$first = array($first);
+		}
+		$ret = pc_permute_choices($newitems);
+		foreach ($first as $f)
+			foreach ($ret as $r)
+				$return[] = array_merge(array($f), $r);
+	}
+	return $return;
+}
+// Permutes order of provided phrases, joins into space-separated sentences
+// For example, ["in foro", "ambulat"] will become ["in foro ambulat", "ambulat in foro"].
+function permute_sentence_choices($phrases) {
+	return array_map("join_spaced",
+		pc_permute_choices($phrases)
+	);
+}
 
 
 function array_key_exists_r($needle, $haystack)

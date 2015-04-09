@@ -16,7 +16,7 @@ function serialize_sentence_part($vector,&$allow_space=NULL) {
 		$allow_space = FALSE;
 	foreach ($vector as $w) {
 		if (ISOP($w)) $n=$w;
-		else $n=OP(format_word($w));
+		else $n=OP($w);
 		if ($n->space_before and $allow_space) $r .= " ";
 		$allow_space = !!$n->space_after;
 		$r .= $n->text;

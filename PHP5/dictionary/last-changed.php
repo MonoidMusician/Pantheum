@@ -8,8 +8,6 @@
 	sro('/PHP5/lib/PHPLang/sql_stmts.php');
 	global $sql_stmts;
 
-	if (!requireRank(3, FALSE)) echo "Insufficient permissions";
-	else
 	if (array_key_exists("id",$_GET) and
 	    is_numeric($_GET["id"])) {
 		$res = NULL;

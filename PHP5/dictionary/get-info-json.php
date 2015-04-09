@@ -76,8 +76,8 @@ if ($ids === NULL) {
 		$list[] = WORD(defaultDB(), intval($id));
 }
 $res = vec_norm(array_map(function($e) {
-	if (no_format($e)) return ["data"=>$e->name(),"value"=>$e->name(),"display"=>$e->name()];
-	return ["data"=>$e->name(),"value"=>$e->name(),"display"=>format_word($e->name())];
+	if (no_format($e)) return ["data"=>$e->name(),"value"=>$e->id()."","display"=>$e->info()];
+	return ["data"=>$e->name(),"value"=>$e->id()."","display"=>format_word($e->info())];
 }, $list));
 echo json_encode($res);
 ?>

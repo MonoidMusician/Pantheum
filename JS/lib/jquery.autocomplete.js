@@ -4,6 +4,8 @@
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
+* 
+*  Modified by Nicholas Scheel, 2015
 */
 
 /*jslint  browser: true, white: true, plusplus: true, vars: true */
@@ -126,9 +128,24 @@
     $.Autocomplete = Autocomplete;
 
     Autocomplete.formatResult = function (suggestion, currentValue) {
-        var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
-
-        return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
+        //var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
+        var pattern = '(' + (
+            currentValue.normalize('NFKD')
+                        .replace(/ae/i,'(ae|æ)')
+                        .replace(/oe/i,'(oe|œ)')
+                        .replace(/([aeiouy])(?![\u0304aeiouy()])/ig,'$1\u0304?')
+        ) + ')';
+        /*console.log(pattern);*/
+        var $html = $.parseHTML(suggestion.display);
+        if (!$html) {
+            $html = $.parseHTML(suggestion.value);
+        }
+        var nodes = getTextNodesIn_($html[0],true,true);
+        $.each(nodes, function(_,j) {
+            var $j = $(j);
+            $j.replaceWith(escapeHtml($j.text()).normalize('NFKD').replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>'));
+        });
+        return $html[0].outerHTML || $html[0].textContent;
     };
 
     Autocomplete.prototype = {
@@ -620,11 +637,11 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-				if (this.options.showNoSuggestionNotice) {
-					this.noSuggestions();
-				} else {
-					this.hide();
-				}
+                if (this.options.showNoSuggestionNotice) {
+                    this.noSuggestions();
+                } else {
+                    this.hide();
+                }
                 return;
             }
 
@@ -670,7 +687,7 @@
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 
-            this.adjustContainerWidth();      
+            this.adjustContainerWidth();
 
             noSuggestionsContainer.detach();
             container.html(html);

@@ -47,6 +47,7 @@ $GLOBALS["OP_MATCHING_CHOICES"] = OP("[matching-choices]");
 $GLOBALS["OP_MULTIPLE_CHOICE"] = OP("[multiple-choice]");
 $GLOBALS["OP_MATCHING"] = OP("[matching]");
 $GLOBALS["OP_USER_INPUT"] = OP("[user-input]");
+$GLOBALS["OP_USER_PARAGRAPH"] = OP("[user-paragraph]");
 
 ##
 # Simple class for coordinating random selections

@@ -23,7 +23,7 @@
 			$ignore = array_map(function($a) {
 				return explode("/", $a);
 			}, $ignore);
-			error_log(var_export($ignore,1));
+			#error_log(var_export($ignore,1));
 		} else $ignore = [];
 		$change = [];
 		if (array_key_exists("change", $_GET)) {

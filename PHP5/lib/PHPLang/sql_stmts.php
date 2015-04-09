@@ -80,6 +80,7 @@ class StmtsMacros {
 	private function define($params) {
 		list ($name,$code) = explode("|",$params,2);
 		do_trim($code);
+		$code = str_replace('"','\\"', $code);
 		return $this->get($name) . "= \"$code\"";
 	}
 

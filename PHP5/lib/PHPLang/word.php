@@ -93,6 +93,20 @@ class _WORD
 		if ($this->issql and $this->_id !== NULL)
 			sql_set($sql_stmts["word_id->word_lang="], $this->_lang, ["i", &$this->_id]);
 	}
+	private $_last_changed = NULL;
+	function last_changed() {
+		global $sql_stmts;
+		if ($this->issql and $this->_id !== NULL)
+			sql_getone($sql_stmts["word_id->last_changed"], $this->_last_changed, ["i", &$this->_id]); # still NULL if not found
+		return $this->_last_changed;
+	}
+	private $_info = NULL;
+	function info() {
+		global $sql_stmts;
+		if ($this->issql and $this->_id !== NULL)
+			sql_getone($sql_stmts["word_id->word_info_formatted"], $this->_info, ["i", &$this->_id]); # still NULL if not found
+		return $this->_info;
+	}
 
 
 	private $_definitions = [];

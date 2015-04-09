@@ -38,7 +38,7 @@
                 if (delay === undefined) delay = 2300;
                 callback();
                 $('.floater-message').show();
-                $('.floater-message a').text(msg);
+                $('.floater-message a').html(msg);
                 if (delay !== null)
                     timer = setTimeout(callback, delay);
             }

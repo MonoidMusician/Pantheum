@@ -16,6 +16,9 @@ foreach ($list as $w) {
 	$result[$w->id()] = format_word($w->name());
 }
 $result["sorted"] = array_keys($result);
+$result["changed"] = [];
+foreach ($list as $w)
+	$result["changed"][$w->id()] = $w->last_changed();
 if ($size !== NULL)
 	$result["max_length"] = $size;
 else $result["max_length"] = count($result["sorted"]);

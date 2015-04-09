@@ -52,13 +52,31 @@ var la_ipa = (function () {
 		return r.replace(/^\s*|\s(?=\s)|\s*$/g, "");
 	};
 	my.ASCIIize = function (r) {
+		return my.ae_oe(r).split("").map(function(a) {return a.match(/[^\u0000-\u007f]/)?"":a}).join("");
+	};
+	my.ae_oe = function(r) {
 		return (
 			r.split("\u00E6").join("ae")
 			 .split("\u0153").join("oe")
 			 .split("\u00C6").join("Ae")
 			 .split("\u0152").join("Oe")
-			 .split("").map(function(a) {return a.match(/[^\u0000-\u007f]/)?"":a}).join("")
 		);
+	}
+	my.deASCIIize = function (r) {
+		return (
+			r.split("ß").join("ss")
+			 .replace(/ae(?![e\u0308\u0304])/g, "æ")
+			 .replace(/oe(?![e\u0308\u0304])/g, "œ")
+			 .replace(/æ([\u0308\u0304e])/g, "ae$1")
+			 .replace(/œ([\u0308\u0304e])/g, "oe$1")
+			 .replace(/([aeiouy])\1(?!\u0304)/g, "$1\u0304")
+		);
+	};
+	my.double_vowels = function (r) {
+		return r.split("\u0304").map(function(a,i,l) {return i<l.length-1?a+a[a.length-1]:a;}).join("");
+	};
+	my.undouble_vowels = function (r) {
+		return r.replace(/([aeiouy])\1(?!\u0304)/g, "$1\u0304");
 	};
 	my.LA = function (r) {
 		return r.split("i\u0304").map(my.ASCIIize).join("\uA7FE").split("U").join("V").split("J").join("I");
@@ -69,12 +87,6 @@ var la_ipa = (function () {
 	};
 	my.old_latin = function (r) {
 		return r.replace(/[uv](?=[sm])/gi,"o").replace(/([ao])e/gi,"$1i");
-	};
-	my.double_vowels = function (r) {
-		return r.split("\u0304").map(function(a,i,l) {return i<l.length-1?a+a[a.length-1]:a;}).join("");
-	};
-	my.undouble_vowels = function (r) {
-		return r.replace(/([aeiouy])\1(?!\u0304)/g, "$1\u0304");
 	};
 	my.short_vowels = function (r) {
 		return r.replace(/([aeiouy])\u0301?(?!\u0304)/g, "$1\u0306").replace(/([qg]u)\u0306|([aeiou])\u0306([eiu])\u0306|([aeiou])\u0306(m)(?![\w])/g,"$1$2$3$4$5");
@@ -87,6 +99,12 @@ var la_ipa = (function () {
 	};
 	my.no_j = function (r) {
 		return r.replace(/j/g, "i").replace(/ii+/g, "i").replace(/J/g, "I").replace(/I[Ii]+/g, "I");
+	};
+	my.nasal = function (r) {
+		return r.replace(/([aeiouy])m(?![a-zA-Z])/g,"$1\u0303");
+	};
+	my.eszett = function (r) {
+		return r.split("ss").join("ß");
 	};
 	my.silicus = function (r) {
 		return r.replace(/([bcdfghj-np-tvwxz])\1/g,"$1\u0357");
@@ -185,6 +203,79 @@ var la_ipa = (function () {
 	my.x = function (r) {
 		return r.replace(/[kcg]s/g,"x");
 	};
+	my.Greek = function (r) {
+		return (
+			r.split("\u0304").join("")
+			 .split("\u00E6").join("ai")
+			 .split("\u0153").join("oi")
+			 .split("\u00C6").join("Ai")
+			 .split("\u0152").join("Oi")
+			 .split("ph").join("f")
+			 .split("th").join("θ")
+			 .split("ch").join("χ")
+			 .split("ps").join("ψ")
+			 .split("x").join("ξ")
+			 .split("a").join("α")
+			 .split("b").join("β")
+			 .split("c").join("k")
+			 .split("d").join("δ")
+			 .split("e\u0304").join("η")
+			 .split("e").join("ε")
+			 .split("f").join("φ")
+			 .split("g").join("γ")
+			 .split("i").join("j")
+			 .split("j").join("ι")
+			 .split("k").join("κ")
+			 .split("l").join("λ")
+			 .split("m").join("μ")
+			 .split("n").join("ν")
+			 .split("o").join("ο")
+			 .split("p").join("π")
+			 .split("qu").join("κυ")
+			 .split("r").join("ρ")
+			 .split("s").join("σ")
+			 .split("t").join("τ")
+			 .split("u").join("υ")
+			 .split("v").join("υ")
+			 .split("y").join("υ")
+			 .split("z").join("ζ")
+			 .split("PH").join("Ph")
+			 .split("TH").join("Th")
+			 .split("CH").join("Ch")
+			 .split("PS").join("Ps")
+			 .split("Ph").join("F")
+			 .split("Th").join("Θ")
+			 .split("Ch").join("Χ")
+			 .split("Ps").join("Ψ")
+			 .split("X").join("Ξ")
+			 .split("A").join("Α")
+			 .split("B").join("Β")
+			 .split("C").join("k")
+			 .split("D").join("Δ")
+			 .split("E\u0304").join("Η")
+			 .split("E").join("Ε")
+			 .split("F").join("Φ")
+			 .split("G").join("Γ")
+			 .split("I").join("j")
+			 .split("J").join("Ι")
+			 .split("K").join("Κ")
+			 .split("L").join("Λ")
+			 .split("M").join("Μ")
+			 .split("N").join("Ν")
+			 .split("O").join("Ο")
+			 .split("P").join("Π")
+			 .split("Qu").join("Κυ")
+			 .split("QU").join("ΚΥ")
+			 .split("R").join("Ρ")
+			 .split("S").join("Σ")
+			 .split("T").join("Τ")
+			 .split("U").join("Υ")
+			 .split("V").join("Υ")
+			 .split("Y").join("Υ")
+			 .split("Z").join("Ζ")
+			 .replace(/σ(?![Α-Ωα-ω])/g, "ς")
+		);
+	};
 	// Adapted from: https://sim0n.wordpress.com/2009/03/28/javascript-char-code-to-unicode-fullwidth-latin/
 	my.fullwidth = function (r) {
 		var ret = "";
@@ -244,6 +335,9 @@ var la_ipa = (function () {
 		),
 		"Original": my.nspace,
 		"Silicus": my.mix(my.x, my.silicus, my.orthography_j),
+		"Nasal": my.mix(my.x, my.nasal, my.orthography_j),
+		"Silicus+Nasal": my.mix(my.x, my.nasal, my.silicus, my.orthography_j),
+		"Silicus+Eszett+Nasal": my.mix(my.x, my.nasal, my.eszett, my.silicus, my.orthography_j),
 		"Silicus2": my.silicus,
 		"IPA length": my.IPA_longa,
 		"IPA length + accent": my.mix(
@@ -253,13 +347,18 @@ var la_ipa = (function () {
 		"x": my.x,
 		"qv": my.qv,
 		"x+qv": my.mix(my.x,my.qv),
+		"x+ae+oe": my.mix(my.x,my.ae_oe),
+		"x+ae+oe+dagger": my.mix(my.x,my.ae_oe,function(r){return r.split('*').join('†')}),
 		"fullwidth": my.mix(
 			my.ASCIIize,
 			my.fullwidth
 		),
+		"Greek": my.Greek,
 	};
 	my.transform = my.old_transform = null;
-	my.transform = my.transforms["Silicus"];
+	my.transform = my.transforms["x+ae+oe+dagger"];
+	//my.transform = my.transforms["Silicus+Eszett+Nasal"];
+	//my.transform = my.transforms["Greek"];
 	my.unformatted = {};
 	my.selector = '.format-word-la';
 	my.format = function (space) {

@@ -36,10 +36,12 @@ function no_format($w) {
 }
 // Format word for displaying based upon replacements
 // TODO: user settings, DB encoding
-function format_word($w, $replacements=NULL) {
+function format_word($w, $lang=NULL) {
 	if (!strlen($w)) return "—"; # em-dash
-	if (!is_string($replacements)) $replacements = "la";
-	return "<span class='format-word-$replacements'>$w</span>";
+	if (!is_string($lang)) $lang = "la";
+	if ($lang)
+		return "<span class='format-word-$lang'>$w</span>";
+	return $w;
 }
 function format_word1($w) { return format_word($w); }
 function format_pron($w, $replacements=NULL) {
@@ -65,6 +67,10 @@ function no_specials($w,$extras="1-9/; ,\\n") {
 	$w = str_replace("Œ", "oe", $w);
 	$w = preg_replace("#[^A-Za-z$extras]#","", $w);
 	return $w;
+}
+
+function strip_html($w) {
+	return preg_replace('/<[^>]*>/', '', $w);
 }
 
 // Normalize a word to check for basic equality
@@ -151,7 +157,9 @@ function format_path($c) {
 
 function word_link($w,$hide_lang=false) {
 	if (!$hide_lang) display_lang($w);
-	?><a class="word-ref" href="dictionary.php?id=<?= $w->id() ?>"><?= $w->name() ?></a><?php
+	$lang = $w->lang();
+	echo $w->info();
+	/*?><a class="word-ref format-word-<?=$lang?>" href="dictionary.php?id=<?= $w->id() ?>"><?= $w->name() ?></a><?php*/
 	?><script type="text/javascript">
 		$(function() {
 			$('a[href="dictionary.php?id=<?= $w->id() ?>"]').on("click", function() {
@@ -254,7 +262,7 @@ function display_word_info($w, $can_edit=FALSE) {
 		$infos[] = format_attr($attr->tag(), $attr->value());
 	}
 	?>(<?php echo implode("; ", $infos); ?>) [<a href="dictionary.php?id=<?= $id ?>">hardlink</a>]<?php
-	if ($can_edit) {
+	if (1 or $can_edit) {
 ?>
 		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_delete">del</a>]
 		<script type="text/javascript">
@@ -283,6 +291,7 @@ function display_word_info($w, $can_edit=FALSE) {
 				});
 			});
 		</script>
+		(size: <?= count($w->paths()) ?>)
 <?php
 	}
 	$made_div = FALSE;

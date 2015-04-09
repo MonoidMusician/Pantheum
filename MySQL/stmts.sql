@@ -74,6 +74,32 @@
 {{{defineupdate|
     table=words&from=word_id&to=inflection_cache}}};
 
+{{{define|word_id->word_info|
+    SELECT CONCAT(
+        '#',word_id,
+        ': ',word_name,
+        ' (',REPLACE((
+            SELECT def_value from definitions where definitions.word_id = words.word_id LIMIT 1
+        ),'\n',''),')'
+    )
+    FROM words WHERE word_id = (?)
+}}};
+
+{{{define|word_id->word_info_formatted|
+    SELECT CONCAT(
+        '#',word_id,
+        ': <a class="word-ref format-word-',
+        word_lang,
+        '" href="dictionary.php?id=',
+        word_id,
+        '">',word_name,'</a>',
+        ' (“',REPLACE((
+            SELECT def_value from definitions where definitions.word_id = words.word_id LIMIT 1
+        ),'\n','”, “'),'”)'
+    )
+    FROM words WHERE word_id = (?)
+}}};
+
 /************************
  * FORMS
  ************************/
@@ -238,6 +264,89 @@
 {{{definedelete|
     table=connections&from=from_word_id,to_word_id,connect_type
 }}};
+
+
+/************************
+ * QUIZZES
+ ************************/
+
+{{{defineselect|
+    table=quizzes&to=user_id&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=type&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=last&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=score&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=completed&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=out_of&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=time_started&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=time_finished&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=questions&from=quiz_id}}};
+
+{{{defineupdate|
+    table=quizzes&to=questions&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=results&from=quiz_id}}};
+
+{{{defineupdate|
+    table=quizzes&to=results&from=quiz_id}}};
+
+{{{defineselect|
+    table=quizzes&to=options_n&from=quiz_id}}};
+
+{{{defineupdate|
+    table=quizzes&to=options_n&from=quiz_id}}};
+
+{{{defineinsert|
+    table=quizzes&from=user_id,last}}};
+
+{{{defineinsert|
+    table=quizzes&from=user_id,type,last}}};
+
+{{{define|user_id->last quiz_id|
+    SELECT quiz_id FROM quizzes WHERE user_id = (?)
+    ORDER BY quiz_id DESC LIMIT 1}}};
+
+{{{define|finish quiz|
+    UPDATE quizzes SET
+    time_finished = CURRENT_TIMESTAMP,
+    completed = TRUE
+    WHERE quiz_id = (?)}}};
+
+{{{define|add score|
+    UPDATE quizzes SET
+    score = score + (?),
+    out_of = out_of + (?)
+    WHERE quiz_id = (?)}}};
+
+{{{define|set score|
+    UPDATE quizzes SET
+    score = (?),
+    out_of = (?)
+    WHERE quiz_id = (?)}}};
+
+{{{defineselect|
+    table=quizzes&to=quiz_id&from=user_id}}};
+
+{{{define|user_id->quiz_id reversed|
+    SELECT quiz_id FROM quizzes
+    WHERE user_id = (?)
+    ORDER BY quiz_id DESC}}};
 
 
 /************************

@@ -296,7 +296,7 @@ function jWord() {
 	this.word_refresh = function(id) {
 		var my = this;
 		if ($.jStorage) {
-			$.jStorage.set("word"+id+"_update","");
+			$.jStorage.set("word"+id+"_changed","");
 			$.jStorage.set("word"+id,"");
 		}
 		$.get(this.api_path+'clear-cache.php','id='+id)
@@ -353,7 +353,7 @@ function jWord() {
 		var val = $('#word'+id+'_value_templ').val().split(":");
 		arg = val[0].split("?").slice(1).join("?");
 		val[0] = val[0].split("?")[0];
-		var re = /^(?:(?:(?:overwrite=true)|(?:ignore)=([_a-zA-Z0-9-]+[,;]?)+|(?:change)=([_a-zA-Z0-9-]+,[_a-zA-Z0-9-]+;?)+)[&]?)*$/;
+		var re = /^(?:(?:(?:overwrite=true)|(?:ignore)=([_a-zA-Z0-9-]+[,;/]?)+|(?:change)=([_a-zA-Z0-9-]+,[_a-zA-Z0-9-]+;?)+)[&]?)*$/;
 		if (!re.test(arg)) return alert("Bad template argument syntax: "+arg);
 		//return alert(arg);
 		val = [val[0],val.slice(1).join(":")];
@@ -420,26 +420,40 @@ function jWord() {
 		}
 	};
 
-	this.refreshEntries_old = function() {
-		messageTip("Loading entries...", null);
-		var my = this;
-		var loc = this.searcher();
-		if (loc === undefined) return messageTip("Empty loc");
-		if (loc != this.last_loc) {
-			history.pushState(null, "", 'dictionary.php?'+loc);
-			this.last_loc = loc;
-		}
-		$('#'+this.qelement+'-permalink').prop('href', 'dictionary.php?'+loc);
-		$.get(this.api_path+'get-entries.php', loc)
-		.done($.proxy(this, "handleResponse"))
-		.fail(function(data) {
-			messageTip('Query failed! The server returned status '+data.status+(data.statusText?": "+data.statusText:""))
-		});
-	};
 	this.handleResponse = function(data) {
 		messageTip("Response succeeded");
 		$('#dictionary').empty();
 		$('#dictionary').html(data);
+	};
+
+	this.getForm = function() {
+		var form = {};
+		$(':input:not(button)').each(function() {
+			var $this = $(this), id = $this.attr('id'), name = $this.attr('name'), q = "", val;
+			if ($this.is('[type=checkbox]'))
+				val = $this.is(':checked');
+			else
+				val = $this.val();
+			//console.log(this,val);
+			if (id) q += '#'+id;
+			if (name) q += '[name='+name+']'
+			if (q in form)
+				console.log("name conflict");
+			else if (q) form[q] = val;
+		});
+		//console.log(form);
+		return form;
+	};
+	this.resetForm = function(form) {
+		$.each(form, function(q,val) {
+			if (typeof val === "boolean") {
+				$(q).prop('checked', val);
+				if (q.endsWith('[name=enter-lang]'))
+					if (val) $(q).parent().parent().show();
+					else $(q).parent().parent().hide();
+			} else $(q).val(val);
+		});
+		//alert("done");
 	};
 
 	this.refreshEntries = function() {
@@ -449,17 +463,20 @@ function jWord() {
 		var loc = this.searcher();
 		if (loc === undefined) return messageTip("Empty loc");
 		if (loc != this.last_loc) {
-			history.pushState(loc, "", 'dictionary.php?'+loc);
+			history.pushState(null, "", 'dictionary.php?'+loc);
 			this.last_loc = loc;
 		}
 		$('#'+this.qelement+'-permalink').prop('href', 'dictionary.php?'+loc);
 		$('#dictionary').empty();
-		this.previewEntries($.proxy(this, 'updateContent'));
+		this.previewEntries($.proxy(this, 'updateContent', this.getForm()));
 		serv.deferRequestBy = delay;
 	};
 
-	this.updateContent = function(entries) {
-		history.replaceState(entries, document.title, document.location.href);
+	this.updateContent = function(form, entries) {
+		//alert(entries.sorted);
+		history.replaceState({'entries':entries,'form':form}, document.title, document.location.href);
+		//alert(form);
+		this.resetForm(form);
 		if (!entries.sorted) return;
 		var m, n = m = entries.sorted.length, my = this;
 		var start = Date.now();
@@ -477,13 +494,13 @@ function jWord() {
 		};
 		var prev = [];
 		$.each(entries.sorted, function(i, id) {
-			if (my.getWord(id, prev.slice(), callback)) n-=1;
+			if (my.getWord(id, prev.slice(), callback, undefined, entries.changed[id])) n-=1;
 			prev.push(id);
 		});
 		if (n) messageTip("Loading entries...", null);
 	};
 
-	this.getWord = function(id, prev, callback, find) {
+	this.getWord = function(id, prev, callback, find, changed) {
 		var my = this, cached = false, data;
 		var done = function(data) {
 			if (!cached) $.jStorage.set("word"+id, data);
@@ -520,11 +537,20 @@ function jWord() {
 			}
 			if (!cached && callback !== undefined) callback();
 		};
-		if (cached = (data = $.jStorage.get("word"+id))) {
+		if ((data = $.jStorage.get("word"+id)) && (changed && changed == $.jStorage.get("word"+id+"_changed"))) {
+			cached = true;
 			done(data);
 			return true;
 		} else {
-			$.get(this.api_path+'get-entries.php', 'id='+id)
+			cached = false;
+			if (changed) $.jStorage.set("word"+id+"_changed", changed);
+			else {
+				$.get(my.api_path+'last-changed.php?id='+id)
+				.success(function(changed) {
+					$.jStorage.set("word"+id+"_changed", changed);
+				})
+			}
+			$.get(my.api_path+'get-entries.php', 'id='+id)
 			.done(done);
 			return false;
 		}
@@ -579,7 +605,7 @@ function jWord() {
 	this.refreshInflection = function(id) {
 		var my = this;
 		if ($.jStorage) {
-			$.jStorage.set("word"+id+"_update","");
+			$.jStorage.set("word"+id+"_changed","");
 			$.jStorage.set("word"+id,"");
 		}
 		$.get(this.api_path+'clear-cache.php','id='+id)
@@ -619,21 +645,13 @@ function jWord() {
 		this.unbindEvents();
 		var t = this;
 		window.addEventListener('popstate', function(event) {
-			console.log('popstate fired!');
-
-			t.updateContent(event.state);
+			//console.log('popstate fired!');
+			$('#dictionary').empty();
+			t.updateContent(event.state.form, event.state.entries);
 		});
-
-		/*$(document).on('click', '#' + this.qelement + '-back', $.proxy(this.handleBack, this));
-		$(document).on('click', '#' + this.qelement + '-submit', $.proxy(this.handleSubmit, this));
-		$(document).on('click', '#' + this.qelement + '-next', $.proxy(this.handleNext, this));*/
 	};
 	
 	this.unbindEvents = function() {
 		window.removeEventListener('popstate');
-		/*$(document).off('click', '#' + this.qelement + '-back');
-		$(document).off('click', '#' + this.qelement + '-submit');
-		$(document).off('click', '#' + this.qelement + '-next');
-		$(document).off('click', '#' + this.qelement + '-finish');*/
 	};
 }

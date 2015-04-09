@@ -69,6 +69,28 @@ $sql_stmts['word_id->delete from words']= "DELETE FROM words WHERE (word_id = (?
 $sql_stmts['word_id->word_name=']= "UPDATE words SET word_name = (?) WHERE word_id = (?)";
 $sql_stmts['word_id->inflection_cache=']= "UPDATE words SET inflection_cache = (?) WHERE word_id = (?)";
 
+$sql_stmts['word_id->word_info']= "SELECT CONCAT(
+        '#',word_id,
+        ': ',word_name,
+        ' (',REPLACE((
+            SELECT def_value from definitions where definitions.word_id = words.word_id LIMIT 1
+        ),'\n',''),')'
+    )
+    FROM words WHERE word_id = (?)";
+
+$sql_stmts['word_id->word_info_formatted']= "SELECT CONCAT(
+        '#',word_id,
+        ': <a class=\"word-ref format-word-',
+        word_lang,
+        '\" href=\"dictionary.php?id=',
+        word_id,
+        '\">',word_name,'</a>',
+        ' (“',REPLACE((
+            SELECT def_value from definitions where definitions.word_id = words.word_id LIMIT 1
+        ),'\n','”, “'),'”)'
+    )
+    FROM words WHERE word_id = (?)";
+
 /************************
  * FORMS
  ************************/
@@ -451,6 +473,73 @@ $sql_stmts['connect_type,from_word_id,to_word_id->new in connections']= "INSERT 
 $sql_stmts['to_word_id,connect_type,from_word_id->new in connections']= "INSERT INTO connections (to_word_id,connect_type,from_word_id) VALUES (?, ?, ?)";
 $sql_stmts['connect_type,to_word_id,from_word_id->new in connections']= "INSERT INTO connections (connect_type,to_word_id,from_word_id) VALUES (?, ?, ?)";
 $sql_stmts['from_word_id,to_word_id,connect_type->delete from connections']= "DELETE FROM connections WHERE (from_word_id = (?) AND to_word_id = (?) AND connect_type = (?))";
+
+
+/************************
+ * QUIZZES
+ ************************/
+
+$sql_stmts['quiz_id->user_id']= "SELECT user_id FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->type']= "SELECT type FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->last']= "SELECT last FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->score']= "SELECT score FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->completed']= "SELECT completed FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->out_of']= "SELECT out_of FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->time_started']= "SELECT time_started FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->time_finished']= "SELECT time_finished FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->questions']= "SELECT questions FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->questions=']= "UPDATE quizzes SET questions = (?) WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->results']= "SELECT results FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->results=']= "UPDATE quizzes SET results = (?) WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->options_n']= "SELECT options_n FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->options_n=']= "UPDATE quizzes SET options_n = (?) WHERE quiz_id = (?)";
+
+$sql_stmts['user_id,last->new in quizzes']= "INSERT INTO quizzes (user_id,last) VALUES (?, ?)";
+$sql_stmts['last,user_id->new in quizzes']= "INSERT INTO quizzes (last,user_id) VALUES (?, ?)";
+
+$sql_stmts['user_id,type,last->new in quizzes']= "INSERT INTO quizzes (user_id,type,last) VALUES (?, ?, ?)";
+$sql_stmts['type,user_id,last->new in quizzes']= "INSERT INTO quizzes (type,user_id,last) VALUES (?, ?, ?)";
+$sql_stmts['user_id,last,type->new in quizzes']= "INSERT INTO quizzes (user_id,last,type) VALUES (?, ?, ?)";
+$sql_stmts['last,user_id,type->new in quizzes']= "INSERT INTO quizzes (last,user_id,type) VALUES (?, ?, ?)";
+$sql_stmts['type,last,user_id->new in quizzes']= "INSERT INTO quizzes (type,last,user_id) VALUES (?, ?, ?)";
+$sql_stmts['last,type,user_id->new in quizzes']= "INSERT INTO quizzes (last,type,user_id) VALUES (?, ?, ?)";
+
+$sql_stmts['user_id->last quiz_id']= "SELECT quiz_id FROM quizzes WHERE user_id = (?)
+    ORDER BY quiz_id DESC LIMIT 1";
+
+$sql_stmts['finish quiz']= "UPDATE quizzes SET
+    time_finished = CURRENT_TIMESTAMP,
+    completed = TRUE
+    WHERE quiz_id = (?)";
+
+$sql_stmts['add score']= "UPDATE quizzes SET
+    score = score + (?),
+    out_of = out_of + (?)
+    WHERE quiz_id = (?)";
+
+$sql_stmts['set score']= "UPDATE quizzes SET
+    score = (?),
+    out_of = (?)
+    WHERE quiz_id = (?)";
+
+$sql_stmts['user_id->quiz_id']= "SELECT quiz_id FROM quizzes WHERE user_id = (?)";
+
+$sql_stmts['user_id->quiz_id reversed']= "SELECT quiz_id FROM quizzes
+    WHERE user_id = (?)
+    ORDER BY quiz_id DESC";
 
 
 /************************

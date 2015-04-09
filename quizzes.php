@@ -8,14 +8,15 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Forms | Latin</title>
+        <title>Quiz | Latin</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
+        <script type="text/javascript" src="/JS/jQuiz.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
         <section id="content">
-            <?php sro('/Pages/raw_forms.php'); ?>
+            <?php sro('/Pages/quiz/quizzes.php'); ?>
         </section>
         <?php sro('/Includes/footer.php'); ?>
     </body>

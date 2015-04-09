@@ -98,6 +98,14 @@
 							"perfect",
 							"future"
 						]
+					},
+					"number",
+					"gender",
+					{
+						"case":[
+							"nominative",
+							"accusative"
+						]
 					}
 				],
 				"participle":[
@@ -111,7 +119,17 @@
 					},
 					"number",
 					"gender",
-					"case"
+					{
+						"case":[
+							"vocative",
+							"nominative",
+							"accusative",
+							"ablative",
+							"dative",
+							"genitive",
+							"locative"
+						]
+					}
 				],
 				"indicative":[
 					"voice",

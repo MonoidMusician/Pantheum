@@ -15,7 +15,7 @@
     <body>
         <?php sro('/Includes/header.php'); ?>
         <section id="content">
-            <?php sro('/Pages/raw_forms.php'); ?>
+            <?php sro('/Pages/raw_forms2.php'); ?>
         </section>
         <?php sro('/Includes/footer.php'); ?>
     </body>

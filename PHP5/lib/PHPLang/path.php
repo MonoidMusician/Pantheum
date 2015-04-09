@@ -80,8 +80,8 @@ class _PATH implements Countable
 	function set_value($value) {
 		global $sql_stmts;
 		$this->_value = $value;
-		if ($this->issql and $this->_id !== NULL)
-			error_log($this->_id." -> $value");
+		/*if ($this->issql and $this->_id !== NULL)
+			error_log($this->_id." -> $value");/**/
 		if ($this->issql and $this->_id !== NULL)
 			sql_set($sql_stmts["form_id->form_value="], $this->_value, ["i", &$this->_id]);
 	}

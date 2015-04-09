@@ -31,6 +31,7 @@
 		{ $attrs = []; }
 
 	$definitions = safe_get("definitions", $_GET);
+	$connections = safe_get("connections", $_GET);
 	$forms = safe_get("forms", $_GET);
 
 	if (!requireRank(3, FALSE)) echo "Insufficient permissions";
@@ -57,6 +58,17 @@
 				$dd->set_lang("en");
 				$dd->set_value($d);
 				$w->add_definition($dd);
+			}
+			foreach ($connections as $c) {
+				list($type,$other,$mutual) = $c;
+				if (!$type or !$other) continue;
+				$other = intval($other);
+				$cc = CONNECTION($w, WORD(defaultDB(),$other), $type);
+				$w->add_connection($cc);
+				if ($mutual) {
+					$cc = CONNECTION(WORD(defaultDB(),$other), $w, $type);
+					WORD(defaultDB(),$other)->add_connection($cc);
+				}
 			}
 			$ignore = []; $changes = []; $path = "";
 			if ($sparts[0] === "verb") {
@@ -128,7 +140,7 @@
 			$t = $t->name($template);
 			$t = $t->only_with_attr(ATTR("template", "true"));
 			$t = $t->all();
-			error_log(var_export(array_map(function($a){return$a->id();},$t),1));
+			//error_log(var_export(array_map(function($a){return$a->id();},$t),1));
 			if (count($t) === 0) exit("Could not find template with name: ".$template);
 			elseif (count($t) !== 1) exit("Ambiguous template name (please remove duplicate template(s))");
 			if (($s=run_template($w, PATH($w,$path), $t[0], $forms, $ignore, $changes, FALSE)) === NULL) {

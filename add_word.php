@@ -12,7 +12,6 @@
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="/JS/lib/jquery.autocomplete.js"></script>
-        <script type="text/javascript" src="/JS/lib/jquery.autosize.input.min.js"></script>
         <script type="text/javascript" src="/JS/addword_data.js"></script>
         <script type="text/javascript" src="/JS/jWord.js"></script>
     </head>
@@ -39,7 +38,7 @@
                 if (delay === undefined) delay = 2300;
                 callback();
                 $('.floater-message').show();
-                $('.floater-message a').text(msg);
+                $('.floater-message a').html(msg);
                 if (delay !== null)
                     timer = setTimeout(callback, delay);
             }

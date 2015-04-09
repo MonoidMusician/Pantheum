@@ -140,13 +140,28 @@ input:not([type="checkbox"]):not([type="radio"]) {
     width: 300px;
 }
 
+input.autosizeable {
+    min-width: 300px;
+    max-width: 90%;
+}
+
+textarea {
+    width: 300px;
+    height: 100px;
+    font: inherit;
+}
+
 input.small {
     width: 50px !important;
     text-align: center;
 }
 
-input:focus, input:active, button:focus, button:active {
+input:focus, input:active, button:focus:not(.disabled), button:active:not(.disabled) {
     border: 1px solid #4466aa;
+}
+
+button.disabled {
+    color: rgba(0,0,0,0.5) !important;
 }
 
 button.large {
@@ -210,6 +225,9 @@ input[type=checkbox], input[type=radio] {
     margin-left: 10px;
     margin-right: 10px;
 }
+table input[type=checkbox], table input[type=radio] {
+    top: 0em !important;
+}
 
 .center {
     margin: 0 auto;
@@ -235,11 +253,24 @@ input[type=checkbox], input[type=radio] {
 }
 
 .jquiz-correct {
+    color: rgba(11, 181, 0, 1);
+}
+
+.jquiz-other {
     color: rgba(34, 50, 138, 1);
+}
+
+.jquiz-help {
+    color: #ee6622;
 }
 
 .jquiz-matching {
     border-collapse: collapse;
+}
+.jquiz-matching input:not([type="checkbox"]):not([type="radio"]) {
+    width: 60px;
+    min-width: 60px;
+    max-width: 300px;
 }
 .jquiz-matching td, .jquiz-matching th {
     vertical-align: middle;
@@ -250,10 +281,6 @@ input[type=checkbox], input[type=radio] {
 a.word-ref {
     /*font-weight: bold;*/
     font-style: italic;
-}
-
-span.help {
-    color: #ee6622;
 }
 
 table.inflection {
@@ -269,6 +296,18 @@ table.inflection th {
     white-space: nowrap;
 }
 table.inflection td {
+    border-bottom: 1px dashed #aaa;
+    border-top: 1px dashed #aaa;
+}
+table.expansive td {
+    height: 3.5em;
+    white-space: nowrap;
+}
+table.expansive th {
+    height: 3.5em;
+    white-space: nowrap;
+}
+table.expansive td {
     border-bottom: 1px dashed #aaa;
     border-top: 1px dashed #aaa;
 }

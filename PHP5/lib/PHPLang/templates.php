@@ -6,36 +6,48 @@ sro('/Includes/functions.php');
 
 sro('/PHP5/lib/PHPLang/common.php');
 
-function TEMPLATE($templ) {
-	$interp = [""];
-	$array = str_split($templ);
-	$i = 0;
-	foreach($array as $char) {
-		if (is_numeric($char)) {
-			$interp[] = intval($char);
-			$interp[] = "";
-			$i += 2;
-		} else $interp[$i] .= $char;
+function TEMPLATE($template) {
+	$interp = [];
+	foreach (explode("\n",$template) as $templ) {
+		$inter = [""];
+		$array = str_split($templ);
+		$i = 0;
+		foreach($array as $char) {
+			if (is_numeric($char)) {
+				$inter[] = intval($char);
+				$inter[] = "";
+				$i += 2;
+			} else $inter[$i] .= $char;
+		}
+		$interp[] = $inter;
 	}
 	return function($arg) use($interp) {
-		$res = [""];
-		$raw = TRUE;
-		foreach ($interp as $i) {
-			if ($raw)
-				foreach ($res as &$r)
-					$r .= $i;
-			elseif (!array_key_exists($i, $arg))
-				return NULL;
-			else {
-				foreach (explode("\n",$arg[$i]) as $a) {
+		$rres = [];
+		foreach ($interp as $inter) {
+			$res = [""];
+			$raw = TRUE;
+			foreach ($inter as $i) {
+				if ($raw) {
 					foreach ($res as &$r) {
-						$r .= $a;
+						$r .= $i;
 					}
+				} elseif (array_key_exists($i, $arg)) {
+					$old = $res;
+					$res = [];
+					foreach (explode("\n",$arg[$i]) as $a) {
+						foreach ($old as $r) {
+							$res[] = $r.trim($a);
+						}
+					}
+				} else {
+					return NULL;
 				}
+				$raw = !$raw;
 			}
-			$raw = !$raw;
+			$rres = array_merge($rres,$res);
 		}
-		return implode("\n", $res);
+		$rres = array_unique($rres);
+		return implode("\n", $rres);
 	};
 }
 function run_template($w, $p, $t, $arg, $ignore, $change, $overwrite=FALSE) {
