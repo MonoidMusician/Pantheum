@@ -10,7 +10,7 @@ function subscript($obj, $index) {
 			return $obj[$index];
 		return NULL;
 	}
-	else return $obj($index);
+	else if ($obj != null) return $obj($index);
 }
 function equals($a,$b){return $a==$b;}
 function is_vec($obj) {

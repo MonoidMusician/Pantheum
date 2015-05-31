@@ -19,5 +19,6 @@
             <?php sro('/Pages/quiz/quizzes.php'); ?>
         </section>
         <?php sro('/Includes/footer.php'); ?>
+        <?php sro('/Includes/messages.php'); ?>
     </body>
 </html>

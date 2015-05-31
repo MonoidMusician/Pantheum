@@ -53,5 +53,5 @@ if (!$stmt)
 	echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
 $res = [];
 sql_getmany($stmt, $res, []);
-echo json_encode($res);
+echo json_encode(array_values($res));
 ?>

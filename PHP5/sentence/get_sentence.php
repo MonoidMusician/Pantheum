@@ -167,20 +167,20 @@ $(function(){
 				$.each(phrases_others[y], function(k, phrases) {
 					var phrase = phrases;
 					//$.each(phrases, function(_,phrase) {
-						$('#tree-'+k).addClass('phrase'+phrase);
+						$('.tree-'+k).addClass('phrase'+phrase);
 						$('#sentence-'+k).addClass('phrase'+phrase);
 						$('#translation-'+k).addClass('phrase'+phrase);
 					//});
 				});
 			}
-			$('#tree-'+y).addClass('selected');
+			$('.tree-'+y).addClass('selected');
 			$('#sentence-'+y).addClass('selected');
 			$('#translation-'+y).addClass('selected');
 		}
 	};
 	function select2(y) {
 		if (y !== undefined) {
-			$('#tree-'+y).addClass('selected2');
+			$('.tree-'+y).addClass('selected2');
 			$('#sentence-'+y).addClass('selected2');
 			$('#translation-'+y).addClass('selected2');
 		}
@@ -204,14 +204,14 @@ $(function(){
 			return get_id($value,$sentence);
 		}, array_key_exists("modifies",$v) ? $v["modifies"] : []);
 ?>
-		$('#sentence-<?= $id ?>, #tree-<?= $id ?>, #translation-<?= $id ?>').mouseover(function(){
+		$('#sentence-<?= $id ?>, .tree-<?= $id ?>, #translation-<?= $id ?>').mouseover(function(){
 			if (timeout !== undefined) clearTimeout(timeout);
 			clear();
 			select('<?= $id ?>');
 			var modifies = <?= json_encode($modifies); ?>;
 			modifies.forEach(select2);
 		});
-		$('#tree-<?= $id ?>').parent().mouseleave(_out);
+		$('.tree-<?= $id ?>').parent().mouseleave(_out);
 <?php
 	}
 ?>
@@ -254,7 +254,7 @@ The markup will be simple nested lists
 			if (array_key_exists("role", $sentence[$id]))
 				$div = '<div class="role'.$phrase.'">('.$sentence[$id]["role"].')</div>';
 			else $div = NULL;
-			?><?= $div ?><span class="word" id="tree-<?= $id ?>"><?= $name ?></span><?php
+			?><?= $div ?><span class="word tree-<?= $id ?>" id="tree-<?= $id ?>"><?= $name ?></span><?php
 		}
 		if (is_array($element)) {
 			?><ul><?php
@@ -319,6 +319,8 @@ function update(source) {
 	var nodeEnter = node.enter().append("svg:g")
 		.attr("class", "node")
 		.attr("transform", function(d) {
+			/*console.log([source.x0,source.y0]);
+			console.log([d.x,d.y]);/**/
 			return "translate(" + source.y0 + "," + source.x0 + ")";
 		})
 		.on("click", function(d) {
@@ -346,6 +348,7 @@ function update(source) {
 	var nodeUpdate = node.transition()
 		.duration(duration)
 		.attr("transform", function(d) {
+			//console.log("translate(" + d.y + "," + d.x + ")");
 			return "translate(" + d.y + "," + d.x + ")";
 		});
 
@@ -547,4 +550,3 @@ $(function(){
 	$('#translation_hide').trigger('click');
 });
 </script>
-

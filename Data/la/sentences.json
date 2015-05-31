@@ -1,4 +1,9 @@
 {
+  "servī Barbillum, quī vulnus habēbat, portābant.":{"sentence":{"0":{"value":"servī","role":"subject of <i>portābant</i>","desc":" (n): subject of <i>portābant</i>, masculine nominative plural","modifies":["portābant"]},"1":{"value":"Barbillum","role":"direct object of <i>portābant</i>","desc":" (n): direct object of <i>portābant</i>, masculine accusative","modifies":["portābant"]},"-1":{"space_after":1,"text":",","space_before":0},"2":{"value":"quī","role":"modifier of <i>Barbillum</i>","desc":" (pro): modifier of <i>Barbillum</i>, masculine nominative singular","modifies":["Barbillum"]},"3":{"value":"vulnus","role":"direct object of <i>habēbat</i>","desc":" (n): direct object of <i>habēbat</i>, neuter accusative singular","modifies":["habēbat"]},"4":{"value":"habēbat","role":"verb of <i>quī</i>","desc":" (v): verb of <i>quī</i>, 3rd person singular imperfect active indicative","modifies":["quī"]},"-2":{"space_after":1,"text":",","space_before":0},"5":{"value":"portābant","role":"main verb","desc":" (v): main verb, 3rd person plural imperfect active indicative","modifies":[""]}},"translation":{"0":{"value":"The slaves"},"5":{"value":"were carrying"},"1":{"value":"Barbillus"},"-1":{"space_after":1,"text":",","space_before":0},"2":{"value":"who"},"4":{"value":"had"},"3":{"value":"a wound"}},"phrases":[["0","1","2","3","4","5"],["1","2","4","3"]],"tree":{"5":{"0":null,"1":{"2":{"4":{"3":null}}}}}} ,
+  "servī Barbillum aegrum, quī vulnus habēbat, portābant.":{"sentence":{"0":{"value":"servī","role":"subject of <i>portābant</i>","desc":" (n): subject of <i>portābant</i>, masculine nominative plural","modifies":["portābant"]},"1":{"value":"Barbillum","role":"direct object of <i>portābant</i>","desc":" (n): direct object of <i>portābant</i>, masculine accusative","modifies":["portābant"]},"2":{"value":"aegrum","role":"modifier of <i>Barbillum</i>","desc":" (adj): modifier of <i>Barbillum</i>, masuline accusative singular","modifies":["Barbillum"]},"-1":{"space_after":1,"text":",","space_before":0},"3":{"value":"quī","role":"modifier of <i>Barbillum</i>","desc":" (pro): modifier of <i>Barbillum</i>, masculine nominative singular","modifies":["Barbillum"]},"4":{"value":"vulnus","role":"direct object of <i>habēbat</i>","desc":" (n): direct object of <i>habēbat</i>, neuter accusative singular","modifies":["habēbat"]},"5":{"value":"habēbat","role":"verb of <i>quī</i>","desc":" (v): verb of <i>quī</i>, 3rd person singular imperfect active indicative","modifies":["quī"]},"-2":{"space_after":1,"text":",","space_before":0},"6":{"value":"portābant","role":"main verb","desc":" (v): main verb, 3rd person plural imperfect active indicative","modifies":[""]}},"translation":{"0":{"value":"The slaves"},"6":{"value":"were carrying"},"2":{"value":"a sick"},"1":{"value":"Barbillus"},"-1":{"space_after":1,"text":",","space_before":0},"3":{"value":"who"},"5":{"value":"had"},"4":{"value":"a wound"}},"phrases":[["0","1","2","3","4","5","6"],["1","2","3","5","4"],["3","5","4"]],"tree":{"6":{"0":null,"1":{"2":null,"3":{"5":{"4":null}}}}}},
+  "servīs dīligenter labōrandum est.":{"sentence":{"0":{"value":"servīs","role":"subject of <i>labōrandum</i>","desc":" (n): subject of <i>labōrandum</i>, masculine dative plural","modifies":["labōrandum"]},"1":{"value":"dīligenter","role":"modifier of <i>labōrandum</i>","desc":" (adv): modifier of <i>labōrandum</i>","modifies":["labōrandum"]},"2":{"value":"labōrandum","role":"verb of <i>est</i>","desc":" (v): verb of <i>est</i>, gerundive","modifies":["est"]},"3":{"value":"est","role":"main verb","desc":" (v): main verb, 3rd person singular present active indicative","modifies":[""]}},"translation":{"0":{"value":"The slaves"},"2":{"value":"must work"},"1":{"value":"hard"}},"phrases":[["0","1","2","3"]],"tree":{"3":{"2":{"0":null,"1":null}}}},
+  "scīre volēbam quis hoc docuisset":{"sentence":{"0":{"value":"scīre","role":"complement of <i>volēbam</i>","desc":" (v): complement of <i>volēbam</i>, present active infinitive","modifies":["volēbam"]},"1":{"value":"volēbam","role":"main verb","desc":" (v): main verb, 1st person singular imperfect active indicative","modifies":[""]},"2":{"value":"quis","role":"direct object of <i>scīre</i>","desc":" (pro): direct object of <i>scīre</i>, common nominative singular","modifies":["scīre"]},"3":{"value":"hoc","role":"direct object of <i>docuisset</i>","desc":" (pro): direct object of <i>docuisset</i>, neuter accusative singular","modifies":["docuisset"]},"4":{"value":"docuisset","role":"verb of <i>quis</i>","desc":" (v): verb of <i>quis</i>, 3rd person singular pluperfect active subjunctive","modifies":["quis"]}},"translation":{"1":{"value":"I wanted"},"0":{"value":"to know"},"2":{"value":"who"},"4":{"value":"had taught"},"3":{"value":"this"}},"phrases":[["0","1","2","3","4"],["2","3","4"]],"tree":{"1":{"0":{"2":{"4":{"3":null}}}}}},
+  "Salvius servum torsit ut eum vērum patefacere cōgeret.":{"sentence":{"0":{"value":"Salvius","role":"subject of <i>torsit</i> and <i>cōgeret</i>","desc":" (n): subject of <i>torsit</i> and <i>cōgeret</i>, masculine nominative","modifies":["torsit","cōgeret"]},"1":{"value":"servum","role":"direct object of <i>torsit</i>","desc":" (n): direct object of <i>torsit</i>, masculine accusative singular","modifies":["torsit"]},"2":{"value":"torsit","role":"main verb","desc":" (v): main verb, 3rd person singular perfect active indicative","modifies":[""]},"3":{"value":"ut","role":"purpose of <i>torsit</i>","desc":" (conj): purpose of <i>torsit</i>","modifies":["torsit"]},"4":{"value":"eum","role":"direct object of <i>cōgeret</i>, subject of <i>patefacere</i>","desc":" (pro): direct object of <i>cōgeret</i>, subject of <i>patefacere</i>, masculine accusative singular","modifies":["cōgeret","patefacere"]},"5":{"value":"vērum","role":"direct object of <i>patefacere</i>","desc":" (n): direct object of <i>patefacere</i>, neuter accusative singular","modifies":["patefacere"]},"6":{"value":"patefacere","role":"complement of <i>cōgeret</i>","desc":" (v): complement of <i>cōgeret</i>, present active infinitive","modifies":["cōgeret"]},"7":{"value":"cōgeret","role":"verb of <i>ut</i>","desc":" (v): verb of <i>ut</i>, 3rd person singular imperfect active subjunctive","modifies":["ut"]}},"translation":{"0":{"value":"Salvius"},"2":{"value":"tortured"},"1":{"value":"the slave"},"3":{"value":"in order that"},"7":{"value":"he might force"},"4":{"value":"him"},"6":{"value":"to reveal"},"5":{"value":"the truth"}},"phrases":[["0","1","2","3","4","5","6","7"],["3","7","0","4","6","5"],["6","4","5"]],"tree":{"2":{"0":null,"1":null,"3":{"7":{"0":null,"4":null,"6":{"4":null,"5":null}}}}}},
   "Salvius, quī mercātor dīves in Brittaniā erat, multā pecuniā vīllam splendidam ēmit.":{
     "sentence":{
       "0":{
@@ -497,6 +502,117 @@
         1,
         2
       ]
+    }
+  },
+  "servī Barbillum portābant ut eum in lectum pōnerent":{
+    "sentence":{
+      "0":{
+        "value":"servī",
+        "desc":" (n): subject of <i>portābant</i>, masculine nominative plural",
+        "role":"subject",
+        "modifies":["portābant"]
+      },
+      "1":{
+        "value":"Barbillum",
+        "desc":" (N): object of <i>portābant</i>, masculine accusative",
+        "role":"object",
+        "modifies":["portābant"]
+      },
+      "2":{
+        "value":"portābant",
+        "desc":" (v): main verb, 3rd person plural imperfect active indicative",
+        "role":"verb/root"
+      },
+      "3":{
+        "value":"ut",
+        "desc":" (conj): purpose word",
+        "role":"conjunction",
+        "modifies":["portābant"]
+      },
+      "4":{
+        "value":"eum",
+        "desc":" (pro): object of pōnerent, masculine accusative singular",
+        "role":"object",
+        "modifies":["pōnerent"]
+      },
+      "5":{
+        "value":"in",
+        "desc":" (prep)",
+        "role":"location",
+        "modifies":["pōnerent"]
+      },
+      "6":{
+        "value":"lectum",
+        "desc":" (n): object of <i>in</i>, masculine accusative singular",
+        "role":"object",
+        "modifies":["in"]
+      },
+      "7":{
+        "value":"pōnerent",
+        "desc":" (v): purpose",
+        "role":"purpose",
+        "modifies":["ut"]
+      }
+    },
+    "translation":{
+      "0":{
+        "value":"The slaves"
+      },
+      "2":{
+        "value":"were carrying"
+      },
+      "1":{
+        "value":"Barbillus"
+      },
+      "3":{
+        "value":"in order that"
+      },
+      "7":{
+        "value":"they might place"
+      },
+      "4":{
+        "value":"him"
+      },
+      "5":{
+        "value":"onto"
+      },
+      "6":{
+        "value":"the bed"
+      }
+    },
+    "phrases":[
+      [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      [
+        4,
+        5,
+        6,
+        7
+      ],
+      [
+        5,
+        6
+      ]
+    ],
+    "tree":{
+      "2":{
+        "0":null,
+        "1":null,
+        "3":{
+          "7":{
+            "4":null,
+            "5":["6"]
+          }
+        }
+      }
     }
   },
   "cr\u0113de quod hab\u0113s, et hab\u0113s.":{

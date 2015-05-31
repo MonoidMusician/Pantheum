@@ -6,6 +6,7 @@ sro('/Includes/functions.php');
 
 sro('/PHP5/lib/PHPLang/make_example.php');
 sro('/PHP5/lib/PHPLang/display.php');
+sro('/PHP5/lib/PHPLang/string.php');
 sro('/PHP5/quiz/common.php');
 
 function get_pick($i,$i2=NULL) {
@@ -224,8 +225,8 @@ function make_matching($map) {
 	return $ret;
 }/**/
 
-function make_chart($w,$values=NULL) {
-	if ($values === NULL) $values = word_table_values($w);
+function make_chart($w,$values=NULL,$ignore=NULL) {
+	if ($values === NULL) $values = word_table_values($w,$ignore);
 	list ($values0,$values1,$values2,$values3,$values4) = $values;
 	global $OP_USER_INPUT;
 	$ret = [
@@ -238,7 +239,7 @@ function make_chart($w,$values=NULL) {
 	$i = 0;
 	$get_question = function($word) use(&$i,&$ret) {
 		$ret["answer$i-hidden"] = TRUE;
-		$ret["answer$i"] = [format_word($word)];
+		$ret["answer$i"] = array_map("format_word",explode("\n",$word));
 		$ret["answer$i-tooltip"] = "Enter form";
 		$i++;
 		return '<input>';
@@ -538,6 +539,7 @@ $GLOBALS["quiz_types"] = [
 	"random" => ["name" => "Random"]
 ];
 include_once('quiz_types1.php');
+include_once('model_sentences.php');
 global $quiz_types;
 
 $options = [];

@@ -121,16 +121,6 @@
 							var last = [$('#word'+id+'_value_templ').val()];
 							$('#word'+id+'_value_templ').autocomplete({
 								lookup: names,
-								onSelect: function(selection) {
-									if (lock) return; lock=true;
-									var el = $('#word'+id+'_value_templ');
-									if ($.inArray(selection.value, last) === -1) {
-										el.val(el.val()+": ");
-									}
-									last = [el.val().split(":")[0]];
-									el.focus();
-									lock=false;
-								},
 							});
 							var id2vals = <?= "{".$id.":[".$id2val."]}" ?>;
 							var dependencies = <?= "{".$id.":{".$dependency."}}" ?>;

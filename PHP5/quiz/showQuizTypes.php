@@ -12,11 +12,22 @@ include_once('quiz_types.php');
 global $quiz_types;
 $quizzes = [];
 $first = TRUE;
+$id = safe_get("id",$_GET);
+$predicate = function($q) use(&$first,$id) {
+    if ($id===NULL) {
+        if ($first) {
+            $first=FALSE;
+            return TRUE;
+        }
+        return $first;
+    }
+    return $q===$id;
+}
 ?><div class="select"><?php
 foreach ($quiz_types as $k=>$v) {
     if (!is_array($v) or !array_key_exists("name", $v)) continue;
     ?><label><input name="quiz-types" type="radio" value="<?= $k ?>"
-    <?php if ($first) echo "checked"; $first=FALSE; ?>
+    <?php if ($predicate($k)) echo "checked"; $first=FALSE; ?>
     <?php
     if (safe_get("n_questions",$v)) {
         $n = $v["n_questions"];

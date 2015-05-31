@@ -39,7 +39,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 	global $OP_MATCHING;
 	global $OP_USER_INPUT;
 	global $OP_USER_PARAGRAPH;
-	if ($recurse >= QUIZ_MAX_RECURSE) {echo json_encode([['text', '<span class="jquiz-incorrect" style="font-size: 7px">could not complete sentence '.$reason.'</span>']]); return;}
+	if ($recurse >= QUIZ_MAX_RECURSE) {echo json_encode([['text', '<span class="jquiz-incorrect" style="font-size: 8px">could not complete sentence '.$reason.'</span>']]); return;}
 	$recurse += 1;
 	$selections = $quiz["selections"];
 	$sentence = do_template($quiz["sentence"], NULL, $selections, $reason);
@@ -185,34 +185,35 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				$reason = "answers were not in an array";
 				return $try();
 			}
+			$process = function($answer) use(&$selections,&$stop,&$reason,&$correct) {
+				if ($stop) return;
+				$ret = do_pick($answer, NULL, $selections, $reason);
+				if ($ret === NULL)
+					$stop = TRUE;
+				else $ret = format_word($ret);
+				return $ret;
+			};
 			if (array_key_exists("correct", $answers)
 			and array_key_exists("acceptable", $answers)
 			and is_array($answers["correct"])
 			and is_array($answers["acceptable"])) {
-				$results = ["correct"=>array_map(function($answer) use(&$selections,&$stop,&$reason,&$correct) {
-					if ($stop) return;
-					$ret = do_pick($answer, NULL, $selections, $reason);
-					if ($ret === NULL)
-						$stop = TRUE;
-					else $ret = format_word($ret);
-					return $ret;
-				}, $answers["correct"]), "acceptable"=>array_map(function($answer) use(&$selections,&$stop,&$reason,&$correct) {
-					if ($stop) return;
-					$ret = do_pick($answer, NULL, $selections, $reason);
-					if ($ret === NULL)
-						$stop = TRUE;
-					else $ret = format_word($ret);
-					return $ret;
-				}, $answers["acceptable"])];
+				$results = [
+					"correct"=>array_map($process, $answers["correct"]),
+					"acceptable"=>array_map($process, $answers["acceptable"])
+				];
+			} else if (array_key_exists("correct", $answers)
+			and is_array($answers["correct"])
+			and array_key_exists("expr", $answers)
+			and is_string($answers["expr"])) {
+				$results = [
+					"correct"=>array_map($process, $answers["correct"]),
+					"expr"=>do_pick($answers["expr"], NULL, $selections, $reason)
+				];
 			} else
-				$results = array_map(function($answer) use(&$selections,&$stop,&$reason,&$correct) {
-					if ($stop) return;
-					$ret = do_pick($answer, NULL, $selections, $reason);
-					if ($ret === NULL)
-						$stop = TRUE;
-					else $ret = format_word($ret);
-					return $ret;
-				}, $answers);
+				$results = array_map($process, $answers);
+			if ($stop) {
+				return $try();
+			}
 
 			quiz_addkey("current_answer","answer$n",$results);
 

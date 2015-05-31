@@ -97,7 +97,7 @@ if ($ids === NULL) {
 	$list = [];
 }
 $res = vec_norm(array_map(function($e) {
-	return format_word($e);
+	return ["data"=>$e,"value"=>$e,"display"=>format_word($e)];
 }, $list));
 echo json_encode($res);
 ?>

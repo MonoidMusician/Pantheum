@@ -11,7 +11,7 @@ global $quiz_types;
 
 $type = array_key_exists("type",$_GET) ? $_GET["type"] : NULL;
 $last = array_key_exists("last",$_GET) ? $_GET["last"] : NULL;
-if ($type !== NULL and $last !== NULL and
+if ($type !== NULL and $last and
     array_key_exists($type, $quiz_types) and
     is_array($quiz_types[$type]) and
     array_key_exists("options", $quiz_types[$type]) and
@@ -26,11 +26,11 @@ if ($type !== NULL and $last !== NULL and
 	if (NEWQUIZ($type,$last) !== NULL) {
 		print "success";
 	} else print "no-credit";
-} else {
+} else if ($last) {
 	if (array_key_exists($type, $quiz_types) and
 	    is_array($quiz_types[$type]) and
 	    array_key_exists("name", $quiz_types[$type]))
 		$type = $quiz_types[$type]["name"];
 	print "Cannot find the type of quiz: \"$type\", or it was not valid";
-}
+} else print "You must have at least 1 question!";
 ?>

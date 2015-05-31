@@ -16,6 +16,7 @@
         <script type="text/javascript" src="/JS/lib/la_ipa.js"></script>
         <script type="text/javascript" src="/JS/lib/jquery.autosize.input.min.js"></script>
         <script type="text/javascript" src="/JS/lib/date.js"></script>
+        <script type="text/javascript" src="/JS/lib/jstorage.min.js"></script>
         <script type="text/javascript">
             if ($(window).width() < 800) {
                 $("meta:[name='viewport']").remove();

@@ -120,7 +120,7 @@ var changes = {
             "ending0": "um",
             "ending1": "ī"
         },
-        "decl-2-on": {
+        "decl-2-on-neuter": {
             "ending0": "on",
             "ending1": "ī"
         },
@@ -194,7 +194,7 @@ var changes = {
             "ending0": "a",
             "ending1": "ōrum"
         },
-        "decl-2-on": {
+        "decl-2-on-neuter": {
             "ending0": "a",
             "ending1": "ōrum"
         },

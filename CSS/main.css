@@ -140,8 +140,9 @@ input:not([type="checkbox"]):not([type="radio"]) {
     width: 300px;
 }
 
-input.autosizeable {
-    min-width: 300px;
+input:not([type="checkbox"]):not([type="radio"]).autosizeable {
+    min-width: 30px;
+    width: 0px;
     max-width: 90%;
 }
 

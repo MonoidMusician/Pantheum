@@ -154,10 +154,10 @@ function jWord() {
 		      '&val='+this.word_user_val(id))
 		.done(function(data){
 			if (data == "success") return path ? my.refreshInflection(id) : my.refreshEntry(id);
-			alert("Could not set path: "+data);
+			errorTip("Could not set path: "+data,6900);
 		})
 		.fail(function(data) {
-			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText)
+			errorTip('Query failed! The server returned status '+data.status+": "+data.statusText)
 		});
 	};
 	this.word_del_val = function(id) {
@@ -168,10 +168,10 @@ function jWord() {
 		      '&id='+id)
 		.done(function(data){
 			if (data == "success") return path ? my.refreshInflection(id) : my.refreshEntry(id);
-			alert("Could not delete path: "+data);
+			errorTip("Could not delete path: "+data,6900);
 		})
 		.fail(function(data) {
-			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText)
+			errorTip('Query failed! The server returned status '+data.status+": "+data.statusText)
 		});
 	};
 
@@ -186,10 +186,10 @@ function jWord() {
 		      '&val='+this.word_user_pron(id))
 		.done(function(data){
 			if (data == "success") {
-				messageTip("Successfully added pronunciation");
+				successTip("Successfully added pronunciation");
 				return path ? my.refreshInflection(id) : my.refreshEntry(id);
 			}
-			alert("Could not add pronunciation: "+data);
+			errorTip("Could not add pronunciation: "+data,6900);
 		});
 	};
 	this.word_add_def = function(id) {
@@ -213,10 +213,10 @@ function jWord() {
 		      lang)
 		.done(function(data){
 			if (data == "success") {
-				messageTip("Successfully added definition");
+				successTip("Successfully added definition");
 				return my.refreshDefinitions(id);
 			}
-			alert("Could not add definition: "+data);
+			errorTip("Could not add definition: "+data,6900);
 		});
 	};
 	this.word_add_attr = function(id) {
@@ -227,10 +227,10 @@ function jWord() {
 		      'attr='+attr+'&id='+id)
 		.done(function(data){
 			if (data == "success") {
-				messageTip("Successfully added attribute(s)");
+				successTip("Successfully added attribute(s)");
 				return my.refreshEntry(id);
 			}
-			alert("Could not add definition: "+data);
+			errorTip("Could not add attribute: "+data,6900);
 		});
 	};
 	this.definition_delete = function(id,word_id) {
@@ -239,10 +239,10 @@ function jWord() {
 		$.get(this.api_path+'delete-definition.php','id='+id)
 		.done(function(data){
 			if (data == "success") {
-				messageTip("Successfully deleted definition");
+				successTip("Successfully deleted definition");
 				return my.refreshDefinitions(word_id);
 			}
-			alert("Could not delete definition: "+data);
+			errorTip("Could not delete definition: "+data,6900);
 		});
 	};
 	this.word_add_connect = function(from_id, to_id, type) {
@@ -258,14 +258,13 @@ function jWord() {
 		      '&mutual='+(mutual?'true':'false'))
 		.done(function(data){
 			if (data == "success") {
-				messageTip("Successfully added connection");
+				successTip("Successfully added connection");
 				my.refreshEntry(from_id);
 				if (mutual) my.refreshEntry(to_id);
 				return;
 			}
-			alert("Could not add connection: "+data);
-		})
-		.fail(function(){alert("failed")});
+			errorTip("Could not add connection: "+data,6900);
+		});
 	};
 	this.connection_delete = function(from_id, to_id, type) {
 		messageTip("Trying to delete connection...");
@@ -276,10 +275,10 @@ function jWord() {
 		      '&type='+type)
 		.done(function(data){
 			if (data == "success") {
-				messageTip("Successfully deleted connection");
+				successTip("Successfully deleted connection");
 				return my.refreshEntry(from_id);
 			}
-			alert("Could not delete connection: "+data);
+			errorTip("Could not delete connection: "+data,6900);
 		});
 	};
 	this.word_delete = function(id) {
@@ -290,7 +289,7 @@ function jWord() {
 		$.get(this.api_path+'delete-word.php','id='+id)
 		.done(function(data){
 			if (data == "success") return my.refreshEntries();
-			alert("Could not delete word: "+data);
+			errorTip("Could not delete word: "+data);
 		});
 	};
 	this.word_refresh = function(id) {
@@ -302,7 +301,7 @@ function jWord() {
 		$.get(this.api_path+'clear-cache.php','id='+id)
 		.done(function(data){
 			if (data == "success") return my.getWord(id);
-			alert("Could not refresh word: "+data);
+			errorTip("Could not refresh word: "+data,2300);
 		});
 	};
 	this.word_rename = function(id, old_name) {
@@ -331,7 +330,7 @@ function jWord() {
 				if (data == "success") {
 					return show_name(new_name);
 				}
-				alert("Could not rename word: "+data);
+				errorTip("Could not rename word: "+data);
 			});
 		};
 		$('#word'+id+'_rename').off("click.rename");
@@ -360,17 +359,17 @@ function jWord() {
 		if (arg && arg.slice(-1) != "&") arg+='&';
 		arg += 'template='+encodeURIComponent(val[0].trim());
 		$.each(val[1].split(";"), function(i,argi) {
-			arg += '&'+i+'='+encodeURIComponent(argi.trim());
+			arg += '&'+i+'='+encodeURIComponent(argi.replace(/\s*,\s*/g,"\n").trim());
 		});
 		$.get(this.api_path+'run-template.php',
 		      'id='+id+
 		      '&path='+this.path(id)+'&'+arg)
 		.done(function(data){
 			if (data == "success") return my.refreshInflection(id);
-			alert("Could not run template on word: "+data);
+			errorTip("Could not run template on word: "+data);
 		})
 		.fail(function(data) {
-			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText)
+			errorTip('Query failed! The server returned status '+data.status+": "+data.statusText)
 		});
 	};
 
@@ -415,7 +414,7 @@ function jWord() {
 					$.each(callbacks, function(k,c) {c(my.entries);})
 			})
 			.fail(function(data) {
-				messageTip('Query failed! The server returned status '+data.status+(data.statusText?": "+data.statusText:""))
+				errorTip('Query failed! The server returned status '+data.status+(data.statusText?": "+data.statusText:""))
 			});
 		}
 	};
@@ -461,7 +460,7 @@ function jWord() {
 		var delay = serv.deferRequestBy;
 		serv.deferRequestBy = null;
 		var loc = this.searcher();
-		if (loc === undefined) return messageTip("Empty loc");
+		if (loc === undefined) return errorTip("Empty loc");
 		if (loc != this.last_loc) {
 			history.pushState(null, "", 'dictionary.php?'+loc);
 			this.last_loc = loc;
@@ -565,7 +564,7 @@ function jWord() {
 		$.get(this.api_path+'get-entries.php', 'id='+id)
 		.done(handle1Response)
 		.fail(function(data) {
-			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText);
+			errorTip('Query failed! The server returned status '+data.status+": "+data.statusText);
 		});
 	};
 
@@ -578,7 +577,7 @@ function jWord() {
 		$.get(this.api_path+'get-entries.php', 'id='+id)
 		.done(handle1Response)
 		.fail(function(data) {
-			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText);
+			errorTip('Query failed! The server returned status '+data.status+": "+data.statusText);
 		});
 	};
 
@@ -596,7 +595,7 @@ function jWord() {
 		$.get(this.api_path+'get-entries.php', 'id='+id)
 		.done(handle1Response)
 		.fail(function(data) {
-			messageTip('Query failed! The server returned status '+data.status+": "+data.statusText);
+			errorTip('Query failed! The server returned status '+data.status+": "+data.statusText);
 		});
 	};
 	this.refreshEntry = function(id) {
@@ -611,7 +610,7 @@ function jWord() {
 		$.get(this.api_path+'clear-cache.php','id='+id)
 		.done(function(data){
 			if (data == "success") return my.getWord(id, undefined, undefined, "#word"+id+"_forms");
-			alert("Could not refresh word: "+data);
+			errorTip("Could not refresh word: "+data,2300);
 		});
 	};
 	this.addEntry = function(id, callback) {
@@ -622,8 +621,8 @@ function jWord() {
 		$.get(this.api_path+'add-word.php', loc)
 		.done(function(data) {
 			if (data == "success")
-			{ my.refreshEntries(); messageTip("Word successfully added"); }
-			else alert("Word could not be created: "+data);
+			{ my.refreshEntries(); successTip("Word successfully added"); }
+			else errorTip("Word could not be created: "+data);
 			if (callback !== undefined) callback();
 		});
 	};

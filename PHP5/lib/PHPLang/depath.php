@@ -100,7 +100,7 @@ class _DEPATH
 		$ret = $key ? subscript(subscript($this->aliases, $key), $value) : NULL;
 		if (!is_string($ret))
 			$ret = subscript($this->aliases, $value);
-		if (!is_string($ret)) _die("value '$value' has no alias for key ".($key?'nil':"'$key'"));
+		if (!is_string($ret)) _die("value '$value' has no alias for key ".($key==null?'nil':"'$key'"));
 		return $ret;
 	}
 	function add_alias($alias, $value, $key=NULL) {

@@ -1,0 +1,31 @@
+
+
+
+<script src="lib/jquery.js" type="text/javascript"></script>
+<script src="laquery.js" type="text/javascript"></script>
+<body style="font-family: monospace"><span>js error</span></body>
+<script type="text/javascript">
+$ = undefined;
+var tests = [
+	"omnes",
+	"classis i18n signi help typi span",
+	"classis i18n typi span vel a",
+	"classis i18n typi span vel a vel div",
+	"classis i18n vel translatable",
+	"classis i18n typi span, vel classis translatable",
+	"classis i18n typi span vel classis translatable",
+];
+var style = 'border: 1px solid #EEE;padding:2px;margin:2px';
+tests = jQuery.map(tests, function(test){return test+"</td><td style='"+style+"'>"+laquery.parse(test)});
+//console.log(tests);
+jQuery('body').html("<table><tr><td style='"+style+"'>"+tests.join("</td></tr><tr><td style='"+style+"'>")+"</tr><tr><td style='"+style+"'><input></td><td style='"+style+"'>&nbsp;</td></tr></table>");
+jQuery('input').on('keyup', function() {
+	jQuery(this).parent().next().text(laquery.parse(jQuery(this).val()));
+}).on('change', function() {
+	var $this = jQuery(this);
+	var l = $this.val();
+	var r = $this.parent().next().text();
+	jQuery("<tr><td style='"+style+"'>"+l+"</td><td style='"+style+"'>"+r+"</td></tr>").insertBefore($this.parents('table').find('tr:last'));
+	$this.val("").trigger('keyup');
+});
+</script>

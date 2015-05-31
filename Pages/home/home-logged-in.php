@@ -9,7 +9,7 @@
 </header>
 <article>
     <p>
-        Welcome to Sassy's Online Latin Quiz, created by Nick Scheel and website design by Alex Scheel.<br><br>
+        Welcome to the Pantheum, quizzes and a dictionary for Latin, created by Nick Scheel with website design by Alex Scheel.<br><br>
         <button class="large" onclick="window.location.href='/links.php';">Latin websites</button><br>
         <button class="large" onclick="window.location.href='/dictionary.php';">Dictionary</button><br>
         <button class="large" onclick="window.location.href='/sentence.php';">Sentence Viewer</button><br>

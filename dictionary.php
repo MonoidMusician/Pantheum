@@ -12,7 +12,7 @@
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="/JS/lib/jquery.autocomplete.js"></script>
-        <script type="text/javascript" src="/JS/lib/jstorage.min.js"></script>
+        <script type="text/javascript" src="/JS/autocompletions.js"></script>
         <script type="text/javascript" src="/JS/jWord.js"></script>
     </head>
     <body>
@@ -21,29 +21,6 @@
             <?php sro('/Pages/dictionary.php'); ?>
         </section>
         <?php sro('/Includes/footer.php'); ?>
+        <?php sro('/Includes/messages.php'); ?>
     </body>
-    <div class="floater-message">
-    <a>Javascript did not successfully load. Some/all functionality may not be available.</a>
-    </div>
-    <script type="text/javascript">
-        $('.floater-message').hide();
-        messageTip = (function() {
-            var timer = null;
-            function callback() {
-                $('.floater-message').hide();
-                if (timer !== null)
-                    clearTimeout(timer);
-            }
-            function messageTip(msg, delay) {
-                if (delay === undefined) delay = 2300;
-                callback();
-                $('.floater-message').show();
-                $('.floater-message a').html(msg);
-                if (delay !== null)
-                    timer = setTimeout(callback, delay);
-            }
-            $('.floater-message').on("click", callback);
-            return messageTip;
-        })();
-    </script>
 </html>

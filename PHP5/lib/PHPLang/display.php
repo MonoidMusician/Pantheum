@@ -85,6 +85,16 @@ function unformat_word($w) {
 	$w = str_replace("uu", "u", $w);
 	return normalize_spaces($w);
 }
+function slugify($w) {
+	$w = mb_strtolower(no_specials($w), "utf-8");
+	$w = str_replace("j", "i", $w);
+	$w = str_replace("aa", "a", $w);
+	$w = str_replace("ee", "e", $w);
+	$w = str_replace("ii", "i", $w);
+	$w = str_replace("oo", "o", $w);
+	$w = str_replace("uu", "u", $w);
+	return normalize_spaces($w);
+}
 
 function format_key ($k) {
 	return str_replace("-", " ", ucfirst($k));
@@ -130,10 +140,16 @@ function format_attr($tag,$value=NULL) {
 		if ($value === "decl-1") return "1st Declension";
 		elseif ($value === "decl-2") return "2nd Declension";
 		elseif ($value === "decl-3") return "3rd Declension";
+		elseif ($value === "decl-4") return "4th Declension";
+		elseif ($value === "decl-5") return "5th Declension";
+		elseif ($value === "decl-2-neuter") return "2nd Declension Neuter";
+		elseif ($value === "decl-3-neuter") return "3rd Declension Neuter";
+		elseif ($value === "decl-4-neuter") return "4th Declension Neuter";
 	if ($tag === "conjugation")
 		if ($value === "conj-1") return "1st Conjugation";
 		elseif ($value === "conj-2") return "2nd Conjugation";
 		elseif ($value === "conj-3") return "3rd Conjugation";
+		elseif ($value === "conj-3-io") return "3rd Conjugation i-stem";
 		elseif ($value === "conj-4") return "4th Conjugation";
 	if ($tag === "clc-stage") {
 		$sp = explode("-", $value);
@@ -261,9 +277,22 @@ function display_word_info($w, $can_edit=FALSE) {
 	foreach ($w->read_attrs() as $attr) {
 		$infos[] = format_attr($attr->tag(), $attr->value());
 	}
-	?>(<?php echo implode("; ", $infos); ?>) [<a href="dictionary.php?id=<?= $id ?>">hardlink</a>]<?php
+	?>(<?php echo implode("; ", $infos); ?>)<?php
 	if (1 or $can_edit) {
+		$slug = slugify($w->name());
+		$class = "word${id}_toolbox";
 ?>
+		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_tools">tools</a>]
+		<script type="text/javascript">
+			$(function() {
+				var id = <?= $id ?>;
+				$('#word'+id+'_tools').on("click.tools", function() {
+					$('.<?= $class ?>').toggle();
+				});
+			});
+		</script>
+		<span class="<?= $class ?>" style="display: none;">
+		[<a href="dictionary.php?id=<?= $id ?>">hardlink</a>]
 		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_delete">del</a>]
 		<script type="text/javascript">
 			$(function() {
@@ -291,25 +320,40 @@ function display_word_info($w, $can_edit=FALSE) {
 				});
 			});
 		</script>
+		</span>
 		(size: <?= count($w->paths()) ?>)
+		<div style="display: none;" class="<?= $class ?>">
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="http://en.wiktionary.org/wiki/<?= $slug ?>#Latin" target="_blank">Wiktionary</a>,
+			<a href="http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry=<?= $slug ?>" target="_blank">Lewis & Short</a>
+			<br>&nbsp;&nbsp;&nbsp;&nbsp;
+			Pronunciation: <input id="word<?= $id ?>_pronunciation_tool"> <span></span>
+		</div>
+		<script>
+			$(function() {
+				var transform = la_ipa.transforms["IPA transcription"];
+				$('#word<?= $id ?>_pronunciation_tool').on('keyup', function() {
+					var $this=$(this);
+					$this.next().text(transform($this.val()));
+				});
+			});
+		</script>
 <?php
 	}
 	$made_div = FALSE;
 	$first = TRUE;
 	$last_type = NULL;
-	$r = "From ";
 	$using = [];
 	$from = [];
+	$sep = "";
 	foreach ($connections as $c) {
 		if (!$made_div) {
 			?><div class="word-more-info"><?php
 			$made_div = TRUE;
 		}
-		if ($c->type() === "etymon")
-		{echo$r;word_link($c->to());$r=", from ";}
-		elseif ($c->type() === "derived using")
+		if ($c->type() === "prefix")
 			$using[] = $c->to();
-		elseif ($c->type() === "derived from")
+		elseif ($c->type() === "etymon")
 			$from[] = $c->to();
 	}
 	if ($from) {
@@ -319,18 +363,18 @@ function display_word_info($w, $can_edit=FALSE) {
 		}
 		echo "From ";
 		foreach ($using as $u) {
-			word_link($u,true);
+			word_link($u,$u->lang() === $w->lang());
 			echo " + ";
 		}
 		$sep = "";
 		foreach ($from as $u) {
-			word_link($u,true);
+			word_link($u,$u->lang() === $w->lang());
 			echo $sep;
-			$sep = " and ";
+			$sep = ", from ";
 		}
 		?><br><?php
 	}
-	if ($r===", from ") { ?><br><?php }
+	if ($sep===", from ") { ?><br><?php }
 	foreach ($w->pronunciations() as $pron) {
 		if ((string)$pron->path()) continue;
 		if (!$pron->value()) continue;
@@ -377,42 +421,7 @@ function display_word_info($w, $can_edit=FALSE) {
 				});
 				return ret.join();
 			}
-			$('#word'+id+'_value_attr').autocomplete({
-				serviceUrl: '/PHP5/dictionary/get-attributes-json.php',
-				params: {
-					"lang": '<?= $lang ?>',
-					"spart": '<?= $spart ?>',
-				},
-				delimiter: splitter,
-				onSelect: function(selection) {
-					if (lock) return; lock=true;
-					var el = $('#word'+id+'_value_attr');
-					if ($.inArray(selection.value, last2) === -1) {
-						if (selection.value.indexOf("={") === -1) {
-							el.val(el.val()+", ");
-						} else {
-							var prev = /^(.*?,?)(?:[^{,}]|\{[^{}]*\})+$/.exec(el.val())[1];
-							console.log(prev);
-							var re = /\{([^,]+)\}$/;
-							var matched = re.exec(selection.value);
-							console.log(matched);
-							if (matched !== null)
-								el.val(prev+selection.value.split("=")[0]+"="+matched[1]);
-							else el.val(prev+selection.value.split("=")[0]+"=");
-						}
-					}
-					last2 = el.val().split(splitter);
-					el.focus();
-					lock=false;
-				},
-				paramName: "attr",
-				deferRequestBy: 150,
-				transformResult: function(response) {
-					response = JSON.parse(response);
-					return {suggestions: response};
-				},
-				minChars: 0,
-			});
+			$('#word'+id+'_value_attr').autocomplete(autocompletions['word-attributes'](id,'<?= $lang ?>','<?= $spart ?>'));
 		});
 		</script>
 <?php
@@ -466,7 +475,22 @@ function display_definitions($w, $can_edit=FALSE) {
 	echo "<br>";
 }
 
-function word_table_values($w) {
+function _do_ignore($l,$ignore) {
+	if (!$ignore or !$l) return $l;
+	$vec = is_vec($l);
+	foreach ($l as $k => $v) {
+		if (is_array($v)) {
+			$v = $l[$k] = _do_ignore($v,$ignore);
+			if (!$v or in_array($k, $ignore, true))
+				unset($l[$k]);
+		} elseif (in_array($v, $ignore))
+			unset($l[$k]);
+	}
+	if ($vec) $l = array_values($l);
+	return $l;
+}
+
+function word_table_values($w,$ignore=NULL) {
 	$w->read_paths();
 	$lang = $w->lang();
 	$spart = $w->speechpart();
@@ -563,11 +587,55 @@ function word_table_values($w) {
 			$values1 = $w->path()->iterate("degree");
 		}
 	}
+	if ($lang === "es") {
+		if (($spart === "noun") or
+			($spart === "adjective") or
+			($spart === "pronoun")) {
+			$values3 = $w->path()->iterate("gender");
+			$values2 = $w->path()->iterate("number");
+			if ($spart === "adjective")
+				$values1 = $w->path()->iterate("degree");
+			else $values1 = [];
+			$values0 = [];
+		} elseif ($spart === "verb") {
+			$moods = $w->path()->iterate("mood");
+			$values0 = [];
+			foreach ($moods as $_0) {
+				$path = PATH($w,$_0);
+				if ($_0 === "indicative" or
+					$_0 === "subjunctive") {
+					$values4 = $path->iterate("tense");
+					$values3 = $path->iterate("person");
+					$values2 = $path->iterate("number");
+					if (!$values1) $values1 = [FALSE];
+				} else if ($_0 === "infinitive" or
+				           $_0 === "gerund") {
+					$values4 = [""];
+					$values2 = [""];
+					$values3 = [FALSE,FALSE,FALSE];
+					$values1 = [""];
+				} else if ($_0 === "imperative") {
+					$values4 = [""];
+					$values3 = $path->iterate("person");
+					$values2 = $path->iterate("number");
+					$values1 = [""];
+				}
+				$values0[$_0] = [$values1,$values2,$values3,$values4];
+			}
+		} elseif ($spart === "adverb") {
+			$values1 = $w->path()->iterate("degree");
+		}
+	}
 	if ($lang === "ith" && $spart === "root") {
 		$values0 = $w->path()->iterate("complement");
 		$values2 = $w->path()->iterate("formality");
 		$values4 = $w->path()->iterate("stem");
 	}
+	$values0 = _do_ignore($values0,$ignore);
+	$values1 = _do_ignore($values1,$ignore);
+	$values2 = _do_ignore($values2,$ignore);
+	$values3 = _do_ignore($values3,$ignore);
+	$values4 = _do_ignore($values4,$ignore);
 	return [$values0, $values1, $values2, $values3, $values4];
 }
 
@@ -848,7 +916,7 @@ function display_connections($w, $can_edit) {
 		$c_id = 0;
 		foreach ($connections as $c) {
 			?><li>
-			<?= format_path($c->type()) ?>: <?php word_link($c->to());
+			<?= format_path($c->type()) ?>: <?php word_link($c->to(),$c->to()->lang() === $w->lang());
 			if ($can_edit) {
 				?>
 				[<a href="javascript:void(0)" id="connection<?= $id.'_'.$c_id ?>_delete">del</a>]
@@ -877,9 +945,28 @@ function display_connections($w, $can_edit) {
 	<button id="word<?= $id ?>_button_clear_connect" onclick="$('#word<?= $id ?>_connection_to, #word<?= $id ?>_connection_type').val('')">Clear</button>
 	<script type="text/javascript">
 	$(function() {
+		//alert(4);
+		
 		$('#word<?= $id ?>_connection_to, #word<?= $id ?>_connection_type').keypress(function(e){
 			if (e.which == 13) dict.word_add_connect(<?= $id ?>);
 		});
+		//alert(45);
+		$('#word<?= $id ?>_connection_to').autocomplete({
+			//lookup: names,
+			serviceUrl: '/PHP5/dictionary/get-info-json.php',
+			params: {
+				"lang":"la",
+			},
+			paramName: "name",
+			deferRequestBy: 150,
+			noCache: true,
+			transformResult: function(response) {
+				response = JSON.parse(response);
+				return {suggestions: response};
+			},
+			minChars: 1,
+		});
+		//alert(5);
 	});
 	</script><br>
 	<?php

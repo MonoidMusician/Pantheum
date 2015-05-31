@@ -40,7 +40,7 @@
 	    $names and count($names) == 1 and
 	    $sparts and count($sparts) == 1) {
 		$w = defaultDB()->searcher()->name($names[0])->spart($sparts[0])->lang($langs[0])->all();
-		if (count($w)) exit("Word seems to be already added");
+		if (count($w)) exit("Word seems to be already added. <a href='/dictionary.php?lang={$langs[0]}&spart={$sparts[0]}&name={$names[0]}' target='_blank'>See it</a>");
 		if (!$definitions or !count($definitions)) exit("Please enter at least one definition");
 		sql_exec($sql_stmts["word_lang,word_name,word_spart->new in words"], ["sss", $langs[0],$names[0],$sparts[0]]);
 		$w = defaultDB()->searcher()->name($names[0])->spart($sparts[0])->lang($langs[0])->all();

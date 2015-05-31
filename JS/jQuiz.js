@@ -8,6 +8,7 @@ function jQuiz() {
 	this.score = 0;
 	this.out_of = 0;
 	this.active = true;
+	this.scored = false; // Have we shown the user their score?
 	this.current = 0;
 	this.next = 0;
 	this.last = 1;
@@ -48,7 +49,7 @@ function jQuiz() {
 		if (data != '') {
 			var result = jQuery.parseJSON(data);
 			this.results[this.current] = result;
-			this.score += 0-(-result["score"]);
+			this.score += 0-(-result["subscore"]);
 			this.out_of += 0-(-result["out_of"]);
 			this.displayQuestion();
 		}
@@ -63,12 +64,14 @@ function jQuiz() {
 			header += '<button id="' + this.qelement + '-back" class="disabled">Back</button>';
 		}
 
-		header += '<span>' + (this.current+1) + ' / ' + this.last + '</span>';
+		header += '<span> ' + this.select() + ' / ' + this.last + ' </span>';
 
 		if ((this.current == (this.next-1)) && (this.results[this.current] == undefined)) {
 			header += '<button id="' + this.qelement + '-submit">Submit</button>';
 		} else if (this.current == this.last - 1) {
-			if (this.active)
+			if (!this.scored)
+				header += '<button id="' + this.qelement + '-next">Results</button>';
+			else if (this.active)
 				header += '<button id="' + this.qelement + '-next">Finish</button>';
 			else
 				header += '<button id="' + this.qelement + '-next">Return</button>';
@@ -79,6 +82,17 @@ function jQuiz() {
 		header += '</section>';
 
 		return header;
+	}
+
+	this.select = function() {
+		var ret = '<select id="' + this.qelement + '-page">';
+		for (var i=0; this.questions[i] !== undefined; i++) {
+			if (this.current == i)
+				ret += '<option selected>';
+			else ret += '<option>';
+			ret += (i+1);
+		}
+		return ret + '</select>';
 	}
 
 	this.parsePart = function(part) {
@@ -93,21 +107,7 @@ function jQuiz() {
 				var result = this.results[this.current];
 				var correct = result['subscore'];
 				var total = result['out_of'];
-				var incorrect = total - correct;
-				var percent = Math.round(correct / total * 100);
-				if (correct) correct = '<span class="jquiz-correct">+' + correct + '</span> ';
-				else correct = '';
-				if (incorrect) incorrect = '<span class="jquiz-incorrect">-' + incorrect + '</span> ';
-				else incorrect = '';
-				if (percent > 90)
-					var color = 'correct';
-				else if (percent < 70)
-					var color = 'incorrect';
-				else
-					var color = 'other';
-				percent = ' (<span class="jquiz-'+color+'">' + percent + '%</span>)';
-				total = '<span class="jquiz-other">' + total + '</span>';
-				var score = '<br><span class="jquiz-score">You got '+correct+incorrect+' / ' + total + percent + "</span>";
+				var score = '<br>' + this.makeScore(correct, total);
 			} else var score = '';
 			result = '<span class="jquiz-help">' + part[1] + '</span><br>'+score+'<br>';
 		} else if (part[0] == 'html') {
@@ -115,7 +115,7 @@ function jQuiz() {
 		} else {
 			if (this.results[this.current] == undefined) {
 				if (part[0] == 'input') {
-					result = '<input class="autosizeable" type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
+					result = '<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="autosizeable" type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
 				} else if (part[0] == 'paragraph') {
 					result = '<textarea id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '" style="font-family:Linux Libertine;"></textarea>';
 				} else if (part[0] == 'select') {
@@ -207,7 +207,7 @@ function jQuiz() {
 
 	this.buildBody = function() {
 		var body = '<section id="' + this.qelement + '-content">';
-		body += '<p type="jquiz-question">';
+		body += '<p class="jquiz-question">';
 		for (var pid in this.questions[this.current]) {
 			var part = this.questions[this.current][pid];
 			body += this.parsePart(part);
@@ -216,10 +216,56 @@ function jQuiz() {
 		body += '</section>';
 
 		return body;
+	};
+
+	this.makeScore = function(correct, total, intro, classes) {
+		if (intro === undefined) intro = "You got ";
+		if (classes === undefined) classes = "jquiz-score";
+		var incorrect = total - correct;
+		var percent = Math.round(correct / total * 100);
+		if (correct) correct = '<span class="jquiz-correct">+' + correct + '</span> ';
+		else correct = '';
+		if (incorrect) incorrect = '<span class="jquiz-incorrect">-' + incorrect + '</span> ';
+		else incorrect = '';
+		if (percent > 90)
+			var color = 'correct';
+		else if (percent < 70)
+			var color = 'incorrect';
+		else
+			var color = 'other';
+		percent = ' (<span class="jquiz-'+color+'">' + percent + '%</span>)';
+		total = '<span class="jquiz-other">' + total + '</span>';
+		return '<span class="'+classes+'">'+intro+correct+incorrect+' / ' + total + percent + "</span>";
 	}
 
+	this.buildScore = function() {
+		var body = '<section id="' + this.qelement + '-content">';
+		body += '<p class="jquiz-scores">';
+		body += this.makeScore(this.score, this.out_of, "Total: ", "jquiz-totalscore");
+		for (rid in this.results) {
+			var result = this.results[rid];
+			var correct = result['subscore'];
+			var total = result['out_of'];
+			// FIXME: need unobtrusivity here!
+			body += '<br>' + this.makeScore(correct, total, '<a href="javascript:quiz.goTo('+rid+')">Question #'+(rid-0+1)+':</a> ');
+		}
+		body += '</p>';
+		body += '</section>';
+		return body;
+	};
+
 	this.displayQuestion = function() {
+		this.scored = false;
 		var html = this.buildHeader() + this.buildBody();
+		var $html = $(html);
+		$('#' + this.qelement).html($html);
+		æ.format($html);
+		$html.find('input.autosizeable').autosizeInput();
+	};
+
+	this.showScore = function() {
+		this.scored = true;
+		var html = this.buildHeader() + this.buildScore();
 		var $html = $(html);
 		$('#' + this.qelement).html($html);
 		æ.format($html);
@@ -251,7 +297,8 @@ function jQuiz() {
 
 	this.handleNext = function(data) {
 		if (this.current == this.last - 1) {
-			this.endQuiz();
+			if (!this.scored) this.showScore();
+			else this.endQuiz();
 		} else if (this.current == (this.next-1)) {
 			this.getNextQuestion();
 		} else {
@@ -269,20 +316,35 @@ function jQuiz() {
 		this.displayQuestion();
 	};
 
+	this.handleNextField = function(e) {
+		if (e.which == 13) {
+			var next = $(':input:eq(' + ($(':input').index(e.target) + 1) + ')').focus();
+			if (!next.length) $('#' + this.qelement + '-submit').focus();/**/
+		}
+	};
+
+	this.handlePage = function(data) {
+		this.goTo(data.target.value - 1);
+	};
+
 
 	this.bindEvents = function() {
 		this.unbindEvents();
 
-		$(document).on('click', '#' + this.qelement + '-back', $.proxy(this.handleBack, this));
-		$(document).on('click', '#' + this.qelement + '-submit', $.proxy(this.handleSubmit, this));
-		$(document).on('click', '#' + this.qelement + '-next', $.proxy(this.handleNext, this));
+		$(document).on('click',  '#' + this.qelement + '-back', $.proxy(this.handleBack, this));
+		$(document).on('click',  '#' + this.qelement + '-submit', $.proxy(this.handleSubmit, this));
+		$(document).on('click',  '#' + this.qelement + '-next', $.proxy(this.handleNext, this));
+		$(document).on('change', '#' + this.qelement + '-page', $.proxy(this.handlePage, this));
+		$(document).on('keyup',  '#' + this.qelement + '-content input:text', $.proxy(this.handleNextField, this));
 	};
 
 	this.unbindEvents = function() {
-		$(document).off('click', '#' + this.qelement + '-back');
-		$(document).off('click', '#' + this.qelement + '-submit');
-		$(document).off('click', '#' + this.qelement + '-next');
-		$(document).off('click', '#' + this.qelement + '-finish');
+		$(document).off('click',  '#' + this.qelement + '-back');
+		$(document).off('click',  '#' + this.qelement + '-submit');
+		$(document).off('click',  '#' + this.qelement + '-next');
+		$(document).off('click',  '#' + this.qelement + '-finish');
+		$(document).off('change', '#' + this.qelement + '-page');
+		$(document).off('keyup',  '#' + this.qelement + '-content input:text');
 	};
 
 	this.start = function(last) {
@@ -297,7 +359,7 @@ function jQuiz() {
 		this.last = data['last'];
 		this.score = data['score'];
 		this.out_of = data['out_of'];
-		this.active = (this.results[this.last - 1] == undefined);
+		this.active = !data['completed'];
 		if (this.active) {
 			for (var i=0;i++;i<this.last) {
 				if (this.results[i] == undefined) {
@@ -310,6 +372,11 @@ function jQuiz() {
 		}
 		this.displayQuestion();
 		this.bindEvents();
+	};
+
+	this.goTo = function(index) {
+		this.current = index;
+		this.displayQuestion();
 	};
 
 	this.endQuiz = function() {

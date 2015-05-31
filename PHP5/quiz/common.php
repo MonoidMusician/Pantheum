@@ -149,6 +149,11 @@ class _QUIZ
 		sql_exec($sql_stmts["finish quiz"], ["i", &$this->_id]);
 		return TRUE;
 	}
+	function delete() {
+		global $sql_stmts;
+		sql_exec($sql_stmts["quiz_id->delete from quizzes"], ["i", &$this->_id]);
+		return TRUE;
+	}
 	function data() {
 		global $sql_stmts;
 		$questions = NULL;
@@ -159,7 +164,7 @@ class _QUIZ
 		sql_getone($sql_stmts["quiz_id->results"], $results, ["i", &$this->_id]);
 		if (!$results) $results = "[]";
 		$results = json_decode($results);
-		return ["questions"=>$questions,"results"=>$results,"last"=>$this->last(),"score"=>$this->score(),"out_of"=>$this->out_of()];
+		return ["questions"=>$questions,"results"=>$results,"last"=>$this->last(),"score"=>$this->score(),"out_of"=>$this->out_of(),"completed"=>$this->completed()];
 	}
 }
 

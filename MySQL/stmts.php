@@ -70,7 +70,7 @@ $sql_stmts['word_id->word_name=']= "UPDATE words SET word_name = (?) WHERE word_
 $sql_stmts['word_id->inflection_cache=']= "UPDATE words SET inflection_cache = (?) WHERE word_id = (?)";
 
 $sql_stmts['word_id->word_info']= "SELECT CONCAT(
-        '#',word_id,
+        -- '#',word_id,
         ': ',word_name,
         ' (',REPLACE((
             SELECT def_value from definitions where definitions.word_id = words.word_id LIMIT 1
@@ -79,15 +79,18 @@ $sql_stmts['word_id->word_info']= "SELECT CONCAT(
     FROM words WHERE word_id = (?)";
 
 $sql_stmts['word_id->word_info_formatted']= "SELECT CONCAT(
-        '#',word_id,
-        ': <a class=\"word-ref format-word-',
+        -- '#',word_id,': ',
+        '<a class=\"word-ref format-word-',
         word_lang,
         '\" href=\"dictionary.php?id=',
         word_id,
         '\">',word_name,'</a>',
-        ' (“',REPLACE((
-            SELECT def_value from definitions where definitions.word_id = words.word_id LIMIT 1
-        ),'\n','”, “'),'”)'
+        IF((EXISTS (SELECT 1 FROM definitions WHERE definitions.word_id = words.word_id)),
+            CONCAT(' (“',REPLACE((
+                SELECT def_value FROM definitions WHERE definitions.word_id = words.word_id LIMIT 1
+            ),'\n','”, “'),'”)'),
+            ''
+        )
     )
     FROM words WHERE word_id = (?)";
 
@@ -540,6 +543,8 @@ $sql_stmts['user_id->quiz_id']= "SELECT quiz_id FROM quizzes WHERE user_id = (?)
 $sql_stmts['user_id->quiz_id reversed']= "SELECT quiz_id FROM quizzes
     WHERE user_id = (?)
     ORDER BY quiz_id DESC";
+
+$sql_stmts['quiz_id->delete from quizzes']= "DELETE FROM quizzes WHERE (quiz_id = (?))";
 
 
 /************************

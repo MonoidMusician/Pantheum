@@ -85,11 +85,13 @@ class _PICK
 			}
 		}
 		if (is_array($this->rand)) {
+			#error_log(var_export($this->rand,1));
 			$rand = [];
 			foreach ($this->rand as $k => $weight) {
 				if (in_array($k, $possibles))
 					$rand[array_search($k, $possibles)] = (int)($weight);
 			}
+			#error_log(var_export($rand,1));
 		} else $rand = $this->rand;
 		return choose_n_unique($possibles, $this->n, $rand);
 	}

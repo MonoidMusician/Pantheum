@@ -782,11 +782,15 @@
             // If suggestions is string array, convert them to supported format:
             if (suggestions.length && typeof suggestions[0] === 'string') {
                 return $.map(suggestions, function (value) {
-                    return { value: value, data: null };
+                    if (value)
+                        return { value: value, data: null };
                 });
             }
 
-            return suggestions;
+            return $.map(suggestions, function(suggestion) {
+                if (suggestion.value)
+                    return suggestion;
+            });
         },
 
         validateOrientation: function(orientation, fallback) {

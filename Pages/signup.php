@@ -8,6 +8,7 @@
             <input id="signuppassword" class="signup" type="password" placeholder="Password"><br>
             <input id="signupconfirmpassword" class="signup" type="password" placeholder="Confirm Password"><br>
             <input id="signupemail" class="signup" type="email" placeholder="Email"><br>
+            <?php sro("/PHP5/user/classes.php") ?><br>
             <button id="signupsubmit">Sign Up</button>
             <div id="signuperror"></div>
         </div>
@@ -19,6 +20,8 @@
                 var password = $('#signuppassword').val();
                 var cpassword = $('#signupconfirmpassword').val();
                 var email = $('#signupemail').val();
+                var classid = $('input[name=signupclass]:checked').val();
+                //alert(classid);
                 if (username != '') {
                     if (password != '') {
                         if (cpassword != '') {
@@ -28,9 +31,9 @@
                                         $('#signuperror').html('Sending&nbsp;request...');
                                         password = loginHash(username, password);
                                         cpassword = loginHash(username, cpassword);
-                                        $.post("/PHP5/signup.php", { u: username, p: password, c: cpassword, e: email, v: value }, function(data) {
+                                        $.post("/PHP5/signup.php", { u: username, p: password, c: cpassword, e: email, v: value, l: classid }, function(data) {
                                             if (data == 'success') {
-                                                $('#signuperror').html('Account&nbsp;created.<br>Please&nbsp;check&nbsp;your&nbsp;email.');
+                                                $('#signuperror').html('Account&nbsp;created.<!--<br>Please&nbsp;check&nbsp;your&nbsp;email.-->');
                                             } else {
                                                 switch (data) {
                                                     case '1':
@@ -59,6 +62,9 @@
                                                         break;
                                                     case '9':
                                                         $('#signuperror').html('Error:&nbsp;Email&nbsp;in&nbsp;use.');
+                                                        break;
+                                                    case '10':
+                                                        $('#signuperror').html('Error:&nbsp;Invalid&nbsp;class.');
                                                         break;
                                                     default: 
                                                         $('#signuperror').html('Error:&nbsp;Unknown&nbsp;error&nbsp('+data+').');

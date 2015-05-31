@@ -403,6 +403,22 @@ function RWORD($db) {
 	$id = intval(rand_row("words", "word_id"));
 	return WORD($db, $id);
 }
+function WORD2($lang, $name, $spart=null) {
+	$w = defaultDB()->searcher()->name($name)->lang($lang);
+	if ($spart !== null)
+		$w = $w->spart($spart);
+	$w = $w->all();
+	$r = array_pop($w);
+	if ($w) return null;
+	return $r;
+}
+function RWORD2($lang, $spart, $name=null) {
+	$w = defaultDB()->searcher()->spart($spart)->lang($lang)->only_without_attr(ATTR("irregular"))->only_without_attr(ATTR("template"));
+	if ($name !== null)
+		$w = $w->name($name);
+	$w->stmt .= " AND EXISTS (SELECT 1 FROM forms WHERE forms.word_id = words.word_id AND form_tag != '' AND form_value != '') AND NOT EXISTS (SELECT 1 FROM attributes WHERE attr_tag = 'conjugation' AND attr_value like '%deponent%' AND word_id = words.word_id)";
+	return $w->rand();
+}
 sro('/PHP5/lib/PHPLang/definition.php');
 sro('/PHP5/lib/PHPLang/pronunciation.php');
 sro('/PHP5/lib/PHPLang/connection.php');

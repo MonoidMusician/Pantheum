@@ -4,6 +4,7 @@
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
 	sro('/PHP5/lib/PHPLang/display.php');
+	sro('/PHP5/lib/PHPLang/string.php');
 	sro('/PHP5/quiz/common.php');
 
 	$result = [];
@@ -13,47 +14,43 @@
 	foreach (quiz_getvalue("current_answer") as $name=>$values) {
 		$answer = $_POST[$name];
 		$answer2 = unformat_word(strip_html($answer));
+
 		if (array_key_exists("correct", $values)
-		and array_key_exists("acceptable", $values)
 		and is_array($values["correct"])
-		and is_array($values["acceptable"])) {
-			$also = $values["correct"];
-			$correct = $values["correct"];
-			$values = $values["acceptable"];
-		} else $correct = ($also=$values);
-		$score = FALSE;
-		#error_log($answer2);
-		foreach ($values as $value) {
-			$_val = unformat_word(strip_html($value));
-			#error_log($_val);
-			if (!$score and $answer2 == $_val) {
+		and array_key_exists("expr", $values)
+		and is_string($values["expr"])) {
+			$value = compare_syntax($values["expr"], $answer2, ["unescaped"=>TRUE]);
+			if ($value === null) {
+				$score = FALSE;
+				$correct = $values["correct"];
+			} else {
 				$score = TRUE;
-				$_also = $also;
-				foreach ($_also as $key => $v2) {
-					if (unformat_word(strip_html($v2))==$_val) unset($also[$key]);
+				$also = [];
+			}
+		} else {
+			if (array_key_exists("correct", $values)
+			and array_key_exists("acceptable", $values)
+			and is_array($values["correct"])
+			and is_array($values["acceptable"])) {
+				$also = $values["correct"];
+				$correct = $values["correct"];
+				$values = $values["acceptable"];
+			} else $correct = ($also=$values);
+			$score = FALSE;
+			#error_log($answer2);
+			foreach ($values as $value) {
+				$_val = unformat_word(strip_html($value));
+				#error_log($_val);
+				if (!$score and $answer2 == $_val) {
+					$score = TRUE;
+					$_also = $also;
+					foreach ($_also as $key => $v2) {
+						if (unformat_word(strip_html($v2))==$_val) unset($also[$key]);
+					}
+					break;
 				}
-				break;
 			}
 		}
-		/*foreach ($also as &$definition) {
-			$paren = -1;
-			$new = "";
-			for ($i=0;$i<strlen($definition);$i++) {
-				if ($definition[$i] == "(" or $definition[$i] == ")")
-					if ($i == 0 or $paren >= 0)
-					{ $paren += 1; continue; }
-				if ($paren !== 0 and (!$new or !ctype_space($definition[$i]))) $new .= $definition[$i];
-			}
-		}/**/
-		/*
-		if (!$score) {
-			$correct = $correct ? "“".implode("” or “", $correct)."”" : "";
-			$result[$name] = [$answer, $correct];
-		} else {
-			if ($also) $also = " (also: “".implode("” or “", $also)."”)";
-			else $also = "";
-			$result[$name] = [$value.$also, true];
-		}*/
 		$result[$name] = array_merge([$score, $score?$value:$answer], $score?$also:$correct);
 		$out_of += 1; if ($score) $subscore += 1;
 	}

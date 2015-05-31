@@ -78,7 +78,7 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 	$searcher = $db->searcher();
 	#var_dump(array_keys($searcher->master));
 	if (array_key_exists("name", $t))
-		$searcher = $searcher->name($t["name"]);
+		$searcher = $searcher->name(_process_value($t["name"],$pick_db,$db));
 	if (array_key_exists("language", $t))
 		$searcher = $searcher->lang($t["language"]);
 	elseif (array_key_exists("lang", $t))
@@ -109,7 +109,7 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 
 	$path = PATH($word);
 	if (array_key_exists("path", $t)) {
-		$p = $t["path"];
+		$p = _process_value($t["path"],$pick_db,$db,$path);
 		foreach ($p as $k=>$_) {
 			$path->add2([$k=>_process_value($_,$pick_db,$db,$path)]);
 		}
@@ -131,7 +131,7 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 			$pick_db[$t["store"]] = $ret;
 		return $ret;
 	} else {
-		$reason = "path $path didn't exist in word with id ".$word->id()." or was NULL";
+		$reason = "path '$path' didn't exist in word with id ".$word->id()." or was NULL";
 		return;
 	}
 }

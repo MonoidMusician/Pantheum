@@ -20,9 +20,11 @@
     <?php
         global $sql_stmts;
         $quizzes = [];
+        $quizzes_data = [];
         sql_getmany($sql_stmts["user_id->quiz_id reversed"], $quizzes, ["i", $suid]);
         foreach ($quizzes as &$q) {
             $q = QUIZ($q);
+            $quizzes_data[$q->id()] = $q->completed();
             ?><tr>
             <td><input name="quizzes" type="radio" value="<?=$q->id()?>"></td>
             <td><?=$q->name()?></td>
@@ -49,7 +51,10 @@
     </script>
     <br>
     <button id="start" onclick="startQuiz();">
-        Review
+        Review/Resume
+    </button>
+    <button id="delete" onclick="deleteQuiz();" disabled>
+        Delete
     </button>
 </article>
 <script type="text/javascript">
@@ -60,6 +65,20 @@
     });
     var quiz = new jQuiz();
     quiz.init('quiz', '/PHP5/quiz/nextQuestion.php', '/PHP5/quiz/submitQuestion.php', '/PHP5/quiz/endQuiz.php');
+    var quizzes_data = <?= json_encode($quizzes_data) ?>;
+    $('input[name=quizzes]').on('change', function() {
+        var $this=$(this), val=$this.val();
+        if (!val in quizzes_data) {
+            $('#start').text("Review/Resume");
+            $('#delete').attr('disabled', true);
+        } else if (quizzes_data[val]) {
+            $('#start').text("Review");
+            $('#delete').removeAttr('disabled');
+        } else {
+            $('#start').text("Resume");
+            $('#delete').removeAttr('disabled');
+        }
+    });
     function startQuiz() {
         var id = $('input[name=quizzes]:checked').val();
         if (!id) return;
@@ -69,6 +88,18 @@
                 quiz.review(data);
             } else {
                 alert("Error: "+msg);
+            }
+        });
+    }
+    function deleteQuiz() {
+        var id = $('input[name=quizzes]:checked').val();
+        if (!id) return;
+        $.get('/PHP5/quiz/deleteQuiz.php?id=' + id, function(data) {
+            if (data == "success") {
+                messageTip("Successfully deleted the quiz");
+                $('input[name=quizzes][value='+id+']').parents("tr").remove();
+            } else {
+                alert("Error: "+data);
             }
         });
     }

@@ -20,7 +20,7 @@ if ($_GET["type"] === "pron") {
 	$name = "definition";
 	$column = "def_id"; $table = $name."s"; $table2 = $table."2";
 }
-if (!$name) exit("No valid table supplied");
+if (!$name) exit("No valid table supplied (<a href='?type=pron'>pron</a>, <a href='?type=form'>form<a/>, or <a href='?type=def'>def</a>)");
 $table2 = $table;
 $e = TRUE;
 

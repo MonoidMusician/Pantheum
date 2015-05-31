@@ -29,6 +29,11 @@
 	select {
 		font-family: Linux Libertine;
 	}
+
+	.present {
+		font-weight: bold;
+		color: #CC3333;
+	}
 </style>
 <p style="font-size: 2em; color:red">¡¡js failed to load!! (syntax error)</p>
 <h1>Panθeũ</h1>
@@ -89,8 +94,8 @@
 <div style="width: calc(100% - 500px); height: 300px; float: right; display:none">
 <iframe style="width: 100%; height: 100%"></iframe>
 <br>
-<button onclick="$('iframe')[0].history.back()">←</button>
-<button onclick="$('iframe')[0].history.forward()">→</button>
+<button onclick="if ($('iframe')[0].history) $('iframe')[0].history.back()">←</button>
+<button onclick="if ($('iframe')[0].history) $('iframe')[0].history.forward()">→</button>
 </div>
 <form data-action="submit-verb.php">
 <div class="verb">
@@ -134,7 +139,7 @@
 		<option data-ending0="r" data-ending1="rī" value="decl-2-r">2nd Declension -r, -rī</option>
 		<option data-ending0="os" data-ending1="ī" value="decl-2-os">Grecian -ŏs</option>
 		<option data-ending0="um" data-ending1="ī" value="decl-2-neuter">2nd Declension Neuter</option>
-		<option data-ending0="on" data-ending1="ī" value="decl-2-on">Grecian -on (Neuter)</option>
+		<option data-ending0="on" data-ending1="ī" value="decl-2-on-neuter">Grecian -on (Neuter)</option>
 		<optgroup label="3rd Declension">
 		<option data-ending0="" data-ending1="is" value="decl-3">3rd Declension</option>
 		<option data-ending0="" data-ending1="is" value="decl-3-i">3rd Declension i-stem</option>
@@ -203,16 +208,19 @@
 [<a id="perseus2" target="_blank">2</a>]
 <div id="forms">
 <div class="verb">
+	<span class="present"></span>
 	<input id="verb0" name="verb0" type="text"><span id="verb_ending0">ō,</span><span></span>
 	<input id="verb1" name="verb1"><span id="verb_ending1">āre,</span><span></span>
 	<input id="verb2" name="verb2"><span id="verb_ending2">ī,</span><span></span>
 	<input id="verb3" name="verb3"><span id="verb_ending3">us</span><span></span>
 </div> 
 <div class="noun">
+	<span class="present"></span>
 	<input id="noun0"><span id="noun_ending0">a,</span><span></span>
 	<input id="noun1"><span id="noun_ending1">æ</span><span></span>
 </div>
 <div class="adjective">
+	<span class="present"></span>
 	<input id="adjective0"><span id="adjective_ending0">us,</span><span></span>
 	<input id="adjective1"><span id="adjective_ending1">a,</span><span></span>
 	<input id="adjective2"><span id="adjective_ending2">um,</span><span></span>
@@ -220,6 +228,7 @@
 	<input id="adjective4"><span id="adjective_ending4">imus</span><span></span>
 </div>
 <div class="adverb">
+	<span class="present"></span>
 	<input id="adverb0"><span id="adverb_ending0">ē,</span><span></span>
 	<input id="adverb1"><span id="adverb_ending1">us,</span><span></span>
 	<input id="adverb2"><span id="adverb_ending2">imē</span><span></span>
@@ -247,6 +256,14 @@ CLC stage(s): <input placeholder="stage, …" style="width: 80px">
 </form>
 <script>
 $('p').text('js load error (runtime)');
+var lock_url = true;
+$('iframe').on('load',function() {
+	if (lock_url) return;
+	lock_url = true;
+	$this=$(this);
+	$this.attr('src', $this.attr('src')+'#Latin');
+});
+$('.present').attr('title','This word already exists!');
 // autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
 $('#forms input')
 	.attr('autocomplete', 'off')
@@ -355,17 +372,18 @@ function show(type) {
 
 var lock_blur = false;
 $('#forms input').on('blur.repl', function(){
-	var $this = $(this), val, suffix, slug, w;
+	var $this = $(this), $par = $this.parent(), val, suffix, slug, nomen, type, w;
 	if (!$this.is(':visible')) return;
 	if (!lock_blur) {
-		if (!$this.parent().children('input').val()) {
+		if (!$par.children('input').val()) {
 			$('iframe').parent().hide();
+			$('.present').text('');
 			return;
 		}
 		lock_blur = true;
 		setTimeout(function() {
 			if (lock_blur)
-				$this.parent().children('input').trigger('blur.repl');
+				$par.children('input').trigger('blur.repl');
 			lock_blur = false;
 		}, 0);
 		return;
@@ -375,20 +393,35 @@ $('#forms input').on('blur.repl', function(){
 	var comma = suffix.endsWith(",");
 	if (comma) suffix = suffix.slice(0,-1);
 	val = $.map($this.val().split(/\//g), function(a){
-		a = a.trim();
-		if (slug === undefined) return slug = a+suffix;
-		return a+suffix;
+		a = a.trim()+suffix;
+		if (slug === undefined) nomen = slug = a;
+		return a;
 	}).join("/").normalize('NFKD') + (comma?',':'');
 	while (slug.endsWith(",")) slug = slug.slice(0,-1).trim();
-	if (!$this.prev().length) {
-		slug = æ.ASCIIize(slug.normalize('NFKD')), w = 'wiktionary.org/wiki/'+slug+'#Latin';
-		$('#wiktionary').attr('href','http://en.'+w);
+	if (!$this.prev().length || $this.prev().is('.present')) {
+		slug = æ.ASCIIize(slug.normalize('NFKD')), w = 'wiktionary.org/wiki/'+slug;
+		$('#wiktionary').attr('href','http://en.'+w+'#Latin');
 		$('iframe').parent().show();
-		if ($('iframe').attr('src') != w)
-			$('iframe').attr('src', 'http://en.m.'+w);
+		if ($('iframe').attr('src') != w && $('iframe').attr('src') != w+'#Latin')
+		{ $('iframe').attr('src', 'http://en.m.'+w); lock_url = false; }
 		$('#perseus').attr('href','http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry='+slug);
 		$('#perseus1').attr('href','http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry='+slug+'1');
 		$('#perseus2').attr('href','http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry='+slug+'2');
+		type = (
+			$par.is(".verb") ? "verb" :
+			$par.is(".noun") ? "noun" :
+			$par.is(".adjective") ? "adjective" :
+			$par.is(".adverb") ? "adverb" :
+			$par.is(".preposition") ? "preposition" :
+			$par.is(".conjunction") ? "conjunction" :
+			"unknown"
+		);
+		$.get("/PHP5/dictionary/word-exists.php",{'lang':'la','spart':type,'name':nomen})
+		.done(function(data) {
+			if (data == "present" || data == "absent")
+			{ $('.present').text({"present":"⚠","absent":""}[data]); }
+			else alert("Word lookup failed: "+data);
+		});
 	}
 	$this.next().next().show().text(val).on('click.repl', function() {
 		var $t = $(this);
@@ -409,6 +442,7 @@ var updater = function (target, fields_strict, fields_loose) {
 		var $this = $(this);
 		if ($this.parents('#forms').length && !$this.prev().length)
 			$('#wiktionary, #perseus').removeAttr('href');
+		$('.present').text(''); messageTip(false);
 		if (lock_updater) return; lock_updater = true;
 		var val, orig = val = $this.val();
 		val = transform(val);
@@ -627,6 +661,12 @@ $('select').on('change', function () {
 		ending.is(".conjunction") ? "conjunction" :
 		"unknown"
 	)) + "_ending";
+	if (name.endsWith("-neuter")) $("select[name=gender]").val("neuter");
+	else if (name.startsWith("decl-1")) $("select[name=gender]").val("feminine");
+	else if (name.startsWith("decl-2")) $("select[name=gender]").val("masculine");
+	else if (name.startsWith("decl-4")) $("select[name=gender]").val("masculine");
+	else if (name.startsWith("decl-5")) $("select[name=gender]").val("feminine");
+	else if (name == "indeclineable") $("select[name=gender]").val("neuter");
 	if (name.startsWith("conj-1")) {
 		verb_endings[0][1] = verb_endings[1][1] = "";
 		verb_endings[0][2] = "āv";
@@ -651,8 +691,9 @@ $('select').on('change', function () {
 				return a.slice(0,-1)+"x";
 			if (a.match(/(?:[aeiouyæœ]|ā|ē|ī|ō|ū|ȳ)[dt]$/i))
 				return a.slice(0,-1)+"s";
-			if (a.match(/^[a-dfgj-np-tvxz](?:[aeiouyæœ]|ā|ē|ī|ō|ū|ȳ)[a-dfgj-np-tvxz]/i))
-				return a.substr(0,2)+a;
+			// reduplication (rare)
+			/*if (a.match(/^[a-dfgj-np-tvxz](?:[aeiouyæœ]|ā|ē|ī|ō|ū|ȳ)[a-dfgj-np-tvxz]/i))
+				return a.substr(0,2)+a;/**/
 			return a;
 		};
 		verb_endings[1][2] = function(a){
@@ -791,11 +832,12 @@ $('#submit').on('click', function() {
 		get['name'] = $('#forms > div:visible input + span + span').first().text().split("/")[0].trim();
 		while (get['name'].endsWith(",")) get['name'] = get['name'].slice(0,-1).trim();
 		console.log(get);
+		messageTip("Trying to add word...");
 		$.get(dict.api_path+'add-word-complete.php', get)
 		.done(function(data) {
 			if (data == "success")
-			{ messageTip("Word successfully added. <a href='dictionary.php?name="+get['name']+"' target='_blank'>See it</a>"); }
-			else alert("Word could not be created: "+data);
+			{ successTip("Word successfully added. <a href='dictionary.php?name="+get['name']+"' target='_blank'>See it</a>"); }
+			else errorTip("Word could not be created: "+data);
 		});
 	}, 1);
 });

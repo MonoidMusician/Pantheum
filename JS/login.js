@@ -52,6 +52,7 @@ function loginSubmit(username, password, error) {
         $.post("/PHP5/login.php", { u: username, p: password }, function(data) {
             if (data == 'success') {
                 window.location.href = '/index.php';
+                $.jStorage.flush();
             } else {
                 if (data == '1') {
                     $(error).html('Already logged in.');
