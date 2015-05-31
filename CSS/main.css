@@ -141,7 +141,7 @@ input:not([type="checkbox"]):not([type="radio"]) {
 }
 
 input:not([type="checkbox"]):not([type="radio"]).autosizeable {
-    min-width: 30px;
+    min-width: 6em;
     width: 0px;
     max-width: 90%;
 }
@@ -279,6 +279,13 @@ table input[type=checkbox], table input[type=radio] {
     padding: 0px 8px;
 }
 
+.jquiz-scores {
+    text-align: center;
+}
+.jquiz-totalscore {
+    font-size: 2em;
+}
+
 a.word-ref {
     /*font-weight: bold;*/
     font-style: italic;
@@ -374,6 +381,12 @@ div.floater-message {
     padding-right: 6px;
     padding-top: 4px;
     padding-bottom: 4px;
+}
+div.floater-message.error {
+    background-color: #CC3333;
+}
+div.floater-message.success {
+    background-color: #78A83D;
 }
 div.floater-message a {
     color: #EFEFEF !important;
