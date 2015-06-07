@@ -27,6 +27,7 @@ function display_word_entries($list) {
 function display_word_entry($w, $inflection_hidden=TRUE) {
 	display_word_info($w);
 	display_definitions($w);
+	echo "<br>";
 	display_inflection($w, $inflection_hidden);
 }
 
@@ -36,9 +37,11 @@ function no_format($w) {
 }
 // Format word for displaying based upon replacements
 // TODO: user settings, DB encoding
-function format_word($w, $lang=NULL) {
+function format_word($w, $lang=NULL, $all=false) {
 	if (!strlen($w)) return "—"; # em-dash
 	if (!is_string($lang)) $lang = "la";
+	if (!$all)
+		$w = explode("\n", $w)[0];
 	if ($lang)
 		return "<span class='format-word-$lang'>$w</span>";
 	return $w;
@@ -145,6 +148,8 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "decl-2-neuter") return "2nd Declension Neuter";
 		elseif ($value === "decl-3-neuter") return "3rd Declension Neuter";
 		elseif ($value === "decl-4-neuter") return "4th Declension Neuter";
+		elseif ($value === "adjective-12") return "1st/2nd Declension";
+		elseif ($value === "adjective-3-3") return "3rd Declension";
 	if ($tag === "conjugation")
 		if ($value === "conj-1") return "1st Conjugation";
 		elseif ($value === "conj-2") return "2nd Conjugation";
@@ -165,7 +170,7 @@ function format_attr($tag,$value=NULL) {
 		$value .= ", and ".$sp[$i];
 		return "Stages $value (CLC)";
 	}
-	return $value !== NULL ? "$tag=$value" : "$tag";
+	return ($value !== NULL and $value !== "true") ? "$tag=$value" : "$tag";
 }
 function format_path($c) {
 	return implode(" ", array_map("format_value", array_reverse(explode("/",$c))));
@@ -260,7 +265,7 @@ function display_word_info($w, $can_edit=FALSE) {
 	if ($name === NULL) $name = $w->name();
 	if (no_format($w)) {
 		$name = $w->name();
-	} else $name = format_word($name);
+	} else $name = format_word($name,$w->lang());
 	display_lang($w);
 	?><span class="word-name" id="word<?= $w->id() ?>_name"><?= $name ?></span>
 	<?php
@@ -278,7 +283,7 @@ function display_word_info($w, $can_edit=FALSE) {
 		$infos[] = format_attr($attr->tag(), $attr->value());
 	}
 	?>(<?php echo implode("; ", $infos); ?>)<?php
-	if (1 or $can_edit) {
+	if ($can_edit !== NULL and (1 or $can_edit)) {
 		$slug = slugify($w->name());
 		$class = "word${id}_toolbox";
 ?>
@@ -472,7 +477,6 @@ function display_definitions($w, $can_edit=FALSE) {
 		?></li><?php
 	}
 	?></ol><?php
-	echo "<br>";
 }
 
 function _do_ignore($l,$ignore) {
@@ -672,7 +676,9 @@ function display_inflection($w, $hidden=TRUE) {
 	do_table(
 		$w,$values0,$values1,$values2,$values3,$values4,
 		"format_value",
-		"format_word1",
+		function($v) use($w) {
+			return format_word($v,$w->lang(),true);
+		},
 		function($p) use($connections) {
 			$p = (string)$p;
 			foreach ($connections as $connect) {
@@ -747,7 +753,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 			?><tr><th><?php
 			echo format_value($_1);
 			?></th></tr><tr><td><?php
-			echo format_word(PATH($w,$_1)->get());
+			echo format_word(PATH($w,$_1)->get(),$w->lang(),true);
 			?></td></tr><?php
 		}
 	} else {

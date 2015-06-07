@@ -41,7 +41,22 @@
 				fill: none;
 			}
 			.slope {
-				stroke: rgba(131, 187, 234, .5);
+				stroke: rgba(131, 187, 234, .6);
+				stroke-width: 1;
+				fill: none;
+			}
+			.slope.box {
+				stroke: rgba(131, 187, 234, .25);
+				stroke-width: 1;
+				fill: none;
+			}
+			.slope.visible {
+				stroke: blue;
+				stroke-width: 1;
+				fill: none;
+			}
+			.slope.semivisible {
+				stroke: rgba(0,0,255, .6);
 				stroke-width: 1;
 				fill: none;
 			}
@@ -72,24 +87,26 @@
 	<body>
 		<h1>Euler's method <a id="what" href="explain.html">what?</a></h1>
 		<div id="saved"></div>
-		$dy \over dx$: <input id="derivative" placeholder="dy/dx=" value="6x^2 - 3x^2 * y">
-		$6x^2 - 3x^2 * y$
+		$dy \over dx$: <input id="derivative" placeholder="dy/dx=" value="2x">
+		$2x$
 		<br>
-		$f(x)$: <input id="solution" placeholder="f(x)=" value="2+e^(-x^3)">
-		$2 + e^{-x^3}$
+		$f(x)$: <input id="solution" placeholder="f(x)=" value="x^2">
+		$2x^2$
 		<br>
 		$x_0$: <input id="x_0" placeholder="x_0=" value="0">
-		$y_0$: <input id="y_0" placeholder="y_0=" value="3">
-		$h$ ($\Delta x$): <input id="step" placeholder="h=" value="0.01">
-		$n$: <input id="number" placeholder="n=" value="100">
+		$y_0$: <input id="y_0" placeholder="y_0=" value="0">
+		$h$ ($\Delta x$): <input id="step" placeholder="h=" value="0.1">
+		$n$: <input id="number" type="number" placeholder="n=" value="10">
 		<button id="save">Save</button>
 		<button id="10x">10x</button>
 		<br>
 		<label><input type="checkbox" id="field" checked>Graph slope field</label>
-		<label><input type="checkbox" id="quadratic">Quadratic slope field</label>
+		<label><input type="checkbox" id="quadratic" checked>Quadratic slope field</label>
+		&nbsp;
+		<label><input id="slope-step" type="number" placeholder="10" value="10"> Steps</label>
 		<div>
 			<h2>Preview:</h2>
-			$f(x_n) \approx y_n$, where ${dy \over dx} = 6x^2 - 3x^2 * y$, $f(0)=3$, and $n = 1$<br>
+			$f(x_n) \approx y_n$, where ${dy \over dx} = x^2$, $f(0)=0$, and $n = 10$<br>
 			<table id="preview">
 				<tr>
 					<th>$x$</th>
@@ -100,7 +117,7 @@
 				</tr>
 			</table>
 			<div id="graph" class="aGraph">
-				<div id="coords"></div>
+				<div id="coords-container"><span id="coords"></span></div>
 			</div>
 		</div>
 		<script type="text/javascript">
@@ -189,6 +206,9 @@
 				data2.x_min = x;
 				data2.x_step = h;
 				data2.d = d;
+				data2.d2ydx2 = function(x,y) {
+					return slope(dy,x)+slope(dx,y)*d(x,y);
+				}
 				console.log("start");
 				for (var i=0; i<n; i++) {
 					data2.y.push(y);
@@ -261,7 +281,7 @@
 				MathJax.Hub.Queue(["Text",outputDisplay[3],tex5]);
 				updategraph();
 			};
-			$('#derivative,#solution,#number,#step,#x_0,#y_0,#field').change(update);
+			$('input').change(update);
 			$('#save').click(function() {
 				var src = $('#preview').html();
 				var found = !src;
@@ -284,13 +304,61 @@
 			/* implementation heavily influenced by http://bl.ocks.org/1166403 */
 			$( window ).resize(updategraph);
 			var mmm;
+			function solvequad(a,b,c,y) {
+				var det = b*b - 4*a*(c-y);
+				if (det < 0) return [];
+				if (det == 0) return [-b/2/a];
+				return [
+					[(-b - Math.sqrt(det))/(2*a),y],
+					[(-b + Math.sqrt(det))/(2*a),y],
+				];
+			}
+			function getintersects(a,b,c,x_min,x_max,y_min,y_max) {
+				var f = function(x) {return a*x*x + b*x + c;}
+				var pts = solvequad(a,b,c,y_min).concat(solvequad(a,b,c,y_max));
+				var y0 = f(x_min);
+				var y1 = f(x_max);
+				if (y_min <= y0 && y0 <= y_max)
+					pts.push([x_min,y0]);
+				if (y_min <= y1 && y1 <= y_max)
+					pts.push([x_max,y1]);
+				if (!pts.length)
+					console.log(a,b,c,x_min,x_max,y_min,y_max,y0,y1);
+				pts = $.map(pts, function(pt) {
+					if (x_min <= pt[0] && pt[0] <= x_max) return {x:pt[0],y:pt[1]};
+				});
+				return pts;
+			}
+			function quadslope(data2,xi,yi,box,x,y) {
+				var d = data2.d(xi,yi);
+				var d2 = data2.d2ydx2(xi,yi);
+				// Simplify Taylor polynomial:
+				var a = d2/2,
+				    b = d - d2*xi,
+				    c = yi + d2*xi*xi/2 - d*xi;
+				var pts = getintersects(a,b,c,xi-box/2,xi+box/2,yi-box/2,yi+box/2);
+				if (pts.length < 2) return;
+				//console.log(JSON.stringify(pts));
+				// The slope at each end point
+				var m = [d + d2*(pts[0].x-xi),d + d2*(pts[1].x-xi)];
+				// intersection of both y = m(x-x_0) + y_0, for each x_0,y_0 in {pts[0],pts[1]}
+				var top = (m[0]*pts[0].x - pts[0].y - m[1]*pts[1].x + pts[1].y);
+				var mid = {x:top/(m[0]-m[1])};
+				mid.y = m[0]*(mid.x - pts[0].x) + pts[0].y;
+				//console.log(mid.y, m[1]*(mid.x - pts[1].x) + pts[1].y);
+				var P = [pts[0],mid,pts[1]];
+				//console.log(JSON.stringify(P));
+				return "M "+[x(P[0].x),y(P[0].y)].join(" ")+" Q "+[x(P[1].x),y(P[1].y),x(P[2].x),y(P[2].y)].join(" ");
+			}
+
+
 			function updategraph() {
 				$('#graph svg').remove();
-				//console.log();
 				// define dimensions of graph
 				var m = [8, 30, 20, 90]; // margins: top, right, bottom, left
-				var w = $(window).width()-$('#preview').width() - 40 - m[1] - m[3]; // width
-				var h = ($(window).width()-$('#preview').width() - 40)/4 - m[0] - m[2]; // height
+				var width = $(window).width()-$('#preview').width() - 40;
+				var w = width - m[1] - m[3]; // width
+				var h = width/2 - m[0] - m[2]; // height
 
 				// X scale will fit all values from data[] within pixels 0-w
 				data2.x_max = data2.x_min+data2.x_step*(data2.y.length-1);
@@ -325,36 +393,16 @@
 				// create a line function that can convert data[] into x and y points
 				var line = d3.svg.line()
 					// assign the X function to plot our line as we wish
-					.x(function(d,i) {
-						// verbose logging to show what's actually being done
-						//console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
-						// return the X coordinate where we want to plot this datapoint
-						return x(n.invert(i));
-					})
-					.y(function(d) {
-						// verbose logging to show what's actually being done
-						//console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
-						// return the Y coordinate where we want to plot this datapoint
-						return y(d);
-					});
+					.x(function(d,i) {return x(n.invert(i))})
+					.y(function(d) {return y(d)});
 
 				var solution = d3.svg.line()
 					// assign the X function to plot our line as we wish
-					.x(function(d) {
-						// verbose logging to show what's actually being done
-						//console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
-						// return the X coordinate where we want to plot this datapoint
-						return x(d);
-					})
-					.y(function(d,i) {
-						// verbose logging to show what's actually being done
-						//console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
-						// return the Y coordinate where we want to plot this datapoint
-						return y(data2.f(d));
-					});
+					.x(function(d) {return x(d)})
+					.y(function(d,i) {return y(data2.f(d))});
 
 				// Add an SVG element with the desired dimensions and margin.
-				var svg, graph = (svg = d3.select("#graph").insert("svg:svg", "#coords"))
+				var svg, graph = (svg = d3.select("#graph").insert("svg:svg", "#coords-container"))
 				      .attr("width", w + m[1] + m[3])
 				      .attr("height", h + m[0] + m[2])
 				    .append("svg:g")
@@ -371,10 +419,13 @@
 
 				// Slope field
 				if ($('#field:checked').length) {
+					var quadratic = $('#quadratic:checked').length;
 					var slopefield = graph.append("svg:g").attr("class", "slopefield");
-					var step = data2.x_step*data2.y.length / 30, xi, yi;
+					var step = data2.x_step*data2.y.length, xi, yi;
+					step /= $('#slope-step').val();
 					for (var xi=data2.x_min; xi<data2.x_max; xi+=step) {
 						for (var yi=data2.y_min; yi<data2.y_max; yi+=step) {
+							var slope = data2.d(xi,yi), box = step*0.8, points;
 							var plot = d3.svg.line()
 								// assign the X function to plot our line as we wish
 								.x(function(d) {
@@ -389,17 +440,40 @@
 									// return the Y coordinate where we want to plot this datapoint
 									return y(d.y);
 								});
-							var slope = data2.d(xi,yi), points;
-							var box = step*0.8;
+
 							if (Math.abs(slope) == Infinity)
 								points = [{x:xi,y:yi-step/2},{x:xi,y:yi+step/2}];
 							else if (Math.abs(slope) <= 1)
 								points = [{x:xi-box/2,y:yi-box*slope/2},{x:xi+box/2,y:yi+box*slope/2}];
 							else
 								points = [{x:xi-box/2/slope,y:yi-box/2},{x:xi+box/2/slope,y:yi+box/2}];
+
+							var d = quadratic ? quadslope(data2,xi,yi,box,x,y) : plot(points);
+							slopefield.append("svg:path").attr("d", d).attr("class", "slope");
+							/*slopefield.append("svg:path").attr("d", quadslope(data2,xi,yi,box,x,y)).attr("class", "slope semivisible");
 							slopefield.append("svg:path").attr("d", plot(points)).attr("class", "slope");
+							//box/=10;
+							slopefield.append("svg:path").attr("d", ["M",x(xi-box/2),y(yi-box/2),"H",x(xi+box/2),"V",y(yi+box/2),"H",x(xi-box/2),"V",y(yi-box/2)].join(" ")).attr("class", "slope box");
+							graph.append('circle')
+								.attr('r', 2)
+								.style('fill', 'red')
+								.attr('cx',x(xi))
+								.attr('cy',y(yi));/**/
 						}
-					}
+					}/**/
+					/*pt = "M "+[x(0),y(0)].join(" ")+" Q "+[x(0.5),y(0),x(1),y(1)].join(" ");
+					slopefield.append("svg:path").attr("d", pt).attr("class", "slope visible");
+					xi = 0.25, yi = 0, box = 0.5;
+					graph.append('circle')
+						.attr('r', 7)
+						.style('fill', '#FFFFFF')
+						.style('stroke', '#FB5050')
+						.style('stroke-width', '3px')
+						.attr('cx',x(xi))
+						.attr('cy',y(yi));
+					var q = quadslope(data2,xi,yi,box,x,y);
+					console.log(q);
+					slopefield.append("svg:path").attr("d", q).attr("class", "slope visible");/**/
 				}
 
 				// create yAxis
@@ -434,17 +508,26 @@
 					.style('pointer-events', 'none')
 					.style('stroke', '#FB5050')
 					.style('stroke-width', '3px');
-					// Add event listeners/handlers
+				if (data2.f)
+					var marker2 = graph.append('circle')
+						.attr('r', 7)
+						.style('display', 'none')
+						.style('fill', '#FFFFFF')
+						.style('pointer-events', 'none')
+						.style('stroke', '#FB5050')
+						.style('stroke-width', '3px');
 
 				// Create custom bisector
 				var bisect = d3.bisector(function(datum) {
 					return datum;
 				}).right;
 
+				// Add event listeners/handlers
 				var mousein = false;
 				var toggle = function(display) {
 					display = display && display !== 'none' ? 'inherit' : 'none';
 					marker.style('display', display);
+					if (marker2) marker2.style('display', display);
 					$('#coords').css('display', display);
 				};
 				svg.on('mouseover', function() {
@@ -466,6 +549,10 @@
 						toggle(false);
 						return;
 					} else if (mousein) toggle(true);
+					if (data2.f) {
+						marker2.attr('cx', mouse[0]);
+						marker2.attr('cy', y(data2.f(xn)));
+					}
 					//console.log(index, xn, n(xn), n(xn) - index);
 					var startDatum = data2.y[index],
 						endDatum = data2.y[index + 1],
@@ -476,6 +563,7 @@
 					update_coords(xn, valueY, (endDatum-startDatum)/data2.x_step);
 				});
 			};
+			var first = true;
 			function update_coords(x,y,x_) {
 				var snumy = snum(y);
 				var slope = snum(x_);
@@ -484,6 +572,8 @@
 				}
 				var text = '('+snum(x)+', '+snumy+'), slope: '+slope;
 				$('#coords').text(text);
+				if (first)
+					$('#coords-container').css('height', $('#coords').height()+20+'px');
 			}
 			MathJax.Hub.Queue(update);
 		</script>

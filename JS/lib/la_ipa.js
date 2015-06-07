@@ -139,7 +139,7 @@ var la_ipa = (function () {
 				// Rhotics
 				.replace(/r(?![.]?[r\u02D0])/g,"\u027E")
 				.replace(/r[.]\u027E/g, "r.r")
-				.replace(/([tdbpfvnm])\u027E/g, "$1r")
+				.replace(/([tdbpfvnm][\u02D0]?)\u027E/g, "$1r")
 				// Double articulations
 				.replace(/(?=mn|pt|pk|bd|bg)(.)(.)/g,"$1\u0361$2")
 				// Digraphs/dipthongs
@@ -357,6 +357,10 @@ var la_ipa = (function () {
 	};
 	my.transform = my.old_transform = null;
 	my.transform = my.transforms["x+ae+oe+dagger"];
+	my.select_transformer = function(nomen) {
+		my.transform = my.transforms[nomen];
+		return my;
+	}
 	//my.transform = my.transforms["Silicus+Eszett+Nasal"];
 	//my.transform = my.transforms["Greek"];
 	my.unformatted = {};

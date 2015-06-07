@@ -518,6 +518,12 @@ function jWord() {
 					if (dd.length)
 						d = dd;
 				}
+				s.removeClass('pending');
+				s.find('input').each(function() {
+					var $this = $(this);
+					var autocomplete = $this.autocomplete();
+					if (autocomplete) autocomplete.dispose();
+				});
 				if (d.length) s.replaceWith(d);
 				else s.replaceWith($data);
 			} else {
@@ -544,6 +550,13 @@ function jWord() {
 			cached = false;
 			if (changed) $.jStorage.set("word"+id+"_changed", changed);
 			else {
+				var s = $('#dictionary section#word'+id);
+				if (find !== undefined) {
+					var ss = s.find(find);
+					if (ss.length)
+						s = ss;
+				}
+				s.addClass('pending');
 				$.get(my.api_path+'last-changed.php?id='+id)
 				.success(function(changed) {
 					$.jStorage.set("word"+id+"_changed", changed);
@@ -586,13 +599,15 @@ function jWord() {
 		function handle1Response(data) {
 			var $html = $('<section>'+data+'</section>');
 			var selector = $html.find('#word'+id);
-			//$('#word'+id).html(selector.html());
 			$('#word'+id).replaceWith(selector);
 			$html.find('script').each(function() {
 				$.globalEval($(this).text());
 			});
 		}
 		$.get(this.api_path+'get-entries.php', 'id='+id)
+		.always(function() {
+			$('#word'+id).removeClass('pending');
+		})
 		.done(handle1Response)
 		.fail(function(data) {
 			errorTip('Query failed! The server returned status '+data.status+": "+data.statusText);

@@ -302,9 +302,13 @@ class _PATH implements Countable
 		#echo "\$hash:";
 		#var_dump($hash);
 		$vals = $this->_calculate_valid_values();
-		#echo "\$vals:";
-		#var_dump($vals);
 		$ret = $vals[$k];
+		/*if (!$ret) {
+			echo "\$vals ($k, $this, ".$this->word()->id()."):";
+			var_dump($vals);
+			var_dump($this->word()->id());
+			die($this->word()->id()." was not valid");
+		}/**/
 		if(FLAT_STORAGE) {
 			if ($h !== NULL)
 			foreach ($vals[$k] as $i=>$k) {

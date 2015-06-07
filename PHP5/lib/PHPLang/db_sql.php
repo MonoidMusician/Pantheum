@@ -300,6 +300,8 @@ class _SQL_searcher
 	}
 	function all($order_by=NULL) {
 		global $mysqli;
+		if (count($this->args) === 1)
+			$this->args = [];
 		if ($order_by !== NULL) {
 			$this->stmt .= " ORDER BY word_$order_by";
 		}

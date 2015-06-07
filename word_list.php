@@ -11,14 +11,12 @@
         <title>Dictionary | Latin</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
-        <script type="text/javascript" src="/JS/lib/jquery.autocomplete.js"></script>
         <script type="text/javascript" src="/JS/jWord.js"></script>
-        <script type="text/javascript" src="/JS/autocompletions.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
         <section id="content">
-            <?php sro('/Pages/dictionary.php'); ?>
+            <?php sro('/Pages/word_list.php'); ?>
         </section>
         <?php sro('/Includes/footer.php'); ?>
         <?php sro('/Includes/messages.php'); ?>

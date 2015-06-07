@@ -570,8 +570,28 @@ var adjective_endings3 = [
 		}]
 	]],
 	[[], [
+		['#adjective3',true,'i'],
+		['#adjective4', true, function(a){
+			if (a.endsWith("er"))
+				return a+"r";
+			if (a.endsWith("r"))
+				return a.slice(0,-1)+"err";
+			if (a.endsWith("il"))
+				return a+"l";
+			return a+"iss";
+		}]
 	]],
 	[[], [
+		['#adjective3',true,'i'],
+		['#adjective4', true, function(a){
+			if (a.endsWith("er"))
+				return a+"r";
+			if (a.endsWith("r"))
+				return a.slice(0,-1)+"err";
+			if (a.endsWith("il"))
+				return a+"l";
+			return a+"iss";
+		}]
 	]]
 ];
 var adjective_endings33 = [

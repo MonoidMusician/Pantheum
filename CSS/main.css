@@ -102,6 +102,10 @@ nav.global-nav li:hover {
     background-color: #BB2222;
 }
 
+section h1 {
+    margin-top: 0px;
+}
+
 section#content {
     display: block !important;
     
@@ -248,6 +252,13 @@ table input[type=checkbox], table input[type=radio] {
     text-align: left;
 }
 
+.pending {
+    color: gray;
+}
+.pending a {
+    color: #6A7CA1 !important;
+}
+
 .jquiz-incorrect, #login-error {
     color: #cc3333;
     font-weight: bold;
@@ -306,6 +317,9 @@ table.inflection th {
 table.inflection td {
     border-bottom: 1px dashed #aaa;
     border-top: 1px dashed #aaa;
+}
+table.inflection ol {
+    margin: 0px;
 }
 table.expansive td {
     height: 3.5em;

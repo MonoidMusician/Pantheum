@@ -10,7 +10,7 @@ sro('/PHP5/quiz/common.php');
 include_once('quiz_types.php');
 global $quiz_types;
 
-const QUIZ_MAX_RECURSE = 1;
+const QUIZ_MAX_RECURSE = 10;
 
 $type = $quiz_types[quiz_getvalue("quiz_type")];
 $options = []; foreach ($type["options"] as $opt)

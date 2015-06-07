@@ -10,7 +10,7 @@ global $mysqli;
 
 $stmt = $mysqli->prepare("
 	SELECT word_name FROM words
-	WHERE word_id in (
+	WHERE word_id IN (
 		SELECT word_id FROM attributes
 		WHERE attr_tag = 'template' AND attr_value = 'true'
 	)

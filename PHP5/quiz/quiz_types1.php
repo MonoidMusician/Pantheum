@@ -1,8 +1,10 @@
 <?php
 global $quiz_types;
+global $df_exclude;
 $quiz_types = array_merge($quiz_types,[
 	"random-definitions1" => [
 		"name" => "Define random words",
+		"category" => "Vocabulary",
 		"lang" => "la",
 		"options" => [[
 			"help" => "Choose a correct definition for the given word",
@@ -72,6 +74,84 @@ $quiz_types = array_merge($quiz_types,[
 			"choices0-tooltip"=>"Pick correct definition",
 		]]
 	],
+	"random-definitions2" => [
+		"name" => "Stage 21–27 Vocabulary",
+		"category" => "Vocabulary",
+		"lang" => "la",
+		"options" => [[
+			"help" => "Choose a correct definition for the given word",
+			"selections" => [
+				"word"=>function($_, $db, $path) {
+					$s = $db->searcher();
+					$s->stmt .= "
+						WHERE word_id IN (
+							SELECT word_id FROM definitions
+							WHERE def_lang = 'en'
+						)
+						AND word_lang = 'la'
+						AND word_id NOT IN (
+							SELECT word_id FROM attributes
+							WHERE attr_tag = 'template' OR attr_tag = 'hidden'
+						)
+						AND (
+							SELECT attr_value FROM attributes
+							WHERE word_id = words.word_id
+							AND attr_tag = 'clc-stage' 
+						) IN (21,22,23,24,25,26,27)";
+					$s->args = [];
+					return $s->rand();
+				},
+			],
+			"sentence" => [
+				$OP_LQUOTE,
+				function($pick_db) { return format_word($pick_db["word"]->name()); },
+				$OP_RQUOTE, $OP_COLON,
+				$OP_MULTIPLE_CHOICE,
+			],
+			"choices0-language" => "en",
+			"choices0" => function($pick_db, $db) {
+				global $mysqli;
+				$query = $mysqli->prepare("
+					SELECT DISTINCT def_id FROM definitions
+					WHERE def_lang = 'en'
+					AND word_id = (?)
+					ORDER BY rand()
+					LIMIT 1
+				");
+				$res0 = NULL;
+				sql_getmany($query, $res0, ["i",$pick_db["word"]->id()]);
+				$query->close();
+				if (!$res0) return NULL;
+				$query = $mysqli->prepare("
+					SELECT DISTINCT def_id FROM definitions
+					WHERE def_lang = 'en'
+					AND def_id != (?)
+					AND def_value != ''
+					AND word_id in (
+						SELECT word_id FROM words WHERE word_lang = 'la'
+					)
+					AND word_id NOT IN (
+						SELECT word_id FROM attributes
+						WHERE attr_tag = 'template' OR attr_tag = 'hidden'
+					)
+				");
+				$res1 = NULL;
+				sql_getmany($query, $res1, ["i", $res0[0]]);
+				$query->close();
+				if (!$res1) return NULL;
+				$res1 = choose_n_unique($res1, 4);
+				$res = array_merge($res0, $res1);
+				foreach ($res as &$r) $r=definition(defaultDB(), $r);
+				foreach ($res as &$r) $r=[
+					"correct" => $r->word()->id() === $pick_db["word"]->id(),
+					"value" => ((string)$r->path() ? "(".$r->path().") " : "").str_replace("\n", ", ", $r->value()),
+				];
+				return $res;
+			},
+			"choices0-tooltip"=>"Pick correct definition",
+		]]
+	],
+
 	"subj01" => [
 		"name" => "Subjunctive or Indicative?",
 		"lang" => "la",
@@ -86,6 +166,8 @@ $quiz_types = array_merge($quiz_types,[
 						["indicative","perfect","singular","person-3","active"],
 						["subjunctive","imperfect","singular","person-3","active"],
 						["subjunctive","pluperfect","singular","person-3","active"],
+						["subjunctive","imperfect","singular","person-3","active"],
+						["subjunctive","pluperfect","singular","person-3","active"],
 						/*["indicative","future-perfect","singular","person-3","active"],
 						["indicative","future","singular","person-3","active"],/**/
 					])
@@ -93,7 +175,7 @@ $quiz_types = array_merge($quiz_types,[
 				"sentence" => [
 					[
 						"spart" => "verb",
-						"attr" => ["!template"=>NULL, "!hidden"=>NULL],
+						"attr" => $df_exclude,
 						"path" => get_pick("path")
 					],
 					$OP_MULTIPLE_CHOICE
@@ -140,32 +222,9 @@ $quiz_types = array_merge($quiz_types,[
 			which3("la","verb","number",2,["indicative"]),
 		],
 	],
-	"irregular-pronouns1" => [
-		"name" => "Irregular pronouns",
-		"category" => "Irregular",
-		"lang" => "la",
-		"n_questions" => "auto",
-		"options" => [
-			make_chart(WORD2("la","hic","pronoun")),/*hic*/
-			make_chart(WORD2("la","iste","pronoun")),/*iste*/
-			make_chart(WORD2("la","ille","pronoun")),/*ille*/
-			make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative"]),/*ego*/
-			make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative"]),/*tu*/
-			make_chart(WORD2("la","is","pronoun")),/*is*/
-		]
-	],
-	"irregular-verbs1" => [
-		"name" => "Irregular verbs",
-		"category" => "Irregular",
-		"lang" => "la",
-		"n_questions" => "auto",
-		"options" => [
-			make_chart(WORD2("la","volo","verb"),NULL,["infinitive","participle","subjunctive","future","pluperfect"]),
-		]
-	],
 	"random-verb-forms1" => [
 		"name" => "Random verb forms",
-		"category" => "Irregular",
+		"category" => "Challenge",
 		"lang" => "la",
 		"options" => [
 			[
@@ -199,7 +258,7 @@ $quiz_types = array_merge($quiz_types,[
 	],
 	"random-noun-forms1" => [
 		"name" => "Random noun forms",
-		"category" => "Irregular",
+		"category" => "Challenge",
 		"lang" => "la",
 		"options" => [
 			[
@@ -275,7 +334,7 @@ $quiz_types = array_merge($quiz_types,[
 		],
 	],
 	"004" => [
-		//"name" => "Relative clauses",
+		"name" => "Relative clauses",
 		"category" => "Grammar",
 		"lang" => "la",
 		"options" => [
@@ -296,7 +355,7 @@ $quiz_types = array_merge($quiz_types,[
 				"sentence" => [
 					[
 						"spart" => "noun",
-						"attr" => ["!template"=>NULL,"!hidden"=>NULL],
+						"attr" => $df_exclude,
 						"path" => [ make_picks(PICK(2,"number")->l("la"), 1, 0,0), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 					],
 					$OP_COMMA,
@@ -312,12 +371,11 @@ $quiz_types = array_merge($quiz_types,[
 					[
 						"name" => "sum",
 						"spart" => "verb",
-						"attr" => ["!template"=>NULL,"!hidden"=>NULL],
 						"path" => [get_pick(0,0), "person-3", "indicative", "active", PICK("tense")]
 					],
 					[
 						"spart" => "adjective",
-						"attr" => ["!template"=>NULL,"!hidden"=>NULL],
+						"attr" => $df_exclude,
 						"path" => [get_pick(0,0), get_pick(1,0), "nominative/positive"]
 					]
 				],
@@ -453,114 +511,8 @@ $quiz_types = array_merge($quiz_types,[
 			]),
 		],
 	],
-	"hic-haec-hoc" => [
-		"name" => "Hic, Haec, Hoc",
-		"lang" => "la",
-		"n_questions" => "auto",
-		"options" => [[
-			"help" => "Fill in the chart for this irregular pronoun.",
-			"selections" => [
-			],
-			"sentence" => [
-				HTML("<table class='jquiz-matching'>"
-				."<tr><th></th><th>Hic (m)</th><th>Haec (f)</th><th>Hoc (n)</th></tr>"),
-				HTML("<tr><th>Nom</th><td>"),
-				$OP_USER_INPUT,
-				HTML("</td><td>"),
-				$OP_USER_INPUT,
-				HTML("</td><td>"),
-				$OP_USER_INPUT,
-				HTML("</td></tr>"),
-				HTML("<tr><th>Acc</th><td>"),
-				$OP_USER_INPUT,
-				HTML("</td><td>"),
-				$OP_USER_INPUT,
-				HTML("</td><td>"),
-				$OP_USER_INPUT,
-				HTML("</td></tr>"),
-			],
-			"answer0" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "masculine",
-						"nominative",
-					]
-				],
-			],
-			"answer1" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "feminine",
-						"nominative",
-					]
-				],
-			],
-			"answer2" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "neuter",
-						"nominative",
-					]
-				],
-			],
-			"answer3" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "masculine",
-						"accusative",
-					]
-				],
-			],
-			"answer4" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "feminine",
-						"accusative",
-					]
-				],
-			],
-			"answer5" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "neuter",
-						"accusative",
-					]
-				],
-			],
-			"answer0-tooltip"=>"Enter form",
-			"answer1-tooltip"=>"Enter form", 
-			"answer2-tooltip"=>"Enter form", 
-			"answer3-tooltip"=>"Enter form",
-			"answer4-tooltip"=>"Enter form", 
-			"answer5-tooltip"=>"Enter form", 
-			"answer6-tooltip"=>"Enter form",
-			"answer7-tooltip"=>"Enter form", 
-			"answer8-tooltip"=>"Enter form", 
-			"answer9-tooltip"=>"Enter form",
-			"answer10-tooltip"=>"Enter form", 
-			"answer11-tooltip"=>"Enter form", 
-		]]
-	],
 	"007" => [
-		//"name" => "Noun–verb agreement",
+		"name" => "Noun–verb agreement",
 		"category" => "Grammar",
 		"lang" => "la",
 		"options" => [[
@@ -572,18 +524,20 @@ $quiz_types = array_merge($quiz_types,[
 			"selections" => [
 				#PICK(["true","false"])->l("la"),
 				0=>"true",
-				1=>PICK(3,"person")->l("la"),
-				2=>PICK(2,"number")->l("la"),
+				1=>PICK(3,"person")->l("la"),/**/
+				2=>PICK(2,"number")->l("la"),/**/
 				3=>PICK("gender")->l("la"),
 				4=>NULL,
-				5=>PICK("voice")->l("la"),
+				//5=>PICK("voice")->l("la"),
+				5=>"active",
 				6=>NULL,
-				"+adj"=>PICK([TRUE,FALSE],[TRUE=>6,FALSE=>2])->l("la"),
+				"+adj"=>FALSE/*/PICK([TRUE,FALSE],[TRUE=>6,FALSE=>2])->l("la")*/,
 			],
 			"sentence" => [
-				$OP_MULTIPLE_CHOICE,
+				$OP_MULTIPLE_CHOICE," ",
 				[ "condition" => eq_pick("+adj", TRUE),
 					"lang" => "la",
+					"attr" => $df_exclude,
 					"speechpart" => "adjective",
 					"path" => [
 						"nominative",
@@ -594,6 +548,7 @@ $quiz_types = array_merge($quiz_types,[
 				],
 				[ "condition" => fn_and(eq_pick(0,"true"), eq_pick(5,"active")),
 					"lang" => "la",
+					"attr" => $df_exclude,
 					"speechpart" => "noun",
 					"path" => [
 						"accusative", PICK("number")->l("la"),
@@ -605,12 +560,15 @@ $quiz_types = array_merge($quiz_types,[
 					"speechpart" => "verb",
 					"attr" => [
 						"transitive" => get_pick(0),
+						"!template"=>NULL, "!hidden"=>NULL, "!irregular"=>NULL,
 					],
 					"path" => [
-						PICK(["indicative","subjunctive"])->l("la"),
+						//PICK(["indicative","subjunctive"])->l("la"),
+						"indicative",
 						get_pick(1,0),
 						get_pick(2,0),
-						make_pick(PICK("tense")->l("la"), 4),
+						make_pick(PICK(["present","imperfect","perfect"]),4),
+						//make_pick(PICK("tense")->l("la"), 4),
 						get_pick(5),
 					],
 					"verb-gender" => get_pick(3)
@@ -620,7 +578,6 @@ $quiz_types = array_merge($quiz_types,[
 				"correct" => [
 					"lang" => "la",
 					"speechpart" => "pronoun",
-					"name" => "personal pronoun",
 					"attr" => [
 						"person" => get_pick(1,0)
 					],
@@ -632,7 +589,6 @@ $quiz_types = array_merge($quiz_types,[
 				[
 					"lang" => "la",
 					"speechpart" => "pronoun",
-					"name" => "personal pronoun",
 					"attr" => [
 						"person" => get_pick(1,1)
 					],
@@ -644,7 +600,6 @@ $quiz_types = array_merge($quiz_types,[
 				[
 					"lang" => "la",
 					"speechpart" => "pronoun",
-					"name" => "personal pronoun",
 					"attr" => [
 						"person" => get_pick(1,2)
 					],
@@ -656,7 +611,6 @@ $quiz_types = array_merge($quiz_types,[
 				[
 					"lang" => "la",
 					"speechpart" => "pronoun",
-					"name" => "personal pronoun",
 					"attr" => [
 						"person" => get_pick(1,0)
 					],
@@ -668,7 +622,6 @@ $quiz_types = array_merge($quiz_types,[
 				[
 					"lang" => "la",
 					"speechpart" => "pronoun",
-					"name" => "personal pronoun",
 					"attr" => [
 						"person" => get_pick(1,1)
 					],
@@ -680,7 +633,6 @@ $quiz_types = array_merge($quiz_types,[
 				[
 					"lang" => "la",
 					"speechpart" => "pronoun",
-					"name" => "personal pronoun",
 					"attr" => [
 						"person" => get_pick(1,2)
 					],
@@ -706,9 +658,7 @@ $quiz_types = array_merge($quiz_types,[
 				[
 					"lang" => "la",
 					"speechpart" => "noun",
-					"attr" => [
-						"!template" => null,
-					],
+					"attr" => $df_exclude,
 					"path" => [
 						"nominative",
 						make_pick(PICK("number"),0),
@@ -756,7 +706,7 @@ $quiz_types = array_merge($quiz_types,[
 		]]
 	],
 	"008" => [
-		//"name"=>"Relative Pronouns",
+		"name"=>"Relative Pronouns",
 		"category" => "Grammar",
 		"lang" => "la",
 		"options" => [[
@@ -771,46 +721,63 @@ $quiz_types = array_merge($quiz_types,[
 			"sentence" => [
 				[
 					"spart" => "noun",
+					"lang" => "la",
+					"attr" => $df_exclude,
 					"path" => [ make_picks(PICK(2,"number")->l("la"), 1, 0,0), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 				],
 				$OP_COMMA,
 				$OP_MULTIPLE_CHOICE,
 				[
 					"spart" => "verb",
-					"attr" => ["transitive"=>"true"],
+					"lang" => "la",
+					"attr" => array_merge($df_exclude,["transitive"=>"true"]),
 					"path" => ["indicative", "active", "person-1",
 					           PICK("tense")->l("la"), PICK("number")->l("la")],
 					"verb-gender" => get_pick(1,0)
-				],
+				],/**/
 				$OP_COMMA,
 				[
 					"name" => "sum",
+					"lang" => "la",
+					"spart" => "verb",
 					"path" => [get_pick(0,0), "person-3", "indicative", "active", PICK("tense")->l("la")]
 				],
 				[
 					"spart" => "adjective",
+					"lang" => "la",
+					"attr" => $df_exclude,
 					"path" => [get_pick(0,0), get_pick(1,0), "nominative/positive"]
-				]
+				]/**/
 			],
 			"choices0" => [
 				"correct" => [
 					"name"=>"qui",
+					"lang" => "la",
+					"spart" => "pronoun",
 					"path" => [ get_pick(0,0), get_pick(1,0), "accusative" ]
 				],
 				[
 					"name"=>"qui",
+					"lang" => "la",
+					"spart" => "pronoun",
 					"path" => [ get_pick(0,1), get_pick(1,0), "accusative" ]
 				],
 				[
 					"name"=>"qui",
+					"lang" => "la",
+					"spart" => "pronoun",
 					"path" => [ get_pick(0,0), get_pick(1,1), "accusative" ]
 				],
 				[
 					"name"=>"qui",
+					"lang" => "la",
+					"spart" => "pronoun",
 					"path" => [ get_pick(0,0), get_pick(1,1), get_pick(2,0) ]
 				],
 				[
 					"name"=>"qui",
+					"lang" => "la",
+					"spart" => "pronoun",
 					"path" => [ get_pick(0,1), get_pick(1,0), get_pick(2,1) ]
 				],
 			],
@@ -827,13 +794,16 @@ $quiz_types = array_merge($quiz_types,[
 			"sentence" => [
 				[
 					"spart" => "noun",
+					"lang" => "la",
+					"attr" => $df_exclude,
 					"path" => [ make_picks(PICK(2,"number")->l("la"), 1, 0,0), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 				],
 				$OP_COMMA,
 				$OP_MULTIPLE_CHOICE,
 				[
 					"spart" => "verb",
-					"attr" => ["transitive"=>"false"],
+					"lang" => "la",
+					"attr" => array_merge($df_exclude,["transitive"=>"false"]),
 					"path" => ["indicative/active/person-3",
 					           PICK("tense")->l("la"), get_pick(0,0)],
 					"verb-gender" => get_pick(1,0),
@@ -841,10 +811,14 @@ $quiz_types = array_merge($quiz_types,[
 				$OP_COMMA,
 				[
 					"name" => "sum",
+					"lang" => "la",
+					"spart" => "verb",
 					"path" => [get_pick(0,0), "person-3/indicative/active", PICK("tense")]
 				],
 				[
 					"spart" => "adjective",
+					"lang" => "la",
+					"attr" => $df_exclude,
 					"path" => [get_pick(0,0), get_pick(1,0), "nominative/positive"]
 				]
 			],
@@ -868,10 +842,14 @@ $quiz_types = array_merge($quiz_types,[
 				get_pick(10,2),
 				[
 					"name"=>"qui",
+					"lang" => "la",
+					"spart" => "pronoun",
 					"path" => [ get_pick(0,0), get_pick(1,1), get_pick(2,0) ]
 				],
 				[
 					"name"=>"qui",
+					"lang" => "la",
+					"spart" => "pronoun",
 					"path" => [ get_pick(0,1), get_pick(1,0), get_pick(2,1) ]
 				],
 			],
@@ -888,13 +866,16 @@ $quiz_types = array_merge($quiz_types,[
 			"sentence" => [
 				[
 					"spart" => "noun",
+					"lang" => "la",
+					"attr" => $df_exclude,
 					"path" => [ make_picks(PICK(2,"number")->l("la"), 1, 0,0), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 				],
 				$OP_COMMA,
 				$OP_USER_INPUT,
 				[
 					"spart" => "verb",
-					"attr" => ["transitive"=>"false"],
+					"lang" => "la",
+					"attr" => array_merge($df_exclude,["transitive"=>"true"]),
 					"path" => ["indicative/active/person-3",
 					           PICK("tense")->l("la"), get_pick(0,0)],
 					"verb-gender" => get_pick(1,0),
@@ -902,18 +883,24 @@ $quiz_types = array_merge($quiz_types,[
 				$OP_COMMA,
 				[
 					"name" => "sum",
+					"lang" => "la",
+					"spart" => "verb",
 					"path" => [get_pick(0,0), "person-3/indicative/active", PICK("tense")->l("la")]
 				],
 				[
 					"spart" => "adjective",
+					"lang" => "la",
+					"attr" => $df_exclude,
 					"path" => [get_pick(0,0), get_pick(1,0), "nominative/positive"]
 				]
 			],
 			"answer0" => [
 				"name"=>"qui",
+				"lang" => "la",
+				"spart" => "pronoun",
 				"path" => [ get_pick(0,0), get_pick(1,0), "nominative" ]
 			],
 			"answer0-tooltip"=>"relative pronoun form",
-		]]
+		]/**/]
 	],
 ]);

@@ -80,13 +80,13 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 	if (array_key_exists("name", $t))
 		$searcher = $searcher->name(_process_value($t["name"],$pick_db,$db));
 	if (array_key_exists("language", $t))
-		$searcher = $searcher->lang($t["language"]);
+		$searcher = $searcher->lang(_process_value($t["language"],$pick_db,$db));
 	elseif (array_key_exists("lang", $t))
-		$searcher = $searcher->lang($t["lang"]);
+		$searcher = $searcher->lang(_process_value($t["lang"],$pick_db,$db));
 	if (array_key_exists("speechpart", $t))
-		$searcher = $searcher->partofspeech($t["speechpart"]);
+		$searcher = $searcher->partofspeech(_process_value($t["speechpart"],$pick_db,$db));
 	elseif (array_key_exists("spart", $t))
-		$searcher = $searcher->partofspeech($t["spart"]);
+		$searcher = $searcher->partofspeech(_process_value($t["spart"],$pick_db,$db));
 
 	if (array_key_exists("attr", $t))
 		foreach ($t["attr"] as $k=>$v) {
@@ -109,7 +109,8 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 
 	$path = PATH($word);
 	if (array_key_exists("path", $t)) {
-		$p = _process_value($t["path"],$pick_db,$db,$path);
+		$p = $t["path"];
+		if (!is_array($p)) $p = _process_value($p,$pick_db,$db,$path);
 		foreach ($p as $k=>$_) {
 			$path->add2([$k=>_process_value($_,$pick_db,$db,$path)]);
 		}
@@ -129,9 +130,9 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 		$ret = $path->get();
 		if (array_key_exists("store", $t))
 			$pick_db[$t["store"]] = $ret;
-		return $ret;
+		return format_word($ret,$word->lang());
 	} else {
-		$reason = "path '$path' didn't exist in word with id ".$word->id()." or was NULL";
+		$reason = "path '$path' didn't exist in word with id <a target='_blank' href='dictionary.php?id=".$word->id()."'>".$word->id()."</a> or was NULL";
 		return;
 	}
 }

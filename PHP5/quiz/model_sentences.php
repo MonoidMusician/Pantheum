@@ -425,7 +425,29 @@ miserrimus est.","la"),
 					"This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid house, but he is very miserable."
 					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
 				],
-				"expr" => "This man is Aristō. Aristō is ([a|the] friend of Barbillus|Barbillus' friend). (He|Aristō) ((lives|dwells|resides|remains|lingers) in|inhabits) [a|the] (distinguished|noble|illustrious|bright|shining|glittering|brilliant|splendid|magnificent|sumptuous) (house|villa), but [he|Aristō] is (very|most) (miserable|unhappy|poor|wretched|pitiful|worthless|null|tragic|unfortunate|sick|tormenting).",
+				"expr" => "This [man] is Aristō. Aristō is ([a|the] friend of Barbillus|Barbillus' friend). (He|Aristō) ((lives|dwells|resides|remains|lingers) in|inhabits) [a|the] (distinguished|noble|illustrious|bright|shining|glittering|brilliant|splendid|magnificent|sumptuous) (house|villa), but [he|Aristō] is (very|most) (miserable|unhappy|poor|wretched|pitiful|worthless|null|tragic|unfortunate|sick|tormenting).",
+			],
+			"answer0-tooltip" => "English translation",
+			"answer0-language" => "",
+		]],
+		"options" => [[
+			"help" => "Translate the sentence",
+			"selections" => [],
+			"sentence" => [
+				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_2_large.jpg' style='width: 205px;'><br>"),
+				format_word("1. haec fēmina est Galatēa.
+Galatēa est uxor Aristōnis.
+Galatēa marītum saepe
+castīgat, numquam laudat.","la"),
+				HTML("<br><br>"),
+				$OP_USER_PARAGRAPH
+			],
+			"answer0" => [
+				"correct" => [
+					"This woman is Galatēa. Galatēa is Aristō's wife. Galatēa often scolds her husband, she never praises him."
+					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
+				],
+				"expr" => "({*this [woman]} {is} {Galatēa}). ({Galatēa|she} {is} {[a|the] (wife of Aristō|Aristō's wife)}). ({Galatēa} {often} {scolds} {her husband}), [but|and] ({[she]} {never} {prases} {him}|{never} {praising} {him}).",
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",

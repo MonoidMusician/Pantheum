@@ -9,6 +9,8 @@ sro('/PHP5/lib/PHPLang/display.php');
 sro('/PHP5/lib/PHPLang/string.php');
 sro('/PHP5/quiz/common.php');
 
+global $df_exclude;
+$df_exclude = ["!template"=>NULL, "!hidden"=>NULL, "!irregular"=>NULL];
 function get_pick($i,$i2=NULL) {
 	return function ($_) use ($i,$i2) {
 		return $i2===NULL ? $_[$i] : $_[$i][$i2];
@@ -33,7 +35,7 @@ function make_picks($pick, $n_correct, $i,$i2=NULL) {
 		$_2 = $pick->rand($db);
 		$pick->n = $n;
 		$pick->exclude = $excl;
-		#error_log(var_export($_1,1).var_export($_2,1));
+		//error_log("[$i][$i2]: ".var_export($_1,1).var_export($_2,1));
 		$_[$i] = array_merge($_1, $_2);
 		return $i2===NULL ? $_[$i] : $_[$i][$i2];
 	};
@@ -539,6 +541,7 @@ $GLOBALS["quiz_types"] = [
 	"random" => ["name" => "Random"]
 ];
 include_once('quiz_types1.php');
+include_once('charts.php');
 include_once('model_sentences.php');
 global $quiz_types;
 
