@@ -169,6 +169,9 @@
 		$('#search-form input, #search-form select').on('change', function() {
 			dict.previewEntries(number_entries);
 		}).trigger('change');
+		$('[name=no-inflections]').on('change', function() {
+			if ($.jStorage) $.jStorage.flush();
+		});
 	});
 	var dict = new jWord();
 	dict.init('dictionary', '/PHP5/quiz/get-entries.php', '/PHP5/quiz/set-path.php', '#enter-names');

@@ -90,6 +90,9 @@
 	<span class="header" id="noun" onclick="show('noun')">Noun</span>
 	<span class="header" id="adjective" onclick="show('adjective')">Adjective</span>
 	<span class="header" id="adverb" onclick="show('adverb')">Adverb</span>
+	<span class="header" id="preposition" onclick="show('preposition')">Preposition</span>
+	<span class="header" id="conjunction" onclick="show('conjunction')">Conjunction</span>
+	<span class="header" id="interjection" onclick="show('interjection')">Interjection</span>
 </h2>
 <div style="width: calc(100% - 500px); height: 300px; float: right; display:none">
 <iframe style="width: 100%; height: 100%"></iframe>
@@ -233,6 +236,18 @@
 	<input id="adverb1"><span id="adverb_ending1">us,</span><span></span>
 	<input id="adverb2"><span id="adverb_ending2">imē</span><span></span>
 </div>
+<div class="preposition">
+	<span class="present"></span>
+	<input id="preposition0"><span id="preposition_ending0"></span><span></span>
+</div>
+<div class="conjunction">
+	<span class="present"></span>
+	<input id="conjunction0"><span id="conjunction_ending0"></span><span></span>
+</div>
+<div class="interjection">
+	<span class="present"></span>
+	<input id="interjection0"><span id="interjection_ending0"></span><span></span>
+</div>
 </div>
 <br>
 <script>
@@ -354,7 +369,7 @@ $('#relations input').on('keyup', add_relation = function(e) {
 });
 
 function show(type) {
-	var types = ['verb', 'noun', 'adjective', 'adverb'];
+	var types = ['verb', 'noun', 'adjective', 'adverb', 'preposition', 'conjunction', 'interjection'];
 	$.each(types, function (i, t) {
 		if (type != t) {
 			$('#' + t).removeClass('selected');
@@ -414,12 +429,13 @@ $('#forms input').on('blur.repl', function(){
 			$par.is(".adverb") ? "adverb" :
 			$par.is(".preposition") ? "preposition" :
 			$par.is(".conjunction") ? "conjunction" :
+			$par.is(".interjection") ? "interjection" :
 			"unknown"
 		);
 		$.get("/PHP5/dictionary/word-exists.php",{'lang':'la','spart':type,'name':nomen})
 		.done(function(data) {
 			if (data == "present" || data == "absent")
-			{ $('.present').text({"present":"⚠","absent":""}[data]); }
+			{ $('.present').html({"present":"<a style='color:inherit' href='dictionary.php?lang=la&spart="+type+"&name="+nomen+"' target='_blank'>⚠</a>","absent":""}[data]); }
 			else alert("Word lookup failed: "+data);
 		});
 	}
@@ -679,6 +695,7 @@ $('select').on('change', function () {
 		ending.is(".adverb") ? "adverb" :
 		ending.is(".preposition") ? "preposition" :
 		ending.is(".conjunction") ? "conjunction" :
+		ending.is(".interjection") ? "interjection" :
 		"unknown"
 	)) + "_ending";
 	if (name.endsWith("-neuter")) $("select[name=gender]").val("neuter");

@@ -31,9 +31,9 @@ function unhex(text) {
 }
 
 var getTextNodesIn = function(el) {
-    console.log($(el));
-    return $(el).find(":not(iframe)").contents().filter(function() {
-        console.log(this);
+    //console.log($(el));
+    return $(el).find(":not(iframe)").addBack().contents().filter(function() {
+        //console.log(this);
         return this.nodeType == 3;
     });
 };

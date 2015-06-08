@@ -145,6 +145,7 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "decl-3") return "3rd Declension";
 		elseif ($value === "decl-4") return "4th Declension";
 		elseif ($value === "decl-5") return "5th Declension";
+		elseif ($value === "decl-3-i") return "3rd Declension i-stem";
 		elseif ($value === "decl-2-neuter") return "2nd Declension Neuter";
 		elseif ($value === "decl-3-neuter") return "3rd Declension Neuter";
 		elseif ($value === "decl-4-neuter") return "4th Declension Neuter";
@@ -160,7 +161,7 @@ function format_attr($tag,$value=NULL) {
 		$sp = explode("-", $value);
 		if (count($sp) === 1)
 			return "Stage $value (CLC)";
-		elseif (count($sp) === 1)
+		elseif (count($sp) === 2)
 			return "Stages ".$sp[0]." and ".$sp[1]." (CLC)";
 		$value = "";
 		for ($i=0;$i<count($sp)-1;$i++) {
@@ -194,6 +195,12 @@ function word_link($w,$hide_lang=false) {
 	</script><?php
 }
 
+function word_link2($w, $text=NULL, $no_format=false) {
+	if ($text === NULL) $text = $w->name();
+	if (!$no_format) $text = format_word($text,$w->lang(), true);
+	return '<a href="dictionary.php?lang='.$w->lang().'&spart='.$w->speechpart().'&name='.$w->name().'">'.$text.'</a>';
+}
+
 function display_lang($lang) {
 	if (ISWORD($lang)) $lang = $lang->lang();
 	?><sup>[<?= $lang ?>]</sup><?php
@@ -205,51 +212,72 @@ function modify_options($w) {
 	return $s[0]." (".implode(", ", array_slice($s,1)).")";
 }
 
-function display_word_info($w, $can_edit=FALSE) {
-	$id = $w->id();
+function display_word_name($w) {
 	$lang = $w->lang();
 	$spart = $w->speechpart();
-	$w->clear_connections();
-	$connections = $w->connections();
-	$w->read_paths();
-	$w->read_attrs();
 	$name = NULL;
 	if ($lang === "la" and $spart === "noun") {
 		if ($genders = $w->path()->iterate("gender")) {
-			$name = "";
+			$name = [];
 			if ($name !== NULL and in_array($g = "masculine",$genders)) {
 				$key = PATH($w, "nominative/singular/$g");
 				if (!$key->hasvalue()) $name = NULL;
 				else {
-					$name .= ($name?", ":"") . modify_options($key->get());
+					$name[] = ($key->get());
 					$key = PATH($w, "genitive/singular/$g");
 					if (!$key->hasvalue()) $name = NULL;
-					else $name .= ($name?", ":"") . modify_options($key->get());
+					else $name[] = ($key->get());
 				}
 			}
 			if ($name !== NULL and in_array($g = "feminine",$genders)) {
 				$key = PATH($w, "nominative/singular/$g");
 				if (!$key->hasvalue()) $name = NULL;
 				else {
-					$name .= ($name?", ":"") . modify_options($key->get());
+					$name[] = ($key->get());
 					$key = PATH($w, "genitive/singular/$g");
 					if (!$key->hasvalue()) $name = NULL;
-					else $name .= ($name?", ":"") . modify_options($key->get());
+					else $name[] = ($key->get());
 				}
 			}
 			if ($name !== NULL and in_array($g = "neuter",$genders)) {
 				$key = PATH($w, "nominative/singular/$g");
 				if (!$key->hasvalue()) $name = NULL;
 				else {
-					$name .= ($name?", ":"") . modify_options($key->get());
+					$name[] = ($key->get());
 					$key = PATH($w, "genitive/singular/$g");
 					if (!$key->hasvalue()) $name = NULL;
-					else $name .= ($name?", ":"") . modify_options($key->get());
+					else $name[] = ($key->get());
 				}
 			}
 		}
+	} elseif ($lang === "la" and $spart === "pronoun") {
+		if ($genders = $w->path()->iterate("gender")) {
+			$name = [];
+			if ($name !== NULL and in_array($g = "masculine",$genders)) {
+				$key = PATH($w, "nominative/singular/$g");
+				if (!$key->hasvalue()) $name = NULL;
+				else $name[] = $key->get();
+			}
+			if ($name !== NULL and in_array($g = "feminine",$genders)) {
+				$key = PATH($w, "nominative/singular/$g");
+				if (!$key->hasvalue()) $name = NULL;
+				else $name[] = $key->get();
+			}
+			if ($name !== NULL and in_array($g = "neuter",$genders)) {
+				$key = PATH($w, "nominative/singular/$g");
+				if (!$key->hasvalue()) $name = NULL;
+				else $name[] = $key->get();
+			}
+			if ((count($name) == 2 and $name[0] === $name[1])
+			 or (count($name) == 3 and $name[0] === $name[1] and $name[1] === $name[2])) {
+				$name = [$name[0]];
+				$key = PATH($w, "nominative/plural");
+				if ($key->hasvalue())
+					$name[] = $key->get();
+			}
+		}
 	} elseif ($lang === "la" and $spart === "verb") {
-		$name = "";
+		$name = [];
 		foreach (["indicative/active/present/person-1/singular",
 		          "infinitive/active/present",
 		          "indicative/active/perfect/person-1/singular",
@@ -259,15 +287,27 @@ function display_word_info($w, $can_edit=FALSE) {
 				if ($_ <= 1) {$name = NULL; break;}
 				else continue;
 			}
-			$name .= ($name?", ":"") . modify_options($key->get());
+			$name[] = $key->get();
 		}
 	}
 	if ($name === NULL) $name = $w->name();
+	else $name = implode(", ", array_map("modify_options",$name));
 	if (no_format($w)) {
 		$name = $w->name();
 	} else $name = format_word($name,$w->lang());
+	return $name;
+}
+
+function display_word_info($w, $can_edit=FALSE) {
+	$id = $w->id();
+	$lang = $w->lang();
+	$spart = $w->speechpart();
+	$w->clear_connections();
+	$connections = $w->connections();
+	$w->read_paths();
+	$w->read_attrs();
 	display_lang($w);
-	?><span class="word-name" id="word<?= $w->id() ?>_name"><?= $name ?></span>
+	?><span class="word-name" id="word<?= $w->id() ?>_name"><?= display_word_name($w) ?></span>
 	<?php
 	$infos = [];
 	if ($lang === "la" and $spart === "noun" and ($genders = $w->path()->iterate("gender"))) {

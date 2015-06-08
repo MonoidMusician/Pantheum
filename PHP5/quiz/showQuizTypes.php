@@ -23,15 +23,18 @@ foreach ($quiz_types as $id=>$q) {
 ?><div class="select"><?php
 foreach ($cat as $k=>$vs) {
 	?><label><input name="quiz-category" type="radio" value="<?= $k ?>"
-	<?php if ($k === "All") echo "checked"; ?>
 	<?php
-		$expr = "[name=quiz-types][value=\\\"".implode("\\\"], [name=quiz-types][value=\\\"", $vs)."\\\"]";
-		$onclick = '$("[name=quiz-types]").parent().next().addBack().hide();$("'.$expr.'").parent().next().addBack().show();';
-		echo "onclick='$onclick'";
+		if ($k === "All") {
+			$onclick = '$("[name=quiz-types]").parent().show();update_tabs();';
+			echo "checked onclick='$onclick'";
+			$k = "Any category";
+		} else {
+			$expr = "[name=quiz-types][value=\\\"".implode("\\\"], [name=quiz-types][value=\\\"", $vs)."\\\"]";
+			$onclick = '$("[name=quiz-types]").parent().hide();$("'.$expr.'").parent().show();update_tabs();';
+			echo "onclick='$onclick'";
+		}
 	?>
-	><?php
-	echo htmlspecialchars($k);
-	?></label><?php
+	><?= htmlspecialchars($k);?></label><?php
 }
 ?></div><br><?php
 $first = TRUE;
@@ -46,7 +49,7 @@ $predicate = function($q) use(&$first,$id) {
 	}
 	return $q===$id;
 }
-?><div class="select"><?php
+?><div id="quiz-type-selection" style="overflow: auto; -webkit-overflow-scrolling: touch;" class="select"><?php
 foreach ($quiz_types as $k=>$v) {
 	if (!is_array($v) or !array_key_exists("name", $v)) continue;
 	?><label><input name="quiz-types" type="radio" value="<?= $k ?>"
@@ -60,7 +63,40 @@ foreach ($quiz_types as $k=>$v) {
 	echo "onclick='$onclick'"; ?>
 	><?php
 	echo htmlspecialchars($v["name"]);
-	?></label><br><?php
+	?></label><?php
 }
-?></div><script>var prev_val = 10;$(function(){$('input[name=quiz-types]:checked').click()});</script><?php
+?></div><script>
+var prev_val = 10;
+function update_tabs() {
+	$('#quiz-type-selection br').remove();
+	var i = 0;
+	$('#quiz-type-selection label:visible:not(:last)').each(function() {
+		i += 1;
+		if (!(i % 3)) $(this).after('<br>');
+	});
+};
+update_tabs();
+$(function(){
+	$('input[name=quiz-types]:checked').click();
+	var max_height = 0, max_width = 0;
+	$('input[name=quiz-types]').parent().each(function() {
+		var w = $(this).width()+2;
+		if (w > max_width) max_width = w;
+	});
+	$('input[name=quiz-types]').parent().css('width', max_width + 'px');
+	var container = $('#quiz-type-selection');
+	container.css('width', (max_width*3 + 20) + 'px');
+	$(function() {
+	$('input[name=quiz-category]:not(:first)').each(function() {
+		var $this=$(this);
+		$this.click();
+		update_tabs();
+		var h = container.height()+10;
+		if (h > max_height) max_height = h;
+	});
+	container.css('height', max_height + 'px').css('resize', 'vertical');
+	$('input[name=quiz-category]:first').click();
+	});
+});
+</script><?php
 ?>

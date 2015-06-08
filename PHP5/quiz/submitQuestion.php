@@ -51,7 +51,7 @@
 				}
 			}
 		}
-		$result[$name] = array_merge([$score, $score?$value:$answer], $score?$also:$correct);
+		$result[$name] = array_merge([$score, $score?$value:$answer], array_values($score?$also:$correct));
 		$out_of += 1; if ($score) $subscore += 1;
 	}
 	$result["subscore"] = $subscore;
@@ -61,7 +61,7 @@
 	quiz_setvalue("score",$subscore+quiz_getvalue("score"));
 	quiz_setvalue("out_of",$out_of+quiz_getvalue("out_of"));
 	if (CURRENTQUIZ() !== NULL) {
-		CURRENTQUIZ()->set_score($subscore,$out_of);
+		CURRENTQUIZ()->add_score($subscore,$out_of);
 		CURRENTQUIZ()->add_result($result);
 	}
 	print json_encode($result);

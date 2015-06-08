@@ -27,6 +27,7 @@ if ($type !== NULL and $last and
 		print "success";
 	} else print "no-credit";
 } else if ($last) {
+	var_dump(array_keys($quiz_types));
 	if (array_key_exists($type, $quiz_types) and
 	    is_array($quiz_types[$type]) and
 	    array_key_exists("name", $quiz_types[$type]))

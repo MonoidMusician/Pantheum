@@ -116,7 +116,7 @@ $quiz_types = array_merge($quiz_types,[
 		"n_questions" => "auto",
 		"options" => [
 			make_chart(WORD2("la","hic","pronoun")),/*hic*/
-			make_chart(WORD2("la","iste","pronoun")),/*iste*/
+			make_chart(WORD2("la","iste","pronoun"),null,["vocative"]),/*iste*/
 			make_chart(WORD2("la","ille","pronoun")),/*ille*/
 			make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative"]),/*ego*/
 			make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative"]),/*tu*/

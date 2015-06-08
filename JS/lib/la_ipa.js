@@ -355,49 +355,34 @@ var la_ipa = (function () {
 		),
 		"Greek": my.Greek,
 	};
-	my.transform = my.old_transform = null;
-	my.transform = my.transforms["x+ae+oe+dagger"];
+	my.transform_key = my.old_transform = null;
 	my.select_transformer = function(nomen) {
+		my.transform_key = nomen;
 		my.transform = my.transforms[nomen];
 		return my;
 	}
+	my.select_transformer("x+ae+oe+dagger");
 	//my.transform = my.transforms["Silicus+Eszett+Nasal"];
 	//my.transform = my.transforms["Greek"];
 	my.unformatted = {};
 	my.selector = '.format-word-la';
 	my.format = function (space) {
-		/*getTextNodesIn(my.selector).each(function() {
+		if (space === undefined) space = $(my.selector);
+		else space = space.find(my.selector);
+		getTextNodesIn(space).each(function() {
 			var t = $(this), r, original;
-			if (my.old_transform === null) {
-				r = t.text();
-			} else {
-				r = my.unformatted[my.old_transform][t.text()];
-			}
-			original = r;
+			var p = $(this.parentElement);
+			var i = getTextNodesIn(p).index(this);
+			var attr = 'data-original-word'+i;
+			if (!p.attr(attr)) p.attr(attr, r=t.text());
+			else r = p.attr(attr);
 			r = r.normalize('NFKD');
-			r = my.transforms[my.transform](r);
+			r = my.transforms[my.transform_key](r);
 			// XXX: this is really ugly
 			// because we can't do this:
 			// t.text(r);
 			// (t is not a valid jQuery object??)
-			t.context.textContent = r;
-			if (!(my.transform in my.unformatted)) {
-				my.unformatted[my.transform] = {};
-			}
-			my.unformatted[my.transform][r] = original;
-		});
-		my.old_transform = my.transform;*/
-		if (space === undefined) space = $(my.selector);
-		else space = space.find(my.selector);
-		space.each(function() {
-			var $this = $(this);
-			$this.attr("data-original-word", $this.text());
-			var v = my.transform(
-				//$this.text().trim().replace(/\s*\/\s*/g,"\n").normalize('NFKD')
-				$this.text().trim().normalize('NFKD')
-			);
-			if (v === null) return v = "An error occurred";
-			$this.text(v);
+			this.textContent = r;
 		});
 	}
 

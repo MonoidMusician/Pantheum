@@ -85,6 +85,12 @@ attr_value,word_id,attr_tag->new in attributes; INSERT INTO attributes (attr_val
 attr_tag,attr_value,word_id->new in attributes; INSERT INTO attributes (attr_tag,attr_value,word_id) VALUES (?, ?, ?)
 attr_value,attr_tag,word_id->new in attributes; INSERT INTO attributes (attr_value,attr_tag,word_id) VALUES (?, ?, ?)
 word_id,attr_tag->delete from attributes; DELETE FROM attributes WHERE (word_id = (?) AND attr_tag = (?))
+set attr; INSERT INTO attributes
+        (word_id, attr_tag, attr_value)
+    VALUES
+        (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+        attr_value = VALUES(attr_value)
 word_id->def_id; SELECT def_id FROM definitions WHERE word_id = (?)
 def_id->word_id; SELECT word_id FROM definitions WHERE def_id = (?)
 form_tag->def_id; SELECT def_id FROM definitions WHERE form_tag = (?)

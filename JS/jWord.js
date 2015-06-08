@@ -562,7 +562,8 @@ function jWord() {
 					$.jStorage.set("word"+id+"_changed", changed);
 				})
 			}
-			$.get(my.api_path+'get-entries.php', 'id='+id)
+			var extra = $('[name=no-inflections]:checked').length ? '&no_inflections=true' : '';
+			$.get(my.api_path+'get-entries.php', 'id='+id+extra)
 			.done(done);
 			return false;
 		}

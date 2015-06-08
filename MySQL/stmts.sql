@@ -161,6 +161,14 @@
 {{{definedelete|
     table=attributes&from=word_id,attr_tag}}};
 
+{{{define|set attr|
+    INSERT INTO attributes
+        (word_id, attr_tag, attr_value)
+    VALUES
+        (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+        attr_value = VALUES(attr_value)
+}}};
 
 /************************
  * DEFINITIONS

@@ -148,6 +148,12 @@ $sql_stmts['attr_tag,attr_value,word_id->new in attributes']= "INSERT INTO attri
 $sql_stmts['attr_value,attr_tag,word_id->new in attributes']= "INSERT INTO attributes (attr_value,attr_tag,word_id) VALUES (?, ?, ?)";
 $sql_stmts['word_id,attr_tag->delete from attributes']= "DELETE FROM attributes WHERE (word_id = (?) AND attr_tag = (?))";
 
+$sql_stmts['set attr']= "INSERT INTO attributes
+        (word_id, attr_tag, attr_value)
+    VALUES
+        (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+        attr_value = VALUES(attr_value)";
 
 /************************
  * DEFINITIONS

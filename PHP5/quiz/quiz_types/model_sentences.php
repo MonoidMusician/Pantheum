@@ -248,6 +248,75 @@ $quiz_types = array_merge($quiz_types, [
 			"answer0-language" => "",
 		]]
 	],
+	"modelsentences-19" => [
+		"name" => "Stage 19 Model Sentences",
+		"category" => "Model Sentences",
+		"lang" => "la",
+		"no_shuffle" => true,
+		"n_questions" => "auto",
+		"options" => [[
+			"help" => "Translate the sentence",
+			"selections" => [],
+			"sentence" => [
+				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_1_large.jpg' style='width: 205px;'><br>"),
+				format_word("1. hic vir est Aristō. Aristō est
+amīcus Barbillī. in vīllā
+splendidā habitat, sed
+miserrimus est.","la",true),
+				HTML("<br><br>"),
+				$OP_USER_PARAGRAPH
+			],
+			"answer0" => [
+				"correct" => [
+					"This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid house, but he is very miserable."
+					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
+				],
+				"expr" => "This [man] is Aristō. (Aristō|He) is ([a|the] friend of Barbillus|Barbillus' friend). (He|Aristō) ((lives|dwells|resides|remains|lingers) in|inhabits) [a|the] (distinguished|noble|illustrious|bright|shining|glittering|brilliant|splendid|magnificent|sumptuous) (house|villa), but [he|Aristō] is (very|most) (miserable|unhappy|poor|wretched|pitiful|worthless|null|tragic|unfortunate|sick|tormenting).",
+			],
+			"answer0-tooltip" => "English translation",
+			"answer0-language" => "en",
+		],[
+			"help" => "Translate the sentence",
+			"selections" => [],
+			"sentence" => [
+				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_2_large.jpg' style='width: 205px;'><br>"),
+				format_word("2. haec fēmina est Galatēa.
+Galatēa est uxor Aristōnis.
+Galatēa marītum saepe
+castīgat, numquam laudat.","la",true),
+				HTML("<br><br>"),
+				$OP_USER_PARAGRAPH
+			],
+			"answer0" => [
+				"correct" => [
+					"This woman is Galatēa. Galatēa is Aristō's wife. Galatēa often scolds her husband, she never praises him."
+					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
+				],
+				"expr" => "({*this [woman]} {is} {Galatēa}). ({Galatēa|she} {is} {[a|the] (wife of Aristō|Aristō's wife)}). ({Galatēa} {often} {scolds} {[her|a|the] husband}), [but|and] ({[she]} {never} {prases} {him}|{never} {praising} {him}).",
+			],
+			"answer0-tooltip" => "English translation",
+			"answer0-language" => "en",
+		],[
+			"help" => "Translate the sentence",
+			"selections" => [],
+			"sentence" => [
+				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_3_large.jpg' style='width: 205px;'><br>"),
+				format_word("3. haec puella est Helena. Helena est fīlia Aristōnis et Galatēae.
+multī iuvenēs hanc puellam amant, quod pulcherrima est.","la",true),
+				HTML("<br><br>"),
+				$OP_USER_PARAGRAPH
+			],
+			"answer0" => [
+				"correct" => [
+					"This girl is Helena. Helena is Aristō and Galatēa's daughter. Many young men love this girl, because she is very beautiful."
+					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
+				],
+				"expr" => "({*this [girl]} {is} {Helen[a]}). ({Helen[a]|she} {is} {[a|the] (daughter of Aristō and Galatēa|Aristō and Galatēa's daughter)}). (Many (young men|boys) love (this girl|her|Helen[a])), because ({she} {is} {(very|most) (beautiful|pretty)}).",
+			],
+			"answer0-tooltip" => "English translation",
+			"answer0-language" => "en",
+		]],
+	],
 	"modelsentences-25" => [
 		"name" => "Stage 25 Model Sentences",
 		"category" => "Model Sentences",
@@ -401,56 +470,5 @@ The",
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
 		]]
-	],
-	"modelsentences-19" => [
-		"name" => "Stage 19 Model Sentences",
-		"category" => "Model Sentences",
-		"lang" => "la",
-		"no_shuffle" => true,
-		"n_questions" => "auto",
-		"options" => [[
-			"help" => "Translate the sentence",
-			"selections" => [],
-			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_1_large.jpg' style='width: 205px;'><br>"),
-				format_word("1. hic vir est Aristō. Aristō est
-amīcus Barbillī. in vīllā
-splendidā habitat, sed
-miserrimus est.","la"),
-				HTML("<br><br>"),
-				$OP_USER_PARAGRAPH
-			],
-			"answer0" => [
-				"correct" => [
-					"This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid house, but he is very miserable."
-					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
-				],
-				"expr" => "This [man] is Aristō. Aristō is ([a|the] friend of Barbillus|Barbillus' friend). (He|Aristō) ((lives|dwells|resides|remains|lingers) in|inhabits) [a|the] (distinguished|noble|illustrious|bright|shining|glittering|brilliant|splendid|magnificent|sumptuous) (house|villa), but [he|Aristō] is (very|most) (miserable|unhappy|poor|wretched|pitiful|worthless|null|tragic|unfortunate|sick|tormenting).",
-			],
-			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
-		]],
-		"options" => [[
-			"help" => "Translate the sentence",
-			"selections" => [],
-			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_2_large.jpg' style='width: 205px;'><br>"),
-				format_word("1. haec fēmina est Galatēa.
-Galatēa est uxor Aristōnis.
-Galatēa marītum saepe
-castīgat, numquam laudat.","la"),
-				HTML("<br><br>"),
-				$OP_USER_PARAGRAPH
-			],
-			"answer0" => [
-				"correct" => [
-					"This woman is Galatēa. Galatēa is Aristō's wife. Galatēa often scolds her husband, she never praises him."
-					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
-				],
-				"expr" => "({*this [woman]} {is} {Galatēa}). ({Galatēa|she} {is} {[a|the] (wife of Aristō|Aristō's wife)}). ({Galatēa} {often} {scolds} {her husband}), [but|and] ({[she]} {never} {prases} {him}|{never} {praising} {him}).",
-			],
-			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
-		]],
 	],
 ]);

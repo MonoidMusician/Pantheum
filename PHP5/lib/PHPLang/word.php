@@ -330,7 +330,7 @@ class _WORD
 		global $sql_stmts;
 		$this->_attrs[] = $attr;
 		if ($this->issql and $this->_id !== NULL) {
-			sql_exec($sql_stmts["word_id,attr_tag,attr_value->new in attributes"], ["iss", $this->_id, $attr->tag(), $attr->value()]);
+			sql_exec($sql_stmts["set attr"], ["iss", $this->_id, $attr->tag(), $attr->value()]);
 		}
 	}
 	function remove_attr($attr) {

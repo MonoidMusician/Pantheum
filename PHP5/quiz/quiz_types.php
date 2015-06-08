@@ -231,8 +231,10 @@ function make_chart($w,$values=NULL,$ignore=NULL) {
 	if ($values === NULL) $values = word_table_values($w,$ignore);
 	list ($values0,$values1,$values2,$values3,$values4) = $values;
 	global $OP_USER_INPUT;
+	$w->read_paths();
+	$w->read_attrs();
 	$ret = [
-		"help" => "Fill in the chart for “".$w->name()."”.",
+		"help" => "Fill in the chart for “".display_word_name($w)."”.",
 		"selections" => [],
 		"sentence" => [/*function($pick_db,$db) use($w,$values0,$values1,$values2,$values3,$values4) {
 
@@ -540,9 +542,9 @@ global $OP_COMMA;
 $GLOBALS["quiz_types"] = [
 	"random" => ["name" => "Random"]
 ];
-include_once('quiz_types1.php');
-include_once('charts.php');
-include_once('model_sentences.php');
+foreach (glob("/var/www/PHP5/quiz/quiz_types/*.php") as $filename) {
+	include_once($filename);
+}
 global $quiz_types;
 
 $options = [];

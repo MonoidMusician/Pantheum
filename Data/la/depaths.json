@@ -213,6 +213,8 @@
 		"verb":[
 			"mood"
 		],
-		"preposition":[]
+		"preposition":[],
+		"conjunction":[],
+		"interjection":[]
 	}
 }
