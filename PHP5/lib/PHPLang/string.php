@@ -1,8 +1,14 @@
 <?php
-$s = "{*test (this|that [system])}, {computer|machine}!";
-$s = "{*now} {[the|a] cloud was|[the] clouds were} {coming down|descending} {to [the] (earth|ground)}";
-$s = "{*now} {the (very dense|densest|thickest) ash} {was burning}";
-$s = "{*now} {(the majority of|most [of]) [the] Pompeian(s|i)} {were} {despairing|disparaging} {about (the[ir [own]] city|Pompeii)}";
+// String utilites/languages/parsers
+
+
+
+
+
+// $s = "{*test (this|that [system])}, {computer|machine}!";
+// $s = "{*now} {[the|a] cloud was|[the] clouds were} {coming down|descending} {to [the] (earth|ground)}";
+// $s = "{*now} {the (very dense|densest|thickest) ash} {was burning}";
+// $s = "{*now} {(the majority of|most [of]) [the] Pompeian(s|i)} {were} {despairing|disparaging} {about (the[ir [own]] city|Pompeii)}";
 function permute_syntax($s) {
 	$ll = [];
 	$r = [];
@@ -124,6 +130,12 @@ function sanitize($s,$flags) {
 	else $s = normalize_spaces($s);
 	return $s;
 }
+function _strtoupper($matches) {
+	return mb_strtoupper($matches[0]);
+}
+function capitalize($str) {
+	return preg_replace_callback('/\w/',"_strtoupper",$str,1);
+}
 function compare_strings($l,$r,$flags) {
 	return $l === $r or sanitize($l,$flags) === sanitize($r,$flags);
 }
@@ -145,7 +157,7 @@ function match($l,$r,$flags,$silent=false) {
 	$ignore = "[^\\w]";
 	if (!safe_get("keephtml",$flags)) $ignore .= "|<[^>]*>";
 	$regex = implode("($ignore)*", array_map("preg_quote",str_split($rs)));
-	$regex = "/^($ignore)*$regex\s*/";
+	$regex = "/^($ignore)*$regex\s*/i";
 	if (!$silent) var_dump($regex);
 	$ret = preg_replace($regex,"",$l,1);
 	if (!$silent) echo "</ol>Result remaining:";
@@ -222,6 +234,7 @@ function compare_part($s, $i, $flags) {
 		if ($rr === null)
 			if ($t == 2) {$l=$j+strlen($rn)+4+$capitalize;continue;}
 			else {if (DEBUG_STRING_PHP) echo "</ol>";return null;} else
+		if ($capitalize) $rr = capitalize($rr);
 		$r .= $rr;
 		$i = match($i,$rr,$flags,true); // XXX: ugly hack?
 		if ($i === null) /*go ballastic*/ die("internal error");
@@ -259,5 +272,126 @@ function compare_syntax($ss, $i, $flags) {
 	if (DEBUG_STRING_PHP) var_dump($rr);
 	if (DEBUG_STRING_PHP) echo "</ol>";
 	return $rr;
+}
+
+
+// Nano Macro replacer
+function nanolexify($syntax) {
+	$ret = [];
+	$l = 0; $extra = "";
+	$lens = strlen($syntax);
+	while ($l < $lens) {
+		$i = strpos($syntax,"\\\$",$l);
+		$j = strpos($syntax,"\\_",$l);
+		if ($i === FALSE) $i = $lens;
+		if ($j === FALSE) $j = $lens;
+		$o = $i<$j ? $i : $j;
+		if ($o === $lens) {
+			$ret[] = $extra.substr($syntax,$l,$o-$l);
+			break;
+		}
+		if ($j < $i) {
+			$matches = [];
+			preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*/',substr($syntax,$j+2),$matches);
+			$m = $matches[0];
+			$ret[] = $extra.substr($syntax,$l,$o-$l);
+			$extra = "";
+			$ret[] = [0, $m];
+			$l = $j + 2 + strlen($m);
+		} else {
+			$j1 = $j2 = $i+2;
+			$r1 = str_between("\\(","\\)",$syntax,$j1);
+			$r2 = str_between("\\[","\\]",$syntax,$j2);
+			if ($r1 === null) $r1 = $j1 = $lens;
+			if ($r2 === null) $r2 = $j2 = $lens;
+			$t = null;
+			if ($j1 === $i+2) {
+				$j=$j1;$rn=$r1;$t=1;
+			} else if ($j2 === $i+2) {
+				$j=$j2;$rn=$r2;$t=2;
+			} else {
+				$extra.=substr($syntax,$l,$o+2-$l);
+				$l=$o+2;
+				continue;
+			}
+			$ret[] = $extra.substr($syntax,$l,$o-$l);
+			$extra = "";
+			$ret[] = [$t, $rn];
+			$l = $i + 6 + strlen($rn);
+		}
+	}
+	return $ret;
+}
+function nanolexify_replacements($syntax) {
+	$ret = [];
+	$l = 0;
+	while ($l < strlen($syntax)) {
+		$i = strpos($syntax,"\\\$\\{",$l);
+		if ($i === FALSE) $i = strlen($syntax);
+		$ret[] = substr($syntax,$l,$i-$l);
+		if ($i === strlen($syntax)) break;
+		$j = strpos($syntax,"\\}",$i);
+		if ($j === FALSE) $j = strlen($syntax);
+		$ret[] = substr($syntax,$i+4,$j-($i+4));
+		$l = $j+2;
+	}
+	return $ret;
+}
+function get_map($expr) {
+	if (startswith($expr,"+=") || startswith($expr,"-=")) {
+		$i = intval(trim(substr($expr,2)));
+		if ($expr[0] === "-") $i = -$i;
+		return function($j)use($i){
+			return $i+$j;
+		};
+	} else {
+		$map = [];
+		foreach (explode(", ",$expr) as $kv) {
+			list($k,$v) = array_map("intval", array_map("trim",explode("=>",$k,$v)));
+			$map[$k] = $v;
+		}
+		return function($j)use($map){
+			return array_key_exists($j,$map) ? $map[$j] : $j;
+		};
+	}
+}
+function run_map($result, $expr) {
+	$res = "";
+	$odd = false;
+	$map = get_map($expr);
+	foreach (nanolexify_replacements($result) as $i) {
+		$odd = !$odd;
+		if ($odd) {$res.=$i;continue;}
+		$res .= "\\\$\\{".$map($i)."\\}";
+	}
+	return $res;
+}
+function nanoescape($str) {
+	return swap3($str, [
+		"(",")","[","]",
+		"{","}","$","_"
+	]);
+}
+function nanomacro($syntax, $dictionary, $escape=false) {
+	$result = "";
+	$odd = false;
+	if ($escape) $syntax = nanoescape($syntax);
+	if ($escape === 3 || $escape === 4)
+		$dictionary = array_map("nanoescape", $dictionary);
+	foreach (nanolexify($syntax) as $op) {
+		$odd = !$odd;
+		if ($odd) {$result.=$op;continue;}
+		list($type,$expr) = $op;
+		if ($type === 0)
+			if (array_key_exists($expr,$dictionary))
+				$result .= $dictionary[$expr];
+			else $result .= $expr;
+		if ($type === 1)
+			{$result = str_replace("\\\$\\{1\\}", $expr, $result);$expr="-=1";}
+		if ($type) $result = run_map($result,$expr);
+	}
+	if ($escape === 2 || $escape === 4)
+		$result = nanoescape($result);
+	return $result;
 }
 ?>
