@@ -33,7 +33,8 @@
                                         cpassword = loginHash(username, cpassword);
                                         $.post("/PHP5/signup.php", { u: username, p: password, c: cpassword, e: email, v: value, l: classid }, function(data) {
                                             if (data == 'success') {
-                                                $('#signuperror').html('Account&nbsp;created.<!--<br>Please&nbsp;check&nbsp;your&nbsp;email.-->');
+                                                $('#signuperror').html('Account&nbsp;created. Redirecting to login page...<!--<br>Please&nbsp;check&nbsp;your&nbsp;email.-->');
+                                                setTimeout(function(){window.location.replace('login.php');}, 2000);
                                             } else {
                                                 switch (data) {
                                                     case '1':

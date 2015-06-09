@@ -70,10 +70,10 @@ var prev_val = 10;
 function update_tabs() {
 	$('#quiz-type-selection br').remove();
 	var i = 0;
-	$('#quiz-type-selection label:visible:not(:last)').each(function() {
+	/*$('#quiz-type-selection label:visible:not(:last)').each(function() {
 		i += 1;
 		if (!(i % 3)) $(this).after('<br>');
-	});
+	});/**/
 };
 update_tabs();
 $(function(){
@@ -85,7 +85,7 @@ $(function(){
 	});
 	$('input[name=quiz-types]').parent().css('width', max_width + 'px');
 	var container = $('#quiz-type-selection');
-	container.css('width', (max_width*3 + 20) + 'px');
+	//container.css('width', (max_width*3 + 20) + 'px');
 	$(function() {
 	$('input[name=quiz-category]:not(:first)').each(function() {
 		var $this=$(this);

@@ -7,7 +7,7 @@ $quiz_types = array_merge($quiz_types, [
 		"lang" => "la",
 		"no_shuffle" => true,
 		"n_questions" => "auto",
-		"options" => [[
+		"options" => function(){global$OP_USER_INPUT;return[[
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
@@ -246,7 +246,7 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
-		]]
+		]];}
 	],
 	"modelsentences-19" => [
 		"name" => "Stage 19 Model Sentences",
@@ -254,7 +254,7 @@ $quiz_types = array_merge($quiz_types, [
 		"lang" => "la",
 		"no_shuffle" => true,
 		"n_questions" => "auto",
-		"options" => [[
+		"options" => function(){global$OP_USER_PARAGRAPH;return[[
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
@@ -315,7 +315,7 @@ multī iuvenēs hanc puellam amant, quod pulcherrima est.","la",true),
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "en",
-		]],
+		]];},
 	],
 	"modelsentences-25" => [
 		"name" => "Stage 25 Model Sentences",
@@ -323,7 +323,7 @@ multī iuvenēs hanc puellam amant, quod pulcherrima est.","la",true),
 		"lang" => "la",
 		"no_shuffle" => true,
 		"n_questions" => "auto",
-		"options" => [[
+		"options" => function(){global$OP_USER_PARAGRAPH;return[[
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
@@ -469,6 +469,6 @@ The",
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
-		]]
+		]];}
 	],
 ]);

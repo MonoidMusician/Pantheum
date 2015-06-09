@@ -24,29 +24,24 @@
 		"tense":{
 			"pres":"present",
 			"imperf":"imperfect",
-			"hist":"past-historic",
+			"preter":"preterite",
 			"fut":"future",
-			"cond":"conditional",
-			"perf":"present-perfect",
-			"pluperf":"pluperfect",
-			"ante":"past-anterior",
-			"f-perf":"future-perfect",
-			"c-perf":"conditional-perfect",
-			"pperf":"pluperfect",
-			"fperf":"future-perfect",
-			"cperf":"conditional-perfect",
-			"futur":"future"
+			"cond":"conditional"
 		},
 		"type":{
 			"sml":"simple",
 			"cmd":"compound"
+		},
+		"imperative-mood":{
+			"affirm":"affirmative",
+			"neg":"negative"
 		}
 	},{
 		"mood":{
 			"_values_":{
 				"infinitive":[],
 				"gerund":[],
-				"past-participle":[],
+				"past-participle":["number","gender"],
 				"indicative":[
 					"tense",
 					"number",
@@ -58,8 +53,7 @@
 						"tense":[
 							"present",
 							"imperfect",
-							"past",
-							"pluperfect"
+							"future"
 						]
 					},
 					"number",
@@ -67,6 +61,7 @@
 					"gender"
 				],
 				"imperative":[
+					"imperative-mood",
 					"number",
 					"person"
 				]

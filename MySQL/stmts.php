@@ -553,6 +553,14 @@ $sql_stmts['user_id->quiz_id reversed']= "SELECT quiz_id FROM quizzes
 $sql_stmts['quiz_id->delete from quizzes']= "DELETE FROM quizzes WHERE (quiz_id = (?))";
 
 
+$sql_stmts['all quizzes']= "SELECT quiz_id FROM quizzes";
+$sql_stmts['id->username']= "SELECT username FROM users WHERE id = (?)";
+$sql_stmts['quiz_id->username'] = $sql_stmts['id->username'];
+foreach (explode('|','(' . 
+        $sql_stmts['quiz_id->user_id'] . ')') as $arg) {
+    $sql_stmts['quiz_id->username'] = substr_replace($sql_stmts['quiz_id->username'], trim($arg), strpos($sql_stmts['quiz_id->username'],'?'), strlen('?'));
+};
+
 /************************
  * OTHER
  ************************/

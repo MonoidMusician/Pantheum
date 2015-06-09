@@ -272,6 +272,10 @@ table input[type=checkbox], table input[type=radio] {
     color: rgba(34, 50, 138, 1);
 }
 
+.jquiz-correct a, .jquiz-incorrect a, .jquiz-other a {
+    color: inherit;
+}
+
 .jquiz-help {
     color: #ee6622;
 }

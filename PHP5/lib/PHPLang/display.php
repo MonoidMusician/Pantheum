@@ -624,7 +624,12 @@ function word_table_values($w,$ignore=NULL) {
 					$values3 = $path->iterate("person");
 					$values2 = $path->iterate("number");
 					$values1 = [""];
-				}
+				} else if ($_0 === "participle") {
+					$values4 = $path->iterate("gender");
+					$values3 = $path->iterate("number");
+					$values2 = $path->iterate("tense");
+					$values1 = [""];
+				}/**/
 				$values0[$_0] = [$values1,$values2,$values3,$values4];
 			}
 		} elseif ($spart === "adverb") {
@@ -659,8 +664,13 @@ function word_table_values($w,$ignore=NULL) {
 					$values3 = [FALSE,FALSE,FALSE];
 					$values1 = [""];
 				} else if ($_0 === "imperative") {
-					$values4 = [""];
+					$values4 = $path->iterate("imperative-mood");
 					$values3 = $path->iterate("person");
+					$values2 = $path->iterate("number");
+					$values1 = [""];
+				} else if ($_0 === "past-participle") {
+					$values4 = $path->iterate("gender");
+					$values3 = [false,false,false];
 					$values2 = $path->iterate("number");
 					$values1 = [""];
 				}

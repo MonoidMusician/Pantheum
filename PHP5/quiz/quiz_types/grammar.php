@@ -2,6 +2,38 @@
 global $quiz_types;
 global $df_exclude;
 $quiz_types = array_merge($quiz_types,[
+	"001" => [
+		"name" => "Nouns: number and case",
+		"lang" => "la",
+		"category" => "Grammar",
+		"options" => function(){return[
+			which3("la","noun","case",3,NULL,
+			       ["case"=>["vocative"=>0,
+			                 "locative"=>0,
+			                 "nominative"=>1,
+			                 "genitive"=>3,
+			                 "dative"=>3,
+			                 "ablative"=>4,
+			                 "accusative"=>2]]),
+			which("la","noun","number",NULL,
+			      ["case"=>["vocative"=>0,
+			                "locative"=>0,
+			                "nominative"=>1,
+			                "genitive"=>3,
+			                "dative"=>3,
+			                "ablative"=>4,
+			                "accusative"=>2]]),
+		];},
+	],
+	"002" => [
+		"name" => "Verbs: tense and number",
+		"lang" => "la",
+		"category" => "Grammar",
+		"options" => function(){return[
+			which3("la","verb","tense",3,["indicative"]),
+			which3("la","verb","number",2,["indicative"]),
+		];},
+	],
 	"complementary-infinitives" => [
 		"name" => "Complementary infinitives",
 		"category" => "Grammar",
@@ -320,6 +352,140 @@ $quiz_types = array_merge($quiz_types,[
 			"answer0-tooltip"=>"relative pronoun form",
 		]/**/]
 	],
+	"007" => [
+		"name" => "Noun–verb agreement",
+		"category" => "Grammar",
+		"lang" => "la",
+		"options" => [[
+			"help" => "Choose the pronoun that correctly 
+			           restates the subject of the verb.
+			           (Note: for third-person pronouns,
+			           assume both options are of the same
+			           gender and thus only differ in number.)",
+			"selections" => [
+				#PICK(["true","false"])->l("la"),
+				0=>"true",
+				1=>PICK(3,"person")->l("la"),/**/
+				2=>PICK(2,"number")->l("la"),/**/
+				3=>PICK("gender")->l("la"),
+				4=>NULL,
+				//5=>PICK("voice")->l("la"),
+				5=>"active",
+				6=>NULL,
+				"+adj"=>FALSE/*/PICK([TRUE,FALSE],[TRUE=>6,FALSE=>2])->l("la")*/,
+			],
+			"sentence" => [
+				$OP_MULTIPLE_CHOICE," ",
+				[ "condition" => eq_pick("+adj", TRUE),
+					"lang" => "la",
+					"attr" => $df_exclude,
+					"speechpart" => "adjective",
+					"path" => [
+						"nominative",
+						"positive",
+						get_pick(2,0),
+						get_pick(3)
+					]
+				],
+				[ "condition" => fn_and(eq_pick(0,"true"), eq_pick(5,"active")),
+					"lang" => "la",
+					"attr" => $df_exclude,
+					"speechpart" => "noun",
+					"path" => [
+						"accusative", PICK("number")->l("la"),
+						PICK("gender")->l("la")
+					],
+				],
+				[
+					"lang" => "la",
+					"speechpart" => "verb",
+					"attr" => [
+						"transitive" => get_pick(0),
+						"!template"=>NULL, "!hidden"=>NULL, "!irregular"=>NULL,
+					],
+					"path" => [
+						//PICK(["indicative","subjunctive"])->l("la"),
+						"indicative",
+						get_pick(1,0),
+						get_pick(2,0),
+						make_pick(PICK(["present","imperfect","perfect"]),4),
+						//make_pick(PICK("tense")->l("la"), 4),
+						get_pick(5),
+					],
+					"verb-gender" => get_pick(3)
+				]
+			],
+			"choices0" => [
+				"correct" => [
+					"lang" => "la",
+					"speechpart" => "pronoun",
+					"attr" => [
+						"person" => get_pick(1,0)
+					],
+					"path" => [
+						"number" => get_pick(2,0),
+						"nominative", get_pick(3)
+					]
+				],
+				[
+					"lang" => "la",
+					"speechpart" => "pronoun",
+					"attr" => [
+						"person" => get_pick(1,1)
+					],
+					"path" => [
+						"number" => get_pick(2,0),
+						"nominative", get_pick(3)
+					]
+				],
+				[
+					"lang" => "la",
+					"speechpart" => "pronoun",
+					"attr" => [
+						"person" => get_pick(1,2)
+					],
+					"path" => [
+						"number" => get_pick(2,0),
+						"nominative", get_pick(3)
+					]
+				],
+				[
+					"lang" => "la",
+					"speechpart" => "pronoun",
+					"attr" => [
+						"person" => get_pick(1,0)
+					],
+					"path" => [
+						"number" => get_pick(2,1),
+						"nominative", get_pick(3)
+					]
+				],
+				[
+					"lang" => "la",
+					"speechpart" => "pronoun",
+					"attr" => [
+						"person" => get_pick(1,1)
+					],
+					"path" => [
+						"number" => get_pick(2,1),
+						"nominative", get_pick(3)
+					]
+				],
+				[
+					"lang" => "la",
+					"speechpart" => "pronoun",
+					"attr" => [
+						"person" => get_pick(1,2)
+					],
+					"path" => [
+						"number" => get_pick(2,1),
+						"nominative", get_pick(3)
+					]
+				]
+			],
+			"choices0-tooltip"=>"Quis/qui", 
+		]]
+	],
 	"subj01" => [
 		"name" => "Subjunctive or Indicative?",
 		"category" => "Grammar",
@@ -366,56 +532,59 @@ $quiz_types = array_merge($quiz_types,[
 		"category" => "Grammar",
 		"lang" => "la",
 		"stage" => 24,
-		"options" => [
-			[
-				"help" => function(&$pick_db, $db) {
-					$word = $pick_db["word"];
-					$word_name = format_word($word->name(), $word->lang());
-					$pick_db["word"]->read_paths();
-					$path = $pick_db["path"] = PATH($word);
-					foreach ($pick_db as $k => $v) {
-						if($k==="word" or $k==="path") continue;
-						#error_log("$k = $v".var_export($v,true));
-						$path->add2($v);
-					}
-					#error_log(var_export($path->get(),1));
-					$pick_db["form"] = $path->get();
-					$path = implode(" ", array_map("format_path",array_reverse(explode("/",(string)$path))));
-					return "What is the $path for $word_name.";
-				},
-				"selections" => [
-					"word"=>function($_, $db, $path) {
-						$s = $db->searcher()->spart("verb")->only_without_attr(ATTR("irregular"))->only_without_attr(ATTR("template"));
-	    	$s->stmt .= " AND EXISTS (SELECT 1 FROM forms WHERE forms.word_id = words.word_id AND form_tag != '' AND form_value != '') AND NOT EXISTS (SELECT 1 FROM attributes WHERE attr_tag = 'conjugation' AND attr_value like '%deponent%' AND word_id = words.word_id)";
-						return $s->rand();
+		"options" => function(){
+			global $OP_USER_INPUT;
+			return [
+				[
+					"help" => function(&$pick_db, $db) {
+						$word = $pick_db["word"];
+						$pick_db["word"]->read_paths();
+						$path = $pick_db["path"] = PATH($word);
+						foreach ($pick_db as $k => $v) {
+							if($k==="word" or $k==="path") continue;
+							#error_log("$k = $v".var_export($v,true));
+							$path->add2($v);
+						}
+						#error_log(var_export($path->get(),1));
+						$pick_db["form"] = $path->get();
+						$path = implode(" ", array_map("format_path",array_reverse(explode("/",(string)$path))));
+						$word_name = display_word_name($word);
+						return "What is the $path for $word_name.";
 					},
-					"tense"=>PICK(["imperfect","pluperfect"]),
-					"mood"=>PICK(["indicative","indicative","indicative","subjunctive","subjunctive","subjunctive","subjunctive","subjunctive"]),
-					"number"=>PICK(["singular","plural"]),
-					"person"=>"person-3",
-					"voice"=>"active",
-				],
-				"sentence" => [$OP_USER_INPUT],
-				"answer0" => function($pick_db) {
-					return array_map("format_word",explode("\n",$pick_db["form"]));
-				},
-				"answer0-tooltip" => "Enter form"
-			],/**/
-			make_chart(RWORD2("la","verb"),null,["participle","infinitive","supine","imperative","passive","person-1","person-2","present","perfect","future","future-perfect"]),
-		],
+					"selections" => [
+						"word"=>function($_, $db, $path) {
+							$s = $db->searcher()->spart("verb")->only_without_attr(ATTR("irregular"))->only_without_attr(ATTR("template"));
+				$s->stmt .= " AND EXISTS (SELECT 1 FROM forms WHERE forms.word_id = words.word_id AND form_tag != '' AND form_value != '') AND NOT EXISTS (SELECT 1 FROM attributes WHERE attr_tag = 'conjugation' AND attr_value like '%deponent%' AND word_id = words.word_id)";
+							return $s->rand();
+						},
+						"tense"=>PICK(["imperfect","pluperfect"]),
+						"mood"=>PICK(["indicative","indicative","indicative","subjunctive","subjunctive","subjunctive","subjunctive","subjunctive"]),
+						"number"=>PICK(["singular","plural"]),
+						"person"=>"person-3",
+						"voice"=>"active",
+					],
+					"sentence" => [$OP_USER_INPUT],
+					"answer0" => function($pick_db) {
+						return array_map("format_word",explode("\n",$pick_db["form"]));
+					},
+					"answer0-tooltip" => "Enter form"
+				],/**/
+				make_chart(RWORD2("la","verb"),null,["participle","infinitive","supine","imperative","passive","person-1","person-2","present","perfect","future","future-perfect"]),
+			];
+		}
 	],
 	"013" => [
 		"name" => "Subjunctive matching",
 		"lang" => "la",
 		"category" => "Grammar",
 		"n_questions" => "auto",
-		"options" => [
+		"options" => function(){return[
 			make_matching([
 				"Pluperfect Subjunctive"=>"portāvisset",
 				"Pluperfect Indicative"=>"discēderat",
 				"Imperfect Indicative"=>"veniēbat",
 				"Imperfect Subjunctive"=>"prōmitteret" ,
 			]),
-		],
+		];},
 	],
 ]);

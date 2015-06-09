@@ -24,6 +24,9 @@ class _OP
 		if (count($arg) == 3)
 			list($this->space_before, $this->text, $this->space_after) = $arg;
 	}
+	function __toString() {
+		return $this->text;
+	}
 }
 
 
@@ -37,6 +40,7 @@ function OP() {
 }
 $GLOBALS["OP_COMMA"]  = OP(0, ",");
 $GLOBALS["OP_COLON"]  = OP(0, ":");
+$GLOBALS["OP_APOS"]  = OP(0, "’");
 $GLOBALS["OP_LPAREN"] = OP("(", 0);
 $GLOBALS["OP_RPAREN"] = OP(0, ")");
 $GLOBALS["OP_LQUOTE"] = OP("“", 0);

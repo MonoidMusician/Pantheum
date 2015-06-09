@@ -437,6 +437,9 @@ user_id->quiz_id reversed; SELECT quiz_id FROM quizzes
     WHERE user_id = (?)
     ORDER BY quiz_id DESC
 quiz_id->delete from quizzes; DELETE FROM quizzes WHERE (quiz_id = (?))
+all quizzes; SELECT quiz_id FROM quizzes
+id->username; SELECT username FROM users WHERE id = (?)
+quiz_id->username; SELECT username FROM users WHERE id = ((SELECT user_id FROM quizzes WHERE quiz_id = (?)))
 lang_id->lang_dispname; SELECT lang_dispname FROM languages WHERE lang_id = (?)
 word_name,word_lang->word_id; SELECT word_id FROM words WHERE word_name = (?) AND word_lang = (?)
 word_lang,word_name->word_id; SELECT word_id FROM words WHERE word_lang = (?) AND word_name = (?)

@@ -10,23 +10,30 @@
     sro('/Includes/functions.php');
     sro('/PHP5/quiz/common.php');
     sro('/PHP5/quiz/quiz_types.php');
+    $master = safe_get("master",$_GET) == "true" and quiz_auth();
 ?>
 <header>
-    <h1>My Quizzes</h1>
+    <h1>My Quizzes <?php if (!$master and quiz_auth()) echo "<a href='?master=true'>master</a>" ?></h1>
 </header>
 <article id="quiz">
-    <table>
-    <tr><th>Select</th><th>Name</th><th>Score/Grade</th><th>Date</th></tr>
+    <table style="border-spacing: 8px 2px;">
+    <tr><th>Select</th>
+    <?php if ($master) echo "<th>UserName</th>"; ?>
+    <th>Name</th><th>Score/Grade</th><th>Date</th></tr>
     <?php
         global $sql_stmts;
         $quizzes = [];
         $quizzes_data = [];
-        sql_getmany($sql_stmts["user_id->quiz_id reversed"], $quizzes, ["i", $suid]);
+        if ($master) sql_getmany($sql_stmts["all quizzes"], $quizzes, []);
+        else sql_getmany($sql_stmts["user_id->quiz_id reversed"], $quizzes, ["i", $suid]);
         foreach ($quizzes as &$q) {
             $q = QUIZ($q);
             $quizzes_data[$q->id()] = $q->completed();
             ?><tr>
             <td><input name="quizzes" type="radio" value="<?=$q->id()?>"></td>
+            <?php
+                if ($master) echo "<td>".$q->username()."</td>";
+            ?>
             <td><?=$q->name()?></td>
             <td class="text-center">
                 <?php if ($q->completed()) {
@@ -35,7 +42,10 @@
                     elseif ($p < 75) $class = "incorrect";
                     else $class = "other";
                     echo "<span class='jquiz-$class'>$p%</span>";
-                } else echo "INC"; ?>
+                } else {
+                    $data = $q->data();
+                    echo "INC (".count($data["results"])."/".$data["last"].")";
+                } ?>
             </td><td>
                 <span class="date" data-date="<?= $q->time_started()?>"></span>
             </td>
@@ -84,9 +94,10 @@
         if (!id) return;
         $.get('/PHP5/quiz/restartQuiz.php?id=' + id, function(data) {
             var msg = data;
-            if ((data = $.parseJSON(data)) !== null) {
+            try {
+                data = $.parseJSON(data);
                 quiz.review(data);
-            } else {
+            } catch(e) {
                 alert("Error: "+msg);
             }
         });

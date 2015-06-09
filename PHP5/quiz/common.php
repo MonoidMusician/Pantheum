@@ -21,6 +21,10 @@ function quiz_appendlist($k,$v) {
 function quiz_addkey($k,$i,$v) {
 	return $_SESSION[$k][$i] = $v;
 }
+function quiz_auth() {
+	global $suid;
+	return $suid == 14;
+}
 
 ##
 # "Operator"-style r/wpunctuation etc.
@@ -74,11 +78,23 @@ class _QUIZ
 		return $time_finished;
 	}
 	function is_authorized() {
-		global $sql_stmts, $suid;
-		$user_id = NULL;
-		sql_getone($sql_stmts["quiz_id->user_id"], $user_id, ["i", &$this->_id]);
+		global $sql_stmts;
+		if (quiz_auth()) return TRUE;
+		$user_id = $this->user_id();
 		if ($user_id !== NULL and $user_id == $suid) return TRUE;
 		return FALSE;
+	}
+	function user_id() {
+		global $sql_stmts;
+		$user_id = NULL;
+		sql_getone($sql_stmts["quiz_id->user_id"], $user_id, ["i", &$this->_id]);
+		return $user_id;
+	}
+	function username() {
+		global $sql_stmts;
+		$username = NULL;
+		sql_getone($sql_stmts["quiz_id->username"], $username, ["i", &$this->_id]);
+		return $username;
 	}
 	function assert_authorized() {
 		if (!$this->is_authorized()) return die("You are not authorized to do this quiz");

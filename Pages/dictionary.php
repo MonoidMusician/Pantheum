@@ -84,11 +84,10 @@
 	}
 ?>
 	</span>
-<?php
-	if ($show_more) {
-		?><a href="javascript:void(0)" onclick="$(this).remove();$('#select-langs div').show();">(show all)</a><?php
-	}
-?>
+	<a id="show-all-langs"
+	    <?php if(!$show_more) echo 'style="display:none"' ?>
+	    href="javascript:void(0)"
+	    onclick="$(this).hide();$('#select-langs div').show();">(show all)</a>
 	<br>Attributes:
 	<input id="enter-attrs" type="text" value="<?= safe_get('attr', $_GET) ?>" placeholder="[!]attr[=value], ...">
 	<br>Part(s) of speech:

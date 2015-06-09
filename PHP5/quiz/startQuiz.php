@@ -15,8 +15,6 @@ if ($type !== NULL and $last and
     array_key_exists($type, $quiz_types) and
     is_array($quiz_types[$type]) and
     array_key_exists("options", $quiz_types[$type]) and
-    is_array($quiz_types[$type]["options"]) and
-    $quiz_types[$type]["options"] and
     $quiz_types[$type]["name"]) {
 	quiz_setvalue("quiz_type",$type);
 	quiz_setvalue("quiz_last",$last);

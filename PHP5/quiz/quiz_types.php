@@ -542,14 +542,22 @@ global $OP_COMMA;
 $GLOBALS["quiz_types"] = [
 	"random" => ["name" => "Random"]
 ];
+$_start_t = microtime(true); $_i = 0; $_times = [];
 foreach (glob("/var/www/PHP5/quiz/quiz_types/*.php") as $filename) {
+	$_start_t2 = microtime(true);
 	include_once($filename);
+	$_times[] = [$filename, microtime(true)-$_start_t2];
 }
+/*$time = microtime(true) - $_start_t;
+error_log("Took $time seconds to load ".count($_times)." file(s):");
+foreach ($_times as $_t) {
+	error_log("- ".$_t[1]." seconds for ".$_t[0]);
+}/**/
 global $quiz_types;
 
 $options = [];
 foreach ($quiz_types as $k=>$v) {
-	if (array_key_exists("options", $v)) {
+	if (array_key_exists("options", $v) and is_array($v["options"])) {
 		$options = array_merge($options, $v["options"]);
 	}
 }

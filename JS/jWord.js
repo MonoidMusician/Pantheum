@@ -449,7 +449,10 @@ function jWord() {
 				$(q).prop('checked', val);
 				if (q.endsWith('[name=enter-lang]'))
 					if (val) $(q).parent().parent().show();
-					else $(q).parent().parent().hide();
+					else {
+						$(q).parent().parent().hide();
+						$('#show-all-langs').show();
+					}
 			} else $(q).val(val);
 		});
 		//alert("done");

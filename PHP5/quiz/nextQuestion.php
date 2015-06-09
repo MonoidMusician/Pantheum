@@ -12,11 +12,16 @@ global $quiz_types;
 
 const QUIZ_MAX_RECURSE = 10;
 
-$type = $quiz_types[quiz_getvalue("quiz_type")];
-$options = []; foreach ($type["options"] as $opt)
+$type = safe_get(quiz_getvalue("quiz_type"),$quiz_types);
+if (!is_array($type)) exit("bad quiz type, or session expired");
+$type_options = $type["options"];
+if (is_callable($type_options))
+	$type_options = $type_options();
+
+$options = []; foreach ($type_options as $opt)
 	if (!array_key_exists("condition", $opt) or $opt["condition"]())
 		$options[] = $opt;
-//$quiz = choose_one($options);
+
 $idx = NULL; $i=0;
 while ($idx === NULL or !array_key_exists($idx, $options)) {
 	if (!quiz_getvalue("options_n") or quiz_getvalue("options_n") === true) {
@@ -31,7 +36,9 @@ while ($idx === NULL or !array_key_exists($idx, $options)) {
 		CURRENTQUIZ()->set_options_n(quiz_getvalue("options_n"));
 	if ($i++ > 12) exit("ran out of indices");
 }
+
 $quiz = $options[$idx];
+
 $try = NULL; $recurse=0; $reason=NULL;
 $try = function() use($quiz,&$try,&$recurse,&$reason) {
 	global $OP_MATCHING_CHOICES;

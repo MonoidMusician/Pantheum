@@ -114,22 +114,22 @@ $quiz_types = array_merge($quiz_types,[
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => "auto",
-		"options" => [
+		"options" => function(){return[
 			make_chart(WORD2("la","hic","pronoun")),/*hic*/
 			make_chart(WORD2("la","iste","pronoun"),null,["vocative"]),/*iste*/
 			make_chart(WORD2("la","ille","pronoun")),/*ille*/
 			make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative"]),/*ego*/
 			make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative"]),/*tu*/
 			make_chart(WORD2("la","is","pronoun")),/*is*/
-		]
+		];}
 	],
 	"irregular-verbs1" => [
 		"name" => "Irregular verbs",
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => "auto",
-		"options" => [
+		"options" => function(){return[
 			make_chart(WORD2("la","volo","verb"),NULL,["infinitive","participle","subjunctive","future","pluperfect","future-perfect"]),
-		]
+		];}
 	],
 ]);

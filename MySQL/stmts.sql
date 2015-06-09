@@ -363,6 +363,13 @@
     table=quizzes&from=quiz_id}}};
 
 
+{{{define|all quizzes|SELECT quiz_id FROM quizzes}}};
+{{{defineselect|table=users&to=username&from=id}}};
+{{{compose|
+username<-quiz_id=
+    username<-id|
+        {{{get|user_id<-quiz_id}}}}}};
+
 /************************
  * OTHER
  ************************/
