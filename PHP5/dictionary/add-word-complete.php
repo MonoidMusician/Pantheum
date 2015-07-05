@@ -143,6 +143,13 @@
 			//error_log(var_export(array_map(function($a){return$a->id();},$t),1));
 			if (count($t) === 0) exit("Could not find template with name: ".$template);
 			elseif (count($t) !== 1) exit("Ambiguous template name (please remove duplicate template(s))");
+			if ($path === "common") {
+			if (($s=run_template($w, PATH($w,"feminine"), $t[0], $forms, $ignore, $changes, FALSE)) === NULL) {
+				if (($s=run_template($w, PATH($w,"masculine"), $t[0], $forms, $ignore, $changes, FALSE)) === NULL) {
+					exit("success");
+				} else exit("Template did not run successfully: $s");
+			} else exit("Template did not run successfully: $s");
+			} else
 			if (($s=run_template($w, PATH($w,$path), $t[0], $forms, $ignore, $changes, FALSE)) === NULL) {
 				exit("success");
 			} else exit("Template did not run successfully: $s");

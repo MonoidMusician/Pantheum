@@ -1,5 +1,9 @@
 Plugins.AutosizeInput.getDefaultOptions().space = 30;
 
+function randomcase(string) {
+	return string.replace(/\w/g, function(i){return Math.random() > 0.5 ? i.toUpperCase() : i;});
+}
+
 function jQuiz() {
 	this.questions = [];
 	this.results = [];
@@ -59,7 +63,7 @@ function jQuiz() {
 		var header = '<section id="' + this.qelement + '-top">';
 
 		if ((this.current - 1) >= 0) {
-			header += '<button id="' + this.qelement + '-back">Back</button>';
+			header += '<button tabindex="101" id="' + this.qelement + '-back">Back</button>';
 		} else {
 			header += '<button id="' + this.qelement + '-back" class="disabled">Back</button>';
 		}
@@ -67,16 +71,16 @@ function jQuiz() {
 		header += '<span> ' + this.select() + ' / ' + this.last + ' </span>';
 
 		if ((this.current == (this.next-1)) && (this.results[this.current] == undefined)) {
-			header += '<button id="' + this.qelement + '-submit">Submit</button>';
+			header += '<button tabindex="100" id="' + this.qelement + '-submit">Submit</button>';
 		} else if (this.current == this.last - 1) {
 			if (!this.scored)
-				header += '<button id="' + this.qelement + '-next">Results</button>';
+				header += '<button tabindex="1" id="' + this.qelement + '-next">Results</button>';
 			else if (this.active)
-				header += '<button id="' + this.qelement + '-next">Finish</button>';
+				header += '<button tabindex="1" id="' + this.qelement + '-next">Finish</button>';
 			else
-				header += '<button id="' + this.qelement + '-next">Return</button>';
+				header += '<button tabindex="1" id="' + this.qelement + '-next">Return</button>';
 		} else {
-			header += '<button id="' + this.qelement + '-next">Next</button>';
+			header += '<button tabindex="1" id="' + this.qelement + '-next">Next</button>';
 		}
 
 		header += '</section>';
@@ -96,6 +100,7 @@ function jQuiz() {
 	}
 
 	this.parsePart = function(part) {
+		var tabindex = 0;
 		var result = '';
 
 		if (part[0] == 'wrap') {
@@ -115,16 +120,16 @@ function jQuiz() {
 		} else {
 			if (this.results[this.current] == undefined) {
 				if (part[0] == 'input') {
-					result = '<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="autosizeable" type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
+					result = '<input tabindex="'+(++tabindex)+'" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="autosizeable" type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
 				} else if (part[0] == 'paragraph') {
-					result = '<textarea id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '" style="font-family:Linux Libertine;"></textarea>';
+					result = '<textarea tabindex="'+(++tabindex)+'" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '" style="font-family:Linux Libertine;"></textarea>';
 				} else if (part[0] == 'select') {
 					//result += '<select id="' + this.qelement + '-' + part[1] + '" title="' + part[2] + '">';
 					result += '<span id="' + this.qelement + part[1] + '" class="select select-bordered">';
 					for (var oid in part[3]) {
 						var option = part[3][oid];
 						result += '<label>';
-						result += '<input class="inputlabel" type="radio"';
+						result += '<input tabindex="'+(++tabindex)+'" class="inputlabel" type="radio"';
 						result += 'name="'+this.qelement + '-' + part[1]+'"';
 						result += 'value="'+option+'" required>';
 						result += option;
@@ -137,7 +142,7 @@ function jQuiz() {
 					for (var oid in part[3]) {
 						var option = part[3][oid];
 						result += '<td><label>';
-						result += '<input class="inputlabel" type="radio"';
+						result += '<input tabindex="'+(++tabindex)+'" class="inputlabel" type="radio"';
 						result += 'name="'+this.qelement + '-' + part[1]+'"';
 						result += 'value="'+option+'" required>';
 						result += (parseInt(oid)+1)+'.';
@@ -160,7 +165,7 @@ function jQuiz() {
 						for (var oid in part[4]) {
 							var option = part[4][oid];
 							result += '<td><label>';
-							result += '<input class="inputlabel" type="radio"';
+							result += '<input tabindex="'+(++tabindex)+'" class="inputlabel" type="radio"';
 							result += 'name="'+this.qelement + '-' + part[1]+'-'+vid+'"';
 							result += 'value="'+option+'" required>';
 							result += (parseInt(oid)+1)+'.';
@@ -247,7 +252,7 @@ function jQuiz() {
 			var correct = result['subscore'];
 			var total = result['out_of'];
 			// FIXME: need unobtrusivity here!
-			body += '<br>' + this.makeScore(correct, total, '<a href="javascript:quiz.goTo('+rid+')">Question #'+(rid-0+1)+':</a> ');
+			body += '<br>' + this.makeScore(correct, total, '<a href="javascript:quiz.goTo('+rid+')">Page #'+(rid-0+1)+':</a> ');
 		}
 		body += '</p>';
 		body += '</section>';

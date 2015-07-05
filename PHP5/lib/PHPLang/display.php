@@ -490,6 +490,8 @@ function display_definitions($w, $can_edit=FALSE) {
 				?>(<?= format_path($d->path()) ?>) <?php
 			}
 		}
+		if ($d->type())
+			echo "{:".$d->type().":} ";
 		echo $value;
 		/*/
 		if ((string)$d->path()) {

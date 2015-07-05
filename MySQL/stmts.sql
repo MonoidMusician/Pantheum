@@ -187,6 +187,9 @@
     table=definitions&to=form_tag&from=def_id
 }}};
 {{{defineselect|
+    table=definitions&to=def_type&from=def_id
+}}};
+{{{defineselect|
     table=definitions&to=def_id&from=word_id,form_tag
 }}};
 {{{defineselect|
@@ -199,6 +202,9 @@
 {{{defineupdate|
     table=definitions&to=form_tag&from=def_id
 }}};
+{{{defineupdate|
+    table=definitions&to=def_type&from=def_id
+}}};
 
 {{{attrs|
     table=definitions&pre=def_&bi=sense,lang,src,type,value
@@ -208,6 +214,8 @@
     table=definitions&from=word_id,def_value,def_lang}}};
 {{{defineinsert|
     table=definitions&from=word_id,def_value,def_lang,form_tag}}};
+{{{defineinsert|
+    table=definitions&from=word_id,def_value,def_lang,form_tag,def_type}}};
 {{{definedelete|
     table=definitions&from=def_id}}};
 

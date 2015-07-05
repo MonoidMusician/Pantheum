@@ -14,11 +14,16 @@
 	    is_numeric($_GET["id"])) {
 		$w = WORD(defaultDB(), intval($_GET["id"]));
 		$d = DEFINITION(defaultDB(), NULL, $w);
-		if (array_key_exists("lang",$_GET))
+
+		if (safe_get("lang",$_GET))
 			$d->set_lang($_GET["lang"]);
 		else $d->set_lang("en");
+
+		if (safe_get("type",$_GET))
+			$d->set_type($_GET["type"]);
+
 		$d->set_value($_GET["val"]);
-		if ($_GET["path"]) {
+		if (safe_get("path", $_GET)) {
 			$p = PATH($w, $_GET["path"]);
 			$d->set_path($p);
 		}

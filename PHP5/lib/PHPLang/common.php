@@ -45,9 +45,9 @@ function flatten(array $array) {
 
 
 
-// From http://stackoverflow.com/a/7168986
-function startswith($haystack, $needle) {
-	return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;
+// Adapted from http://stackoverflow.com/a/7168986
+function startswith($haystack, $needle, $offset=0) {
+	return substr_compare($haystack, $needle, $offset, strlen($needle)) === 0;
 }
 function endswith($haystack, $needle) {
 	return !$needle or substr_compare($haystack, $needle, -strlen($needle)) === 0;

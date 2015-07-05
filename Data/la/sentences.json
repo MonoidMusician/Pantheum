@@ -1,707 +1,1269 @@
 {
-  "servī Barbillum, quī vulnus habēbat, portābant.":{"sentence":{"0":{"value":"servī","role":"subject of <i>portābant</i>","desc":" (n): subject of <i>portābant</i>, masculine nominative plural","modifies":["portābant"]},"1":{"value":"Barbillum","role":"direct object of <i>portābant</i>","desc":" (n): direct object of <i>portābant</i>, masculine accusative","modifies":["portābant"]},"-1":{"space_after":1,"text":",","space_before":0},"2":{"value":"quī","role":"modifier of <i>Barbillum</i>","desc":" (pro): modifier of <i>Barbillum</i>, masculine nominative singular","modifies":["Barbillum"]},"3":{"value":"vulnus","role":"direct object of <i>habēbat</i>","desc":" (n): direct object of <i>habēbat</i>, neuter accusative singular","modifies":["habēbat"]},"4":{"value":"habēbat","role":"verb of <i>quī</i>","desc":" (v): verb of <i>quī</i>, 3rd person singular imperfect active indicative","modifies":["quī"]},"-2":{"space_after":1,"text":",","space_before":0},"5":{"value":"portābant","role":"main verb","desc":" (v): main verb, 3rd person plural imperfect active indicative","modifies":[""]}},"translation":{"0":{"value":"The slaves"},"5":{"value":"were carrying"},"1":{"value":"Barbillus"},"-1":{"space_after":1,"text":",","space_before":0},"2":{"value":"who"},"4":{"value":"had"},"3":{"value":"a wound"}},"phrases":[["0","1","2","3","4","5"],["1","2","4","3"]],"tree":{"5":{"0":null,"1":{"2":{"4":{"3":null}}}}}} ,
-  "servī Barbillum aegrum, quī vulnus habēbat, portābant.":{"sentence":{"0":{"value":"servī","role":"subject of <i>portābant</i>","desc":" (n): subject of <i>portābant</i>, masculine nominative plural","modifies":["portābant"]},"1":{"value":"Barbillum","role":"direct object of <i>portābant</i>","desc":" (n): direct object of <i>portābant</i>, masculine accusative","modifies":["portābant"]},"2":{"value":"aegrum","role":"modifier of <i>Barbillum</i>","desc":" (adj): modifier of <i>Barbillum</i>, masuline accusative singular","modifies":["Barbillum"]},"-1":{"space_after":1,"text":",","space_before":0},"3":{"value":"quī","role":"modifier of <i>Barbillum</i>","desc":" (pro): modifier of <i>Barbillum</i>, masculine nominative singular","modifies":["Barbillum"]},"4":{"value":"vulnus","role":"direct object of <i>habēbat</i>","desc":" (n): direct object of <i>habēbat</i>, neuter accusative singular","modifies":["habēbat"]},"5":{"value":"habēbat","role":"verb of <i>quī</i>","desc":" (v): verb of <i>quī</i>, 3rd person singular imperfect active indicative","modifies":["quī"]},"-2":{"space_after":1,"text":",","space_before":0},"6":{"value":"portābant","role":"main verb","desc":" (v): main verb, 3rd person plural imperfect active indicative","modifies":[""]}},"translation":{"0":{"value":"The slaves"},"6":{"value":"were carrying"},"2":{"value":"a sick"},"1":{"value":"Barbillus"},"-1":{"space_after":1,"text":",","space_before":0},"3":{"value":"who"},"5":{"value":"had"},"4":{"value":"a wound"}},"phrases":[["0","1","2","3","4","5","6"],["1","2","3","5","4"],["3","5","4"]],"tree":{"6":{"0":null,"1":{"2":null,"3":{"5":{"4":null}}}}}},
-  "servīs dīligenter labōrandum est.":{"sentence":{"0":{"value":"servīs","role":"subject of <i>labōrandum</i>","desc":" (n): subject of <i>labōrandum</i>, masculine dative plural","modifies":["labōrandum"]},"1":{"value":"dīligenter","role":"modifier of <i>labōrandum</i>","desc":" (adv): modifier of <i>labōrandum</i>","modifies":["labōrandum"]},"2":{"value":"labōrandum","role":"verb of <i>est</i>","desc":" (v): verb of <i>est</i>, gerundive","modifies":["est"]},"3":{"value":"est","role":"main verb","desc":" (v): main verb, 3rd person singular present active indicative","modifies":[""]}},"translation":{"0":{"value":"The slaves"},"2":{"value":"must work"},"1":{"value":"hard"}},"phrases":[["0","1","2","3"]],"tree":{"3":{"2":{"0":null,"1":null}}}},
-  "scīre volēbam quis hoc docuisset":{"sentence":{"0":{"value":"scīre","role":"complement of <i>volēbam</i>","desc":" (v): complement of <i>volēbam</i>, present active infinitive","modifies":["volēbam"]},"1":{"value":"volēbam","role":"main verb","desc":" (v): main verb, 1st person singular imperfect active indicative","modifies":[""]},"2":{"value":"quis","role":"direct object of <i>scīre</i>","desc":" (pro): direct object of <i>scīre</i>, common nominative singular","modifies":["scīre"]},"3":{"value":"hoc","role":"direct object of <i>docuisset</i>","desc":" (pro): direct object of <i>docuisset</i>, neuter accusative singular","modifies":["docuisset"]},"4":{"value":"docuisset","role":"verb of <i>quis</i>","desc":" (v): verb of <i>quis</i>, 3rd person singular pluperfect active subjunctive","modifies":["quis"]}},"translation":{"1":{"value":"I wanted"},"0":{"value":"to know"},"2":{"value":"who"},"4":{"value":"had taught"},"3":{"value":"this"}},"phrases":[["0","1","2","3","4"],["2","3","4"]],"tree":{"1":{"0":{"2":{"4":{"3":null}}}}}},
-  "Salvius servum torsit ut eum vērum patefacere cōgeret.":{"sentence":{"0":{"value":"Salvius","role":"subject of <i>torsit</i> and <i>cōgeret</i>","desc":" (n): subject of <i>torsit</i> and <i>cōgeret</i>, masculine nominative","modifies":["torsit","cōgeret"]},"1":{"value":"servum","role":"direct object of <i>torsit</i>","desc":" (n): direct object of <i>torsit</i>, masculine accusative singular","modifies":["torsit"]},"2":{"value":"torsit","role":"main verb","desc":" (v): main verb, 3rd person singular perfect active indicative","modifies":[""]},"3":{"value":"ut","role":"purpose of <i>torsit</i>","desc":" (conj): purpose of <i>torsit</i>","modifies":["torsit"]},"4":{"value":"eum","role":"direct object of <i>cōgeret</i>, subject of <i>patefacere</i>","desc":" (pro): direct object of <i>cōgeret</i>, subject of <i>patefacere</i>, masculine accusative singular","modifies":["cōgeret","patefacere"]},"5":{"value":"vērum","role":"direct object of <i>patefacere</i>","desc":" (n): direct object of <i>patefacere</i>, neuter accusative singular","modifies":["patefacere"]},"6":{"value":"patefacere","role":"complement of <i>cōgeret</i>","desc":" (v): complement of <i>cōgeret</i>, present active infinitive","modifies":["cōgeret"]},"7":{"value":"cōgeret","role":"verb of <i>ut</i>","desc":" (v): verb of <i>ut</i>, 3rd person singular imperfect active subjunctive","modifies":["ut"]}},"translation":{"0":{"value":"Salvius"},"2":{"value":"tortured"},"1":{"value":"the slave"},"3":{"value":"in order that"},"7":{"value":"he might force"},"4":{"value":"him"},"6":{"value":"to reveal"},"5":{"value":"the truth"}},"phrases":[["0","1","2","3","4","5","6","7"],["3","7","0","4","6","5"],["6","4","5"]],"tree":{"2":{"0":null,"1":null,"3":{"7":{"0":null,"4":null,"6":{"4":null,"5":null}}}}}},
-  "Salvius, quī mercātor dīves in Brittaniā erat, multā pecuniā vīllam splendidam ēmit.":{
-    "sentence":{
-      "0":{
-        "value":"Salvius",
-        "desc":" (n): subject of <i>\u0113mit<\/i>, nominative singular",
-        "modifies":[
-          "\u0113mit"
-        ],
-        "role":"subject"
-      },
-      "-1":{
-        "space_after":1,
-        "text":",",
-        "space_before":0
-      },
-      "1":{
-        "value":"qu\u012b",
-        "desc":" (pro): modifier of <i>Salvius<\/i>, nominative masculine singular",
-        "modifies":[
-          "Salvius"
-        ],
-        "role":"relative phrase/subject",
-        "link":"dictionary.php?name=relative pronoun&lang=la&spart=pronoun"
-      },
-      "2":{
-        "value":"merc\u0101tor",
-        "desc":" (n): predicative nominative of <i>erat<\/i>, nominative singular",
-        "modifies":[
-          "erat"
-        ],
-        "role":"predicate"
-      },
-      "3":{
-        "value":"d\u012bves",
-        "desc":" (adj): modifier of <i>merc\u0101tor<\/i>, nominative singular",
-        "modifies":[
-          "merc\u0101tor"
-        ],
-        "role":"adjective"
-      },
-      "100":{
-        "value":"in",
-        "desc":" (prep): locative modifier of <i>erat<\/i>",
-        "modifies":[
-          "erat"
-        ],
-        "role":"location"
-      },
-      "101":{
-        "value":"Brittani\u0101",
-        "desc":" (n): object of <i>in<\/i>, feminine ablative singular",
-        "modifies":[
-          "in"
-        ],
-        "role":"object"
-      },
-      "4":{
-        "value":"erat",
-        "desc":" (v): verb of <i>qu\u012b<\/i>, 3rd person singular imperfect indicative",
-        "modifies":[
-          "qu\u012b"
-        ],
-        "role":"verb",
-        "link":"dictionary.php?name=sum&lang=la&spart=verb"
-      },
-      "-2":{
-        "space_after":1,
-        "text":",",
-        "space_before":0
-      },
-      "5":{
-        "value":"mult\u0101",
-        "desc":" (adj): modifier of <i>pecuni\u0101<\/i>, ablative singular",
-        "modifies":[
-          "pecuni\u0101"
-        ],
-        "role":"adjective",
-        "link":"dictionary.php?name=multus&lang=la&spart=adjective"
-      },
-      "6":{
-        "value":"pecuni\u0101",
-        "desc":" (n): modifier of <i>\u0113mit<\/i>, ablative singular",
-        "modifies":[
-          "\u0113mit"
-        ],
-        "role":"instrument"
-      },
-      "7":{
-        "value":"v\u012bllam",
-        "desc":" (n): object of <i>\u0113mit<\/i>, accusative singular",
-        "modifies":[
-          "\u0113mit"
-        ],
-        "role":"direct object",
-        "link":"dictionary.php?name=villa&lang=la&spart=adjective"
-      },
-      "8":{
-        "value":"splendidam",
-        "desc":" (adj): modifier of <i>v\u012bllam<\/i>, accusative singular",
-        "modifies":[
-          "v\u012bllam"
-        ],
-        "role":"adjective"
-      },
-      "9":{
-        "value":"\u0113mit",
-        "desc":" (v): root of sentence, indicative active perfect 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
-        "link":"dictionary.php?name=emo&lang=la&spart=verb",
-        "role":"verb/root"
-      }
-    },
-    "translation":{
-      "0":{
-        "value":"Salvius"
-      },
-      "-1":{
-        "space_after":1,
-        "text":",",
-        "space_before":0
-      },
-      "1":{
-        "value":"who"
-      },
-      "4":{
-        "value":"was"
-      },
-      "3":{
-        "value":"a rich"
-      },
-      "2":{
-        "value":"merchant"
-      },
-      "100":{
-        "value":"in"
-      },
-      "101":{
-        "value":"Britain"
-      },
-      "-2":{
-        "space_after":1,
-        "text":",",
-        "space_before":0
-      },
-      "9":{
-        "value":"bought"
-      },
-      "8":{
-        "value":"a splendid"
-      },
-      "7":{
-        "value":"house"
-      },
-      "5":{
-        "value":"with much"
-      },
-      "6":{
-        "value":"money"
-      }
-    },
-    "phrases":[
-      [
-        0,
-        -1,
-        1,
-        2,
-        3,
-        100,
-        101,
-        4,
-        -2,
-        5,
-        6,
-        7,
-        8,
-        9
-      ],
-      [
-        1,
-        2,
-        3,
-        4,
-        100,
-        101
-      ],
-      [
-        100,
-        101
-      ]
-    ],
-    "tree":{
-      "9":{
-        "0":{
-          "1":{
-            "4":{
-              "2":[
-                3
-              ],
-              "100":[
-                101
-              ]
-            }
-          }
-        },
-        "7":[
-          8
-        ],
-        "6":[
-          5
-        ]
-      }
-    }
-  },
-  "nauta, cui pecuniam d\u0113b\u0113s, ad \u012atalia revenit.":{
-    "sentence":{
-      "0":{
-        "value":"nauta",
-        "desc":" (n): subject of <i>revenit<\/i>, nominative singular",
-        "modifies":[
-          "revenit"
-        ],
-        "role":"subject"
-      },
-      "-1":{
-        "space_after":1,
-        "text":",",
-        "space_before":0
-      },
-      "1":{
-        "value":"cui",
-        "desc":" (pro): modifier of <i>nauta<\/i>, dative masculine singular",
-        "modifies":[
-          "nauta"
-        ],
-        "role":"relative phrase/indirect object",
-        "link":"dictionary.php?name=relative pronoun&lang=la&spart=pronoun"
-      },
-      "3":{
-        "value":"pecuniam",
-        "desc":" (n): object of <i>d\u0113b\u0113s<\/i>, accusative singular",
-        "modifies":[
-          "d\u0113b\u0113s"
-        ],
-        "role":"object"
-      },
-      "4":{
-        "value":"d\u0113b\u0113s",
-        "desc":" (v): verb of <i>qu\u012b<\/i>, 3rd person singular imperfect indicative",
-        "modifies":[
-          "cui"
-        ],
-        "role":"verb",
-        "link":"dictionary.php?name=sum&lang=la&spart=verb"
-      },
-      "-2":{
-        "space_after":1,
-        "text":",",
-        "space_before":0
-      },
-      "5":{
-        "value":"ad",
-        "desc":" (prep): location for <i>revenit<\/i>",
-        "modifies":[
-          "revenit"
-        ],
-        "role":"preposition",
-        "link":"dictionary.php?name=multus&lang=la&spart=adjective"
-      },
-      "6":{
-        "value":"\u012ataliam",
-        "desc":" (n): object of <i>ad<\/i>, accusative singular",
-        "modifies":[
-          "ad"
-        ],
-        "role":"object"
-      },
-      "9":{
-        "value":"revenit",
-        "desc":" (v): root of sentence, indicative active present 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
-        "link":"dictionary.php?name=revenio&lang=la&spart=verb",
-        "role":"verb/root"
-      }
-    },
-    "translation":{
-      "0":{
-        "value":"The sailor"
-      },
-      "-1":{
-        "space_after":1,
-        "text":",",
-        "space_before":0
-      },
-      "1":{
-        "value":"to whom"
-      },
-      "4":{
-        "value":"you owe"
-      },
-      "3":{
-        "value":"money"
-      },
-      "-2":{
-        "space_after":1,
-        "text":",",
-        "space_before":0
-      },
-      "9":{
-        "value":"is returning"
-      },
-      "5":{
-        "value":"to"
-      },
-      "6":{
-        "value":"Italy"
-      }
-    },
-    "phrases":[
-      [
-        0,
-        -1,
-        1,
-        3,
-        4,
-        -2,
-        5,
-        6,
-        9
-      ],
-      [
-        1,
-        3,
-        4
-      ],
-      [6,5]
-    ],
-    "tree":{
-      "9":{
-        "0":{
-          "1":{
-            "4":[
-              3
-            ]
-          }
-        },
-        "5":[
-          6
-        ]
-      }
-    }
-  },
-  "necesse est mihi hoc tibi dare.":{
-    "sentence":{
-      "0":{
-        "value":"necesse",
-        "desc":" (adj): predicate of <i>est<\/i>, neuter nominative singular",
-        "modifies":[
-          "est"
-        ],
-        "role":"predicate"
-      },
-      "1":{
-        "value":"est",
-        "desc":" (v): root of sentence, indicative active present 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
-        "modifies":[],
-        "role":"verb/root",
-        "link":"dictionary.php?name=sum&lang=la&spart=verb"
-      },
-      "3":{
-        "value":"mihi",
-        "desc":" (pro): subject of <i>dare<\/i>, dative singular",
-        "modifies":[
-          "dare"
-        ],
-        "role":"subject"
-      },
-      "4":{
-        "value":"hoc",
-        "desc":" (pro): direct object of <i>dare<\/i>",
-        "modifies":[
-          "dare"
-        ],
-        "role":"direct object",
-        "link":"dictionary.php?name=hic&lang=la&spart=pronoun"
-      },
-      "5":{
-        "value":"tibi",
-        "desc":" (pro): indirect object of <i>dare<\/i>",
-        "modifies":[
-          "dare"
-        ],
-        "role":"indirect object",
-        "link":"dictionary.php?name=tu&lang=la&spart=pronoun"
-      },
-      "6":{
-        "value":"dare",
-        "desc":" (v): subject of <i>est<\/i>, present active infinitive",
-        "modifies":[
-          "est"
-        ],
-        "role":"subject/verb"
-      }
-    },
-    "translation":{
-      "1":{
-        "value":"It is"
-      },
-      "0":{
-        "value":"necessary"
-      },
-      "3":{
-        "value":"for me"
-      },
-      "6":{
-        "value":"to give"
-      },
-      "4":{
-        "value":"this"
-      },
-      "5":{
-        "value":"to you"
-      }
-    },
-    "phrases":[
-      [
-        0,
-        1,
-        3,
-        4,
-        5,
-        6
-      ],
-      [
-        6,
-        4,
-        5
-      ]
-    ],
-    "tree":{
-      "1":{
-        "6":[
-          3,
-          4,
-          5
-        ],
-        "0":null
-      }
-    }
-  },
-  "d\u0101 mihi statuam!":{
-    "sentence":{
-      "0":{
-        "value":"d\u0101",
-        "desc":" (v): root of sentence, imperative active present 2<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
-        "modifies":[],
-        "role":"verb/root",
-        "link":"dictionary.php?name=do&lang=la&spart=verb"
-      },
-      "1":{
-        "value":"mihi",
-        "desc":" (pro): indirect object of <i>d\u0101<\/i>, dative singular",
-        "modifies":[
-          0
-        ],
-        "role":"indirect object",
-        "link":"dictionary.php?name=ego&lang=la&spart=pronoun"
-      },
-      "2":{
-        "value":"statuam",
-        "desc":" (n): direct object of <i>d\u0101<\/i>",
-        "modifies":[
-          0
-        ],
-        "role":"direct object",
-        "link":"dictionary.php?name=statua&lang=la&spart=noun"
-      }
-    },
-    "translation":{
-      "0":{
-        "value":"Give"
-      },
-      "1":{
-        "value":"me"
-      },
-      "2":{
-        "value":"the statue!"
-      }
-    },
-    "phrases":[
-      [
-        0,
-        1,
-        2
-      ]
-    ],
-    "tree":{
-      "0":[
-        1,
-        2
-      ]
-    }
-  },
-  "servī Barbillum portābant ut eum in lectum pōnerent":{
-    "sentence":{
-      "0":{
-        "value":"servī",
-        "desc":" (n): subject of <i>portābant</i>, masculine nominative plural",
-        "role":"subject",
-        "modifies":["portābant"]
-      },
-      "1":{
-        "value":"Barbillum",
-        "desc":" (N): object of <i>portābant</i>, masculine accusative",
-        "role":"object",
-        "modifies":["portābant"]
-      },
-      "2":{
-        "value":"portābant",
-        "desc":" (v): main verb, 3rd person plural imperfect active indicative",
-        "role":"verb/root"
-      },
-      "3":{
-        "value":"ut",
-        "desc":" (conj): purpose word",
-        "role":"conjunction",
-        "modifies":["portābant"]
-      },
-      "4":{
-        "value":"eum",
-        "desc":" (pro): object of pōnerent, masculine accusative singular",
-        "role":"object",
-        "modifies":["pōnerent"]
-      },
-      "5":{
-        "value":"in",
-        "desc":" (prep)",
-        "role":"location",
-        "modifies":["pōnerent"]
-      },
-      "6":{
-        "value":"lectum",
-        "desc":" (n): object of <i>in</i>, masculine accusative singular",
-        "role":"object",
-        "modifies":["in"]
-      },
-      "7":{
-        "value":"pōnerent",
-        "desc":" (v): purpose",
-        "role":"purpose",
-        "modifies":["ut"]
-      }
-    },
-    "translation":{
-      "0":{
-        "value":"The slaves"
-      },
-      "2":{
-        "value":"were carrying"
-      },
-      "1":{
-        "value":"Barbillus"
-      },
-      "3":{
-        "value":"in order that"
-      },
-      "7":{
-        "value":"they might place"
-      },
-      "4":{
-        "value":"him"
-      },
-      "5":{
-        "value":"onto"
-      },
-      "6":{
-        "value":"the bed"
-      }
-    },
-    "phrases":[
-      [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
-      [
-        4,
-        5,
-        6,
-        7
-      ],
-      [
-        5,
-        6
-      ]
-    ],
-    "tree":{
-      "2":{
-        "0":null,
-        "1":null,
-        "3":{
-          "7":{
-            "4":null,
-            "5":["6"]
-          }
-        }
-      }
-    }
-  },
-  "cr\u0113de quod hab\u0113s, et hab\u0113s.":{
-    "sentence":{
-      "0":{
-        "value":"cr\u0113de",
-        "desc":" (v): root of clause, imperative active present 2<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
-        "modifies":["et"],
-        "role":"verb/root",
-        "link":"dictionary.php?name=do&lang=la&spart=verb"
-      },
-      "1":{
-        "value":"quod",
-        "desc":" (pro): direct object of <i>cr\u0113de<\/i> and <i>hab\u0113s<\/i>, dative singular",
-        "modifies":[
-          0,2
-        ],
-        "role":"indirect object",
-        "link":"dictionary.php?name=qui&lang=la&spart=pronoun"
-      },
-      "2":{
-        "value":"hab\u0113s",
-        "desc":" (n): verb of <i>quod<\/i>",
-        "modifies":[
-          1
-        ],
-        "role":"verb",
-        "link":"dictionary.php?name=habeo&lang=la&spart=verb"
-      },
-      "-1":{
-        "space_before":0,
-        "text":",",
-        "space_after":1
-      },
-      "3":{
-        "value":"et",
-        "desc":" (conj): root of sentence",
-        "modifies":[],
-        "role":"conj/root",
-        "link":"dictionary.php?name=et&lang=la&spart=conjunction"
-      },
-      "4":{
-        "value":"hab\u0113s",
-        "desc":" (n): root of clause",
-        "modifies":["et"],
-        "role":"verb/root",
-        "link":"dictionary.php?name=habeo&lang=la&spart=verb"
-      }
-    },
-    "translation":{
-      "0":{
-        "value":"Believe that"
-      },
-      "2":{
-        "value":"you have"
-      },
-      "1":{
-        "value":"it"
-      },
-      "-1":{
-        "space_before":0,
-        "text":",",
-        "space_after":1
-      },
-      "3":{
-        "value":"and"
-      },
-      "4":{
-        "value":"you do [have it]"
-      }
-    },
-    "phrases":[
-      [
-        0,
-        1,
-        2,
-        3,
-        4
-      ],
-      [0,1,2],
-      [4]
-    ],
-    "tree":{
-      "3":{
-        "0":{
-          "1":["2"]
-        },
-        "4":null
-      }
-    }
-  }
+	"servī Barbillum, quī vulnus habēbat, portābant.": {
+		"sentence": {
+			"0": {
+				"value": "servī",
+				"role": "subject of <i>portābant<\/i>",
+				"desc": " (n): subject of <i>portābant<\/i>, masculine nominative plural",
+				"modifies": [
+					"portābant"
+				]
+			},
+			"1": {
+				"value": "Barbillum",
+				"role": "direct object of <i>portābant<\/i>",
+				"desc": " (n): direct object of <i>portābant<\/i>, masculine accusative",
+				"modifies": [
+					"portābant"
+				]
+			},
+			"-1": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"2": {
+				"value": "quī",
+				"role": "modifier of <i>Barbillum<\/i>",
+				"desc": " (pro): modifier of <i>Barbillum<\/i>, masculine nominative singular",
+				"modifies": [
+					"Barbillum"
+				]
+			},
+			"3": {
+				"value": "vulnus",
+				"role": "direct object of <i>habēbat<\/i>",
+				"desc": " (n): direct object of <i>habēbat<\/i>, neuter accusative singular",
+				"modifies": [
+					"habēbat"
+				]
+			},
+			"4": {
+				"value": "habēbat",
+				"role": "verb of <i>quī<\/i>",
+				"desc": " (v): verb of <i>quī<\/i>, 3rd person singular imperfect active indicative",
+				"modifies": [
+					"quī"
+				]
+			},
+			"-2": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"5": {
+				"value": "portābant",
+				"role": "main verb",
+				"desc": " (v): main verb, 3rd person plural imperfect active indicative",
+				"modifies": [
+					""
+				]
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "The slaves"
+			},
+			"5": {
+				"value": "were carrying"
+			},
+			"1": {
+				"value": "Barbillus"
+			},
+			"-1": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"2": {
+				"value": "who"
+			},
+			"4": {
+				"value": "had"
+			},
+			"3": {
+				"value": "a wound"
+			}
+		},
+		"phrases": [
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5"
+			],
+			[
+				"1",
+				"2",
+				"4",
+				"3"
+			]
+		],
+		"tree": {
+			"5": {
+				"0": null,
+				"1": {
+					"2": {
+						"4": {
+							"3": null
+						}
+					}
+				}
+			}
+		}
+	},
+	"servī Barbillum aegrum, quī vulnus habēbat, portābant.": {
+		"sentence": {
+			"0": {
+				"value": "servī",
+				"role": "subject of <i>portābant<\/i>",
+				"desc": " (n): subject of <i>portābant<\/i>, masculine nominative plural",
+				"modifies": [
+					"portābant"
+				]
+			},
+			"1": {
+				"value": "Barbillum",
+				"role": "direct object of <i>portābant<\/i>",
+				"desc": " (n): direct object of <i>portābant<\/i>, masculine accusative",
+				"modifies": [
+					"portābant"
+				]
+			},
+			"2": {
+				"value": "aegrum",
+				"role": "modifier of <i>Barbillum<\/i>",
+				"desc": " (adj): modifier of <i>Barbillum<\/i>, masuline accusative singular",
+				"modifies": [
+					"Barbillum"
+				]
+			},
+			"-1": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"3": {
+				"value": "quī",
+				"role": "modifier of <i>Barbillum<\/i>",
+				"desc": " (pro): modifier of <i>Barbillum<\/i>, masculine nominative singular",
+				"modifies": [
+					"Barbillum"
+				]
+			},
+			"4": {
+				"value": "vulnus",
+				"role": "direct object of <i>habēbat<\/i>",
+				"desc": " (n): direct object of <i>habēbat<\/i>, neuter accusative singular",
+				"modifies": [
+					"habēbat"
+				]
+			},
+			"5": {
+				"value": "habēbat",
+				"role": "verb of <i>quī<\/i>",
+				"desc": " (v): verb of <i>quī<\/i>, 3rd person singular imperfect active indicative",
+				"modifies": [
+					"quī"
+				]
+			},
+			"-2": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"6": {
+				"value": "portābant",
+				"role": "main verb",
+				"desc": " (v): main verb, 3rd person plural imperfect active indicative",
+				"modifies": [
+					""
+				]
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "The slaves"
+			},
+			"6": {
+				"value": "were carrying"
+			},
+			"2": {
+				"value": "a sick"
+			},
+			"1": {
+				"value": "Barbillus"
+			},
+			"-1": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"3": {
+				"value": "who"
+			},
+			"5": {
+				"value": "had"
+			},
+			"4": {
+				"value": "a wound"
+			}
+		},
+		"phrases": [
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6"
+			],
+			[
+				"1",
+				"2",
+				"3",
+				"5",
+				"4"
+			],
+			[
+				"3",
+				"5",
+				"4"
+			]
+		],
+		"tree": {
+			"6": {
+				"0": null,
+				"1": {
+					"2": null,
+					"3": {
+						"5": {
+							"4": null
+						}
+					}
+				}
+			}
+		}
+	},
+	"servīs dīligenter labōrandum est.": {
+		"sentence": {
+			"0": {
+				"value": "servīs",
+				"role": "subject of <i>labōrandum<\/i>",
+				"desc": " (n): subject of <i>labōrandum<\/i>, masculine dative plural",
+				"modifies": [
+					"labōrandum"
+				]
+			},
+			"1": {
+				"value": "dīligenter",
+				"role": "modifier of <i>labōrandum<\/i>",
+				"desc": " (adv): modifier of <i>labōrandum<\/i>",
+				"modifies": [
+					"labōrandum"
+				]
+			},
+			"2": {
+				"value": "labōrandum",
+				"role": "verb of <i>est<\/i>",
+				"desc": " (v): verb of <i>est<\/i>, gerundive",
+				"modifies": [
+					"est"
+				]
+			},
+			"3": {
+				"value": "est",
+				"role": "main verb",
+				"desc": " (v): main verb, 3rd person singular present active indicative",
+				"modifies": [
+					""
+				]
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "The slaves"
+			},
+			"2": {
+				"value": "must work"
+			},
+			"1": {
+				"value": "hard"
+			}
+		},
+		"phrases": [
+			[
+				"0",
+				"1",
+				"2",
+				"3"
+			]
+		],
+		"tree": {
+			"3": {
+				"2": {
+					"0": null,
+					"1": null
+				}
+			}
+		}
+	},
+	"scīre volēbam quis hoc docuisset": {
+		"sentence": {
+			"0": {
+				"value": "scīre",
+				"role": "complement of <i>volēbam<\/i>",
+				"desc": " (v): complement of <i>volēbam<\/i>, present active infinitive",
+				"modifies": [
+					"volēbam"
+				]
+			},
+			"1": {
+				"value": "volēbam",
+				"role": "main verb",
+				"desc": " (v): main verb, 1st person singular imperfect active indicative",
+				"modifies": [
+					""
+				]
+			},
+			"2": {
+				"value": "quis",
+				"role": "direct object of <i>scīre<\/i>",
+				"desc": " (pro): direct object of <i>scīre<\/i>, common nominative singular",
+				"modifies": [
+					"scīre"
+				]
+			},
+			"3": {
+				"value": "hoc",
+				"role": "direct object of <i>docuisset<\/i>",
+				"desc": " (pro): direct object of <i>docuisset<\/i>, neuter accusative singular",
+				"modifies": [
+					"docuisset"
+				]
+			},
+			"4": {
+				"value": "docuisset",
+				"role": "verb of <i>quis<\/i>",
+				"desc": " (v): verb of <i>quis<\/i>, 3rd person singular pluperfect active subjunctive",
+				"modifies": [
+					"quis"
+				]
+			}
+		},
+		"translation": {
+			"1": {
+				"value": "I wanted"
+			},
+			"0": {
+				"value": "to know"
+			},
+			"2": {
+				"value": "who"
+			},
+			"4": {
+				"value": "had taught"
+			},
+			"3": {
+				"value": "this"
+			}
+		},
+		"phrases": [
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4"
+			],
+			[
+				"2",
+				"3",
+				"4"
+			]
+		],
+		"tree": {
+			"1": {
+				"0": {
+					"2": {
+						"4": {
+							"3": null
+						}
+					}
+				}
+			}
+		}
+	},
+	"Salvius servum torsit ut eum vērum patefacere cōgeret.": {
+		"sentence": {
+			"0": {
+				"value": "Salvius",
+				"role": ["subject of <i>torsit<\/i>","subject of <i>cōgeret<\/i>"],
+				"desc": " (n): subject of <i>torsit<\/i> and <i>cōgeret<\/i>, masculine nominative",
+				"modifies": [
+					"torsit",
+					"cōgeret"
+				]
+			},
+			"1": {
+				"value": "servum",
+				"role": "direct object of <i>torsit<\/i>",
+				"desc": " (n): direct object of <i>torsit<\/i>, masculine accusative singular",
+				"modifies": [
+					"torsit"
+				]
+			},
+			"2": {
+				"value": "torsit",
+				"role": "main verb",
+				"desc": " (v): main verb, 3rd person singular perfect active indicative",
+				"modifies": [
+					""
+				]
+			},
+			"3": {
+				"value": "ut",
+				"role": "purpose of <i>torsit<\/i>",
+				"desc": " (conj): purpose of <i>torsit<\/i>",
+				"modifies": [
+					"torsit"
+				]
+			},
+			"4": {
+				"value": "eum",
+				"role": ["direct object of <i>cōgeret<\/i>", "subject of <i>patefacere<\/i>"],
+				"desc": " (pro): direct object of <i>cōgeret<\/i>, subject of <i>patefacere<\/i>, masculine accusative singular",
+				"modifies": [
+					"cōgeret",
+					"patefacere"
+				]
+			},
+			"5": {
+				"value": "vērum",
+				"role": "direct object of <i>patefacere<\/i>",
+				"desc": " (n): direct object of <i>patefacere<\/i>, neuter accusative singular",
+				"modifies": [
+					"patefacere"
+				]
+			},
+			"6": {
+				"value": "patefacere",
+				"role": "complement of <i>cōgeret<\/i>",
+				"desc": " (v): complement of <i>cōgeret<\/i>, present active infinitive",
+				"modifies": [
+					"cōgeret"
+				]
+			},
+			"7": {
+				"value": "cōgeret",
+				"role": "verb of <i>ut<\/i>",
+				"desc": " (v): verb of <i>ut<\/i>, 3rd person singular imperfect active subjunctive",
+				"modifies": [
+					"ut"
+				]
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "Salvius"
+			},
+			"2": {
+				"value": "tortured"
+			},
+			"1": {
+				"value": "the slave"
+			},
+			"3": {
+				"value": "in order that"
+			},
+			"7": {
+				"value": "he might force"
+			},
+			"4": {
+				"value": "him"
+			},
+			"6": {
+				"value": "to reveal"
+			},
+			"5": {
+				"value": "the truth"
+			}
+		},
+		"phrases": [
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7"
+			],
+			[
+				"3",
+				"7",
+				"0",
+				"4",
+				"6",
+				"5"
+			],
+			[
+				"6",
+				"4",
+				"5"
+			]
+		],
+		"tree": {
+			"2": {
+				"0": null,
+				"1": null,
+				"3": {
+					"7": {
+						"0": null,
+						"4": null,
+						"6": {
+							"4": null,
+							"5": null
+						}
+					}
+				}
+			}
+		}
+	},
+	"Salvius, quī mercātor dīves in Brittaniā erat, multā pecuniā vīllam splendidam ēmit.": {
+		"sentence": {
+			"0": {
+				"value": "Salvius",
+				"desc": " (n): subject of <i>ēmit<\/i>, nominative singular",
+				"modifies": [
+					"ēmit"
+				],
+				"role": "subject"
+			},
+			"-1": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"1": {
+				"value": "quī",
+				"desc": " (pro): modifier of <i>Salvius<\/i>, nominative masculine singular",
+				"modifies": [
+					"Salvius"
+				],
+				"role": "relative phrase/subject",
+				"link": "dictionary.php?name=relative pronoun&lang=la&spart=pronoun"
+			},
+			"2": {
+				"value": "mercātor",
+				"desc": " (n): predicative nominative of <i>erat<\/i>, nominative singular",
+				"modifies": [
+					"erat"
+				],
+				"role": "predicate"
+			},
+			"3": {
+				"value": "dīves",
+				"desc": " (adj): modifier of <i>mercātor<\/i>, nominative singular",
+				"modifies": [
+					"mercātor"
+				],
+				"role": "adjective"
+			},
+			"100": {
+				"value": "in",
+				"desc": " (prep): locative modifier of <i>erat<\/i>",
+				"modifies": [
+					"erat"
+				],
+				"role": "location"
+			},
+			"101": {
+				"value": "Brittaniā",
+				"desc": " (n): object of <i>in<\/i>, feminine ablative singular",
+				"modifies": [
+					"in"
+				],
+				"role": "object"
+			},
+			"4": {
+				"value": "erat",
+				"desc": " (v): verb of <i>quī<\/i>, 3rd person singular imperfect indicative",
+				"modifies": [
+					"quī"
+				],
+				"role": "verb",
+				"link": "dictionary.php?name=sum&lang=la&spart=verb"
+			},
+			"-2": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"5": {
+				"value": "multā",
+				"desc": " (adj): modifier of <i>pecuniā<\/i>, ablative singular",
+				"modifies": [
+					"pecuniā"
+				],
+				"role": "adjective",
+				"link": "dictionary.php?name=multus&lang=la&spart=adjective"
+			},
+			"6": {
+				"value": "pecuniā",
+				"desc": " (n): modifier of <i>ēmit<\/i>, ablative singular",
+				"modifies": [
+					"ēmit"
+				],
+				"role": "instrument"
+			},
+			"7": {
+				"value": "vīllam",
+				"desc": " (n): object of <i>ēmit<\/i>, accusative singular",
+				"modifies": [
+					"ēmit"
+				],
+				"role": "direct object",
+				"link": "dictionary.php?name=villa&lang=la&spart=adjective"
+			},
+			"8": {
+				"value": "splendidam",
+				"desc": " (adj): modifier of <i>vīllam<\/i>, accusative singular",
+				"modifies": [
+					"vīllam"
+				],
+				"role": "adjective"
+			},
+			"9": {
+				"value": "ēmit",
+				"desc": " (v): root of sentence, indicative active perfect 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+				"link": "dictionary.php?name=emo&lang=la&spart=verb",
+				"role": "verb/root"
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "Salvius"
+			},
+			"-1": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"1": {
+				"value": "who"
+			},
+			"4": {
+				"value": "was"
+			},
+			"3": {
+				"value": "a rich"
+			},
+			"2": {
+				"value": "merchant"
+			},
+			"100": {
+				"value": "in"
+			},
+			"101": {
+				"value": "Britain"
+			},
+			"-2": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"9": {
+				"value": "bought"
+			},
+			"8": {
+				"value": "a splendid"
+			},
+			"7": {
+				"value": "house"
+			},
+			"5": {
+				"value": "with much"
+			},
+			"6": {
+				"value": "money"
+			}
+		},
+		"phrases": [
+			[
+				0,
+				-1,
+				1,
+				2,
+				3,
+				100,
+				101,
+				4,
+				-2,
+				5,
+				6,
+				7,
+				8,
+				9
+			],
+			[
+				1,
+				2,
+				3,
+				4,
+				100,
+				101
+			],
+			[
+				100,
+				101
+			]
+		],
+		"tree": {
+			"9": {
+				"0": {
+					"1": {
+						"4": {
+							"2": [
+								3
+							],
+							"100": [
+								101
+							]
+						}
+					}
+				},
+				"7": [
+					8
+				],
+				"6": [
+					5
+				]
+			}
+		}
+	},
+	"nauta, cui pecuniam dēbēs, ad Ītalia revenit.": {
+		"sentence": {
+			"0": {
+				"value": "nauta",
+				"desc": " (n): subject of <i>revenit<\/i>, nominative singular",
+				"modifies": [
+					"revenit"
+				],
+				"role": "subject"
+			},
+			"-1": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"1": {
+				"value": "cui",
+				"desc": " (pro): modifier of <i>nauta<\/i>, dative masculine singular",
+				"modifies": [
+					"nauta"
+				],
+				"role": "relative phrase/indirect object",
+				"link": "dictionary.php?name=relative pronoun&lang=la&spart=pronoun"
+			},
+			"3": {
+				"value": "pecuniam",
+				"desc": " (n): object of <i>dēbēs<\/i>, accusative singular",
+				"modifies": [
+					"dēbēs"
+				],
+				"role": "object"
+			},
+			"4": {
+				"value": "dēbēs",
+				"desc": " (v): verb of <i>quī<\/i>, 3rd person singular imperfect indicative",
+				"modifies": [
+					"cui"
+				],
+				"role": "verb",
+				"link": "dictionary.php?name=sum&lang=la&spart=verb"
+			},
+			"-2": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"5": {
+				"value": "ad",
+				"desc": " (prep): location for <i>revenit<\/i>",
+				"modifies": [
+					"revenit"
+				],
+				"role": "preposition",
+				"link": "dictionary.php?name=multus&lang=la&spart=adjective"
+			},
+			"6": {
+				"value": "Ītaliam",
+				"desc": " (n): object of <i>ad<\/i>, accusative singular",
+				"modifies": [
+					"ad"
+				],
+				"role": "object"
+			},
+			"9": {
+				"value": "revenit",
+				"desc": " (v): root of sentence, indicative active present 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+				"link": "dictionary.php?name=revenio&lang=la&spart=verb",
+				"role": "verb/root"
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "The sailor"
+			},
+			"-1": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"1": {
+				"value": "to whom"
+			},
+			"4": {
+				"value": "you owe"
+			},
+			"3": {
+				"value": "money"
+			},
+			"-2": {
+				"space_after": 1,
+				"text": ",",
+				"space_before": 0
+			},
+			"9": {
+				"value": "is returning"
+			},
+			"5": {
+				"value": "to"
+			},
+			"6": {
+				"value": "Italy"
+			}
+		},
+		"phrases": [
+			[
+				0,
+				-1,
+				1,
+				3,
+				4,
+				-2,
+				5,
+				6,
+				9
+			],
+			[
+				1,
+				3,
+				4
+			],
+			[
+				6,
+				5
+			]
+		],
+		"tree": {
+			"9": {
+				"0": {
+					"1": {
+						"4": [
+							3
+						]
+					}
+				},
+				"5": [
+					6
+				]
+			}
+		}
+	},
+	"necesse est mihi hoc tibi dare.": {
+		"sentence": {
+			"0": {
+				"value": "necesse",
+				"desc": " (adj): predicate of <i>est<\/i>, neuter nominative singular",
+				"modifies": [
+					"est"
+				],
+				"role": "predicate"
+			},
+			"1": {
+				"value": "est",
+				"desc": " (v): root of sentence, indicative active present 3<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+				"modifies": [],
+				"role": "verb/root",
+				"link": "dictionary.php?name=sum&lang=la&spart=verb"
+			},
+			"3": {
+				"value": "mihi",
+				"desc": " (pro): subject of <i>dare<\/i>, dative singular",
+				"modifies": [
+					"dare"
+				],
+				"role": "subject"
+			},
+			"4": {
+				"value": "hoc",
+				"desc": " (pro): direct object of <i>dare<\/i>",
+				"modifies": [
+					"dare"
+				],
+				"role": "direct object",
+				"link": "dictionary.php?name=hic&lang=la&spart=pronoun"
+			},
+			"5": {
+				"value": "tibi",
+				"desc": " (pro): indirect object of <i>dare<\/i>",
+				"modifies": [
+					"dare"
+				],
+				"role": "indirect object",
+				"link": "dictionary.php?name=tu&lang=la&spart=pronoun"
+			},
+			"6": {
+				"value": "dare",
+				"desc": " (v): subject of <i>est<\/i>, present active infinitive",
+				"modifies": [
+					"est"
+				],
+				"role": "subject/verb"
+			}
+		},
+		"translation": {
+			"1": {
+				"value": "It is"
+			},
+			"0": {
+				"value": "necessary"
+			},
+			"3": {
+				"value": "for me"
+			},
+			"6": {
+				"value": "to give"
+			},
+			"4": {
+				"value": "this"
+			},
+			"5": {
+				"value": "to you"
+			}
+		},
+		"phrases": [
+			[
+				0,
+				1,
+				3,
+				4,
+				5,
+				6
+			],
+			[
+				6,
+				4,
+				5
+			]
+		],
+		"tree": {
+			"1": {
+				"6": [
+					3,
+					4,
+					5
+				],
+				"0": null
+			}
+		}
+	},
+	"dā mihi statuam!": {
+		"sentence": {
+			"0": {
+				"value": "dā",
+				"desc": " (v): root of sentence, imperative active present 2<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+				"modifies": [],
+				"role": "verb/root",
+				"link": "dictionary.php?name=do&lang=la&spart=verb"
+			},
+			"1": {
+				"value": "mihi",
+				"desc": " (pro): indirect object of <i>dā<\/i>, dative singular",
+				"modifies": [
+					0
+				],
+				"role": "indirect object",
+				"link": "dictionary.php?name=ego&lang=la&spart=pronoun"
+			},
+			"2": {
+				"value": "statuam",
+				"desc": " (n): direct object of <i>dā<\/i>",
+				"modifies": [
+					0
+				],
+				"role": "direct object",
+				"link": "dictionary.php?name=statua&lang=la&spart=noun"
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "Give"
+			},
+			"1": {
+				"value": "me"
+			},
+			"2": {
+				"value": "the statue!"
+			}
+		},
+		"phrases": [
+			[
+				0,
+				1,
+				2
+			]
+		],
+		"tree": {
+			"0": [
+				1,
+				2
+			]
+		}
+	},
+	"servī Barbillum portābant ut eum in lectum pōnerent": {
+		"sentence": {
+			"0": {
+				"value": "servī",
+				"desc": " (n): subject of <i>portābant<\/i>, masculine nominative plural",
+				"role": "subject",
+				"modifies": [
+					"portābant"
+				]
+			},
+			"1": {
+				"value": "Barbillum",
+				"desc": " (N): object of <i>portābant<\/i>, masculine accusative",
+				"role": "object",
+				"modifies": [
+					"portābant"
+				]
+			},
+			"2": {
+				"value": "portābant",
+				"desc": " (v): main verb, 3rd person plural imperfect active indicative",
+				"role": "verb/root"
+			},
+			"3": {
+				"value": "ut",
+				"desc": " (conj): purpose word",
+				"role": "conjunction",
+				"modifies": [
+					"portābant"
+				]
+			},
+			"4": {
+				"value": "eum",
+				"desc": " (pro): object of pōnerent, masculine accusative singular",
+				"role": "object",
+				"modifies": [
+					"pōnerent"
+				]
+			},
+			"5": {
+				"value": "in",
+				"desc": " (prep)",
+				"role": "location",
+				"modifies": [
+					"pōnerent"
+				]
+			},
+			"6": {
+				"value": "lectum",
+				"desc": " (n): object of <i>in<\/i>, masculine accusative singular",
+				"role": "object",
+				"modifies": [
+					"in"
+				]
+			},
+			"7": {
+				"value": "pōnerent",
+				"desc": " (v): purpose",
+				"role": "purpose",
+				"modifies": [
+					"ut"
+				]
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "The slaves"
+			},
+			"2": {
+				"value": "were carrying"
+			},
+			"1": {
+				"value": "Barbillus"
+			},
+			"3": {
+				"value": "in order that"
+			},
+			"7": {
+				"value": "they might place"
+			},
+			"4": {
+				"value": "him"
+			},
+			"5": {
+				"value": "onto"
+			},
+			"6": {
+				"value": "the bed"
+			}
+		},
+		"phrases": [
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7
+			],
+			[
+				4,
+				5,
+				6,
+				7
+			],
+			[
+				5,
+				6
+			]
+		],
+		"tree": {
+			"2": {
+				"0": null,
+				"1": null,
+				"3": {
+					"7": {
+						"4": null,
+						"5": [
+							"6"
+						]
+					}
+				}
+			}
+		}
+	},
+	"crēde quod habēs, et habēs.": {
+		"sentence": {
+			"0": {
+				"value": "crēde",
+				"desc": " (v): root of clause, imperative active present 2<span style=\"font-size: 65%;\"><sup class=\"\">rd<\/sup><\/span> person singular",
+				"modifies": [
+					"et"
+				],
+				"role": "verb/root",
+				"link": "dictionary.php?name=do&lang=la&spart=verb"
+			},
+			"1": {
+				"value": "quod",
+				"desc": " (pro): direct object of <i>crēde<\/i> and <i>habēs<\/i>, dative singular",
+				"modifies": [
+					0,
+					2
+				],
+				"role": "indirect object",
+				"link": "dictionary.php?name=qui&lang=la&spart=pronoun"
+			},
+			"2": {
+				"value": "habēs",
+				"desc": " (n): verb of <i>quod<\/i>",
+				"modifies": [
+					1
+				],
+				"role": "verb",
+				"link": "dictionary.php?name=habeo&lang=la&spart=verb"
+			},
+			"-1": {
+				"space_before": 0,
+				"text": ",",
+				"space_after": 1
+			},
+			"3": {
+				"value": "et",
+				"desc": " (conj): root of sentence",
+				"modifies": [],
+				"role": "conj/root",
+				"link": "dictionary.php?name=et&lang=la&spart=conjunction"
+			},
+			"4": {
+				"value": "habēs",
+				"desc": " (n): root of clause",
+				"modifies": [
+					"et"
+				],
+				"role": "verb/root",
+				"link": "dictionary.php?name=habeo&lang=la&spart=verb"
+			}
+		},
+		"translation": {
+			"0": {
+				"value": "Believe that"
+			},
+			"2": {
+				"value": "you have"
+			},
+			"1": {
+				"value": "it"
+			},
+			"-1": {
+				"space_before": 0,
+				"text": ",",
+				"space_after": 1
+			},
+			"3": {
+				"value": "and"
+			},
+			"4": {
+				"value": "you do [have it]"
+			}
+		},
+		"phrases": [
+			[
+				0,
+				1,
+				2,
+				3,
+				4
+			],
+			[
+				0,
+				1,
+				2
+			],
+			[
+				4
+			]
+		],
+		"tree": {
+			"3": {
+				"0": {
+					"1": [
+						"2"
+					]
+				},
+				"4": null
+			}
+		}
+	}
 }

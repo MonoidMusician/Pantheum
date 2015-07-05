@@ -38,15 +38,20 @@ function OP() {
 	$arg = func_get_args();
 	return new _OP($arg);
 }
+$GLOBALS["OP_PERIOD"] = OP(0, ".");
 $GLOBALS["OP_COMMA"]  = OP(0, ",");
 $GLOBALS["OP_COLON"]  = OP(0, ":");
-$GLOBALS["OP_APOS"]  = OP(0, "’");
+$GLOBALS["OP_APOS"]   = OP(0, "’");
 $GLOBALS["OP_LPAREN"] = OP("(", 0);
 $GLOBALS["OP_RPAREN"] = OP(0, ")");
 $GLOBALS["OP_LQUOTE"] = OP("“", 0);
 $GLOBALS["OP_RQUOTE"] = OP(0, "”");
 $GLOBALS["OP_DASH"]   = OP(0, "—", 0); # m-dash
-$GLOBALS["OP_PARAGRAPH"]   = OP(0, "<br>", 0); # m-dash
+$GLOBALS["OP_MDASH"]  = OP(0, "—", 0); # m-dash
+$GLOBALS["OP_NDASH"]  = OP(1, "–", 1); # n-dash
+$GLOBALS["OP_QUEST"]  = OP(0, "?");
+$GLOBALS["OP_EXCL"]   = OP(0, "!");
+$GLOBALS["OP_PARAGRAPH"]   = OP(0, "<br>", 0);
 $GLOBALS["OP_MATCHING_CHOICES"] = OP("[matching-choices]");
 $GLOBALS["OP_MULTIPLE_CHOICE"] = OP("[multiple-choice]");
 $GLOBALS["OP_MATCHING"] = OP("[matching]");

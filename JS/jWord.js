@@ -193,16 +193,22 @@ function jWord() {
 		});
 	};
 	this.word_add_def = function(id) {
-		var def = this.word_user_def(id,false);
+		var def = this.word_user_def(id,false).trim();
 		if (!def) return;
-		var lang = "";
-		var re = /^\[([a-z]{1,3})\]\s*(.*)$/;
+		var extra = "";
+		if (def.startsWith("{:expr:}")) {
+			extra += "&type=expr";
+			def = def.substr(8).trim();
+		}
+		var re = /^\[([a-z]{1,3})\]\s*(.*?)\s*$/;
 		var matched = re.exec(def);
 		if (matched !== null) {
-			lang = "&lang="+matched[1];
+			extra = "&lang="+matched[1];
 			def = matched[2];
 		}
-		if (!def) return;
+		if (!def) {
+			return;
+		}
 		def = encodeURIComponent(def);
 		messageTip("Trying to add definition...");
 		var my = this;
@@ -210,7 +216,7 @@ function jWord() {
 		      'path='+this.path(id)+
 		      '&id='+id+
 		      '&val='+def+
-		      lang)
+		      extra)
 		.done(function(data){
 			if (data == "success") {
 				successTip("Successfully added definition");

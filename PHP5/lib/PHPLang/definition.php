@@ -67,6 +67,11 @@ class _DEFINITION
 			sql_getone($sql_stmts["def_id->def_type"], $this->_type, ["i", &$this->_id]); # still NULL if not found
 		return $this->_type;
 	}
+	function set_type($type) {
+		$this->_type = $type;
+		if ($this->issql and $this->_id !== NULL)
+			sql_set($sql_stmts["def_id->def_type="], $this->_type, ["i", &$this->_id]);
+	}
 	private $_lang = NULL;
 	function lang() {
 		global $sql_stmts;

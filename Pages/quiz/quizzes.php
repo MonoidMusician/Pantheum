@@ -56,7 +56,10 @@
     <script>
     $('.date').each(function() {
         var $this = $(this);
-        $this.text(Date.parse($this.data('date')+" GMT").toString('dddd, MMM d, yyyy, h:mmtt'));
+        var from = d3.time.format("%Y-%m-%d %X GMT%Z");
+        var to = d3.time.format("%A, %B %-d, %Y, at %-I:%M %p");
+        var time = from.parse($this.data('date')+" GMT-0000");
+        $this.text(to(time));
     });
     </script>
     <br>

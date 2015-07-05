@@ -51,9 +51,11 @@
 				if (!array_key_exists($o, $apply) or $apply[$o] < $level)
 					$apply[$o] = $level;
 			}
+			//if (is_vec($apply)) $apply = array_values($apply);
 		}
 		$last = $phr;
 	}
+	//if (is_vec($phrases_others)) $phrases_others = array_values($phrases_others);
 	$width = 500;
 	if ($translation) {
 ?>
@@ -131,12 +133,11 @@
 <br>
 
 
-
-
-<!-- Loading script, enable hover events etc. -->
 <script>
+var phrases_others, phrases;
 $(function(){
-	var phrases_others = <?= json_encode($phrases_others); ?>;
+	phrases_others = <?= json_encode($phrases_others); ?>;
+	phrases = <?= json_encode($phrases); ?>;
 	var hght = 0;
 	$('.description').each(function() {
 		var h = $(this).height();
@@ -158,19 +159,23 @@ $(function(){
 		}
 ?>
 	};
-	function select(y) {
+	function select(y,force) {
 		if (y === undefined) y = "default";
 		$('.description').hide();
 		if (y !== undefined) {
 			$('.description#desc-'+y).show();
-			if (y in phrases_others) {
-				$.each(phrases_others[y], function(k, phrases) {
-					var phrase = phrases;
-					//$.each(phrases, function(_,phrase) {
-						$('.tree-'+k).addClass('phrase'+phrase);
-						$('#sentence-'+k).addClass('phrase'+phrase);
-						$('#translation-'+k).addClass('phrase'+phrase);
-					//});
+			if ((force !== undefined && force in phrases) || y in phrases_others) {
+				var id_to_phrase = $.extend({}, phrases_others[y]);
+				if (force !== undefined && force in phrases && force !== phrases_others[y][y]) {
+					//console.log("word "+y+" from phrase "+phrases_others[y][y]+" to phrase "+force);
+					$.each(phrases[force], function(_,id) {
+						id_to_phrase[id] = force;
+					});
+				}
+				$.each(id_to_phrase, function(k, phrase) {
+					$('.tree-'+k).addClass('phrase'+phrase);
+					$('#sentence-'+k).addClass('phrase'+phrase);
+					$('#translation-'+k).addClass('phrase'+phrase);
 				});
 			}
 			$('.tree-'+y).addClass('selected');
@@ -207,7 +212,7 @@ $(function(){
 		$('#sentence-<?= $id ?>, .tree-<?= $id ?>, #translation-<?= $id ?>').mouseover(function(){
 			if (timeout !== undefined) clearTimeout(timeout);
 			clear();
-			select('<?= $id ?>');
+			select('<?= $id ?>',$(this).data('phrase'));
 			var modifies = <?= json_encode($modifies); ?>;
 			modifies.forEach(select2);
 		});
@@ -228,7 +233,7 @@ The markup will be simple nested lists
 -->
 <?php
 	$root = safe_get("tree",$sentence_data);
-	$recurse = function($key,$element) use($sentence,&$recurse,$phrases_others) {
+	$recurse = function($key,$element,$parent=null) use(&$sentence,&$recurse,$phrases_others) {
 		$name=NULL;$id=NULL;
 		if (is_string($element)) {
 			$name = $element;
@@ -244,23 +249,33 @@ The markup will be simple nested lists
 			$name = $sentence[$id]["value"];
 		}
 		if ($name !== NULL and $id !== NULL) {
+			$dataphrase = "";
 			$phrase = safe_get($id, safe_get($id, $phrases_others));
+			if ($parent !== NULL and is_array(safe_get("role", $sentence[$id])))
+				$phrase = safe_get($parent, safe_get($parent, $phrases_others));/**/
+
 			if ($phrase !== NULL) {
+				$dataphrase = " data-phrase='$phrase'";
 				$phrase = " phrase$phrase";
 			}
-			if (array_key_exists("link",$sentence[$id])) {
+
+			if (array_key_exists("link",$sentence[$id]))
 				$name = "<a href='{$sentence[$id]['link']}'>$name</a>";
-			}
-			if (array_key_exists("role", $sentence[$id]))
-				$div = '<div class="role'.$phrase.'">('.$sentence[$id]["role"].')</div>';
-			else $div = NULL;
-			?><?= $div ?><span class="word tree-<?= $id ?>" id="tree-<?= $id ?>"><?= $name ?></span><?php
+
+			if (array_key_exists("role", $sentence[$id])) {
+				$role = $sentence[$id]["role"];
+				if (is_array($role))
+					$role = array_shift($sentence[$id]["role"]);
+				$div = '<div class="role'.$phrase.'">('.$role.')</div>';
+			} else $div = NULL;
+
+			?><?= $div ?><span <?= $dataphrase ?> class="word tree-<?= $id ?>"><?= $name ?></span><?php
 		}
 		if (is_array($element)) {
 			?><ul><?php
 			foreach ($element as $k => $v) {
 				?><li><?php
-				$recurse($k,$v);
+				$recurse($k,$v,$id);
 				?></li><?php
 			}
 			?></ul><?php
@@ -274,14 +289,14 @@ The markup will be simple nested lists
 
 
 <script>
-var m = [10, 110, 10, 110],
-	w = 1050 - m[1] - m[3],
+var text_width = 180;
+var depth_scale = text_width + 5;
+var m = [10, 50, 10, 180],
+	w = $('#content').width() - 30 - m[1] - m[3],
 	h = 450 - m[0] - m[2],
 	i = 0,
 	root,
 	anim_duration = 200;
-var depth_scale = 100;
-var text_width = 80;
 
 var tree = d3.layout.tree()
 	.size([h, w]);
@@ -298,7 +313,7 @@ var vis = d3.select("#body").append("svg:svg")
 	.attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
 
-function update(source) {
+function update(source, first) {
 	var duration = d3.event && d3.event.altKey ? anim_duration * 10 : anim_duration;
 
 	// Compute the new tree layout.
@@ -319,9 +334,9 @@ function update(source) {
 	var nodeEnter = node.enter().append("svg:g")
 		.attr("class", "node")
 		.attr("transform", function(d) {
-			/*console.log([source.x0,source.y0]);
-			console.log([d.x,d.y]);/**/
-			return "translate(" + source.y0 + "," + source.x0 + ")";
+			if (first)
+				return "translate(" + d.y + "," + d.x + ")";
+			else return "translate(" + source.y0 + "," + source.x0 + ")";
 		})
 		.on("click", function(d) {
 			toggle(d);
@@ -329,7 +344,7 @@ function update(source) {
 		});
 
 	nodeEnter.append("svg:circle")
-		.attr("r", 1e-6)
+		.attr("r", 2)
 		.style("fill", function(d) {
 			return d._children ? "lightsteelblue" : "#fff";
 		});
@@ -348,7 +363,6 @@ function update(source) {
 	var nodeUpdate = node.transition()
 		.duration(duration)
 		.attr("transform", function(d) {
-			//console.log("translate(" + d.y + "," + d.x + ")");
 			return "translate(" + d.y + "," + d.x + ")";
 		});
 
@@ -361,38 +375,15 @@ function update(source) {
 	node.select("text")
 		.style("fill-opacity", 1)
 		.text(function(d){return d.name;})
-		/*.each(function(d) {
-			var text = d3.select(this),
-				lineNumber = 0,
-				lineHeight = 1, // ems
-				dy = parseFloat(text.attr("dy")),
-				_y = 0;
-			var matches = [];
-			//matches = d.name.split(/\s+/);
-			var e, re = /[^\s]{1,5}\s+[^\s]{1,5}(?=\s|$)|[^\s]{1,3}\s+[^\s]{1,10}(?=\s|$)|[^\s]+/g,
-				s = d.name;
-			while (e = re.exec(s)) {
-				matches.push(e[0]);
-			}
-			_y -= (matches.length > 1 ? matches.length : 0) / 2 * lineHeight;
-			matches.forEach(function(e) {
-				if (!lineNumber) var h = _y;
-				else var h = lineHeight;
-				lineNumber++;
-				text.append("tspan").text(e)
-					.attr("x", text.attr("x"))
-					.attr("y", text.attr("y"))
-					.attr("dy", h + dy + "em");
-			});
-		});*/
 		.each(wrap);
 
 	// Transition exiting nodes to the parent's new position.
 	var nodeExit = node.exit().transition()
 		.duration(duration)
+        .ease("linear")
 		.attr("transform", function(d) {
 			return "translate(" + source.y + "," + source.x + ")";
-		})
+		})/**/
 		.remove();
 
 	nodeExit.select("circle")
@@ -489,14 +480,22 @@ var sentence = <?= json_encode(["sentence" => $sentence, "phrases" => $phrases, 
 var root = {};
 var run = function(tree) {
 	var ret = [];
+	console.log(tree);
 	for (key in tree) {
 		var v = tree[key];
-		if (v instanceof Array) {
+		if ($.isArray(v)) {
 			var v2 = {};
 			for (_ in v) {
-				v2[v[_]] = {};
+				if (typeof v[_] == "string" || $.isNumeric(v[_]))
+					v2[v[_]] = {};
+				else v2[_] = v[_];
 			}
+			console.log(v,v2);
 			v = v2;
+		}
+		if (!sentence.sentence[key]) {
+			console.log(tree,key,v);
+			continue;
 		}
 		ret.push({
 			"name": sentence.sentence[key].value,
@@ -512,9 +511,9 @@ var recurse = function(e) {
 	e._name2 = e.name;
 	if (e.children) {
 		e.children.forEach(recurse);
-		if (e.children.length === 1) {
+		if (e.children.length === 1)
 			e._name2 += " " + e.children[0]._name2;
-		} else
+		else
 			e.children.forEach(function(_) {
 				e._name2 += " (" + _._name2 + ")";
 				first = false;
@@ -545,7 +544,7 @@ function toggleAll(d) {
 	}
 }
 
-update(root);
+update(root, true);
 $(function(){
 	$('#translation_hide').trigger('click');
 });

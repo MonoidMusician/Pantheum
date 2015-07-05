@@ -1,0 +1,501 @@
+{
+	"name": {
+		"la": "lingua",
+		"en": "language"
+	},
+	"plural": {
+		"la": "Latin",
+		"en": "English"
+	},
+	"_children": [
+		{
+			"name": {
+				"la": "nomen",
+				"en": "noun"
+			},
+			"plural": {
+				"la": "nomina",
+				"en": "nouns"
+			},
+			"_children": [
+				{
+					"name": {
+						"la": "homo\u0304",
+						"en": [
+							"person",
+							"human"
+						]
+					},
+					"plural": {
+						"la": "homine\u0304s",
+						"en": [
+							"people",
+							"humans"
+						]
+					},
+					"_children": [
+						{
+							"name": {
+								"la": "vir",
+								"en": "man"
+							}
+						},
+						{
+							"name": {
+								"la": "fe\u0304mina",
+								"en": "woman"
+							}
+						},
+						{
+							"name": {
+								"la": "actor",
+								"en": "doer"
+							},
+							"plural": {
+								"la": "actore\u0304s",
+								"en": "doers"
+							},
+							"_children": [
+								{
+									"name": {
+										"la": "actor",
+										"en": "actor"
+									}
+								},
+								{
+									"name": {
+										"la": "cantor",
+										"en": "singer"
+									}
+								},
+								{
+									"name": {
+										"la": "pictor",
+										"en": "painter"
+									}
+								},
+								{
+									"name": {
+										"la": "pistor",
+										"en": "baker"
+									}
+								},
+								{
+									"name": {
+										"la": "le\u0304ctor",
+										"en": "reader"
+									}
+								},
+								{
+									"name": {
+										"la": "victor",
+										"en": "conqueror"
+									}
+								}
+							]
+						},
+						{
+							"name": {
+								"la": "familia",
+								"en": "family"
+							},
+							"plural": {
+								"la": "parte\u0304s familiae",
+								"en": "parts of the family"
+							},
+							"_children": [
+								{
+									"name": {
+										"la": "pro\u0304genitor",
+										"en": "ancestor"
+									},
+									"plural": {
+										"la": "pro\u0304genito\u0304re\u0304s",
+										"en": "ancestors"
+									},
+									"_children": [
+										{
+											"name": {
+												"la": [
+													"pare\u0304ns",
+													"genitor"
+												],
+												"en": "parent"
+											},
+											"plural": {
+												"la": [
+													"parente\u0304s",
+													"genito\u0304re\u0304s"
+												],
+												"en": "parents"
+											},
+											"_children": [
+												{
+													"name": {
+														"la": "pater",
+														"en": "father"
+													}
+												},
+												{
+													"name": {
+														"la": "ma\u0304ter",
+														"en": "mother"
+													}
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": {
+										"la": "u\u0304n. ex pro\u0304geniei\u0304",
+										"en": [
+											"descendant",
+											"offspring"
+										]
+									},
+									"plural": {
+										"la": "pro\u0304genie\u0304s",
+										"en": [
+											"descendants",
+											"offspring"
+										]
+									},
+									"_children": [
+										{
+											"name": {
+												"en": "child"
+											},
+											"plural": {
+												"en": "children"
+											},
+											"_children": [
+												{
+													"name": {
+														"la": "filius",
+														"en": "son"
+													}
+												},
+												{
+													"name": {
+														"la": "filia",
+														"en": "daughter"
+													}
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": {
+						"la": "animal",
+						"en": "animal"
+					},
+					"plural": {
+						"la": "animalia",
+						"en": "animals"
+					},
+					"_children": [
+						{
+							"name": {
+								"la": "leo\u0304",
+								"en": "lion"
+							}
+						},
+						{
+							"name": {
+								"la": "mu\u0304s",
+								"en": "mouse"
+							}
+						},
+						{
+							"name": {
+								"la": [
+									"equus",
+									"caballus"
+								],
+								"en": "horse"
+							},
+							"plural": {
+								"la": [
+									"equi\u0304",
+									"caballi\u0304"
+								],
+								"en": "horses"
+							}
+						}
+					]
+				},
+				{
+					"name": {
+						"la": "re\u0304s",
+						"en": "thing"
+					},
+					"plural": {
+						"la": "re\u0304s",
+						"en": "things"
+					},
+					"_children": [
+						{
+							"name": {
+								"la": "amicita\u0304s",
+								"en": "friendship"
+							}
+						},
+						{
+							"name": {
+								"la": "auxilium",
+								"en": "help"
+							}
+						}
+					]
+				},
+				{
+					"name": {
+						"la": "locus",
+						"en": "location"
+					},
+					"plural": {
+						"la": "loci\u0304",
+						"en": "locations"
+					},
+					"_children": [
+						{
+							"name": {
+								"la": "spatium",
+								"en": "room"
+							},
+							"plural": {
+								"la": "spatia",
+								"en": "rooms"
+							},
+							"_children": [
+								{
+									"name": {
+										"la": "a\u0304trium",
+										"en": "reception hall"
+									}
+								},
+								{
+									"name": {
+										"la": "frigida\u0304rium",
+										"en": "cold room (baths)"
+									}
+								},
+								{
+									"name": {
+										"la": "tepida\u0304rium",
+										"en": "warm room (baths)"
+									}
+								},
+								{
+									"name": {
+										"la": "calda\u0304rium",
+										"en": "hot room (baths)"
+									}
+								}
+							]
+						},
+						{
+							"name": {
+								"la": "aedificium",
+								"en": "building"
+							},
+							"plural": {
+								"la": "aedificia",
+								"en": "buildings"
+							},
+							"_children": [
+								{
+									"name": {
+										"la": "villa",
+										"en": "house"
+									}
+								},
+								{
+									"name": {
+										"la": "taberna",
+										"en": [
+											"shop",
+											"inn"
+										]
+									}
+								},
+								{
+									"name": {
+										"la": "horreum",
+										"en": "barn"
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": {
+				"la": "verbum",
+				"en": "verb"
+			},
+			"plural": {
+				"la": "verba",
+				"en": "verbs"
+			},
+			"_children": [
+				{
+					"name": {
+						"la": "cogito\u0304",
+						"en": "think"
+					},
+					"_children": [
+						{
+							"name": {
+								"la": "scio\u0304",
+								"en": "know"
+							},
+							"_children": [
+								{
+									"name": {
+										"la": "disco\u0304",
+										"en": "learn"
+									}
+								},
+								{
+									"name": {
+										"la": "cogno\u0304sco\u0304",
+										"en": [
+											"get to know",
+											"learn"
+										]
+									}
+								},
+								{
+									"name": {
+										"la": "agno\u0304sco\u0304",
+										"en": "recognize"
+									}
+								},
+								{
+									"name": {
+										"la": "intellego\u0304",
+										"en": "understand"
+									},
+									"plural": {}
+								}
+							]
+						},
+						{
+							"name": {
+								"la": [
+									"statuo\u0304",
+									"co\u0304nstituo\u0304"
+								],
+								"en": "decide"
+							}
+						}
+					]
+				},
+				{
+					"name": {
+						"la": "eo\u0304",
+						"en": "go"
+					},
+					"_children": [
+						{
+							"name": {
+								"la": "ambulo\u0304",
+								"en": "walk"
+							}
+						},
+						{
+							"name": {
+								"la": "curro\u0304",
+								"en": "run"
+							}
+						},
+						{
+							"name": {
+								"la": "volo\u0304",
+								"en": "fly"
+							}
+						},
+						{
+							"name": {
+								"la": "exeo\u0304",
+								"en": "exit"
+							},
+							"_children": [
+								{
+									"name": {
+										"la": "disce\u0304do\u0304",
+										"en": [
+											"leave",
+											"depart"
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": {
+						"la": [
+							"di\u0304co\u0304",
+							"inquam"
+						],
+						"en": [
+							"say",
+							"talk"
+						]
+					},
+					"_children": [
+						{
+							"name": {
+								"la": [
+									"susurro\u0304",
+									"musso\u0304"
+								],
+								"en": "whisper"
+							}
+						},
+						{
+							"name": {
+								"la": [
+									"rogo\u0304",
+									"interrogo\u0304"
+								],
+								"en": "ask"
+							}
+						},
+						{
+							"name": {
+								"la": "voco\u0304",
+								"en": "call"
+							}
+						},
+						{
+							"name": {
+								"la": "cla\u0304mo\u0304",
+								"en": "shout"
+							},
+							"_children": [
+								{
+									"name": {
+										"la": "excla\u0304mo\u0304",
+										"en": "exclaim"
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

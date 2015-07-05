@@ -141,7 +141,9 @@ class _WORD
 	function add_definition($def) {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
-			sql_exec($sql_stmts["word_id,def_lang,def_value,form_tag->new in definitions"], ["isss", $this->_id, $def->lang(), $def->value(), (string)$def->path()]);
+			if ($def->type())
+				sql_exec($sql_stmts["word_id,def_lang,def_value,form_tag,def_type->new in definitions"], ["issss", $this->_id, $def->lang(), $def->value(), (string)$def->path(), $def->type()]);
+			else sql_exec($sql_stmts["word_id,def_lang,def_value,form_tag->new in definitions"], ["isss", $this->_id, $def->lang(), $def->value(), (string)$def->path()]);
 			$def = $this->get_def($def);
 		}
 		$this->_definitions[] = $def;

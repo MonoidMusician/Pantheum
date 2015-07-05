@@ -19,13 +19,16 @@
 		and is_array($values["correct"])
 		and array_key_exists("expr", $values)
 		and is_string($values["expr"])) {
-			$value = compare_syntax($values["expr"], $answer2, ["unescaped"=>TRUE]);
+			$value = compare_syntax($values["expr"], $answer2, ["unescaped"=>TRUE,"matchall"=>TRUE]);
 			if ($value === null) {
 				$score = FALSE;
 				$correct = $values["correct"];
 			} else {
 				$score = TRUE;
-				$also = [];
+				$also = $values["correct"];
+				foreach ($_also as $key => $v2) {
+					if (unformat_word(strip_html($v2))==$_val) unset($also[$key]); // XXX: use compare_strings here
+				}
 			}
 		} else {
 			if (array_key_exists("correct", $values)
@@ -45,7 +48,7 @@
 					$score = TRUE;
 					$_also = $also;
 					foreach ($_also as $key => $v2) {
-						if (unformat_word(strip_html($v2))==$_val) unset($also[$key]);
+						if (unformat_word(strip_html($v2))==$_val) unset($also[$key]); // XXX: use compare_strings here
 					}
 					break;
 				}
