@@ -126,8 +126,8 @@ var la_ipa = (function () {
 			.split("v").join("w")
 			// Convert sequences to IPA
 				// er allophone
-				.replace(/e(?=[.]?r)/g,"\u00E6")
-				.replace(/([ao])\u00E6/g, "$1e")
+				/*.replace(/e(?=[.]?r)/g,"\u00E6")
+				.replace(/([ao])\u00E6/g, "$1e")/**/
 				// Rhotics
 				.replace(/r(?![.]?[r\u02D0])/g,"\u027E")
 				.replace(/r[.]\u027E/g, "r.r")
@@ -197,7 +197,9 @@ var la_ipa = (function () {
 	};
 	my.Greek = function (r) {
 		return (
-			r.split("\u0304").join("")
+			r.replace(/us(?=[^w])/,"os")
+			 .replace(/um(?=[^w])/,"on")
+			 .split("\u0304").join("")
 			 .split("\u00E6").join("ai")
 			 .split("\u0153").join("oi")
 			 .split("\u00C6").join("Ai")
@@ -363,8 +365,9 @@ var la_ipa = (function () {
 		return my;
 	}
 	my.select_transformer("x+ae+oe+dagger");
+	//my.select_transformer("IPA transcription");
 	//my.transform = my.transforms["Silicus+Eszett+Nasal"];
-	//my.transform = my.transforms["Greek"];
+	//my.select_transformer("Greek");
 	my.unformatted = {};
 	my.selector = '.format-word-la';
 	my.format = function (space) {
@@ -386,6 +389,9 @@ var la_ipa = (function () {
 			this.textContent = r;
 		});
 	}
+	$(function() {
+		my.format();
+	});
 
 	return my;
 }());

@@ -33,7 +33,7 @@ class _PATH implements Countable
 			$this->_mgr = $init->mgr();
 			$this->map = array_of_size($init->map);
 		} else {
-			if (!ISDEPATH($init)) _die("");#_die("bad init object ".var_export($init,1));
+			if (!ISDEPATH($init)) _die("bad init object ".var_export($init,1));
 			$this->_mgr = &$init;
 			$this->map = array_of_size($init->all_sub_keys);
 		}
@@ -227,11 +227,12 @@ class _PATH implements Countable
 		$ret = [];
 		$recurse = NULL;
 		$recurse = function($dp) use(&$ret, &$recurse) {
+			assert('ISDEPATH($dp)');
+			if ($dp === NULL) return $ret;
 			foreach ($dp->simple_keys as $k) {
 				if (array_key_exists($k, $ret)) die("duplicate key");
 				$ret[$k] = $dp->level[$k];
 			}
-			assert('ISDEPATH($dp)');
 			foreach ($dp->recursive_keys as $k) {
 				if (array_key_exists($k, $ret)) die("duplicate key");
 				$ret[$k] = array_keys($dp->level[$k]);
@@ -339,10 +340,9 @@ class _PATH implements Countable
 		#var_dump($ret);
 		return array_values($ret);
 	}
-	function issub($other) {
-		$ret = FALSE;
+	function issub($other,$ret=FALSE) {
 		foreach ($this->mgr()->all_sub_keys as $k) {
-			if ($other->key_value($k) != "" AND $this->key_value($k) != $other->key_value($k)) {
+			if ($other->key_value($k) != "" and $this->key_value($k) != $other->key_value($k)) {
 				//error_log("!$this issub $other");
 				return FALSE;
 			} elseif ($this->key_value($k) != "") {

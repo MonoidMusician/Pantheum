@@ -106,6 +106,11 @@ section h1 {
     margin-top: 0px;
 }
 
+#content:after {
+       content: "";
+   display: block; 
+   clear: both;
+}
 section#content {
     display: block !important;
     
@@ -118,11 +123,28 @@ section#content {
     
     background-color: #efefef;
 }
-
 section#content a {
     color: #4466aa;
     text-decoration: none;
 }
+
+article:not(.secondary) {
+    float: left;
+}
+article + article.secondary {
+    float: right;
+    margin-right: 2em;
+    width: calc(30% - 2em);
+}
+article + article:not(.secondary) {
+  /* float: none !important; */
+  clear: both;
+}
+.secondary {
+    font-size: 90%;
+    min-width: 200px;
+}
+
 
 input:not([type="checkbox"]):not([type="radio"]), button {
     border: 1px solid #aaaaaa;
@@ -196,6 +218,7 @@ hr {
     height: 2px;
 }
 
+
 .select {
     display: inline-block;
     vertical-align: middle;
@@ -209,6 +232,7 @@ hr {
     border: 1px solid;
     padding-bottom: 10px;
     padding-right: 7px;
+    padding-left: 3px;
     padding-top: -3px;
 }
 
@@ -304,6 +328,12 @@ table input[type=checkbox], table input[type=radio] {
 a.word-ref {
     /*font-weight: bold;*/
     font-style: italic;
+}
+
+abbr {
+    border-bottom: 1px dotted;
+    cursor: help;
+    font-variant: none;
 }
 
 table.inflection {

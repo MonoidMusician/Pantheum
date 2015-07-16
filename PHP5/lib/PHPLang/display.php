@@ -17,6 +17,10 @@ function _get_first_last($arr, &$first, &$last) {
 	}
 }
 
+function format_abbr($abbr, $desc) {
+	return "<abbr title='$desc'>$abbr</abbr>";
+}
+
 function display_word_entries($list) {
 	foreach ($list as $w) {
 		display_word_entry($w);
@@ -117,21 +121,29 @@ function format_value ($v) {
 		return "Comp. L";
 	if ($v === "complementary-2")
 		return "Comp. R";
+	if ($v === "adjectival-participle")
+		return format_abbr("Adj. Participle","Adjectival Participle");
+	if ($v === "nominal-participle")
+		return format_abbr("Nom. Participle","Nominal Participle");
+	if ($v === "adverbial-participle")
+		return format_abbr("Adv. Participle","Adverbial Participle");
 	return str_replace("-", " ", ucfirst($v));
 }
 function format_spart($spart) {
-	if ($spart === "adverb") return "Adv.";
-	if ($spart === "verb") return "V.";
-	if ($spart === "noun") return "N.";
-	if ($spart === "adjective") return "Adj.";
-	if ($spart === "pronoun") return "Pro.";
-	if ($spart === "preposition") return "Prep.";
+	if ($spart === "adverb")       return format_abbr("Adv.",   "Adverb");
+	if ($spart === "verb")         return format_abbr("V.",     "Verb");
+	if ($spart === "noun")         return format_abbr("N.",     "Noun");
+	if ($spart === "adjective")    return format_abbr("Adj.",   "Adjective");
+	if ($spart === "pronoun")      return format_abbr("Pro.",   "Pronoun");
+	if ($spart === "preposition")  return format_abbr("Prep.",  "Preposition");
+	if ($spart === "conjunction")  return format_abbr("Conj.",  "Conjunction");
+	if ($spart === "interjection") return format_abbr("Interj.","Interjection");
 	return ucfirst($spart);
 }
 function format_attr($tag,$value=NULL) {
 	if ($tag === "transitive")
-		if ($value === "true") return "transitive";
-		elseif ($value === "false") return "intransitive";
+		if ($value === "true") return format_abbr("TR","transitive");
+		elseif ($value === "false") return format_abbr("NTR","intransitive");
 	if ($tag === "irregular")
 		if ($value === "true") return "irregular";
 		elseif ($value === "false") return "regular";
@@ -170,6 +182,13 @@ function format_attr($tag,$value=NULL) {
 		}
 		$value .= ", and ".$sp[$i];
 		return "Stages $value (CLC)";
+	}
+	$abbrs = [
+		"copulative"=>"COP",
+	];
+	if ($value === "true") {
+		if (array_key_exists($tag, $abbrs))
+			return format_abbr($abbrs[$tag], $tag);
 	}
 	return ($value !== NULL and $value !== "true") ? "$tag=$value" : "$tag";
 }
@@ -593,7 +612,7 @@ function word_table_values($w,$ignore=NULL) {
 		} elseif ($spart === "adverb") {
 			$values1 = $w->path()->iterate("degree");
 		}
-	}
+	} else
 	if ($lang === "fr") {
 		if (($spart === "noun") or
 			($spart === "adjective") or
@@ -637,7 +656,7 @@ function word_table_values($w,$ignore=NULL) {
 		} elseif ($spart === "adverb") {
 			$values1 = $w->path()->iterate("degree");
 		}
-	}
+	} else
 	if ($lang === "es") {
 		if (($spart === "noun") or
 			($spart === "adjective") or
@@ -681,7 +700,63 @@ function word_table_values($w,$ignore=NULL) {
 		} elseif ($spart === "adverb") {
 			$values1 = $w->path()->iterate("degree");
 		}
-	}
+	} else
+	if ($lang === "eo") {
+		if (($spart === "noun") or
+			($spart === "adjective") or
+			($spart === "pronoun")) {
+			$values4 = $w->path()->iterate("case");
+			$values3 = [];
+			$values2 = $w->path()->iterate("number");
+			$values1 = [];
+			$values0 = [];
+		} elseif ($spart === "verb") {
+			$moods = $w->path()->iterate("mood");
+			$values0 = [];
+			$hacked = NULL;
+			foreach ($moods as $_0) {
+				$path = PATH($w,$_0);
+				$name = NULL;
+				if ($_0 === "indicative") {
+					$values4 = [""];
+					$values3 = [FALSE,FALSE];
+					$values2 = $path->iterate("tense");
+					$values1 = [""];
+				} else if ($_0 === "infinitive" or
+				           $_0 === "conditional" or
+				           $_0 === "imperative") {
+					if ($hacked) {
+						$values0[$hacked][1][] = $_0;
+						continue;
+					}
+					$hacked = $_0;
+					$name = "";
+					$values4 = [""];
+					$values3 = [FALSE,FALSE];
+					$values2 = [$_0];
+					$values1 = [""];
+				} else if ($_0 === "adjectival-participle") {
+					$values4 = $path->iterate("case");
+					$values3 = $path->iterate("number");
+					$values2 = $path->iterate("tense");
+					$values1 = $path->iterate("voice");
+				} else if ($_0 === "nominal-participle") {
+					$values4 = $path->iterate("case");
+					$values3 = $path->iterate("number");
+					$values2 = $path->iterate("tense");
+					$values1 = $path->iterate("voice");
+				} else if ($_0 === "adverbial-participle") {
+					$values4 = [""];
+					$values3 = [FALSE,FALSE];
+					$values2 = $path->iterate("tense");
+					$values1 = $path->iterate("voice");
+				}
+				$values0[$_0] = [$values1,$values2,$values3,$values4];
+				if ($name !== NULL)
+					$values0[$_0][] = $name;
+			}
+		}
+	} else
 	if ($lang === "ith" && $spart === "root") {
 		$values0 = $w->path()->iterate("complement");
 		$values2 = $w->path()->iterate("formality");
@@ -824,7 +899,10 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 				$values3 = $_values[2];
 				$values4 = $_values[3];
 				$_0 = $_key;
-			}
+				if (array_key_exists(4, $_values))
+					$name0 = $_values[4];
+				else $name0 = $_0;
+			} else $name0 = $_0;
 			$path = PATH($w, $_0);
 			if ($_0 !== $first0) {
 				// Blank row to separate sub-tables based on $values0
@@ -842,10 +920,10 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 			$_1 = (count($values1) > 1 or $values1[0] !== FALSE);
 			?><tr><?php
 			$hspan1 = $_1 !== FALSE ? 2 : 1;
-			if ($_0 === FALSE) {
+			if ($name0 === FALSE) {
 				?><th colspan="<?= $hspan1 ?>">&nbsp;</th><?php
 			} else {
-				?><th colspan="<?= $hspan1 ?>" class="greatest"><?= $format_value($_0) ?></th><?php
+				?><th colspan="<?= $hspan1 ?>" class="greatest"><?= $format_value($name0) ?></th><?php
 			}
 			if ($values2)
 			foreach ($values2 as $_2) {

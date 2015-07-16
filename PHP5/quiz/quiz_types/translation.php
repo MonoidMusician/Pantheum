@@ -7,9 +7,15 @@ function pluralize($noun) {
 	return Inflect::pluralize($noun);
 }
 function make_expr($list) {
-	if (!is_array($list)) return $list;
+	if (!is_array($list)) {
+		if (is_string($list)) {
+			$list = str_replace("(","[",$list);
+			$list = str_replace(")","]",$list);
+		}
+		return $list;
+	}
 	if (count($list) === 1) return $list[0];
-	return "(".implode("|",$list).")";
+	return "(".implode("|",array_map("make_expr",$list)).")";
 }
 $quiz_types = array_merge($quiz_types,[
 	"trans001" => [
@@ -102,7 +108,7 @@ $quiz_types = array_merge($quiz_types,[
 			],
 			"sentence" => [
 				[
-					"cond" => PICK([0,1]),
+					"condition" => make_pick(PICK([0,1]),"pronoun"),
 					"spart" => "pronoun",
 					"attr" => [
 						"person" => get_pick("person"),
@@ -147,13 +153,13 @@ $quiz_types = array_merge($quiz_types,[
 				$pron = [
 					"person-1"=>[
 						"singular"=>["I"],
-						"plural"=>["We"]
+						"plural"=>["we"]
 					],"person-2"=>[
-						"singular"=>["You (sg)","You","Thou"],
-						"plural"=>["You (pl)","You","Ye"]
+						"singular"=>["you (sg)","you","thou"],
+						"plural"=>["you (pl)","you","ye"]
 					],"person-3"=>[
-						"singular"=>["masculine"=>["He","It"],"feminine"=>["She","It"],"neuter"=>["It"],"One"],
-						"plural"=>["They"]
+						"singular"=>["masculine"=>["he","it"],"feminine"=>["she","it"],"neuter"=>["it"],"one"],
+						"plural"=>["they"]
 					]
 				];
 				$pron = $pron[$person][$number];
@@ -180,11 +186,14 @@ $quiz_types = array_merge($quiz_types,[
 				$defs = []; $def_expr = NULL;
 				foreach ($word->definitions() as $def) {
 					if ($def->lang() !== "en") continue;
-					if ($def->type() === "expr") {
+					$_path = $def->path();
+					if ($_path and !$path->issub($_path,TRUE))
+						continue;
+
+					if ($def->type() === "expr")
 						$def_expr = $def->value();
-					} else {
+					else
 						$defs = array_merge($defs, explode("\n",$def->value()));
-					}
 				}
 				$defs = array_map("trim", $defs);
 				if ($pick_db["obj_number"] === "plural") {
@@ -192,10 +201,140 @@ $quiz_types = array_merge($quiz_types,[
 					$defs = flatten($defs);
 					$art = "[the|some]";
 				} else $art = "[a[n]|the]";
-
-				$correct = [implode(" ", [$pron[0],$have[0],$defs[0]])];
 				if (!$def_expr) $def_expr = make_expr($defs);
-				$expr = implode(" ", array_map("make_expr",[$pron, $have, $art]))." ($def_expr)";
+
+				$correct = [capitalize(implode(" ", [$pron[0],$have[0],"(the)",$defs[0]]))];
+				$expr = "{*".implode("} {", array_map("make_expr",[$pron, $have, $art]))." $def_expr}";
+				error_log($expr);
+
+				return ["correct" => $correct, "expr" => $expr];
+			},
+			"answer0-tooltip" => "English translation",
+			"answer0-language" => "en",
+		], [
+			"help" => "Translate this into English.",
+			"selections" => [
+				"person" => PICK("person")->l("la"),
+				"number" => PICK("number")->l("la"),
+				"gender" => PICK("gender")->l("la"),
+				"type" => PICK(["location","location/room","location/building","location/city"]),
+				"word" => NULL,
+				"obj_gender" => NULL,
+				"obj_number" => NULL,
+				"ablative" => function($pick_db) {
+					return $pick_db["type"] !== "location/city";
+				},
+				"case" => function($pick_db) {
+					return $pick_db["ablative"] ? "ablative" : "locative";
+				},
+			],
+			"sentence" => [
+				[
+					"condition" => make_pick(PICK([0,1]),"pronoun"),
+					"spart" => "pronoun",
+					"attr" => [
+						"person" => get_pick("person"),
+					],
+					"path" => [
+						"nominative",
+						get_pick("number"),
+						get_pick("gender"),
+					]
+				],
+				[
+					"spart" => "verb",
+					"language" => "la",
+					"name" => "sum",
+					"path" => [
+						"indicative/present/active",
+						get_pick("number"),
+						get_pick("person")
+					]
+				],
+				[
+					"spart" => "preposition",
+					"language" => "la",
+					"name" => "in",
+					"condition" => get_pick("ablative")
+				],
+				[
+					"spart" => "noun",
+					"language" => "la",
+					"attr" => array_merge($df_exclude, [
+						"type"=>get_pick("type"),
+					]),
+					"store_word" => "word",
+					"path" => [
+						get_pick("case"),
+						make_pick(PICK("gender"),"obj_gender"),
+						make_pick(PICK(["singular"]),"obj_number")
+					]
+				],
+				$OP_COLON,
+				$OP_PARAGRAPH,
+				$OP_USER_INPUT
+			],
+			"answer0" => function($pick_db,$db) {
+				$person = $pick_db["person"];
+				$number = $pick_db["number"];
+				$gender = $pick_db["gender"];
+				$word = $pick_db["word"];
+
+				$pron = [
+					"person-1"=>[
+						"singular"=>["I"],
+						"plural"=>["we"]
+					],"person-2"=>[
+						"singular"=>["you (sg)","thou"],
+						"plural"=>["you (pl)","ye"]
+					],"person-3"=>[
+						"singular"=>["masculine"=>["he","it"],"feminine"=>["she","it"],"neuter"=>["it"],"one"],
+						"plural"=>["they"]
+					]
+				];
+				$pron = $pron[$person][$number];
+				if ($person === "person-3" and $number === "singular")
+					$pron = $pron[$gender];
+				else $pron = array_unique(flatten($pron));
+
+				$be = [
+					"person-1"=>[
+						"singular"=>["am"],
+						"plural"=>["are"]
+					],"person-2"=>[
+						"singular"=>["are","art"],
+						"plural"=>["are"]
+					],"person-3"=>[
+						"singular"=>["is"],
+						"plural"=>["are"]
+					]
+				];
+				$be = $be[$person][$number];
+
+
+				$path = PATH($word,"$pick_db[case]/$pick_db[obj_number]/$pick_db[obj_gender]");
+				$defs = []; $def_expr = NULL;
+				foreach ($word->definitions() as $def) {
+					if ($def->lang() !== "en") continue;
+					$_path = $def->path();
+					if ($_path and !$path->issub($_path,TRUE))
+						continue;
+
+					if ($def->type() === "expr")
+						$def_expr = $def->value();
+					else
+						$defs = array_merge($defs, explode("\n",$def->value()));
+				}
+				$defs = array_map("trim", $defs);
+				if ($pick_db["obj_number"] === "plural") {
+					$defs = array_map("pluralize", $defs);
+					$defs = flatten($defs);
+					$art = "[the|some]";
+				} else $art = "[a[n]|the]";
+				if (!$def_expr) $def_expr = make_expr($defs);
+
+				$correct = [capitalize(implode(" ", [$pron[0],$be[0],"in (the)",$defs[0]]))];
+				$expr = "{*".implode("} {", array_map("make_expr",[$pron, $be]))."} {(in|at) ".make_expr($art)." $def_expr}";
 				error_log($expr);
 
 				return ["correct" => $correct, "expr" => $expr];
@@ -225,7 +364,7 @@ $quiz_types = array_merge($quiz_types,[
 					"attr" => $df_exclude,
 					"store_word" => "word",
 					"path" => [
-						"accusative",
+						"nominative",
 						PICK("gender"),
 						get_pick("number")
 					]
@@ -235,14 +374,13 @@ $quiz_types = array_merge($quiz_types,[
 				$OP_USER_INPUT
 			],
 			"answer0" => function($pick_db,$db) {
-				$person = $pick_db["person"];
 				$number = $pick_db["number"];
 				$gender = $pick_db["gender"];
 				$word = $pick_db["word"];
 
 				$pron = [
-					"singular"=>["There","It","He","She"],
-					"plural"=>["There","They"]
+					"singular"=>["there","it","he","she"],
+					"plural"=>["there","they"]
 				];
 				$pron = $pron[$number];
 
@@ -253,23 +391,29 @@ $quiz_types = array_merge($quiz_types,[
 				$be = $be[$number];
 
 
+				$path = PATH($word,"nominative/$gender/$number");
 				$defs = []; $def_expr = NULL;
 				foreach ($word->definitions() as $def) {
 					if ($def->lang() !== "en") continue;
-					if ($def->type() === "expr") {
+					$_path = $def->path();
+					if ($_path and !$path->issub($_path,TRUE))
+						continue;
+
+					if ($def->type() === "expr")
 						$def_expr = $def->value();
-					} else
+					else
 						$defs = array_merge($defs, explode("\n",$def->value()));
 				}
 				$defs = array_map("trim", $defs);
-				if ($pick_db["obj_number"] === "plural") {
+				if ($number === "plural") {
 					$defs = array_map("pluralize", $defs);
 					$defs = flatten($defs);
 					$art = "[the|some]";
 				} else $art = "[a[n]|the]";
+				if (!$def_expr) $def_expr = make_expr($defs);
 
-				$correct = [implode(" ", [$pron[0],$have[0],$defs[0]])];
-				$expr = implode(" ", array_map("make_expr",[$pron, $have, $art, $defs]));
+				$correct = [capitalize(implode(" ", [$pron[0],$be[0],"(the)",$defs[0]]))];
+				$expr = "{*".implode("} {", array_map("make_expr",[$pron, $be, $art]))." $def_expr}";
 				error_log($expr);
 
 				return ["correct" => $correct, "expr" => $expr];

@@ -103,6 +103,12 @@
     FROM words WHERE word_id = (?)
 }}};
 
+
+{{{define|lang_id->#words|
+    SELECT COUNT(*)
+    FROM words WHERE word_lang = (?)
+}}};
+
 /************************
  * FORMS
  ************************/

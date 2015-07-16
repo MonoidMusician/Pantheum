@@ -43,6 +43,7 @@ if ($op === " AND ") $stmt .= ")";
 else $op = " WHERE ";
 if ($attr_t) {
 	$stmt .= "$op attr_tag = '".explode("=",$attr)[0]."'";
+	$stmt .= "AND attr_value LIKE '%".explode("=",$attr)[1]."%'";
 } elseif ($attr) {
 	$stmt .= "$op attr_tag LIKE '%".explode("=",$attr)[0]."%'";
 }

@@ -523,7 +523,8 @@ $quiz_types = array_merge($quiz_types,[
 						return "indicative";
 					}
 				],
-				"choices0-tooltip" => "Which mood?"
+				"choices0-tooltip" => "Which mood?",
+				"choices0-language" => "en",
 			]
 		],
 	],

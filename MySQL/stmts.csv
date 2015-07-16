@@ -46,6 +46,8 @@ word_id->word_info_formatted; SELECT CONCAT(
         )
     )
     FROM words WHERE word_id = (?)
+lang_id->#words; SELECT COUNT(*)
+    FROM words WHERE word_lang = (?)
 form_id->word_id; SELECT word_id FROM forms WHERE form_id = (?)
 word_id->form_id; SELECT form_id FROM forms WHERE word_id = (?)
 word_id,form_tag->form_id; SELECT form_id FROM forms WHERE word_id = (?) AND form_tag = (?)

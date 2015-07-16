@@ -49,6 +49,12 @@ class _SQLDB implements _DB
 	function load_language($langid) {
 		global $data_dir;
 		$this->depaths[$langid] = read_depaths($data_dir . $langid . "/depaths.json");
+		/*if ($langid === "eo")
+			foreach ($this->depaths[$langid] as $key => $value) {
+				if (!$value->key2values) continue;
+				echo "<h1>$key</h1>";
+				var_dump($value);
+			}/**/
 	}
 	function find_all_words($name=NULL, $lang=NULL, $spart=NULL) {
 		global $sql_stmts;

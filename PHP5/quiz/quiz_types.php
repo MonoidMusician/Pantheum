@@ -344,6 +344,7 @@ function which($lang,$spart,$key,$given=NULL,$rand=NULL,$name=NULL) {
 		"choices0" => $answers,
 		"choices0-tooltip" => "What $key?",
 		"choices0-no-shuffle" => true,
+		"choices0-language" => "en",
 	];
 	if ($name !== null)
 		$ret["sentence"][0]["name"] = $name;
@@ -430,6 +431,7 @@ function which2($lang,$spart,$key,$given=NULL,$rand=NULL,$name=NULL) {
 		"choices0" => $answers,
 		"choices0-tooltip" => "What $key?",
 		"choices0-no-shuffle" => true,
+		"choices0-language" => "en",
 	];
 	if ($name !== null)
 		$ret["sentence"][0]["name"] = $name;
@@ -522,6 +524,7 @@ function which3($lang,$spart,$key,$N=NULL,$given=NULL,$rand=NULL,$name=NULL) {
 		],
 		"choices0" => $answers,
 		"choices0-tooltip" => "What $key?",
+		"choices0-language" => "en",
 	];
 	if ($name !== null)
 		$ret["sentence"][0]["name"] = $name;

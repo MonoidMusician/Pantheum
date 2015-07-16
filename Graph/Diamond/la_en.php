@@ -606,7 +606,7 @@ $('#export').on('click', function() {
 	console.log(json);
 	json = JSON.stringify(json, null, "\t");
 	$(this).attr('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(json));
-})
+});
 
 </script>
 

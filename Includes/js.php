@@ -17,9 +17,5 @@
         <script type="text/javascript" src="/JS/lib/jquery.autosize.input.min.js"></script>
         <!-- <script type="text/javascript" src="/JS/lib/date.js"></script> --> <!-- conflicts with d3 transitions :( -->
         <script type="text/javascript" src="/JS/lib/jstorage.min.js"></script>
-        <script type="text/javascript">
-            if ($(window).width() < 800) {
-                $("meta:[name='viewport']").remove();
-                $('head').append('<meta name="viewport" content="width=device-width,initial-scale=0.70,user-scalable=no">')
-            }
-        </script>
+        <script type="text/javascript" src="/JS/view.js"></script>
+

@@ -71,7 +71,7 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 			$reason = "custom function returned NULL";
 		return $ret;
 	}
-	elseif (array_key_exists("condition", $t) and !$t["condition"]($pick_db, $db))
+	elseif (array_key_exists("condition", $t) and !$t["condition"]($pick_db, $db, null))
 		return FALSE;
 	elseif (array_key_exists("value", $t))
 		return _process_value($t["value"],$pick_db,$db);
@@ -126,8 +126,8 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 		}
 	}
 
-	if ($path->hasvalue()) {
-		$ret = $path->get();
+	if ($path->hasvalue() || !(string)$path) {
+		$ret = $path->hasvalue() ? $path->get() : $word->name();
 		if (array_key_exists("store", $t))
 			$pick_db[$t["store"]] = $ret;
 		return format_word($ret,$word->lang());

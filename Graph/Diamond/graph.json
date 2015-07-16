@@ -20,14 +20,14 @@
 			"_children": [
 				{
 					"name": {
-						"la": "homo\u0304",
+						"la": "homō",
 						"en": [
 							"person",
 							"human"
 						]
 					},
 					"plural": {
-						"la": "homine\u0304s",
+						"la": "hominēs",
 						"en": [
 							"people",
 							"humans"
@@ -42,7 +42,7 @@
 						},
 						{
 							"name": {
-								"la": "fe\u0304mina",
+								"la": "fēmina",
 								"en": "woman"
 							}
 						},
@@ -52,7 +52,7 @@
 								"en": "doer"
 							},
 							"plural": {
-								"la": "actore\u0304s",
+								"la": "actorēs",
 								"en": "doers"
 							},
 							"_children": [
@@ -82,7 +82,7 @@
 								},
 								{
 									"name": {
-										"la": "le\u0304ctor",
+										"la": "lēctor",
 										"en": "reader"
 									}
 								},
@@ -100,32 +100,32 @@
 								"en": "family"
 							},
 							"plural": {
-								"la": "parte\u0304s familiae",
+								"la": "partēs familiae",
 								"en": "parts of the family"
 							},
 							"_children": [
 								{
 									"name": {
-										"la": "pro\u0304genitor",
+										"la": "prōgenitor",
 										"en": "ancestor"
 									},
 									"plural": {
-										"la": "pro\u0304genito\u0304re\u0304s",
+										"la": "prōgenitōrēs",
 										"en": "ancestors"
 									},
 									"_children": [
 										{
 											"name": {
 												"la": [
-													"pare\u0304ns",
+													"parēns",
 													"genitor"
 												],
 												"en": "parent"
 											},
 											"plural": {
 												"la": [
-													"parente\u0304s",
-													"genito\u0304re\u0304s"
+													"parentēs",
+													"genitōrēs"
 												],
 												"en": "parents"
 											},
@@ -138,8 +138,38 @@
 												},
 												{
 													"name": {
-														"la": "ma\u0304ter",
+														"la": "māter",
 														"en": "mother"
+													}
+												}
+											]
+										},
+										{
+											"name": {
+												"en": "grandparent"
+											},
+											"plural": {
+												"en": "grandparents"
+											},
+											"_children": [
+												{
+													"name": {
+														"la": "avus",
+														"en": "grandfather"
+													},
+													"plural": {
+														"la": "avī",
+														"en": "grandfathers"
+													}
+												},
+												{
+													"name": {
+														"la": "avia",
+														"en": "grandmother"
+													},
+													"plural": {
+														"la": "aviæ",
+														"en": "grandmothers"
 													}
 												}
 											]
@@ -148,14 +178,14 @@
 								},
 								{
 									"name": {
-										"la": "u\u0304n. ex pro\u0304geniei\u0304",
+										"la": "ūn. ex prōgenieī",
 										"en": [
 											"descendant",
 											"offspring"
 										]
 									},
 									"plural": {
-										"la": "pro\u0304genie\u0304s",
+										"la": "prōgeniēs",
 										"en": [
 											"descendants",
 											"offspring"
@@ -183,6 +213,38 @@
 													}
 												}
 											]
+										},
+										{
+											"name": {
+												"la": "nepōs",
+												"en": "grandchild"
+											},
+											"plural": {
+												"la": "nepōtēs",
+												"en": "grandchildren"
+											},
+											"_children": [
+												{
+													"name": {
+														"la": "nepōs",
+														"en": "grandson"
+													},
+													"plural": {
+														"la": "nepōtēs",
+														"en": "grandsons"
+													}
+												},
+												{
+													"name": {
+														"la": "neptis",
+														"en": "granddaughter"
+													},
+													"plural": {
+														"la": "neptēs",
+														"en": "granddaughters"
+													}
+												}
+											]
 										}
 									]
 								}
@@ -202,13 +264,13 @@
 					"_children": [
 						{
 							"name": {
-								"la": "leo\u0304",
+								"la": "leō",
 								"en": "lion"
 							}
 						},
 						{
 							"name": {
-								"la": "mu\u0304s",
+								"la": "mūs",
 								"en": "mouse"
 							}
 						},
@@ -222,8 +284,8 @@
 							},
 							"plural": {
 								"la": [
-									"equi\u0304",
-									"caballi\u0304"
+									"equī",
+									"caballī"
 								],
 								"en": "horses"
 							}
@@ -232,17 +294,17 @@
 				},
 				{
 					"name": {
-						"la": "re\u0304s",
+						"la": "rēs",
 						"en": "thing"
 					},
 					"plural": {
-						"la": "re\u0304s",
+						"la": "rēs",
 						"en": "things"
 					},
 					"_children": [
 						{
 							"name": {
-								"la": "amicita\u0304s",
+								"la": "amicitās",
 								"en": "friendship"
 							}
 						},
@@ -260,7 +322,7 @@
 						"en": "location"
 					},
 					"plural": {
-						"la": "loci\u0304",
+						"la": "locī",
 						"en": "locations"
 					},
 					"_children": [
@@ -276,25 +338,25 @@
 							"_children": [
 								{
 									"name": {
-										"la": "a\u0304trium",
+										"la": "ātrium",
 										"en": "reception hall"
 									}
 								},
 								{
 									"name": {
-										"la": "frigida\u0304rium",
+										"la": "frigidārium",
 										"en": "cold room (baths)"
 									}
 								},
 								{
 									"name": {
-										"la": "tepida\u0304rium",
+										"la": "tepidārium",
 										"en": "warm room (baths)"
 									}
 								},
 								{
 									"name": {
-										"la": "calda\u0304rium",
+										"la": "caldārium",
 										"en": "hot room (baths)"
 									}
 								}
@@ -349,25 +411,25 @@
 			"_children": [
 				{
 					"name": {
-						"la": "cogito\u0304",
+						"la": "cogitō",
 						"en": "think"
 					},
 					"_children": [
 						{
 							"name": {
-								"la": "scio\u0304",
+								"la": "sciō",
 								"en": "know"
 							},
 							"_children": [
 								{
 									"name": {
-										"la": "disco\u0304",
+										"la": "discō",
 										"en": "learn"
 									}
 								},
 								{
 									"name": {
-										"la": "cogno\u0304sco\u0304",
+										"la": "cognōscō",
 										"en": [
 											"get to know",
 											"learn"
@@ -376,13 +438,13 @@
 								},
 								{
 									"name": {
-										"la": "agno\u0304sco\u0304",
+										"la": "agnōscō",
 										"en": "recognize"
 									}
 								},
 								{
 									"name": {
-										"la": "intellego\u0304",
+										"la": "intellegō",
 										"en": "understand"
 									},
 									"plural": {}
@@ -392,8 +454,8 @@
 						{
 							"name": {
 								"la": [
-									"statuo\u0304",
-									"co\u0304nstituo\u0304"
+									"statuō",
+									"cōnstituō"
 								],
 								"en": "decide"
 							}
@@ -402,37 +464,37 @@
 				},
 				{
 					"name": {
-						"la": "eo\u0304",
+						"la": "eō",
 						"en": "go"
 					},
 					"_children": [
 						{
 							"name": {
-								"la": "ambulo\u0304",
+								"la": "ambulō",
 								"en": "walk"
 							}
 						},
 						{
 							"name": {
-								"la": "curro\u0304",
+								"la": "currō",
 								"en": "run"
 							}
 						},
 						{
 							"name": {
-								"la": "volo\u0304",
+								"la": "volō",
 								"en": "fly"
 							}
 						},
 						{
 							"name": {
-								"la": "exeo\u0304",
+								"la": "exeō",
 								"en": "exit"
 							},
 							"_children": [
 								{
 									"name": {
-										"la": "disce\u0304do\u0304",
+										"la": "discēdō",
 										"en": [
 											"leave",
 											"depart"
@@ -446,7 +508,7 @@
 				{
 					"name": {
 						"la": [
-							"di\u0304co\u0304",
+							"dīcō",
 							"inquam"
 						],
 						"en": [
@@ -458,8 +520,8 @@
 						{
 							"name": {
 								"la": [
-									"susurro\u0304",
-									"musso\u0304"
+									"susurrō",
+									"mussō"
 								],
 								"en": "whisper"
 							}
@@ -467,27 +529,27 @@
 						{
 							"name": {
 								"la": [
-									"rogo\u0304",
-									"interrogo\u0304"
+									"rogō",
+									"interrogō"
 								],
 								"en": "ask"
 							}
 						},
 						{
 							"name": {
-								"la": "voco\u0304",
+								"la": "vocō",
 								"en": "call"
 							}
 						},
 						{
 							"name": {
-								"la": "cla\u0304mo\u0304",
+								"la": "clāmō",
 								"en": "shout"
 							},
 							"_children": [
 								{
 									"name": {
-										"la": "excla\u0304mo\u0304",
+										"la": "exclāmō",
 										"en": "exclaim"
 									}
 								}

@@ -15,6 +15,7 @@ $quiz_types = array_merge($quiz_types,[
 						WHERE word_id IN (
 							SELECT word_id FROM definitions
 							WHERE def_lang = 'en'
+							AND def_type IS NULL
 						)
 						AND word_lang = 'la'
 						AND word_id NOT IN (
@@ -37,6 +38,7 @@ $quiz_types = array_merge($quiz_types,[
 				$query = $mysqli->prepare("
 					SELECT DISTINCT def_id FROM definitions
 					WHERE def_lang = 'en'
+					AND def_type IS NULL
 					AND word_id = (?)
 					ORDER BY rand()
 					LIMIT 1
@@ -48,6 +50,7 @@ $quiz_types = array_merge($quiz_types,[
 				$query = $mysqli->prepare("
 					SELECT DISTINCT def_id FROM definitions
 					WHERE def_lang = 'en'
+					AND def_type IS NULL
 					AND def_id != (?)
 					AND def_value != ''
 					AND word_id in (
@@ -87,6 +90,7 @@ $quiz_types = array_merge($quiz_types,[
 						WHERE word_id IN (
 							SELECT word_id FROM definitions
 							WHERE def_lang = 'en'
+							AND def_type IS NULL
 						)
 						AND word_lang = 'la'
 						AND word_id NOT IN (
@@ -115,6 +119,7 @@ $quiz_types = array_merge($quiz_types,[
 					SELECT DISTINCT def_id FROM definitions
 					WHERE def_lang = 'en'
 					AND word_id = (?)
+					AND def_type IS NULL
 					ORDER BY rand()
 					LIMIT 1
 				");
@@ -125,6 +130,7 @@ $quiz_types = array_merge($quiz_types,[
 				$query = $mysqli->prepare("
 					SELECT DISTINCT def_id FROM definitions
 					WHERE def_lang = 'en'
+					AND def_type IS NULL
 					AND def_id != (?)
 					AND def_value != ''
 					AND word_id in (

@@ -94,6 +94,10 @@ $sql_stmts['word_id->word_info_formatted']= "SELECT CONCAT(
     )
     FROM words WHERE word_id = (?)";
 
+
+$sql_stmts['lang_id->#words']= "SELECT COUNT(*)
+    FROM words WHERE word_lang = (?)";
+
 /************************
  * FORMS
  ************************/

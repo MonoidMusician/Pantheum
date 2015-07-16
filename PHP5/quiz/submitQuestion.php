@@ -11,23 +11,24 @@
 	$subscore = 0;
 	$out_of = 0;
 	if (!is_array(quiz_getvalue("current_answer"))) exit("session timed out");
+	$flags = ["unescaped"=>TRUE,"matchall"=>TRUE];
 	foreach (quiz_getvalue("current_answer") as $name=>$values) {
 		$answer = $_POST[$name];
-		$answer2 = unformat_word(strip_html($answer));
 
 		if (array_key_exists("correct", $values)
 		and is_array($values["correct"])
 		and array_key_exists("expr", $values)
 		and is_string($values["expr"])) {
-			$value = compare_syntax($values["expr"], $answer2, ["unescaped"=>TRUE,"matchall"=>TRUE]);
+			$value = compare_syntax($values["expr"], $answer, $flags);
 			if ($value === null) {
 				$score = FALSE;
 				$correct = $values["correct"];
 			} else {
 				$score = TRUE;
-				$also = $values["correct"];
+				$_also = $also = $values["correct"];
 				foreach ($_also as $key => $v2) {
-					if (unformat_word(strip_html($v2))==$_val) unset($also[$key]); // XXX: use compare_strings here
+					if (compare_strings($value,$v2,$flags))
+						unset($also[$key]);
 				}
 			}
 		} else {
@@ -42,13 +43,13 @@
 			$score = FALSE;
 			#error_log($answer2);
 			foreach ($values as $value) {
-				$_val = unformat_word(strip_html($value));
 				#error_log($_val);
-				if (!$score and $answer2 == $_val) {
+				if (!$score and compare_strings($answer,$value,$flags)) {
 					$score = TRUE;
 					$_also = $also;
 					foreach ($_also as $key => $v2) {
-						if (unformat_word(strip_html($v2))==$_val) unset($also[$key]); // XXX: use compare_strings here
+					if (compare_strings($value,$v2,$flags))
+						unset($also[$key]);
 					}
 					break;
 				}

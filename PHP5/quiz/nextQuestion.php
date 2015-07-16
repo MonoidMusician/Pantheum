@@ -141,6 +141,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			$shuffle = true;
 			$stop = FALSE;
 			$choices = $quiz["matching$n"];
+			$lang = safe_get("matching$n-language", $quiz);
 			if (is_callable($choices)) {
 				$choices = $choices($selections, defaultDB());
 			}
@@ -177,7 +178,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				return $try();
 			}
 			foreach ($answers as &$r)
-				$r = format_word($r);
+				$r = format_word($r,$lang);
 			$result_json[] = ["matching", "answer$n", $quiz["matching$n-tooltip"], $left, $answers];
 			$n += 1;
 
@@ -185,6 +186,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			$refresh(1);
 			$stop = FALSE;
 			$answers = $quiz["answer$n"];
+			$lang = safe_get("answer$n-language", $quiz);
 			if (is_callable($answers)) {
 				$answers = $answers($selections, defaultDB());
 			}
@@ -192,12 +194,12 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				$reason = "answers were not in an array";
 				return $try();
 			}
-			$process = function($answer) use(&$selections,&$stop,&$reason,&$correct) {
+			$process = function($answer) use(&$selections,&$stop,&$reason,&$correct,$lang) {
 				if ($stop) return;
 				$ret = do_pick($answer, NULL, $selections, $reason);
 				if ($ret === NULL)
 					$stop = TRUE;
-				else $ret = format_word($ret);
+				else $ret = format_word($ret,$lang);
 				return $ret;
 			};
 			if (array_key_exists("correct", $answers)
