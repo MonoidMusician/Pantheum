@@ -72,67 +72,21 @@ table.success {
 	background-color: #E8FBE8;
 }
 
+
 .ui-sortable-handle {
 	color: #000;
 }
-
 .ui-sortable-handle:hover,
 .ui-sortable-helper {
 	background-color: rgba(255, 255, 255, 0.7);
 	color: #1212B3;
 	transition: color 0.3s;
 }
+
 .ui-sortable-placeholder {
 	visibility: inherit !important;
+	background-color: #F3F3F3;
 }
 .ui-sortable-placeholder td {
 	border-color: #DCDCDC;
-}
-
-.wrapper {
-	display: table;
-}
-.container div span {
-	display: table-cell;
-	padding: 0px 10px;
-}
-.container div span:last-child:first-child {
-	width: 100%;
-	text-align: center;
-}
-.container div,
-div.gu-mirror {
-	margin: 10px;
-	padding: 10px;
-	background-color: rgba(0, 0, 0, 0.1);
-	transition: opacity 0.4s ease-in-out;
-	cursor: move;
-	cursor: grab;
-	cursor: -moz-grab;
-	cursor: -webkit-grab;
-}
-.gu-mirror {
-	position: fixed !important;
-	margin: 0 !important;
-	z-index: 9999 !important;
-}
-div.gu-mirror {
-	background-color: rgba(0, 0, 0, 0.2);
-}
-.gu-unselectable {
-	cursor: grabbing;
-	cursor: -moz-grabbing;
-	cursor: -webkit-grabbing;
-}
-div.gu-transit {
-	background-color: #4F4;
-}
-.container.ex-over {
-	background-color: rgba(255, 255, 255, 0.3);
-}
-.handle {
-	padding: 0 5px;
-	margin-right: 5px;
-	background-color: rgba(0, 0, 0, 0.4);
-	cursor: move;
 }

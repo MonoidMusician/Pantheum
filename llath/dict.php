@@ -15,8 +15,8 @@ function endsWith($haystack, $needle) {
 
 if (array_key_exists("data",$_POST) and $_POST["data"]) {
     $data = trim($_POST["data"]);
-    if (startsWith($data, "<tbody>") and endsWith($data, "</tbody>")) {
-        $safe = strip_tags($data, "<div><tbody><td><tr><span><input></input></span></tr></td></tbody></div>");
+    if (startsWith($data, "<thead>") and endsWith($data, "</tbody>")) {
+        $safe = strip_tags($data, "<div><thead></thead><tbody><tr><td><span><input></input></span></td></tr></tbody></div>");
         if ($data == $safe) {
             file_put_contents("dict.html", $safe);
         } else error_log("unsafe html");
@@ -33,7 +33,6 @@ if (window.location.href.endsWith("dict.html"))
 <script src="jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="main.css">
 <link rel="stylesheet" type="text/css" href="jquery-ui.css">
-<script src="dragula.js"></script>
 <script src="dict.js"></script>
 </head>
 <body>

@@ -138,21 +138,59 @@ $/**/(function() {
 		return $helper;
 	};
 
-	$("#dict tbody").sortable({
-		helper: fixHelperModified,
-		stop: function(event,ui) {
-			
-		},
-		items: "tr:not(.new):not(.pos)",
-	}).disableSelection();/**/
-	$("#dict table").sortable({
-		handle: "tr.pos",
-		forcePlaceholderSize: true,
-		placeholder: 'group_move_placeholder'
-	}).disableSelection();
+	(function() {
+		var stop = false;
+		var $w = $(window);
+		mouseheight = null;
+		$(document).mousemove(function(event) {
+			mouseheight = (event.pageY - $w.scrollTop());
+		});
+
+		function scrolling(){
+			if (stop) {
+				stop = false; return;
+			}
+			var speed = 18;
+			var q = screen.height / 4;
+			if (mouseheight < q || mouseheight > screen.height*3/4) {
+				var norm = mouseheight < q ? 1-mouseheight/q : -1-(mouseheight - screen.height)/q;
+				console.log(norm);
+				$w.scrollTop($w.scrollTop()-speed*norm);
+			}
+			setTimeout(scrolling,10);
+		}
+
+		$("#dict").sortable({
+			axis: "y",
+			handle: "tr.pos",
+			forcePlaceholderSize: true,
+			scroll: false,
+			start: function( event, ui ) {
+				if (!ui.helper) return;
+				scrolling();
+			},
+			deactivate: function(event, ui) {
+				stop = true;
+			}
+		}).disableSelection();
+
+		$("#dict tbody").sortable({
+			helper: fixHelperModified,
+			connectWith: '#dict tbody',
+			items: "tr:not(.new):not(.pos)",
+			scroll: false,
+			start: function( event, ui ) {
+				if (!ui.helper) return;
+				scrolling();
+			},
+			deactivate: function(event, ui) {
+				stop = true;
+			}
+		}).disableSelection();
+	})();
 
 	//Delete button in table rows
-	$('table').on('click','.btn-delete',function() {
+	$('#dict').on('click','.btn-delete',function() {
 		tableID = '#' + $(this).closest('table').attr('id');
 		r = confirm('Delete this item?');
 		if(r) {
