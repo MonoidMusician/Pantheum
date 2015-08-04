@@ -10,7 +10,6 @@
 
 global $mysqli;
 $actual_link = "http://52.3.75.179/PHP5/quiz/smallquiz.php$_SERVER[REQUEST_URI]";
-
 $la = safe_get("lang",$_GET);
 if (!$la) $la = "la";
 
@@ -26,7 +25,8 @@ $s->stmt .= "
 	AND word_id NOT IN (
 		SELECT word_id FROM attributes
 		WHERE attr_tag = 'template' OR attr_tag = 'hidden'
-	)";
+	)
+	ORDER BY RAND() LIMIT 1";
 $s->args = [];
 $word = $s->rand();
 $query = $mysqli->prepare("
@@ -55,12 +55,13 @@ $query = $mysqli->prepare("
 		SELECT word_id FROM attributes
 		WHERE attr_tag = 'template' OR attr_tag = 'hidden'
 	)
+	ORDER BY RAND() LIMIT 4
 ");
 $res1 = NULL;
 sql_getmany($query, $res1, ["is", $word->id(), definition($db, $res0[0])->value()]);
 $query->close();
 if (!$res1) exit('An error occurred');
-$res1 = choose_n_unique($res1, 4);
+#$res1 = choose_n_unique($res1, 4);
 $res = array_merge($res0, $res1);
 
 $options = [];
@@ -110,13 +111,14 @@ var pantheumsmallquiz = (function() {
 		.on('update.countdown', function(event) {
 			$(this).html(event.strftime('Next word in <span>%S</span> second%!S...'));
 		}).on('finish.countdown', function(event) {
+			$(this).html('Loading next word...');
+			countdown_finished = true;
 			if (html_data)
 				$('#pantheumsmallquiz').replaceWith(html_data);
-			else $(this).html('Loading next word...');
 		});
 	});
 	$('#pantheumsmallquiz-time a').on('click', function() {
-		$('#pantheumsmallquiz-time span').trigger('finish.countdown');
+		$('#pantheumsmallquiz-time span').trigger('finish').countdown('pause');
 	});
 	return pantheumsmallquiz ? pantheumsmallquiz : {
 		handler: undefined
