@@ -11,7 +11,7 @@ $(function() {
 	function title(text, deco) {
 		if (deco === null || deco === undefined) deco  = "";
 		if (typeof deco === "string") deco = [deco, deco];
-		text = titlecase(text).trimLeft(deco[0]).trimRight(deco[1]);
+		text = titlecase(text).replace(deco[0],"").replace(deco[1],"");
 		var first = text.codePointAt(0),
 			last = text.codePointAt(text.length - 1);
 		var adj = 57759; // distance from a to decorated a
@@ -38,6 +38,12 @@ $(function() {
 		$('#dict tr.new input').on('keyup.addnew', function(e) {
 			if (e.which === 13) return addnew.apply(this);
 		});
+		$('#dict tr.new td:first-child input').width(0);
+		var width = $('#dict thead td:first-child').width();
+		$('#dict tr.new td:first-child input').each(function() {
+			var $this = $(this);
+			$this.width(width-16);
+		});
 	}
 
 	function addpos() {
@@ -59,7 +65,7 @@ $(function() {
 			}, 1000);
 			return;
 		}
-		$(this).parents('tbody').before('<tbody><tr class="pos"><td colspan="2" class="title">'+pos+'</td></tr>'+$('#dict tr.new:first')[0].outerHTML+'</tbody>');
+		$(this).parents('tbody').before('<tbody><tr class="pos"><td colspan="4" class="title">'+pos+'</td></tr>'+$('#dict tr.new:first')[0].outerHTML+'</tbody>');
 		update();
 	}
 	function addnew() {
@@ -73,7 +79,7 @@ $(function() {
 		$('#dict tr').each(function() {
 			if (row) return;
 			var $this = $(this);
-			if ($this.find('td:first').text() == word)
+			if ($this.find('td.word').text() == word)
 				row = $this;
 		});
 		if (row) {
@@ -83,7 +89,8 @@ $(function() {
 			}, 1000);
 			return;
 		}
-		tr.before('<tr><td>'+word+'</td><td>'+def+'</td></tr>');
+		tr.before($(this).parents('table').find('tbody:not(:first) tr:not(.pos):not(.new):first').clone());
+		tr.prev().find('.word').text(word).parent().find('.def').text(def);
 	}
 	$('#dict tr#pos input').on('keyup', function(e) {
 		if (e.which === 13) return addpos.apply(this);
@@ -92,6 +99,7 @@ $(function() {
 	update();
 
 	$('#save').on('click', function() {
+		$('#dict .word input, #dict .def input').trigger('change');
 		$('input').val('');
 		var data = $('#dict').html();
 		$.post(window.location.href, {"data":data})
@@ -105,41 +113,26 @@ $(function() {
 			alert("Save failed!");
 		});
 	});
-});
-/*$/**/(function() {
-	var drake = dragula({
-		isContainer: function (el) {
-			return el.classList.contains('container');
-			return el.nodeName === "TBODY" || el.nodeName === "TABLE";
-		},
-/*
-		moves: function (el, container, handle) {
-			console.log(handle, el, container);
-			return container.nodeName === "TBODY" ? handle.nodeName === "TD" : handle.className === 'title';
-		},
-*/
-		//removeOnSpill: true,
-		delay: 200,
-		direction: 'horizontal',
-	}).on('over', function (el, container) {
-		container.className += ' ex-over';
-	}).on('out', function (el, container) {
-		container.className = container.className.replace('ex-over', '').trim();
-	});
-});
-$/**/(function() {
+
 	//Helper function to keep table row from collapsing when being sorted
 	var fixHelperModified = function(e, tr) {
-		var $originals = tr.children();
+		var $originals = tr.width(tr.width()).children();
 		var $helper = tr.clone();
-		$helper.children().each(function(index) {
-			$(this).width($originals.eq(index).width())
-		});
-		return $helper;
+		var recurse = function($helper, $originals) {
+			$helper.children('table, thead, tbody, tr, td').each(function(index) {
+				var $o = $originals.eq(index);
+				$(this).width($o.width());
+				recurse($(this), $o.children());
+			});
+			return $helper;
+		};
+		return recurse($helper, $originals);
 	};
 
+	var sortables;
 	(function() {
 		var stop = false;
+		var scroller = null;
 		var $w = $(window);
 		mouseheight = null;
 		$(document).mousemove(function(event) {
@@ -147,54 +140,123 @@ $/**/(function() {
 		});
 
 		function scrolling(){
-			if (stop) {
-				stop = false; return;
-			}
-			var speed = 18;
+			if (stop) { stop = false; return; }
+			var speed = 24;
 			var q = screen.height / 4;
 			if (mouseheight < q || mouseheight > screen.height*3/4) {
 				var norm = mouseheight < q ? 1-mouseheight/q : -1-(mouseheight - screen.height)/q;
-				console.log(norm);
 				$w.scrollTop($w.scrollTop()-speed*norm);
+				scroller.sortable('refreshPositions');
 			}
 			setTimeout(scrolling,10);
 		}
 
 		$("#dict").sortable({
+			helper: fixHelperModified,
 			axis: "y",
+			delay: 150,
 			handle: "tr.pos",
 			forcePlaceholderSize: true,
 			scroll: false,
 			start: function( event, ui ) {
 				if (!ui.helper) return;
+				scroller = $(this);
 				scrolling();
 			},
 			deactivate: function(event, ui) {
 				stop = true;
 			}
-		}).disableSelection();
+		});
 
-		$("#dict tbody").sortable({
+		sortables = $("#dict tbody:not(:first):not(:last)").sortable({
 			helper: fixHelperModified,
+			axis: "y",
+			delay: 150,
+			handle: ".edit",
 			connectWith: '#dict tbody',
 			items: "tr:not(.new):not(.pos)",
 			scroll: false,
 			start: function( event, ui ) {
 				if (!ui.helper) return;
+				scroller = $(this);
 				scrolling();
 			},
 			deactivate: function(event, ui) {
 				stop = true;
 			}
-		}).disableSelection();
+		})/*.find(':not(:input)').disableSelection();/**/
 	})();
 
 	//Delete button in table rows
-	$('#dict').on('click','.btn-delete',function() {
+	$('#dict').on('click','.del',function() {
 		tableID = '#' + $(this).closest('table').attr('id');
-		r = confirm('Delete this item?');
-		if(r) {
+		r = confirm('Delete this word?');
+		if(r)
 			$(this).closest('tr').remove();
-		}
 	});
+
+	function getSelectionRel(node, val) {
+		var s = window.getSelection();
+		if (!val) val = node.textContent;
+		//console.log(s);
+		if (s.anchorNode === s.focusNode &&
+		    s.anchorNode.textContent === node.textContent)
+			return [s.anchorOffset, s.focusOffset, true];
+		return [val.length, val.length, false];
+	}
+
+	$('#dict').on('click','.word, .def',function() {
+		var $this = $(this), val = $this.text(), width = $this.width();
+		if ($this.find('input').length) return;
+		var s = getSelectionRel(this, val);
+		//if (s[2]) return;
+		$this.html('<input style="width: '+width+'px" value="'+val+'" placeholder="'+val+'">');
+		$this.children('input').on('change', function() {
+			$this.text($(this).val() || $(this).attr('placeholder'));
+			sortables.sortable('enable');
+		}).on('keyup', function(e) {
+			if (e.which === 13) $(this).trigger('change');
+		}).on('blur', function(e) {
+			$(this).trigger('change');
+		}).trigger('focus')[0].setSelectionRange(s[0], s[1]);
+		sortables.sortable('disable');
+	});
+
+	// Search
+	var ins = ["",""];
+	$('.search input').on('keyup', function() {
+		var $this = $(this), val = $this.val();
+		if ($this.parent().is(':first-child'))
+			ins[0] = val;
+		else ins[1] = val;
+		searching();
+	});
+	function searching() {
+		var region = $('tbody:not(:first):not(:last)').show();
+		if (!ins[0] && !ins[1]) {
+			region.find('tr').show();
+			return;
+		}
+		region.find('.new').hide();
+		region.find('tr:not(.pos)').hide();
+		var l = region.find('tr:not(.pos):not(.new)');
+		console.log(ins);
+		if (ins[0])
+			l = l.find('td.word:contains("'+ins[0]+'")').parent();
+		if (ins[1])
+			l = l.find('td.def:contains("'+ins[1]+'")').parent();
+		l.show();
+		region.each(function() {
+			var $tbody = $(this);
+			console.log($tbody.find('tr:not(.pos):visible').length);
+			if (!$tbody.find('tr:not(.pos):visible').length)
+				$tbody.hide();
+		});
+	}
+
 });
+
+
+
+
+

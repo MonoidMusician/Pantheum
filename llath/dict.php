@@ -4,6 +4,8 @@
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
 
+global $suid;
+
 function startsWith($haystack, $needle) {
     // search backwards starting from haystack length characters from the end
     return $needle === "" || strrpos($haystack, $needle, -strlen($haystack)) !== FALSE;
@@ -36,12 +38,18 @@ if (window.location.href.endsWith("dict.html"))
 <script src="dict.js"></script>
 </head>
 <body>
-<h1>Ļaþ: ictionar</h2>
+<content>
+<h1>Ļaþ: ictionar</h1>
 
 <table id="dict">
 <?php
 echo file_get_contents("dict.html");
 ?>
 </table>
-<button id="save">Save</button>
+<?php
+if ($suid == 14) {
+    ?><button id="save">Save</button><?php
+}
+?>
+</content>
 </body></html>

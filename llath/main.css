@@ -3,21 +3,50 @@
 	src: url("Promocyja.otf") format("opentype");
 }
 
+/* Center page */
+content, content > * {
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+content > button {
+	display: block;
+}
+h1 {
+	text-align: center;
+}
 
-* {
+/* Fonts, sizes, colors */
+.title {
 	font-family: Promocyja;
-	font-size: 20pt;
+}
+button, table, table *, td + td + td, .new td + td, .search td + td, thead td + td {
+	font-family: Gentium Plus, Linux Libertine, serif;
+	font-size: 14pt;
+}
+*, td + td, .new td, .search td, #pos td {
+	font-family: Promocyja;
+	font-size: 22pt;
+}
+.def {
+	text-align: left;
+}
+input {
+	font: inherit;
 }
 h1, h2 {
 	font-weight: normal;
 }
 h1 {
 	font-size: 48pt;
-	margin: 5px;
+	margin-top: 0px;
+	margin-bottom: 5px;
 	color: #195A08;
 }
 h2 {
 	font-size: 30pt;
+}
+td:first-child:last-child.title {
+	color: #823EBD;
 }
 tr.pos td {
 	font-size: 30pt;
@@ -25,16 +54,21 @@ tr.pos td {
 thead td {
 	font-size: 26pt;
 }
-button, td + td, td + td * {
-	font-family: Gentium Plus, Linux Libertine, serif;
-	font-size: 14pt;
-	text-align: left;
-}
 thead td + td {
 	font-size: 18.2pt;
 }
+td.edit {
+	font-size: 26pt;
+	width: 1.4em;
+}
+td.del {
+	cursor: pointer;
+	font-size: 30pt;
+	color: #C91717;
+	width: 1.2em;
+}
 
-
+/* Table border */
 table, td {
 	border-color: #005;
 	border-style: solid;
@@ -45,7 +79,6 @@ table, td {
 
 tbody {
 	border-width: 0px;
-	display: table-row-group;
 }
 
 td {
@@ -53,6 +86,15 @@ td {
 	padding: 4px;
 	border-width: 1px;
 	text-align: center;
+}
+td.word input, tr.new td:first-child input {
+	text-align: center !important;
+}
+td.def {
+	padding-left: 8px;
+}
+td.def input {
+	margin-left: -4px;
 }
 
 tr.pos, tr.pos td {
@@ -72,15 +114,31 @@ table.success {
 	background-color: #E8FBE8;
 }
 
+td input {
+	width: 100%;
+}
 
+/* JQuery UI Sortable */
 .ui-sortable-handle {
 	color: #000;
+	cursor: grab;
+}
+.ui-sortable-disabled .ui-sortable-handle {
+	cursor: auto;
+	color: #000 !important;
 }
 .ui-sortable-handle:hover,
 .ui-sortable-helper {
 	background-color: rgba(255, 255, 255, 0.7);
 	color: #1212B3;
 	transition: color 0.3s;
+}
+.ui-sortable-helper,
+.ui-sortable-helper .ui-sortable-handle {
+	cursor: grabbing;
+}
+.ui-sortable-helper {
+	margin-left: -1px;
 }
 
 .ui-sortable-placeholder {
