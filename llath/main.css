@@ -122,6 +122,18 @@ table.success {
 
 td input {
 	width: 100%;
+	outline: none;
+	border: none;
+}
+
+/* remember to define focus styles! */
+td input:focus, td:focus {
+	background-color: #AFA;
+	outline: none;
+	border: none;
+}
+td[contenteditable].empty {
+	color: gray;
 }
 
 

@@ -197,27 +197,28 @@ $(function() {
 		return [val.length, val.length, false];
 	}
 
-	$('#dict').on('click','.word, .def',function() {
-		var $this = $(this), val = $this.text(), width = $this.width();
-		if ($this.is('.word')) width -= 30;
-		else width -= 20;
-		if ($this.find('input').length) return;
-		var s = getSelectionRel(this, val);
-		//if (s[2]) return;
-		$this.html('<input style="width: '+width+'px" value="'+val+'" placeholder="'+val+'">');
-		$this.children('input').on('change', function() {
-			$this.text($(this).val() || $(this).attr('placeholder'));
-			sortables.sortable('enable');
-		}).on('keyup', function(e) {
-			var w = e.which;
-			if (w === 27) {
-				$(this).val(''); w = 13;
+	// Save
+	$('#save').on('click', function() {
+		$('#dict .word input, #dict .def input').trigger('change');
+		$('input').val('');
+		var data = $('#dict').html();
+		$.post(window.location.href, {"data":data})
+		.done(function(d) {
+			var $d = $(d);
+			var status = $d.filter('#status');
+			console.log($d, status);
+			if (status.text() !== "success") {
+				$('#status').show().text(status.text()).attr('class', status.attr('class'));
+			} else {
+				$('#dict').addClass('success');
+				setTimeout(function() {
+					$('#dict').removeClass('success');
+				}, 1000);
 			}
-			if (w === 13) return $(this).trigger('change');
-		}).on('blur', function(e) {
-			$(this).trigger('change');
-		}).trigger('focus')[0].setSelectionRange(s[0], s[1]);
-		sortables.sortable('disable');
+		})
+		.fail(function() {
+			alert("Save failed!");
+		});
 	});
 
 	// Search
@@ -225,6 +226,14 @@ $(function() {
 	$('.search input').on('keyup', function() {
 		var $this = $(this), val = $this.val();
 		if ($this.parent().is(':first-child'))
+			ins[0] = val;
+		else ins[1] = val;
+		searching();
+	});
+	$('.search td').on('keyup', function() {
+		var $this = $(this),
+		    val = $this.is('.empty') ? "" : $this.text();
+		if ($this.is(':first-child'))
 			ins[0] = val;
 		else ins[1] = val;
 		searching();
@@ -261,33 +270,56 @@ $(function() {
 		});
 	}
 
-	// Save
-	$('#save').on('click', function() {
-		$('#dict .word input, #dict .def input').trigger('change');
-		$('input').val('');
-		var data = $('#dict').html();
-		$.post(window.location.href, {"data":data})
-		.done(function(d) {
-			var $d = $(d);
-			var status = $d.filter('#status');
-			console.log($d, status);
-			if (status.text() !== "success") {
-				$('#status').show().text(status.text()).attr('class', status.attr('class'));
-			} else {
-				$('#dict').addClass('success');
-				setTimeout(function() {
-					$('#dict').removeClass('success');
-				}, 1000);
+/*
+	$('#dict').on('click','.word, .def',function() {
+		var $this = $(this), val = $this.text(), width = $this.width();
+		if ($this.is('.word')) width -= 30;
+		else width -= 20;
+		if ($this.find('input').length) return;
+		var s = getSelectionRel(this, val);
+		//if (s[2]) return;
+		$this.html('<input style="width: '+width+'px" value="'+val+'" placeholder="'+val+'">');
+		$this.children('input').on('change', function() {
+			$this.text($(this).val() || $(this).attr('placeholder'));
+			sortables.sortable('enable');
+		}).on('keyup', function(e) {
+			var w = e.which;
+			if (w === 27) {
+				$(this).val(''); w = 13;
 			}
-		})
-		.fail(function() {
-			alert("Save failed!");
-		});
+			if (w === 13) return $(this).trigger('change');
+		}).on('blur', function(e) {
+			$(this).trigger('change');
+		}).trigger('focus')[0].setSelectionRange(s[0], s[1]);
+		sortables.sortable('disable');
 	});
-
+/*/
+	var plch = 'data-placeholder',
+	    prev = 'data-prev-value';
+	$('#dict').on('focus','td[contenteditable=true]',function() {
+		var $this = $(this);
+		if ($this.is('.empty')) {
+			$this.attr(plch, $this.html());
+			$this.html('');
+			$this.removeClass('empty');
+		} else $this.attr(prev, $this.html());
+	}).on('blur','td[contenteditable=true]',function() {
+		var $this = $(this);
+		if (!$this.text() && $this.attr(plch)) {
+			$this.html($this.attr(plch));
+			$this.removeAttr(plch);
+			$this.addClass('empty');
+		}
+		$this.removeAttr(prev);
+	}).on('keyup','td[contenteditable=true]',function(e) {
+		var $this = $(this), w = e.which;
+		if (w === 27) {
+			if ($this.attr(prev))
+				$this.html($this.attr(prev))
+			w = 13; // fall through
+		}
+		if (w === 13) $this.blur();
+	});
+/**/
 });
-
-
-
-
 
