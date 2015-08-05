@@ -58,12 +58,12 @@ thead td + td {
 	font-size: 18.2pt;
 }
 td.edit {
-	font-size: 26pt;
+	font-size: 30pt;
 	width: 1.4em;
 }
 td.del {
 	cursor: pointer;
-	font-size: 30pt;
+	font-size: 34.6pt;
 	color: #C91717;
 	width: 1.2em;
 }
@@ -76,6 +76,9 @@ table, td {
 	border-spacing: 0;
 	border-collapse: collapse;
 }
+#dict {
+	max-width: 800px;
+}
 
 tbody {
 	border-width: 0px;
@@ -87,14 +90,17 @@ td {
 	border-width: 1px;
 	text-align: center;
 }
-td.word input, tr.new td:first-child input {
+
+td.word input,
+.search td:first-child input,
+tr.new td:first-child input {
 	text-align: center !important;
 }
 td.def {
 	padding-left: 8px;
 }
 td.def input {
-	margin-left: -4px;
+	margin-left: -0.1em;
 }
 
 tr.pos, tr.pos td {
@@ -116,6 +122,29 @@ table.success {
 
 td input {
 	width: 100%;
+}
+
+
+div#status {
+	position: fixed;
+	width: 30%;
+	top: calc(4% + 2.25em);
+	left: 35%;
+	/*background-color: rgba(204, 136, 51, 0.7); /-* #CC8833 *-/*/
+	background-color: rgba(204, 108, 0, 0.7); /* #D69347 */
+	border-radius: 5px;
+	text-align: center;
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	color: #EFEFEF;
+}
+div#status.error {
+	background-color: #CC3333;
+}
+div#status.success {
+	background-color: #78A83D;
 }
 
 /* JQuery UI Sortable */

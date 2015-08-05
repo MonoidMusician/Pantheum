@@ -36,13 +36,16 @@ $(function() {
 		//
 		$('#dict tr.new input').off('keyup.addnew');
 		$('#dict tr.new input').on('keyup.addnew', function(e) {
-			if (e.which === 13) return addnew.apply(this);
+			var w = e.which;
+			if (w === 27) $(this).blur();
+			if (w === 13) return addnew.apply(this);
 		});
 		$('#dict tr.new td:first-child input').width(0);
 		var width = $('#dict thead td:first-child').width();
 		$('#dict tr.new td:first-child input').each(function() {
 			var $this = $(this);
 			$this.width(width-16);
+			$this.css('width','');
 		});
 	}
 
@@ -74,8 +77,6 @@ $(function() {
 			def  = tr.find('input:last').val().trim(),
 			row;
 		if (!word || !def) return;
-		tr.find('input').val('');
-		tr.find('input:first').focus();
 		$('#dict tr').each(function() {
 			if (row) return;
 			var $this = $(this);
@@ -83,36 +84,27 @@ $(function() {
 				row = $this;
 		});
 		if (row) {
+			$('html, body').animate({
+				scrollTop: row.offset().top - /* ~center it on screen: */screen.height/3
+			}, 200);
 			row.addClass('error');
 			setTimeout(function() {
 				row.removeClass('error');
 			}, 1000);
 			return;
 		}
+		tr.find('input').val('');
+		tr.find('input:first').focus();
 		tr.before($(this).parents('table').find('tbody:not(:first) tr:not(.pos):not(.new):first').clone());
 		tr.prev().find('.word').text(word).parent().find('.def').text(def);
 	}
 	$('#dict tr#pos input').on('keyup', function(e) {
-		if (e.which === 13) return addpos.apply(this);
+		var w = e.which;
+		if (w === 27) $(this).blur();
+		if (w === 13) return addpos.apply(this);
 	});
 
 	update();
-
-	$('#save').on('click', function() {
-		$('#dict .word input, #dict .def input').trigger('change');
-		$('input').val('');
-		var data = $('#dict').html();
-		$.post(window.location.href, {"data":data})
-		.done(function(d) {
-			$('#dict').addClass('success');
-			setTimeout(function() {
-				$('#dict').removeClass('success');
-			}, 1000);
-		})
-		.fail(function() {
-			alert("Save failed!");
-		});
-	});
 
 	//Helper function to keep table row from collapsing when being sorted
 	var fixHelperModified = function(e, tr) {
@@ -207,6 +199,8 @@ $(function() {
 
 	$('#dict').on('click','.word, .def',function() {
 		var $this = $(this), val = $this.text(), width = $this.width();
+		if ($this.is('.word')) width -= 30;
+		else width -= 20;
 		if ($this.find('input').length) return;
 		var s = getSelectionRel(this, val);
 		//if (s[2]) return;
@@ -215,7 +209,11 @@ $(function() {
 			$this.text($(this).val() || $(this).attr('placeholder'));
 			sortables.sortable('enable');
 		}).on('keyup', function(e) {
-			if (e.which === 13) $(this).trigger('change');
+			var w = e.which;
+			if (w === 27) {
+				$(this).val(''); w = 13;
+			}
+			if (w === 13) return $(this).trigger('change');
 		}).on('blur', function(e) {
 			$(this).trigger('change');
 		}).trigger('focus')[0].setSelectionRange(s[0], s[1]);
@@ -240,19 +238,52 @@ $(function() {
 		region.find('.new').hide();
 		region.find('tr:not(.pos)').hide();
 		var l = region.find('tr:not(.pos):not(.new)');
-		console.log(ins);
+		function trim(v) {
+			var ret = [];
+			$.each(v, function(_,e) {
+				if (e) ret.push(e);
+			});
+			return ret;
+		}
+		var srch = [
+			trim(ins[0].split('|')).join('"), :contains("'),
+			trim(ins[1].split('|')).join('"), :contains("')
+		];
 		if (ins[0])
-			l = l.find('td.word:contains("'+ins[0]+'")').parent();
+			l = l.find('td.word').filter(':contains("'+srch[0]+'")').parent();
 		if (ins[1])
-			l = l.find('td.def:contains("'+ins[1]+'")').parent();
+			l = l.find('td.def' ).filter(':contains("'+srch[1]+'")').parent();
 		l.show();
 		region.each(function() {
 			var $tbody = $(this);
-			console.log($tbody.find('tr:not(.pos):visible').length);
 			if (!$tbody.find('tr:not(.pos):visible').length)
 				$tbody.hide();
 		});
 	}
+
+	// Save
+	$('#save').on('click', function() {
+		$('#dict .word input, #dict .def input').trigger('change');
+		$('input').val('');
+		var data = $('#dict').html();
+		$.post(window.location.href, {"data":data})
+		.done(function(d) {
+			var $d = $(d);
+			var status = $d.filter('#status');
+			console.log($d, status);
+			if (status.text() !== "success") {
+				$('#status').show().text(status.text()).attr('class', status.attr('class'));
+			} else {
+				$('#dict').addClass('success');
+				setTimeout(function() {
+					$('#dict').removeClass('success');
+				}, 1000);
+			}
+		})
+		.fail(function() {
+			alert("Save failed!");
+		});
+	});
 
 });
 
