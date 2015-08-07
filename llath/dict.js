@@ -1,3 +1,34 @@
+function loginSubmit(username, password, error) {
+	console.log(error);
+	if ((username != '') && (password != '')) {
+		password = loginHash(username, password);
+		$.post("/PHP5/login.php", { u: username, p: password }, function(data) {
+			if (data == 'success') {
+				$('#login').hide();
+			} else {
+				if (data == '1') {
+					$(error).html('Already logged in.');
+				} else if (data == '2') {
+					$(error).html('Error logging in.');
+				} else if (data == '3') {
+					$(error).html('User is banned.');
+				} else if (data == '4') {
+					$(error).html('Missing values.');
+				} else {
+					$(error).html('Error logging in (' + data + ').');
+				}
+			}
+		});
+	} else {
+		if (username == '') {
+			$(error).html('Missing username.');
+		} else {
+			$(error).html('Missing password.');
+		}
+	}
+}
+
+
 $(function() {
 	function processtext(fn) {
 		return function() {
@@ -34,26 +65,22 @@ $(function() {
 		$('.titlecase').each(processtext(titlecase));
 
 		//
-		$('#dict tr.new input').off('keyup.addnew');
-		$('#dict tr.new input').on('keyup.addnew', function(e) {
+		$('#dict tr.new td').off('keyup.addnew');
+		$('#dict tr.new td').on('keyup.addnew', function(e) {
 			var w = e.which;
 			if (w === 27) $(this).blur();
-			if (w === 13) return addnew.apply(this);
-		});
-		$('#dict tr.new td:first-child input').width(0);
-		var width = $('#dict thead td:first-child').width();
-		$('#dict tr.new td:first-child input').each(function() {
-			var $this = $(this);
-			$this.width(width-16);
-			$this.css('width','');
+			if (w === 13 && !e.shiftKey) {
+				e.preventDefault();
+				return addnew.apply(this);
+			}
 		});
 	}
 
 	function addpos() {
-		var pos = $('#dict tr#pos input').val().trim(),
+		var pos = $('#dict tr#pos td').text().trim(),
 			row;
 		if (!pos) return;
-		$('#dict tr#pos input').val('');
+		$('#dict tr#pos td').html('');
 		pos = title(pos);
 		$('#dict tr').each(function() {
 			if (row) return;
@@ -73,9 +100,11 @@ $(function() {
 	}
 	function addnew() {
 		var tr = $(this).parents('tr'),
-			word = tr.find('input:first').val().trim(),
-			def  = tr.find('input:last').val().trim(),
+			word = tr.find('td:first'),
+			def  = tr.find('td:last' ),
 			row;
+		word = word.is('.empty') ? '' : word.text().trim();
+		def  = def .is('.empty') ? '' : def .text().trim();
 		if (!word || !def) return;
 		$('#dict tr').each(function() {
 			if (row) return;
@@ -93,22 +122,25 @@ $(function() {
 			}, 1000);
 			return;
 		}
-		tr.find('input').val('');
-		tr.find('input:first').focus();
+		tr.find('td').text('');
+		tr.find('td:first').focus();
 		tr.before($(this).parents('table').find('tbody:not(:first) tr:not(.pos):not(.new):first').clone());
 		tr.prev().find('.word').text(word).parent().find('.def').text(def);
 	}
-	$('#dict tr#pos input').on('keyup', function(e) {
+	$('#dict tr#pos td').on('keyup', function(e) {
 		var w = e.which;
 		if (w === 27) $(this).blur();
-		if (w === 13) return addpos.apply(this);
+		if (w === 13 && !e.shiftKey) {
+			e.preventDefault();
+			return addpos.apply(this);
+		}
 	});
 
 	update();
 
-	//Helper function to keep table row from collapsing when being sorted
+	// Helper function to keep table row from collapsing when being sorted
 	var fixHelperModified = function(e, tr) {
-		var $originals = tr.width(tr.width()).children();
+		var $originals = tr.children();
 		var $helper = tr.clone();
 		var recurse = function($helper, $originals) {
 			$helper.children('table, thead, tbody, tr, td').each(function(index) {
@@ -198,18 +230,21 @@ $(function() {
 	}
 
 	// Save
-	$('#save').on('click', function() {
-		$('#dict .word input, #dict .def input').trigger('change');
-		$('input').val('');
+	$(document).on('click', '#save', function() {
+		$('[data-placeholder]').html('&nbsp;<br>').trigger('blur');
+		ins = ["",""];
+		searching();
 		var data = $('#dict').html();
 		$.post(window.location.href, {"data":data})
 		.done(function(d) {
 			var $d = $(d);
 			var status = $d.filter('#status');
-			console.log($d, status);
 			if (status.text() !== "success") {
 				$('#status').show().text(status.text()).attr('class', status.attr('class'));
+				if (status.text() === "not logged in")
+					$('#login').show();
 			} else {
+				$('#status').hide().text('success').attr('class', 'success');
 				$('#dict').addClass('success');
 				setTimeout(function() {
 					$('#dict').removeClass('success');
@@ -220,37 +255,44 @@ $(function() {
 			alert("Save failed!");
 		});
 	});
+	$(document).on('click', '#showlogin', function() {
+		$('#login').show();
+		$('#showlogin').attr('id', 'save').text('Save');
+	});
+	// from http://stackoverflow.com/a/10273585
+	$(document).keydown(function(event) {
+		//19 for Mac Command+S
+		if (!( String.fromCharCode(event.which).toLowerCase() == 's' && event.ctrlKey) && !(event.which == 19)) return true;
+
+		$('#save').click();
+
+		event.preventDefault();
+		return false;
+	});
 
 	// Search
 	var ins = ["",""];
-	$('.search input').on('keyup', function() {
-		var $this = $(this), val = $this.val();
-		if ($this.parent().is(':first-child'))
-			ins[0] = val;
-		else ins[1] = val;
-		searching();
-	});
 	$('.search td').on('keyup', function() {
 		var $this = $(this),
 		    val = $this.is('.empty') ? "" : $this.text();
 		if ($this.is(':first-child'))
-			ins[0] = val;
-		else ins[1] = val;
+			ins[0] = val.trim();
+		else ins[1] = val.trim();
 		searching();
 	});
 	function searching() {
-		var region = $('tbody:not(:first):not(:last)').show();
+		var region = $('tbody:not(:first)').show();
 		if (!ins[0] && !ins[1]) {
 			region.find('tr').show();
 			return;
 		}
-		region.find('.new').hide();
+		region.find('.new, #pos').hide();
 		region.find('tr:not(.pos)').hide();
 		var l = region.find('tr:not(.pos):not(.new)');
 		function trim(v) {
 			var ret = [];
 			$.each(v, function(_,e) {
-				if (e) ret.push(e);
+				if (e.trim()) ret.push(e.trim());
 			});
 			return ret;
 		}
@@ -270,46 +312,47 @@ $(function() {
 		});
 	}
 
-/*
-	$('#dict').on('click','.word, .def',function() {
-		var $this = $(this), val = $this.text(), width = $this.width();
-		if ($this.is('.word')) width -= 30;
-		else width -= 20;
-		if ($this.find('input').length) return;
-		var s = getSelectionRel(this, val);
-		//if (s[2]) return;
-		$this.html('<input style="width: '+width+'px" value="'+val+'" placeholder="'+val+'">');
-		$this.children('input').on('change', function() {
-			$this.text($(this).val() || $(this).attr('placeholder'));
-			sortables.sortable('enable');
-		}).on('keyup', function(e) {
-			var w = e.which;
-			if (w === 27) {
-				$(this).val(''); w = 13;
+	// from http://stackoverflow.com/a/2587356
+	jQuery.fn.cleanWhitespace = function() {
+		this.contents().filter(function() { return (this.nodeType == 3 && !/\S/.test(this.nodeValue)); })
+			.remove();
+		return this;
+	}
+	jQuery.fn.trimWhitespace = function() {
+		var prev = null;
+		this.contents().each(function() {
+			if (this.nodeType === 3) {
+				this.textContent = this.textContent.replace(/\s+/,' ');
+				if (prev && prev.nodeName === "BR")
+					this.textContent = this.textContent.trimLeft();
+			} else if (prev && this.nodeName === "BR" && prev.nodeType === 3) {
+				prev.textContent = prev.textContent.trimRight();
 			}
-			if (w === 13) return $(this).trigger('change');
-		}).on('blur', function(e) {
-			$(this).trigger('change');
-		}).trigger('focus')[0].setSelectionRange(s[0], s[1]);
-		sortables.sortable('disable');
-	});
-/*/
+			prev = this;
+		});
+		return this;
+	}
+
+	// contenteditable input boxes (table cells)
 	var plch = 'data-placeholder',
 	    prev = 'data-prev-value';
+	var isFirefox = typeof InstallTrigger !== 'undefined'; // from http://stackoverflow.com/a/9851769
+	var empty_input = isFirefox ? '&nbsp;<br>' : '';
 	$('#dict').on('focus','td[contenteditable=true]',function() {
 		var $this = $(this);
 		if ($this.is('.empty')) {
 			$this.attr(plch, $this.html());
-			$this.html('');
+			$this.html(empty_input);
 			$this.removeClass('empty');
 		} else $this.attr(prev, $this.html());
 	}).on('blur','td[contenteditable=true]',function() {
-		var $this = $(this);
-		if (!$this.text() && $this.attr(plch)) {
+		var $this = $(this).cleanWhitespace().trimWhitespace();
+		//console.log($this.html(),$this.text());
+		if (!$this.text().trim() && $this.attr(plch)) {
 			$this.html($this.attr(plch));
 			$this.removeAttr(plch);
 			$this.addClass('empty');
-		}
+		} else if (!$this.text().trim()) $this.html($this.attr(prev));
 		$this.removeAttr(prev);
 	}).on('keyup','td[contenteditable=true]',function(e) {
 		var $this = $(this), w = e.which;
@@ -318,8 +361,19 @@ $(function() {
 				$this.html($this.attr(prev))
 			w = 13; // fall through
 		}
-		if (w === 13) $this.blur();
+		if (w === 13 && !e.shiftKey) {
+			e.preventDefault();
+			$this.blur();
+		}
+		if (!$this.text().trim()) {
+			$this.html(empty_input);
+		}
+	}).on('keydown','td[contenteditable=true]',function(e) {
+		var $this = $(this);
+		if (e.which === 13 && !e.shiftKey) e.preventDefault();
+		if (!$this.text().trim()) {
+			$this.html(empty_input);
+		}
 	});
-/**/
 });
 

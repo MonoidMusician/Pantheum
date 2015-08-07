@@ -34,6 +34,10 @@ $(function() {
         $('#status').hide();
 });
 </script>
+<script src="/JS/lib/md5.js"></script>
+<script src="/JS/lib/sha512.min.js"></script>
+<script src="/JS/lib/whirlpool.min.js"></script>
+<script src="/JS/login.js"></script>
 <script src="jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="main.css">
 <link rel="stylesheet" type="text/css" href="jquery-ui.css">
@@ -46,7 +50,7 @@ if (array_key_exists("data",$_POST) and $_POST["data"]) {
     if ($suid == 14) {
         $data = trim($_POST["data"]);
         if (startsWith($data, "<thead>") and endsWith($data, "</tbody>")) {
-            $safe = strip_tags($data, "<div><thead></thead><tbody><tr><td><span><input></input></span></td></tr></tbody></div>");
+            $safe = strip_tags($data, "<div><thead></thead><tbody><tr><td><span><input><br></br></input></span></td></tr></tbody></div>");
             if ($data == $safe) {
                 file_put_contents("dict.html", $safe);
                 ?><div id="status" class="success">success</div><?php
@@ -72,9 +76,14 @@ echo file_get_contents("dict.html");
 ?>
 </table>
 <?php
-if ($suid == 14 || 1) {
+if ($suid == 14) {
     ?><button id="save">Save</button><?php
+} else {
+    ?><button id="showlogin">Login</button><?php
 }
 ?>
+</content>
+<content id="login" style="display: none">
+<?php sro('/Pages/login/login.php') ?>
 </content>
 </body></html>
