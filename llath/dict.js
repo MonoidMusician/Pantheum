@@ -75,9 +75,12 @@ $(function() {
 			}
 		});
 
-		$('h1:first').attr('title', $('#dict .word').length + ' words/phrases');
+		count();
+	}
+	function count() {
+		$('h1:first').attr('title', $('#dict tr:not(.new) .word').length + ' words/phrases');
 		$('tbody .pos').each(function() {
-			var l =$(this).parent().find('.word').length;
+			var l =$(this).parent().find('tr:not(.new) .word').length;
 			$(this).attr('title', l + (l!==1?' words/phrases':' word/phrase'));
 		});
 	}
@@ -101,7 +104,9 @@ $(function() {
 			}, 1000);
 			return;
 		}
-		$(this).parents('tbody').before('<tbody><tr class="pos"><td colspan="4" class="title">'+pos+'</td></tr>'+$('#dict tr.new:first')[0].outerHTML+'</tbody>');
+		var new_tbody = '<tbody><tr class="pos"><td colspan="4" class="title">'+pos+'</td></tr>'+$('#dict tr.new:first')[0].outerHTML+'</tbody>';
+		var $new_tbody = $(new_tbody).sortable(tbody_sort_opts);
+		$(this).parents('tbody').before($new_tbody);
 		update();
 	}
 	function addnew() {
@@ -112,7 +117,7 @@ $(function() {
 		word = word.is('.empty') ? '' : word.text().trim();
 		def  = def .is('.empty') ? '' : def .text().trim();
 		if (!word || !def) return;
-		$('#dict tr').each(function() {
+		$('#dict tr:not(.new)').each(function() {
 			if (row) return;
 			var $this = $(this);
 			if ($this.find('td.word').text() == word)
@@ -132,6 +137,7 @@ $(function() {
 		tr.find('td:first').focus();
 		tr.before($(this).parents('table').find('tbody:not(:first) tr:not(.pos):not(.new):first').clone());
 		tr.prev().find('.word').text(word).parent().find('.def').text(def);
+		count();
 	}
 	$('#dict tr#pos td').on('keyup', function(e) {
 		var w = e.which;
@@ -159,7 +165,7 @@ $(function() {
 		return recurse($helper, $originals);
 	};
 
-	var sortables;
+	var sortables, table_sort_opts, tbody_sort_opts;
 	(function() {
 		var stop = false;
 		var scroller = null;
@@ -181,7 +187,7 @@ $(function() {
 			setTimeout(scrolling,10);
 		}
 
-		$("#dict").sortable({
+		$("#dict").sortable(table_sort_opts = {
 			helper: fixHelperModified,
 			axis: "y",
 			delay: 150,
@@ -198,7 +204,7 @@ $(function() {
 			}
 		});
 
-		sortables = $("#dict tbody:not(:first):not(:last)").sortable({
+		sortables = $("#dict tbody:not(:first):not(:last)").sortable(tbody_sort_opts = {
 			helper: fixHelperModified,
 			axis: "y",
 			delay: 150,
@@ -241,7 +247,7 @@ $(function() {
 		ins = ["",""];
 		searching();
 		var data = $('#dict').html();
-		$.post(window.location.href, {"data":data})
+		$.post(window.location.href, {"data":data,"readback":"false"})
 		.done(function(d) {
 			var $d = $(d);
 			var status = $d.filter('#status');
@@ -266,7 +272,7 @@ $(function() {
 		$('#showlogin').attr('id', 'save').text('Save');
 	});
 	// from http://stackoverflow.com/a/10273585
-	$(document).keydown(function(event) {
+	$(document).keyup(function(event) {
 		//19 for Mac Command+S
 		if (!( String.fromCharCode(event.which).toLowerCase() == 's' && event.ctrlKey) && !(event.which == 19)) return true;
 
@@ -362,6 +368,10 @@ $(function() {
 		$this.removeAttr(prev);
 	}).on('keyup','td[contenteditable=true]',function(e) {
 		var $this = $(this), w = e.which;
+		if ((String.fromCharCode(w).toLowerCase() == 's' && event.ctrlKey) || (w == 19)) {
+			$this.blur();
+			return true;
+		}
 		if (w === 27) {
 			if ($this.attr(prev))
 				$this.html($this.attr(prev))

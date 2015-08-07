@@ -72,7 +72,8 @@ if (array_key_exists("data",$_POST) and $_POST["data"]) {
 
 <table id="dict">
 <?php
-echo file_get_contents("dict.html");
+if (!array_key_exists("readback",$_POST) or $_POST["readback"] !== "false")
+    echo file_get_contents("dict.html");
 ?>
 </table>
 <?php

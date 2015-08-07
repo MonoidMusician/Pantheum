@@ -19,11 +19,11 @@ h1 {
 .title {
 	font-family: Promocyja;
 }
-button, table, table *, td + td + td, .new td + td, .search td + td, thead td + td {
+button, table, table * {
 	font-family: Gentium Plus, Linux Libertine, serif;
 	font-size: 14pt;
 }
-*, td + td, .new td, .search td, #pos td {
+*, .word {
 	font-family: Promocyja;
 	font-size: 22pt;
 }
