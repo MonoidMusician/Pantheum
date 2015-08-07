@@ -15,7 +15,7 @@
             $(document).on('submit', '#loginform', function(event) {
                 loginSubmit($('#username').val(), $('#password').val(), '#login-error');
                 event.preventDefault();
-            }); 
+            });
         });
     </script>
 </article>
