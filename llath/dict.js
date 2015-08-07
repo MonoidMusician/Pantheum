@@ -74,6 +74,12 @@ $(function() {
 				return addnew.apply(this);
 			}
 		});
+
+		$('h1:first').attr('title', $('#dict .word').length + ' words/phrases');
+		$('tbody .pos').each(function() {
+			var l =$(this).parent().find('.word').length;
+			$(this).attr('title', l + (l!==1?' words/phrases':' word/phrase'));
+		});
 	}
 
 	function addpos() {
