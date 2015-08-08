@@ -536,7 +536,7 @@ function nano_dfdict() {
 	return [
 		'a' => '[a[n]|the]',
 		'test' => 'This is argument 1: ${0}, and 2: ${1}, and 3: ${2}',
-		'quot' => ', “${0}”,',
+		'quot' => ', “(${0})”,',
 		'perfactv' => ', (having (${0}) (${1})|who had (${0}) (${1})),',
 		'cum' => ', when ${0},',
 		'phrase' => ', ${0},',
