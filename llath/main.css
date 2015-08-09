@@ -4,7 +4,7 @@
 }
 
 /* Center page */
-content, content > * {
+content, content > *, footer, footer * {
 	margin-left: auto !important;
 	margin-right: auto !important;
 }
@@ -32,7 +32,6 @@ button, table, table * {
 }
 .word {
 	white-space: nowrap;
-	width: -mox-fit-content;
 	padding: 14px;
 }
 input {
@@ -45,12 +44,12 @@ h1 {
 	font-size: 48pt;
 	margin-top: 0px;
 	margin-bottom: 5px;
-	color: #195A08;
+	color: #2C6B1C;
 }
 h2 {
 	font-size: 30pt;
 }
-td:first-child:last-child.title {
+td:only-child.title {
 	color: #823EBD;
 }
 tr.pos td {
@@ -80,17 +79,32 @@ table, td {
 	border-width: 1px;
 	border-spacing: 0;
 	border-collapse: collapse;
-	transition: border-color 0.5s cubic-bezier(0.56,0.59,0.44,2.89) 0s;
+	transition: border-color 0.35s cubic-bezier(0, 0.96, 0.15, 0.53);
 }
 
 /* remember to define focus styles! */
 td[contenteditable]:focus {
 	outline: none;
-	border: 1px double #1E8000;
+	border-style: double;
+	border-color: #1E8000;
+}
+td[contenteditable]:active {
+	border-style: double;
+	border-color: #0F0;
 }
 td[contenteditable].empty {
 	color: gray;
 }
+
+::selection {
+	color: #3D3DC1;
+	background-color: rgba(112, 245, 89, 0.41);
+}
+::-moz-selection {
+	color: #3D3DC1;
+	background-color: rgba(112, 245, 89, 0.41);
+}
+
 
 #dict {
 	max-width: 80%;
@@ -129,7 +143,7 @@ table {
 	transition: background-color 0.2s;
 }
 table.success {
-	background-color: #E8FBE8;
+	background-color: rgba(112, 245, 89, 0.41);
 }
 
 

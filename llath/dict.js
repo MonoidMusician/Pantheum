@@ -59,6 +59,33 @@ $(function() {
 			text = String.fromCodePoint(first + adj) + text.substr(1);
 		return text;
 	}
+
+	$(document).on('copy',function() {
+		var body_element = document.getElementsByTagName('body')[0];
+		var selection;
+		selection = window.getSelection();
+		var prev = selection.getRangeAt(0).cloneRange();
+		var copytext = selection.toString().replace(/[-]/g, function(c) {
+			return String.fromCodePoint(c.codePointAt() - 57817);
+		}).replace(/[-]/g, function(c) {
+			return String.fromCodePoint(c.codePointAt() - 57759);
+		});
+		if (copytext === selection.toString()) return;
+		var newdiv = document.createElement('div');
+		newdiv.style.position='absolute';
+		newdiv.style.left='-99999px';
+		body_element.appendChild(newdiv);
+		newdiv.innerHTML = copytext;
+		selection.selectAllChildren(newdiv);
+		window.setTimeout(function() {
+			body_element.removeChild(newdiv);
+			// thanks to http://stackoverflow.com/a/21302196
+			selection.removeAllRanges();
+			selection.addRange(prev);
+		},0);
+	});
+
+
 	function update() {
 		// Make fancy Promocyja titles
 		$('.title').each(processtext(title));
@@ -114,8 +141,8 @@ $(function() {
 			word = tr.find('td:first'),
 			def  = tr.find('td:last' ),
 			row;
-		word = word.is('.empty') ? '' : word.text().trim();
-		def  = def .is('.empty') ? '' : def .text().trim();
+		word = word.is('.empty') ? '' : word.html().trim();
+		def  = def .is('.empty') ? '' : def .html().trim();
 		if (!word || !def) return;
 		$('#dict tr:not(.new)').each(function() {
 			if (row) return;
@@ -135,8 +162,8 @@ $(function() {
 		}
 		tr.find('td').text('');
 		tr.find('td:first').focus();
-		tr.before($(this).parents('table').find('tbody:not(:first) tr:not(.pos):not(.new):first').clone());
-		tr.prev().find('.word').text(word).parent().find('.def').text(def);
+		tr.before($(this).parents('table').find('tbody:not(:first) tr:not(.pos):not(.new):not(.formula):first').clone());
+		tr.prev().find('.word').html(word).parent().find('.def').html(def);
 		count();
 	}
 	$('#dict tr#pos td').on('keyup', function(e) {
@@ -210,7 +237,7 @@ $(function() {
 			delay: 150,
 			handle: ".edit",
 			connectWith: '#dict tbody',
-			items: "tr:not(.new):not(.pos)",
+			items: "tr:not(.new):not(.pos):not(.formula)",
 			scroll: false,
 			start: function( event, ui ) {
 				if (!ui.helper) return;
@@ -349,7 +376,7 @@ $(function() {
 	var plch = 'data-placeholder',
 	    prev = 'data-prev-value';
 	var isFirefox = typeof InstallTrigger !== 'undefined'; // from http://stackoverflow.com/a/9851769
-	var empty_input = isFirefox ? '&nbsp;<br>' : '';
+	var empty_input = isFirefox ? '&#xFEFF;<br>' : '';
 	$('#dict').on('focus','td[contenteditable=true]',function() {
 		var $this = $(this);
 		if ($this.is('.empty')) {
