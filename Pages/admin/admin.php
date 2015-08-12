@@ -27,7 +27,7 @@
             dpage = location.hash;
         }
         
-        cpage = new jPage();
+        var cpage = new jPage();
         cpage.init('acontent');
         cpage.setPages([
             ["#overview", "Overview", "Overview | Admin Control Panel | Latin", "/Pages/admin/overview.php", true],

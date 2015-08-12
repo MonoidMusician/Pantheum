@@ -665,17 +665,19 @@ function jWord() {
 		this.refreshEntries();
 	};
 
+	this.onpopstate = function(event) {
+		//console.log('popstate fired!');
+		$('#dictionary').empty();
+		t.updateContent(event.state.form, event.state.entries);
+	};
+
 	this.bindEvents = function() {
 		this.unbindEvents();
 		var t = this;
-		window.addEventListener('popstate', function(event) {
-			//console.log('popstate fired!');
-			$('#dictionary').empty();
-			t.updateContent(event.state.form, event.state.entries);
-		});
+		window.addEventListener('popstate', this.onpopstate);
 	};
-	
+
 	this.unbindEvents = function() {
-		window.removeEventListener('popstate');
+		window.removeEventListener('popstate', this.onpopstate);
 	};
 }

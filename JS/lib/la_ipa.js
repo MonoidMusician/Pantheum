@@ -46,6 +46,9 @@ var la_ipa = (function () {
 	my.ASCIIize = function (r) {
 		return my.ae_oe(r).split("").map(function(a) {return a.match(/[^\u0000-\u007f]/)?"":a}).join("");
 	};
+	my.schwa = function (r) {
+		return r.split("ə").join("i");
+	};
 	my.ae_oe = function(r) {
 		return (
 			r.split("\u00E6").join("ae")
@@ -53,7 +56,7 @@ var la_ipa = (function () {
 			 .split("\u00C6").join("Ae")
 			 .split("\u0152").join("Oe")
 		);
-	}
+	};
 	my.deASCIIize = function (r) {
 		return (
 			r.split("ß").join("ss")
@@ -190,10 +193,7 @@ var la_ipa = (function () {
 		);
 	};
 	my.qv = function (r) {
-		return r.split("qu").join("qv");
-	};
-	my.x = function (r) {
-		return r.replace(/[kcg]s/g,"x");
+		return r.split("qu").join("qv").split("Qu").join("Qv").split("QU").join("QV");
 	};
 	my.Greek = function (r) {
 		return (
@@ -283,72 +283,54 @@ var la_ipa = (function () {
 		return ret;
 	}
 	my.transforms = {
-		"No diacritics": my.mix(
-			my.x,
-			my.ASCIIize
+		"Original": function(a){return a},
+		"No diacritics": my.mix(my.schwa, my.ASCIIize),
+		"CLC": my.mix(my.ae_oe, my.schwa, my.no_j),
+		"Mark all vowels": my.mix(
+			my.undouble_vowels,
+			my.lower,
+			my.short_vowels,
+			my.orthography_j
 		),
+		"Silicus": my.mix(my.silicus, my.orthography_j),
+		"Nasal": my.mix(my.nasal, my.orthography_j),
+		"Silicus+Nasal": my.mix(my.nasal, my.silicus, my.orthography_j),
+		"Silicus+Eszett+Nasal": my.mix(my.nasal, my.eszett, my.silicus, my.orthography_j),
+		"qv": my.qv,
+		"fullwidth": my.mix(
+			my.ASCIIize,
+			my.fullwidth
+		),
+		"Greek": my.Greek,
 		"Finnish": my.mix(
 			my.double_vowels,
 			my.replasor("c","k"),
 			my.ASCIIize
 		),
 		"Latin inscription (upper-case)": my.mix(
-			my.x,
 			my.LA,
 			my.upper,
 			my.no_j
 		),
 		"Old Latin inscription (upper-case)": my.mix(
-			my.x,
 			my.LA,
 			my.old_latin,
 			my.upper,
 			my.no_j
 		),
 		"Old Latin inscription (upper-case, apex)": my.mix(
-			my.x,
 			my.LA_apex,
 			my.old_latin,
 			my.upper,
 			my.no_j
 		),
-		"Mark all vowels": my.mix(
-			my.undouble_vowels,
-			my.lower,
-			my.x,
-			my.short_vowels,
-			my.orthography_j
-		),
 		"IPA transcription": my.mix(
 			my.undouble_vowels,
 			my.lower,
-			my.x,
 			my.IPA_longa,
 			my.IPA_accent,
 			my.IPA_transcr
 		),
-		"Original": my.nspace,
-		"Dagger": function(r){return r.split('*').join('†')},
-		"Silicus": my.mix(my.x, my.silicus, my.orthography_j),
-		"Nasal": my.mix(my.x, my.nasal, my.orthography_j),
-		"Silicus+Nasal": my.mix(my.x, my.nasal, my.silicus, my.orthography_j),
-		"Silicus+Eszett+Nasal": my.mix(my.x, my.nasal, my.eszett, my.silicus, my.orthography_j),
-		"Silicus2": my.silicus,
-		"IPA length": my.IPA_longa,
-		"IPA length + accent": my.mix(
-			my.IPA_longa,
-			my.IPA_accent
-		),
-		"x": my.x,
-		"qv": my.qv,
-		"x+qv": my.mix(my.x,my.qv),
-		"x+ae+oe": my.mix(my.x,my.ae_oe),
-		"x+ae+oe+dagger": my.mix(my.x,my.ae_oe,function(r){return r.split('*').join('†')}),
-		"fullwidth": my.mix(
-			my.ASCIIize,
-			my.fullwidth
-		),
-		"Greek": my.Greek,
 	};
 	my.transform_key = my.old_transform = null;
 	my.select_transformer = function(nomen) {
@@ -364,7 +346,7 @@ var la_ipa = (function () {
 		my.selector = '.format-word-'+lang;
 		return my;
 	}
-	my.select_transformer("x+ae+oe+dagger");
+	my.select_transformer("CLC");
 	//my.select_transformer("IPA transcription");
 	//my.transform = my.transforms["Silicus+Eszett+Nasal"];
 	//my.select_transformer("Greek");

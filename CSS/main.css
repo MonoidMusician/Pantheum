@@ -31,7 +31,7 @@ html,body {
     background-color: #fafafa;
     
     font-size: 1.05em;
-    font-family: "Linux Libertine" !important;
+    font-family: "Gentium Plus", "Linux Libertine" !important;
 }
 
 header.global-nav {
@@ -156,7 +156,7 @@ input:not([type="checkbox"]):not([type="radio"]), button {
     padding-right: 5px;
     
     font-size: 1.1em;
-    font-family: "Linux Libertine" !important;
+    font-family: inherit;
     
     box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -164,6 +164,9 @@ input:not([type="checkbox"]):not([type="radio"]), button {
 
 input:not([type="checkbox"]):not([type="radio"]) {
     width: 300px;
+}
+.select2 input {
+    width: auto;
 }
 
 input:not([type="checkbox"]):not([type="radio"]).autosizeable {
@@ -247,7 +250,7 @@ input[type=checkbox], input[type=radio] {
     border-radius: 2px;
     
     font-size: 1.1em;
-    font-family: "Linux Libertine" !important;
+    font-family: inherit;
     
     position: relative;
     top: 0.5em;
@@ -452,7 +455,7 @@ div.floater-message a {
     padding-right: 5px;
     
     font-size: 1.1em;
-    font-family: "Linux Libertine" !important;
+    font-family: inherit;
     cursor: default;
     overflow: auto;
     /*border: 1px solid #999; background: #FFF; cursor: default; overflow: auto; -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64); box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);*/

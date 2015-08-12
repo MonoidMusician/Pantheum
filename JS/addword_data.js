@@ -104,10 +104,6 @@ var changes = {
             "ending0": "us",
             "ending1": "ī"
         },
-        "decl-2-er": {
-            "ending0": "er",
-            "ending1": "rī"
-        },
         "decl-2-r": {
             "ending0": "r",
             "ending1": "rī"
@@ -177,10 +173,6 @@ var changes = {
         "decl-2": {
             "ending0": "ī",
             "ending1": "ōrum"
-        },
-        "decl-2-er": {
-            "ending0": "rī",
-            "ending1": "rōrum"
         },
         "decl-2-r": {
             "ending0": "rī",

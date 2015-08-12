@@ -11,11 +11,14 @@
         <title>Settings | Latin</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
+        <link rel="stylesheet" type="text/css" href="/CSS/user.css">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+        <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
         <section id="content">
-            <?php sro('/Pages/settings.php'); ?>
+            <?php sro('/Pages/user.php'); ?>
         </section>
         <?php sro('/Includes/footer.php'); ?>
     </body>

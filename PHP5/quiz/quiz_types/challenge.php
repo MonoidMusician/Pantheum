@@ -1,8 +1,8 @@
 <?php
 global $quiz_types;
 global $df_exclude;
-$challenge = function($spart) {
-	return function()use($spart){
+$challenge = function($spart,$lang='la') {
+	return function()use($spart,$lang){
 		global $OP_USER_INPUT;
 		return [[
 			"help" => function(&$pick_db, $db) {
@@ -19,8 +19,8 @@ $challenge = function($spart) {
 				return "What is the $path for $word_name.";
 			},
 			"selections" => [
-				"word"=>function($_, $db, $path)use($spart){
-					$s = $db->searcher()->spart($spart)->only_without_attr(ATTR("irregular"))->only_without_attr(ATTR("hidden"))->only_without_attr(ATTR("template"));
+				"word"=>function($_, $db, $path)use($spart,$lang){
+					$s = $db->searcher()->spart($spart)->lang($lang)->only_without_attr(ATTR("irregular"))->only_without_attr(ATTR("hidden"))->only_without_attr(ATTR("template"));
 					$s->stmt .= " AND EXISTS (SELECT 1 FROM forms WHERE forms.word_id = words.word_id AND form_tag != '' AND form_value != '')";
 					return $s->rand();
 				}

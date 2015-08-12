@@ -17,7 +17,7 @@
 <?php
     } else {
 ?>
-                    <li class="global-nav"><a class="global-nav" href="<?php print rgd('/settings.php'); ?>">Settings</a></li>
+                    <li class="global-nav"><a class="global-nav" href="<?php print rgd('/user.php'); ?>">Settings</a></li>
 <?php
         if ($srank == '1') {
 ?>

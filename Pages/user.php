@@ -1,7 +1,8 @@
 <?php
-    require_once('/var/www/config.php');
-    sro('/Includes/mysql.php');
-    sro('/Includes/session.php');
-    sro('/Includes/functions.php');
+    global $sli,$sgid,$srank;
+    if ((isset($sli)) && ($sli == 'true')) {
+        sro('/Pages/user/user.php');
+    } else {
+        sro('/Pages/restricted/logged-out.php');
+    }
 ?>
-<h1>User Control Panel</h1>

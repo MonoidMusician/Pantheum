@@ -20,18 +20,7 @@ $quiz_types = array_merge($quiz_types, [
 				"correct" => [
 					"Syphāx and Celer were standing in the harbor. The friends were watching the mountain."
 				],
-				"acceptable" => permute_sentence_choices([
-					"Syphāx and Celer",
-					["were standing","stood"],
-					["in","at"],
-					["the","a",""],
-					["harbor.","harbour."],
-					["The",""],
-					"friends were",
-					["watching","looking at"],
-					["the","a",""],
-					"mountain.",
-				])
+				"expr" => '({*Syphāx and Celer} {were standing|stood} {(in|at) _a harbo[u]r}). ({*_a friends} {were (watching|looking at)} {_a mountain}).'
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
@@ -46,17 +35,7 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Syphāx said to his friend, “I was selling slaves near the harbor. Suddenly I heard sounds.”"],
-				"acceptable" => permute_sentence_choices([
-					"Syphāx",
-					["said to","told"],
-					["his","the","a",""],
-					"friend, ",
-					["“I was selling slaves near the harbor."],
-					["Suddenly I","I suddenly"],
-					"heard",
-					["the","some",""],
-					["sounds.”","noises.”"]
-				])
+				"expr" => '_opts $(Syphāx) $(said} {to ${2}) $(told} {${1}) $([his|the|a] friend) _quot$({*I} {was selling} {[the] slaves} {near the harbor}) {_quot({*suddenly} {I} {heard} {[the|some] (sounds|noises)})}.'
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
@@ -71,16 +50,7 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Celer replied to Syphāx, “You heard sounds. I felt tremors. I was walking near the mountain.”"],
-				"acceptable" => permute_sentence_choices([
-					"Celer",
-					["replied","responded"],
-					"to Syphāx, “You heard",
-					["sounds.","noises."],
-					"I felt",
-					["the","some",""],
-					["tremors.","shakes","shaking"],
-					"I was walking near the mountain.”"
-				])
+				"expr" => '{Celer} {replied|responded} {to Syphāx} {_quot$({*you} {heard} {sounds|noises})} {._quot$({*I} {felt|sensed} {[the|some] (tremors|shake(s|ing))}.)} {. _quot$({*I} {was walking} {near _a mountain}.)}.'
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
@@ -95,14 +65,7 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Poppæa and Lucriō were standing in the atrium. They were worried."],
-				"acceptable" => permute_sentence_choices([
-					"Poppæa and Lucriō were",
-					["standing",""],
-					["in","inside","at"],
-					["the","an",""],
-					["atrium."],
-					"They were worried."
-				])
+				"expr" => '({*were standing} {Poppæa and Lucriō} {(in[side]|at) _a atrium}). ({*worried} {were} {they}).'
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
@@ -117,21 +80,7 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Poppæa said to Lucriō, “I was in the forum. I was searching for a toga for you. I caught sight of a marvelous cloud.”"],
-				"acceptable" => permute_sentence_choices([
-					"Poppæa",
-					["said to","told"],
-					"Lucriō, “I was",
-					["in","inside","at"],
-					["the","a",""],
-					"forum. I was",
-					["searching for","seeking","looking for"],
-					["the","a",""],
-					"toga for you. I",
-					["caught sight of","saw"],
-					["the","a",""],
-					["wonderful","marvelous","strange","odd","weird"],
-					"cloud.”"
-				])
+				"expr" => '_opts$(Poppæa)$(said} {to Lucriō)$(told Lucriō) {_quot$({*I} {was} {in _a forum})} {_quot$(_opts$(*I} {for you)$(was (look|search)ing} {for ${2})$(was seeking ${1}) $(_a toga).)} {_quot$({*I} {saw|caught sight of} {_a (wonderful|marvelous|strange|odd|weird) cloud}.)}.'
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
@@ -146,19 +95,7 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Lucriō replied to Poppæa, “You caught sight of a cloud. I felt ashes. I saw flames.”"],
-				"acceptable" => permute_sentence_choices([
-					"Lucriō",
-					["replied","responded"],
-					"to Poppæa, “You",
-					["caught sight of","saw","spied"],
-					["the","a",""],
-					"cloud. I felt",
-					["the","some",""],
-					["ashes.","ash"],
-					"I saw",
-					["the","some",""],
-					"flames.”"
-				])
+				"expr" => '{Lucriō} {replied|responded} {to Poppæa} {_quot$({*you} {caught sight of|saw} {_a cloud})} {._quot$({*I} {felt|sensed} {[the|some] (ash[es])}.)} {. _quot$({*I} {saw} {[the|some] flames}.)}.'
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "",
@@ -271,7 +208,7 @@ miserrimus est.","la",true),
 					"This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid house, but he is very miserable."
 					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
 				],
-				"expr" => "This [man] is Aristō. (Aristō|He) is ([a|the] friend of Barbillus|Barbillus' friend). (He|Aristō) ((lives|dwells|resides|remains|lingers) in|inhabits) [a|the] (distinguished|noble|illustrious|bright|shining|glittering|brilliant|splendid|magnificent|sumptuous) (house|villa), but [he|Aristō] is (very|most) (miserable|unhappy|poor|wretched|pitiful|worthless|null|tragic|unfortunate|sick|tormenting).",
+				"expr" => 'This [man] is Aristō. (Aristō|He) is (_a friend of Barbillus|Barbillus\' friend). (He|Aristō) ((lives|dwells|resides|remains|lingers) in|inhabits) _a (distinguished|noble|illustrious|bright|shining|glittering|brilliant|splendid|magnificent|sumptuous) (house|villa), but [he|Aristō] is (very|most) (miserable|unhappy|poor|wretched|pitiful|worthless|null|tragic|unfortunate|sick|tormenting).',
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "en",
@@ -292,7 +229,7 @@ castīgat, numquam laudat.","la",true),
 					"This woman is Galatēa. Galatēa is Aristō's wife. Galatēa often scolds her husband, she never praises him."
 					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
 				],
-				"expr" => "({*this [woman]} {is} {Galatēa}). ({Galatēa|she} {is} {[a|the] (wife of Aristō|Aristō's wife)}). ({Galatēa} {often} {scolds} {[her|a|the] husband}), [but|and] ({[she]} {never} {prases} {him}|{never} {praising} {him}).",
+				"expr" => '({*this [woman]} {is} {Galatēa}). ({Galatēa|she} {is} {_a (wife of Aristō|Aristō\'s wife)}). ({Galatēa} {often} {scolds} {[her|a|the] husband}), [but|and] ({[she]} {never} {prases} {him}|{never} {praising} {him}).',
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "en",
@@ -311,7 +248,7 @@ multī iuvenēs hanc puellam amant, quod pulcherrima est.","la",true),
 					"This girl is Helena. Helena is Aristō and Galatēa's daughter. Many young men love this girl, because she is very beautiful."
 					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
 				],
-				"expr" => "({*this [girl]} {is} {Helen[a]}). ({Helen[a]|she} {is} {[a|the] (daughter of Aristō and Galatēa|Aristō and Galatēa's daughter)}). (Many (young men|boys) love (this girl|her|Helen[a])), because ({she} {is} {(very|most) (beautiful|pretty)}).",
+				"expr" => '({*this [girl]} {is} {Helen[a]}). ({Helen[a]|she} {is} {_a (daughter of Aristō and Galatēa|Aristō and Galatēa\'s daughter)}). (Many (young men|boys) love (this girl|her|Helen[a])), because ({she} {is} {(very|most) (beautiful|pretty)}).',
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "en",

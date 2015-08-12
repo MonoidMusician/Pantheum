@@ -95,7 +95,7 @@
 	<span class="header" id="interjection" onclick="show('interjection')">Interjection</span>
 </h2>
 <div style="width: calc(100% - 500px); height: 300px; float: right; display:none">
-<iframe style="width: 100%; height: 100%"></iframe>
+<iframe id="iframe" style="width: 100%; height: 100%"></iframe>
 <br>
 <button onclick="if ($('iframe')[0].history) $('iframe')[0].history.back()">←</button>
 <button onclick="if ($('iframe')[0].history) $('iframe')[0].history.forward()">→</button>
@@ -104,19 +104,23 @@
 <div class="verb">
 	<select name="conjugation">
 		<optgroup label="1st Conjugation">
-		<option data-ending0="ō" data-ending1="āre" data-ending2="ī" value="conj-1">1st Conjugation</option>
-		<option data-ending0="or" data-ending1="ārī" data-ending2="us sum" value="conj-1-deponent">1st Conjugation Deponent</option>
+		<option data-ending0="ō" data-ending1="āre" data-ending2="ī" data-ending3="us" value="conj-1">1st Conjugation</option>
+		<option data-ending0="or" data-ending1="ārī" data-ending2="us sum" data-ending3="us" value="conj-1-deponent">1st Conjugation Deponent</option>
 		<optgroup label="2nd Conjugation">
-		<option data-ending0="eō" data-ending1="ēre" data-ending2="ī" value="conj-2">2nd Conjugation</option>
-		<option data-ending0="eor" data-ending1="ērī" data-ending2="us sum" value="conj-2-deponent">2nd Conjugation Deponent</option>
+		<option data-ending0="eō" data-ending1="ēre" data-ending2="ī" data-ending3="us" value="conj-2">2nd Conjugation</option>
+		<option data-ending0="eor" data-ending1="ērī" data-ending2="us sum" data-ending3="us" value="conj-2-deponent">2nd Conjugation Deponent</option>
 		<optgroup label="3rd Conjugation">
-		<option data-ending0="ō" data-ending1="ere" data-ending2="ī" value="conj-3">3rd Conjugation</option>
-		<option data-ending0="iō" data-ending1="ere" data-ending2="ī" value="conj-3-io">3rd Conjugation i-stem</option>
-		<option data-ending0="or" data-ending1="ī" data-ending2="us sum" value="conj-3-deponent">3rd Conjugation Deponent</option>
-		<option data-ending0="ior" data-ending1="ī" data-ending2="us sum" value="conj-3-io-deponent">3rd Conjugation Deponent i-stem</option>
+		<option data-ending0="ō" data-ending1="ere" data-ending2="ī" data-ending3="us" value="conj-3">3rd Conjugation</option>
+		<option data-ending0="iō" data-ending1="ere" data-ending2="ī" data-ending3="us" value="conj-3-io">3rd Conjugation i-stem</option>
+		<option data-ending0="or" data-ending1="ī" data-ending2="us sum" data-ending3="us" value="conj-3-deponent">3rd Conjugation Deponent</option>
+		<option data-ending0="ior" data-ending1="ī" data-ending2="us sum" data-ending3="us" value="conj-3-io-deponent">3rd Conjugation Deponent i-stem</option>
 		<optgroup label="4th Conjugation">
-		<option data-ending0="iō" data-ending1="īre" data-ending2="ī" value="conj-4">4th Conjugation</option>
-		<option data-ending0="ior" data-ending1="īrī" data-ending2="us sum" value="conj-4-deponent">4th Conjugation Deponent</option>
+		<option data-ending0="iō" data-ending1="īre" data-ending2="ī" data-ending3="us" value="conj-4">4th Conjugation</option>
+		<option data-ending0="ior" data-ending1="īrī" data-ending2="us sum" data-ending3="us" value="conj-4-deponent">4th Conjugation Deponent</option>
+		<optgroup label="Irregular">
+		<option data-ending0="eō" data-ending1="īre" data-ending2="iī" data-ending3="itus" value="eō">eō</option>
+		<option data-ending0="ferō" data-ending1="ferre" data-ending2="tulī" data-ending3="lātus" value="ferō">ferō</option>
+		<option data-ending0="sum" data-ending1="esse" data-ending2="fuī" data-ending3="futūrus" value="sum">sum</option>
 	</select>
 	<select name="voice">
 		<option value="active" data-ending3="us">Active</option>
@@ -138,8 +142,7 @@
 		<option data-ending0="ās" data-ending1="æ" value="decl-1-as">Grecian -ās</option>
 		<optgroup label="2nd Declension">
 		<option data-ending0="us" data-ending1="ī" value="decl-2">2nd Declension</option>
-		<option data-ending0="er" data-ending1="rī" value="decl-2-er">2nd Declension -er, -rī</option>
-		<option data-ending0="r" data-ending1="rī" value="decl-2-r">2nd Declension -r, -rī</option>
+		<option data-ending0="r" data-ending1="rī" value="decl-2-r">2nd Declension r-stem</option>
 		<option data-ending0="os" data-ending1="ī" value="decl-2-os">Grecian -ŏs</option>
 		<option data-ending0="um" data-ending1="ī" value="decl-2-neuter">2nd Declension Neuter</option>
 		<option data-ending0="on" data-ending1="ī" value="decl-2-on-neuter">Grecian -on (Neuter)</option>
@@ -255,7 +258,7 @@
 		var check = false;
 		(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4)))check = true})(navigator.userAgent||navigator.vendor||window.opera);
 		return check;
-	})()) $('iframe').parent().remove();
+	})()) $('#iframe').parent().remove();
 </script>
 <div>
 	Definitions:<br>
@@ -339,28 +342,28 @@ function insertAtCaret(txtarea, text) {
 }
 var add_definition, add_relation;
 var lock = false;
-$('#definitions input').on('keyup', add_definition = function(e) {
+$('#definitions').on('keyup', 'input', add_definition = function(e) {
 	//if (e.which == 8) $('#definitions input').last().trigger('focus');
 	if (lock || e.which != 13) return; lock=true; // hack
 	//alert(e.which);
 	$('#definitions input').filter(function() {
 		return !$(this).val();
 	}).parent().remove();
-	$('#definitions').append('<li><input placeholder="secondary">').on('keyup', add_definition);
+	$('#definitions').append('<li><input placeholder="secondary">');
 	$('#definitions input').first().attr('placeholder','primary');
 	setTimeout(function() {
 		$('#definitions input').last().trigger('focus').autosizeInput();
 		lock = false;
 	}, 1);
 });
-$('#relations input').on('keyup', add_relation = function(e) {
+$('#relations').on('keyup', 'input', add_relation = function(e) {
 	//if (e.which == 8) $('#definitions input').last().trigger('focus');
 	if (lock || e.which != 13) return; lock=true; // hack
 	//alert(e.which);
 	$('#relations input:not([type=checkbox])').filter(function() {
 		return !$(this).val();
 	}).parent().remove();
-	$('#relations').append('<li><input placeholder="type"><input placeholder="word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><label><input type="checkbox">Mutual</label>').on('keyup', add_relation);
+	$('#relations').append('<li><input placeholder="type"><input placeholder="word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><label><input type="checkbox">Mutual</label>');
 	setTimeout(function() {
 		updater('#relations input:nth-last-child(2)', [], []);
 		$('#relations input:nth-last-child(2)').autosizeInput().prev().trigger('focus').autosizeInput();
@@ -416,9 +419,12 @@ $('#forms input').on('blur.repl', function(){
 	if (!$this.prev().length || $this.prev().is('.present')) {
 		slug = æ.ASCIIize(slug.normalize('NFKD')), w = 'wiktionary.org/wiki/'+slug;
 		$('#wiktionary').attr('href','http://en.'+w+'#Latin');
-		$('iframe').parent().show();
-		if ($('iframe').attr('src') != w && $('iframe').attr('src') != w+'#Latin')
-		{ $('iframe').attr('src', 'http://en.m.'+w); lock_url = false; }
+		$('#iframe').parent().show();
+		if ($('#iframe').attr('data-slug') != slug) {
+			$('#iframe').attr('data-slug',slug);
+			$('#iframe').attr('src', 'http://en.m.'+w);
+			lock_url = false;
+		}
 		$('#perseus').attr('href','http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry='+slug);
 		$('#perseus1').attr('href','http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry='+slug+'1');
 		$('#perseus2').attr('href','http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry='+slug+'2');
@@ -750,6 +756,16 @@ $('select').on('change', function () {
 		verb_endings[0][1] = verb_endings[1][1] = "";
 		verb_endings[0][2] = "īv";
 		verb_endings[1][2] = "īt";
+	} else if (name.endsWith("ō") || name === "sum") {
+		verb_endings[0][1] = verb_endings[1][1] = "";
+		verb_endings[0][2] = "";
+		verb_endings[1][2] = "";
+		var voice = {
+			"eō": "neutral",
+			"ferō": "active",
+			"sum": "neutral"
+		}[name];
+		$("select[name=voice]").val(voice).change();
 	} else if (name.startsWith("adv-")) {
 		$('#adverb1,#adverb2,#adverb_ending1,#adverb_ending2').show();
 	} else if (name == "uncomparable") {
@@ -845,12 +861,13 @@ $('#submit').on('click', function() {
 				else if ($this.parents('#definitions').length)
 					get['definitions'].push($this.val());
 		});
-		$('#relations :input:first').each(function() {
+		$('#relations :input:first-child').each(function() {
 			$this = $(this);
 			var k = $this.val();
 			var n = $this.next().val();
 			var m = $this.next().next().find('input').is(':checked');
-			get['connections'].push([k,n,m]);
+			if (k && n)
+				get['connections'].push([k,n,m]);
 		});
 		$('#forms > div:visible input').each(function() {
 			get['forms'].push($(this).val().split("/").join("\n"));

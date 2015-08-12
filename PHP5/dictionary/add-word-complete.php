@@ -65,7 +65,7 @@
 				$other = intval($other);
 				$cc = CONNECTION($w, WORD(defaultDB(),$other), $type);
 				$w->add_connection($cc);
-				if ($mutual) {
+				if ($mutual === "true") {
 					$cc = CONNECTION(WORD(defaultDB(),$other), $w, $type);
 					WORD(defaultDB(),$other)->add_connection($cc);
 				}
@@ -80,7 +80,7 @@
 					$ignore[] = "person-1/passive";
 					$ignore[] = "person-2/passive";
 				}
-				$w->add_attr(ATTR("conjugation"), $_GET["conjugation"]);
+				$w->add_attr(ATTR("conjugation", $_GET["conjugation"]));
 			} else if ($sparts[0] === "noun") {
 				$template = $_GET["declension"];
 				$path = $_GET["gender"];
