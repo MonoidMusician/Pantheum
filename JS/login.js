@@ -75,3 +75,41 @@ function loginSubmit(username, password, error) {
         }
     }
 }
+
+function changePassword(username, old, new1, new2, error) {
+    if ((username != '') && (old != '') && (new1 != '') && (new1 === new2)) {
+        old = loginHash(username, old);
+        new1 = loginHash(username, new1);
+        new2 = loginHash(username, new2);
+        $.post("/PHP5/user/change-password.php", { u: username, p: old, n1: new1, n2: new2 }, function(data) {
+            if (data == 'success') {
+                window.location.href = '/index.php';
+                $.jStorage.flush();
+            } else {
+                if (data == '1') {
+                    $(error).html('Already logged in.');
+                } else if (data == '2') {
+                    $(error).html('Error logging in.');
+                } else if (data == '3') {
+                    $(error).html('User is banned.');
+                } else if (data == '4') {
+                    $(error).html('Missing values.');
+                } else {
+                    $(error).html('Error logging in (' + data + ').');
+                }
+            }
+        });
+    } else {
+        if (username == '') {
+            $(error).html('Missing username.');
+        } else if (old == '') {
+            $(error).html('Missing password (current).');
+        } else if (new1 == '') {
+            $(error).html('Missing password (new).');
+        } else if (new2 == '') {
+            $(error).html('Please confirm your password.');
+        } else if (new1 != new2) {
+            $(error).html('Passwords did not match');
+        }
+    }
+}
