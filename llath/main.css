@@ -109,6 +109,13 @@ td[contenteditable].empty {
 #dict {
 	max-width: 80%;
 }
+#conv {
+	width: 80%;
+	margin-bottom: 1em;
+}
+#conv td:not(:last-child) {
+	width: 27%;
+}
 
 tbody {
 	border-width: 0px;

@@ -377,14 +377,16 @@ $(function() {
 	    prev = 'data-prev-value';
 	var isFirefox = typeof InstallTrigger !== 'undefined'; // from http://stackoverflow.com/a/9851769
 	var empty_input = isFirefox ? '&#xFEFF;<br>' : '';
-	$('#dict').on('focus','td[contenteditable=true]',function() {
+	var onfucs, onblur;
+	$('table').on('focus','td[contenteditable=true]',onfocus=function() {
 		var $this = $(this);
+		//console.log(this,$this);
 		if ($this.is('.empty')) {
 			$this.attr(plch, $this.html());
 			$this.html(empty_input);
 			$this.removeClass('empty');
 		} else $this.attr(prev, $this.html());
-	}).on('blur','td[contenteditable=true]',function() {
+	}).on('blur','td[contenteditable=true]',onblur=function() {
 		var $this = $(this).cleanWhitespace().trimWhitespace();
 		//console.log($this.html(),$this.text());
 		if (!$this.text().trim() && $this.attr(plch)) {
@@ -417,6 +419,80 @@ $(function() {
 		if (!$this.text().trim()) {
 			$this.html(empty_input);
 		}
+	});
+
+	$('#conv').on('keyup','td',function() {
+		var table = [
+			["ẇ","ʍ","wh"],
+			["ř","r̝","rzh"],
+			["č","ʧ","tsh"],
+			["ǰ","ʤ","dzh"],
+			["ŝ","ʦ","ts"],
+			["ẑ","ʣ","dz"],
+			["ś","ʃ","sh"],
+			["ź","ʒ","zh"],
+			["ṗ","φ","ph"],
+			["ḃ","β","bh"],
+			["ð","ð","dh"],
+			["þ","θ","th"],
+			["ļ","ɬ","ll"],
+			["ñ","ɲ","gn"],
+			["y","y","ü"],
+			["ø","ø","ö"],
+			["a","a","a"],
+			["ă","ə","uh"],
+			["j","i","y"],
+			["ē","e","ē"],
+			["ō","o","ō"],
+			["w","u","w"],
+			["ı","ɪ","i"],
+			["e","ɛ","e"],
+			["o","ɔ","o"],
+			["u","ʊ","u"],
+			["rr","r","rr"],
+			["ṟ","ɹ","rh"],
+			["r","ɾ","r"],
+			["ḩ","χ","xh"],
+			["ç","ç","ch"],
+			["ǥ","ʝ","gh"],
+		], $this = $(this), i = $this.index(),
+		j = i === 0 ? 1 : 0,
+		k = i === 2 ? 1 : 2,
+		v = $this.html(),
+		ch = $this.parent().children();
+		function map(v,f) {
+			var r = [];
+			$.each(v, function(_,vv) {
+				r.push(f(vv));
+			}); return r;
+		}
+		function splitter(b,z) { var split = function(a) {
+			if (a === undefined) a = _;
+			if (typeof a === "string") return a.split(b);
+			return map(a,split);
+		}; return z === undefined ? split : split(z) }
+		function joiner(b,z) { var join = function(a) {
+			if (a === undefined) a = _;
+			if (typeof a[0] === "string") return a.join(b);
+			return map(a,join);
+		}; return z === undefined ? join : join(z) }
+		if (!$this.text()) {
+			ch.filter('['+plch+']:not(:nth-child('+(i+1)+'))').text('').each(onblur);
+			return;
+		} else ch.filter('.empty').each(onfocus);
+		//console.log(i,j,k);
+		var rev = [];
+		$.each(table, function(_,r) {
+			v = splitter(r[i],v);
+			rev.unshift(r);
+		});
+		v = [v,v];
+		$.each(rev, function(_,r) {
+			v[0] = joiner(r[j],v[0]);
+			v[1] = joiner(r[k],v[1]);
+		});
+		ch[j].innerHTML = v[0];
+		ch[k].innerHTML = v[1];
 	});
 });
 

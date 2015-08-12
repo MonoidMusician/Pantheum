@@ -69,7 +69,13 @@ if (array_key_exists("data",$_POST) and $_POST["data"]) {
 ?>
 <content>
 <h1>Ļaþ: ictionar</h1>
-
+<table id="conv">
+<tr>
+<td class="empty" contenteditable="true" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off">Ļaþ orthography</td>
+<td class="empty" contenteditable="true" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off">IPA /ɬaθ/</td>
+<td class="empty" contenteditable="true" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off">Romanization “llath”</td>
+</tr>
+</table>
 <table id="dict">
 <?php
 if (!array_key_exists("readback",$_POST) or $_POST["readback"] !== "false")
