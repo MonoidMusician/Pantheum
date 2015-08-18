@@ -65,67 +65,73 @@
 	<br>Form(s):
 	<input id="enter-forms" type="text" value="<?= safe_get('form', $_GET) ?>" placeholder="form, ...">
 	<br>Language(s):
-	<span class="select" id="select-langs">
-<?php
-	$show_more = FALSE;
-	foreach ($db->langs() as $l) {
-		$name = $l;
-		sql_getone($sql_stmts["lang_id->lang_dispname"], $name, ["s", $l]);
-		?><div <?php
-		if (!in_array($l, $langs)) {
-			$show_more = TRUE;
-			?>style="display: none"<?php
-		}
-		?>><label><input type="checkbox" id="lang-<?= $l ?>" name="enter-lang" <?php
-		if (in_array($l, $langs)) {
-			?>checked<?php
-		}
-		?> value="<?= $l ?>" ><?php display_lang($l);echo$name ?></label></div><?php
-	}
-?>
-	</span>
-	<a id="show-all-langs"
-	    <?php if(!$show_more) echo 'style="display:none"' ?>
-	    href="javascript:void(0)"
-	    onclick="$(this).hide();$('#select-langs div').show();">(show all)</a>
+	<select id="enter-langs" style="width: 300px;"></select>
 	<br>Attributes:
 	<input id="enter-attrs" type="text" value="<?= safe_get('attr', $_GET) ?>" placeholder="[!]attr[=value], ...">
 	<br>Part(s) of speech:
-	<span class="select" id="select-sparts">
-<?php
-	foreach ($db->sparts() as $s) {
-		?><span><label title="<?= ucfirst($s) ?>"><input type="checkbox" id="spart-<?= $s ?>" name="enter-spart" <?php
-		if ($sparts !== NULL and in_array($s, $sparts)) {
-			?>checked<?php
-		}
-		?> value="<?= $s ?>" ><?= format_spart($s) ?></label></span><?php
-	}
-?>
-	</span>
-	<br>Show <select id="limit">
-	<?php
-		$_ = [5,10,20,50];
-		if (!in_array($limit,$_)) {
-			$_[] = $limit;
-			sort($_);
-		}
-		foreach ($_ as $__) {
-			?><option <?= ($__===$limit?"selected":"") ?>><?= $__ ?></option><?php
-		}
-	?>
-	</select> results from <input placeholder="<?= $start; ?>" value="<?= $start; ?>" id="start-at" style="width: 50px;">
-	<script>$('#start-at').on("keypress", function(event) {
-		if (event.which == 13) {
-			$(this).blur();
-			dict.refreshEntries();
-		}
-	});</script> (out of <span id="number-entries">0</span>).
+	<select id="enter-sparts" style="width: 300px;"></select>
+	
+	<br>
 	<input id="enter-ids" style="width: 100px;" type="text" value="<?= safe_get('id', $_GET) ?>" placeholder="id, ...">
 	<button onclick="dict.refreshEntries();">Search</button>
 	<?php if ($editor) { ?>
 	<button onclick="dict.addEntry(function(){dict.refreshEntries();});">Add</button>
 	<?php } ?>
 	<button onclick="$('#enter-attrs,#enter-ids,#enter-names,#enter-forms').val('');$('[name=enter-spart], [name=enter-lang]').prop('checked', false);">Clear fields</button>
+
+	<div class="navigation">
+		Show <select id="limit">
+		<?php
+			$_ = [5,10,20,50];
+			if (!in_array($limit,$_)) {
+				$_[] = $limit;
+				sort($_);
+			}
+			foreach ($_ as $__) {
+				?><option <?= ($__===$limit?"selected":"") ?>><?= $__ ?></option><?php
+			}
+		?>
+		</select> results from
+			<span class="actionable" id="goto-first" title="First results">&lt;&lt;</span>
+			<span class="actionable" id="goto-prev"  title="Previous results">&lt;</span>
+			<input placeholder="<?= $start; ?>" type="number" value="<?= $start; ?>" min="0" id="start-at" style="width: 80px;">
+			<span class="actionable" id="goto-next"  title="Next results">&gt;</span>
+			<span class="actionable" id="goto-last"  title="Last results">&gt;&gt;</span>
+		<script>
+			$('#start-at').on("keypress", function(event) {
+				if (event.which == 13) {
+					$(this).blur();
+					dict.refreshEntries();
+				}
+			});
+			$('#start-at').on("change", function(event) {
+				$(this).blur();
+				dict.refreshEntries();
+			});
+			$('#goto-first').on('click', function() {
+				$('#start-at').val(0);
+				dict.refreshEntries();
+			});
+			$('#goto-last').on('click', function() {
+				$('#start-at').val(dict.number_entries - $('#limit').val());
+				dict.refreshEntries();
+			});
+			$('#goto-prev').on('click', function() {
+				var next = $('#start-at').val() - $('#limit').val();
+				if (next < 0) next = 0;
+				$('#start-at').val(next);
+				dict.refreshEntries();
+			});
+			$('#goto-next').on('click', function() {
+				var limit = (-$('#limit').val());
+				var next = $('#start-at').val() - limit;
+				if (next > dict.number_entries + limit)
+					next = dict.number_entries + limit;
+				$('#start-at').val(next);
+				dict.refreshEntries();
+			});
+		</script> (out of <span id="number-entries">0</span>).
+		</div>
 	</div>
 
 <article id="dictionary"/>
@@ -148,33 +154,46 @@
 			});
 			return ret.join();
 		}
-		$('#select-langs input').on('change', function() {
-			$('#select-sparts > *').hide();
-			var all = !$('#select-langs input:checked:visible').length;
-			<?php foreach ($db->sparts_by_lang as $l=>$sparts) { ?>
-				if (all || $('#select-langs input#lang-<?= $l ?>:checked:visible').length) {
-					$('#select-sparts').find(
-						'<?php $sep=""; foreach ($sparts as $s) { echo "$sep#spart-$s";$sep=",";} ?>'
-					).parent().parent().show();
+		$('#enter-sparts').select2({
+			multiple: "multiple"
+		});
+		$('#enter-langs').select2({
+			data: <?= json_encode(select2_getlangs()) ?>,
+			multiple: "multiple"
+		}).on('change', function() {
+			var sparts = {}, langs = $('#enter-langs').val() || <?= json_encode($db->langs()) ?>;
+			<?php foreach ($db->sparts_by_lang as $l=>$_sparts) { ?>
+				if ($.inArray("<?= $l ?>",langs) > -1) {
+					<?php foreach ($_sparts as $s) { ?>
+						sparts["<?= $s ?>"] = true;
+					<?php } ?>
 				}
 			<?php } ?>
-		}).first().trigger('change');
+			$('#enter-sparts').html('');
+			$.each(sparts, function(spart) {
+				$('#enter-sparts').append('<option value="'+spart+'">'+spart[0].toUpperCase()+spart.slice(1));
+			});
+		}).val(<?= json_encode($langs) ?>).trigger('change');
+		$('#enter-sparts').val(<?= json_encode($sparts) ?>).trigger('change');
 		$('#enter-names').autocomplete(autocompletions['dictionary-names']);
 		$('#enter-forms').autocomplete(autocompletions['dictionary-forms']);
 		$('#enter-attrs').autocomplete(autocompletions['dictionary-attributes']);
 		var number_entries = function(e) {
+			dict.number_entries = e.max_length;
 			$('#number-entries').text(e.max_length); // hint: set in PHP
+			$('#start-at').attr('max', Math.max(e.max_length - $('#limit').val(),0));
 		};
+		dict = new jWord();//http://52.3.75.179/dictionary.php?lang=la&spart=verb&start=0&limit=5
+		dict.init('dictionary', '/PHP5/quiz/get-entries.php', '/PHP5/quiz/set-path.php', '#enter-names');
+		dict.bindEvents();
 		$('#search-form input, #search-form select').on('change', function() {
 			dict.previewEntries(number_entries);
-		}).trigger('change');
+		});
+		dict.previewEntries(number_entries);
 		$('[name=no-inflections]').on('change', function() {
 			if ($.jStorage) $.jStorage.flush();
 		});
 	});
-	var dict = new jWord();
-	dict.init('dictionary', '/PHP5/quiz/get-entries.php', '/PHP5/quiz/set-path.php', '#enter-names');
-	dict.bindEvents();
 	<?php
 		if (!$langs or $langs == ['la']) {
 			?><?php

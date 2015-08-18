@@ -4,6 +4,8 @@
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
     
+    requireRank('1');
+    
     global $mysqli;
 ?>
 <h2>Overview</h2>

@@ -111,6 +111,7 @@ class _PICK
 function ISPICK($obj) {
 	return $obj instanceof _PICK;
 }
+// PICK([n], [key[] | weight[]] ~ [key | id])
 function PICK() {
 	$key=$id=$n=$weight=NULL;
 	$arg = func_get_args();

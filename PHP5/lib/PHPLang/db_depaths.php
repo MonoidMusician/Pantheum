@@ -1,7 +1,7 @@
 <?php
 # Helper functions:
 # Read depaths (and depath-constructing parts) from a JSON file at $path.
-function read_depaths($path) {
+function read_depaths($path, $lang=NULL) {
 	$string = file_get_contents($path);
 	$json = json_decode($string,true);
 	$parts = $_parts = $json["parts"];
@@ -16,7 +16,7 @@ function read_depaths($path) {
 	$depaths = $json["depaths"]; # depath JSON representation
 	unset($json);
 	if (isset($depaths))
-		return make_depaths($result, $depaths, $parts);
+		return make_depaths($result, $depaths, $parts, $lang);
 }
 # Initialize a part array.
 function init_values(&$key, &$result, &$parts) {
@@ -77,7 +77,7 @@ function catch_aliases($aliases, $values) {
 	return $r;
 }
 # Turn a JSON array syntax representing depaths into an array of PHP-object depaths.
-function make_depaths(&$result, &$depaths, &$parts) {
+function make_depaths(&$result, &$depaths, &$parts, $lang=NULL) {
 	foreach ($depaths as $key => &$depath) {
 		$duo = [[],[]];
 		# Add keys to populate the depath via duo[]
@@ -89,7 +89,7 @@ function make_depaths(&$result, &$depaths, &$parts) {
 			}
 		}
 		# link depath into result, update caller's record of the depaths
-		$depath = $result[$key] = DEPATH($duo[0], $duo[1]);
+		$depath = $result[$key] = DEPATH($duo[0], $duo[1], "$lang/$key");
 	}
 	return $result;
 }

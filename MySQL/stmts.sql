@@ -72,6 +72,8 @@
 {{{defineupdate|
     table=words&from=word_id&to=word_name}}};
 {{{defineupdate|
+    table=words&from=word_id&to=word_spart}}};
+{{{defineupdate|
     table=words&from=word_id&to=inflection_cache}}};
 
 {{{define|word_id->word_info|

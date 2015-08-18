@@ -78,6 +78,10 @@ function jWord() {
 	function normlist(val) {
 		return val ? val.trim().replace(/(?:,\s*)+(?=,|$)|^(?:,\s*)+/g, "") : "";
 	}
+	// Helper: return select2 as CSV
+	function getselect2(sel) {
+		return sel.val() && sel.val().join(',');
+	}
 	// Get the current URL to go to when user clicks "search"
 	this.searcher = function() {
 		var r, h;
@@ -88,8 +92,8 @@ function jWord() {
 			"name":normlist($('#enter-names').val()),
 			"form":normlist($('#enter-forms').val()),
 			"attr":normlist($('#enter-attrs').val()),
-			"lang":getcheckbox("enter-lang"),
-			"spart":getcheckbox("enter-spart"),
+			"lang":getselect2($('#enter-langs')),
+			"spart":getselect2($("#enter-sparts")),
 			"no_inflections":!!getcheckbox("no-inflections"),
 			"no_definitions":!!getcheckbox("no-definitions"),
 			"show_templates":!!getcheckbox("show-templates"),
@@ -351,6 +355,16 @@ function jWord() {
 			}
 		});
 	};
+	this.word_change_POS = function(id, pos) {
+		var my = this;
+		$.get(my.api_path+'change-pos.php','id='+id+'&newpos='+pos)
+		.done(function(data){
+			if (data == "success") {
+				return my.refreshEntry(id);
+			}
+			errorTip("Could not rename word: "+data);
+		});
+	}
 
 	this.word_run_templ = function(id) {
 		var my = this;
@@ -451,15 +465,9 @@ function jWord() {
 	};
 	this.resetForm = function(form) {
 		$.each(form, function(q,val) {
-			if (typeof val === "boolean") {
+			if (typeof val === "boolean")
 				$(q).prop('checked', val);
-				if (q.endsWith('[name=enter-lang]'))
-					if (val) $(q).parent().parent().show();
-					else {
-						$(q).parent().parent().hide();
-						$('#show-all-langs').show();
-					}
-			} else $(q).val(val);
+			else $(q).val(val);
 		});
 		//alert("done");
 	};

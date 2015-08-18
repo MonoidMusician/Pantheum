@@ -77,6 +77,7 @@ function loginSubmit(username, password, error) {
 }
 
 function changePassword(username, old, new1, new2, error) {
+    console.log(username, old, new1, new2, error);
     if ((username != '') && (old != '') && (new1 != '') && (new1 === new2)) {
         old = loginHash(username, old);
         new1 = loginHash(username, new1);
@@ -87,13 +88,17 @@ function changePassword(username, old, new1, new2, error) {
                 $.jStorage.flush();
             } else {
                 if (data == '1') {
-                    $(error).html('Already logged in.');
+                    $(error).html('Unknown error.');
                 } else if (data == '2') {
-                    $(error).html('Error logging in.');
+                    $(error).html('Wrong password.');
                 } else if (data == '3') {
-                    $(error).html('User is banned.');
+                    $(error).html('Bad username.');
                 } else if (data == '4') {
-                    $(error).html('Missing values.');
+                    $(error).html('Passwords did not match.');
+                } else if (data == '5') {
+                    $(error).html('Missing form.');
+                } else if (data == '6') {
+                    $(error).html('You\'ve been logged out.');
                 } else {
                     $(error).html('Error logging in (' + data + ').');
                 }

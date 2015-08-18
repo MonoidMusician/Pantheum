@@ -89,6 +89,7 @@
 		"preposition":[],
 		"conjunction":[],
 		"interjection":[],
+		"numeral":[],
 		"preposition-conjunction":[]
 	}
 }

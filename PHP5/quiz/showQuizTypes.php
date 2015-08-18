@@ -57,8 +57,10 @@ foreach ($quiz_types as $k=>$v) {
 	<?php
 	if (safe_get("n_questions",$v)) {
 		$n = $v["n_questions"];
-		if ($n === "auto") $n = count($v["options"]);
-		$onclick = 'var prev_val = $("#quiz-number").val();$("#quiz-number").val('.$n.').attr("disabled","true")';
+		if ($n === "auto")
+			if (is_callable($v["options"])) error_log("Warning: n_questions=auto does not work with deferred options (key $k)");
+			else $n = count($v["options"]);
+		$onclick = 'var prev_val = $("#quiz-number").val();$("#quiz-number").val(Math.abs('.$n.')).attr("disabled",'.$n.' > 0)';
 	} else $onclick = 'if ($("#quiz-number").attr("disabled"))$("#quiz-number").removeAttr("disabled").val(prev_val);else prev_val = $("#quiz-number").val()';
 	echo "onclick='$onclick'"; ?>
 	><?php
@@ -78,23 +80,30 @@ function update_tabs() {
 update_tabs();
 $(function(){
 	$('input[name=quiz-types]:checked').click();
-	var max_height = 0, max_width = 0;
+	var max_height = 0, max_width = 0, min_height = Infinity;
 	$('input[name=quiz-types]').parent().each(function() {
 		var w = $(this).width()+2;
 		if (w > max_width) max_width = w;
 	});
 	$('input[name=quiz-types]').parent().css('width', max_width + 'px');
 	var container = $('#quiz-type-selection');
+	container.css('max-height', container.height() + 10 + 'px');
 	//container.css('width', (max_width*3 + 20) + 'px');
 	$(function() {
+	container.css('width', '100%');
 	$('input[name=quiz-category]:not(:first)').each(function() {
 		var $this=$(this);
 		$this.click();
 		update_tabs();
 		var h = container.height()+10;
 		if (h > max_height) max_height = h;
+		if (h < min_height) min_height = h;
 	});
-	container.css('height', max_height + 'px').css('resize', 'vertical');
+	container
+		.css('height', max_height + 'px')
+		.css('min-height', min_height + 'px')
+		.css('resize', 'vertical')
+		.css('width', '');
 	$('input[name=quiz-category]:first').click();
 	});
 });

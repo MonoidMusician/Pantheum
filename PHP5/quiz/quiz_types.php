@@ -560,7 +560,7 @@ global $quiz_types;
 
 $options = [];
 foreach ($quiz_types as $k=>$v) {
-	if (array_key_exists("options", $v) and is_array($v["options"])) {
+	if (array_key_exists("name", $v) and array_key_exists("options", $v) and is_array($v["options"])) {
 		$options = array_merge($options, $v["options"]);
 	}
 }

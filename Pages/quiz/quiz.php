@@ -31,7 +31,7 @@
     ?>
     <br>
     Number of questions:
-    <input type="number" class="small" id="quiz-number" value="10">
+    <input type="number" class="small" id="quiz-number" value="10" min="1">
     <br>
     <button id="start" onclick="startQuiz();">
         Start the Quiz

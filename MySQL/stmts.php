@@ -67,6 +67,7 @@ $sql_stmts['word_spart,word_lang,word_name->word_id']= "SELECT word_id FROM word
 $sql_stmts['word_id->delete from words']= "DELETE FROM words WHERE (word_id = (?))";
 
 $sql_stmts['word_id->word_name=']= "UPDATE words SET word_name = (?) WHERE word_id = (?)";
+$sql_stmts['word_id->word_spart=']= "UPDATE words SET word_spart = (?) WHERE word_id = (?)";
 $sql_stmts['word_id->inflection_cache=']= "UPDATE words SET inflection_cache = (?) WHERE word_id = (?)";
 
 $sql_stmts['word_id->word_info']= "SELECT CONCAT(

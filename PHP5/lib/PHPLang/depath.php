@@ -39,13 +39,14 @@ function register3(&$hic, $__hash) {
 #
 class _DEPATH
 {
-	function __construct($init=NULL, $aliases=NULL) {
+	function __construct($init=NULL, $aliases=NULL, $name=NULL) {
 		$this->key2values = [];
 		$this->value2key = [];
 		$this->all_sub_keys = [];
 		$this->level = [];
 		$this->simple_keys = [];
 		$this->recursive_keys = [];
+		$this->name = $name;
 		if ($aliases === NULL) $aliases = [];
 		$this->aliases = $aliases;
 		#echo "\$init:\n";
@@ -100,7 +101,7 @@ class _DEPATH
 		$ret = $key ? subscript(subscript($this->aliases, $key), $value) : NULL;
 		if (!is_string($ret))
 			$ret = subscript($this->aliases, $value);
-		if (!is_string($ret)) _die("value '$value' has no alias for key ".($key==null?'nil':"'$key'"));
+		if (!is_string($ret)) _die("value '$value' has no alias for key ".($key==null?'nil':"'$key'")." depath name ".$this->name);
 		return $ret;
 	}
 	function add_alias($alias, $value, $key=NULL) {
@@ -115,8 +116,8 @@ class _DEPATH
 function ISDEPATH($obj) {
 	return $obj instanceof _DEPATH;
 }
-function DEPATH($init=NULL, $aliases=NULL) {
+function DEPATH($init=NULL, $aliases=NULL, $name=NULL) {
 	if (function_exists("ISWORD") and ISWORD($init)) return $init->mgr();
-	else return new _DEPATH($init, $aliases);
+	else return new _DEPATH($init, $aliases, $name);
 }
 ?>

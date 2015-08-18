@@ -142,7 +142,7 @@ foreach ([
 	['This ([wo]man|person) [here]', 'this woman'],
 	['This ([wo]man|person) [here]', 'this person here'],
 	['{*thou} {knowest} {not} {me}.','me thou knowest not'],
-	['{*venistine} {ex foro} {[tu]}','uenistine tu ex foro'],
+	['{*venistine} {ex foro} {[tu]}?','uenistine·tu·ex·foro'],
 	['{*[a[n]|the] centurion} {, (having (caught sight of) ([a[n]|the] young man)|who had (caught sight of) ([a[n]|the] young man)),} {said} {, “I recognize (this [man|guy]|him)!”,}.','thecenturionhavingcaughtsightoftheyoungmansaidirecognizehim']
 ] as $example) {
 	echo "<li>";
@@ -184,14 +184,15 @@ foreach ([
 <h2>Try it!</h2>
 <p>IT'S ALIVE!!</p>
 
-<input id="syntax" placeholder="Expression">
 <label><input type="checkbox" id="debug">Debug</label>
 <label><input type="checkbox" checked id="matchall">Only match whole string</label>
+<br>
+<input style="width: 100%" id="syntax" placeholder="Expression">
 <br>
 <code class="string" id="expression">
 </code>
 <br>
-<input id="input" placeholder="String to match">
+<input style="width: 100%" id="input" placeholder="String to match">
 <br>
 <span class="output" id="result">
 </span>

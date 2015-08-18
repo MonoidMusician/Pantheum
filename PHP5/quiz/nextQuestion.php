@@ -226,7 +226,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 
 			quiz_addkey("current_answer","answer$n",$results);
 
-			$result_json[] = [$word === $OP_USER_INPUT?"input":"paragraph", "answer$n", $quiz["answer$n-tooltip"]];
+			$result_json[] = [$word === $OP_USER_INPUT?"input":"paragraph", "answer$n", $quiz["answer$n-tooltip"], $quiz["answer$n-tooltip"], $lang];
 			$n += 1;
 
 		} else $_mini[] = $word;

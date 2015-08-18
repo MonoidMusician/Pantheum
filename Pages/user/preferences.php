@@ -21,8 +21,10 @@ Word formatting:
 </select>
 <br>
 <span id="word-format-ex" class="format-word-la">
-Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugnātus‣, et hoc īnflexum: aestəmāvissem. Jussa!
+Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugnātus‣, et hoc īnflexum: aestⱶmāvissem. Jussa!
 </span>
+
+<button id="save">Save</button>
 
 <script>
 $('#lang').select2({
@@ -34,4 +36,14 @@ $('#la_ipa').select2({
 }).val(la_ipa.transform_key).on('change', function() {
     la_ipa.select_transformer($(this).val()).format();
 }).trigger('change');
+
+$('#save').on('click', function() {
+    $.post('/PHP5/user/udata-set.php', {'key':'la_ipa','value':$('#la_ipa').val()}, function(data) {
+        if (data === "success") successTip("Preferences updated successfully");
+        else if (data === "1") errorTip("Unknown error. (Try again or report to webmaster.)");
+        else if (data === "2") errorTip("Bad parameters.");
+        else if (data === "3") errorTip("Unknown user. Try logging out and back in.");
+        else if (data === "4") errorTip("You have been logged out. Please log in and try again.");
+    });
+});
 </script>

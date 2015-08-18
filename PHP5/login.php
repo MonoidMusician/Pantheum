@@ -51,6 +51,7 @@
                 $_SESSION['username'] = $username;
                 $_SESSION['uid'] = $M_row['id'];
                 $_SESSION['rank'] = $M_row['rank'];
+                $_SESSION['udata'] = $M_row['udata'];
                 
                 $M_query6 = "UPDATE users SET currentip='$current' WHERE id='" . $M_row['id'] . "';";
                 $M_result6 = $mysqli->query($M_query6);

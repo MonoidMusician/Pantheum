@@ -1,16 +1,18 @@
 <?php
     session_start();
-    global $sli, $suid, $suname, $srank;
+    global $sli, $suid, $suname, $srank, $sudata;
     $sli = false;
     $suid = '';
     $suname = 'error';
     $srank = '';
+    $sudata = null;
     
     if ((isset($_SESSION['li'])) && ($_SESSION['li'] == 'true')) {
         $sli = true;
         $suid = $_SESSION['uid'];
         $suname = $_SESSION['username'];
         $srank = $_SESSION['rank'];
+        $sudata = $_SESSION['udata'];
     }
     
     if ($sli == true) {

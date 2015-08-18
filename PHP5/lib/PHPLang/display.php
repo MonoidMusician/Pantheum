@@ -195,6 +195,22 @@ function format_attr($tag,$value=NULL) {
 function format_path($c) {
 	return implode(" ", array_map("format_value", array_reverse(explode("/",$c))));
 }
+function format_lang($lang) {
+	global $sql_stmts;
+	if (ISWORD($lang)) $lang = $lang->lang();
+	$name = $lang;
+	sql_getone($sql_stmts["lang_id->lang_dispname"], $name, ["s", $lang]);
+	return $name;
+}
+
+function select2_getlangs() {
+	$langs = [];
+	$db = defaultDB();
+	foreach ($db->langs() as $l) {
+		$langs[] = ["id"=>$l,"text"=>format_lang($l)];
+	}
+	return $langs;
+}
 
 function word_link($w,$hide_lang=false) {
 	if (!$hide_lang) display_lang($w);
@@ -342,7 +358,7 @@ function display_word_info($w, $can_edit=FALSE) {
 		$infos[] = format_attr($attr->tag(), $attr->value());
 	}
 	?>(<?php echo implode("; ", $infos); ?>)<?php
-	if ($can_edit !== NULL and (1 or $can_edit)) {
+	if ($can_edit !== NULL and ($can_edit)) {
 		$slug = slugify($w->name());
 		$class = "word${id}_toolbox";
 ?>
@@ -381,6 +397,16 @@ function display_word_info($w, $can_edit=FALSE) {
 				var id = <?= $id ?>;
 				$('#word'+id+'_refresh').on("click.refresh", function() {
 					dict.word_refresh(id);
+				});
+			});
+		</script>
+		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_change_POS">change POS</a>]
+		<script type="text/javascript">
+			$(function() {
+				var id = <?= $id ?>;
+				$('#word'+id+'_change_POS').on("click.change_POS", function() {
+					var pos = prompt('What part of speech?', '<?= $spart ?>');
+					if (pos) dict.word_change_POS(id, pos);
 				});
 			});
 		</script>

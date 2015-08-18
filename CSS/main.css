@@ -31,7 +31,7 @@ html,body {
     background-color: #fafafa;
     
     font-size: 1.05em;
-    font-family: "Gentium Plus", "Linux Libertine" !important;
+    font-family: "Linux Libertine" !important;
 }
 
 header.global-nav {
@@ -186,8 +186,19 @@ input.small {
     text-align: center;
 }
 
-input:focus, input:active, button:focus:not(.disabled), button:active:not(.disabled) {
-    border: 1px solid #4466aa;
+input:focus:not(.select2-search__field),
+input:active:not(.select2-search__field),
+button:focus:not(.disabled),
+button:active:not(.disabled),
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: 1px solid #3E6FD2 !important;
+}
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner {
+    border: 0;
+    outline: 0;
 }
 
 button.disabled {

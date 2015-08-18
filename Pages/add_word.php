@@ -300,10 +300,7 @@ $('#wiktionary,#perseus').on('click', function() {
 			t.click(); // jQuery does not follow the link
 	}, 2);
 });
-var transform = æ.mix(
-	æ.deASCIIize,
-	æ.x
-);
+var transform = æ.deASCIIize;
 Plugins.AutosizeInput.getDefaultOptions().space = 6;
 var relation_autocomplete = {
 	//lookup: names,

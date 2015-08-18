@@ -19,7 +19,7 @@
 		and is_array($values["correct"])
 		and array_key_exists("expr", $values)
 		and is_string($values["expr"])) {
-			$value = compare_syntax($values["expr"], $answer, $flags);
+			$value = compare_syntax3($values["expr"], $answer, nano_dfdict(), true);
 			if ($value === null) {
 				$score = FALSE;
 				$correct = $values["correct"];

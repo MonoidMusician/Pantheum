@@ -83,7 +83,7 @@ $quiz_types = array_merge($quiz_types,[
 		]]
 	],
 	"004" => [
-		"name" => "Relative clauses",
+		//"name" => "Relative clauses",
 		"category" => "Grammar",
 		"lang" => "la",
 		"options" => [
@@ -105,6 +105,7 @@ $quiz_types = array_merge($quiz_types,[
 					[
 						"spart" => "noun",
 						"attr" => $df_exclude,
+						"lang" => "la",
 						"path" => [ make_picks(PICK(2,"number")->l("la"), 1, 0,0), make_picks(PICK(2, "gender")->l("la"), 1, 1,0), "nominative" ]
 					],
 					$OP_COMMA,
@@ -112,6 +113,7 @@ $quiz_types = array_merge($quiz_types,[
 					[
 						"spart" => "verb",
 						"attr" => ["transitive"=>"true","!template"=>NULL,"!hidden"=>NULL],
+						"lang" => "la",
 						"path" => ["indicative", "active", "person-1",
 						           PICK("tense")->l("la"), PICK("number")->l("la")],
 						"verb-gender" => get_pick(1,0)
@@ -120,33 +122,45 @@ $quiz_types = array_merge($quiz_types,[
 					[
 						"name" => "sum",
 						"spart" => "verb",
+						"lang" => "la",
 						"path" => [get_pick(0,0), "person-3", "indicative", "active", PICK("tense")]
 					],
 					[
 						"spart" => "adjective",
 						"attr" => $df_exclude,
+						"lang" => "la",
 						"path" => [get_pick(0,0), get_pick(1,0), "nominative/positive"]
 					]
 				],
 				"choices0" => [
 					"correct" => [
 						"name"=>"qui",
+						"spart" => "pronoun",
+						"lang" => "la",
 						"path" => [ get_pick(0,0), get_pick(1,0), "accusative" ]
 					],
 					[
 						"name"=>"qui",
+						"spart" => "pronoun",
+						"lang" => "la",
 						"path" => [ get_pick(0,1), get_pick(1,0), "accusative" ]
 					],
 					[
 						"name"=>"qui",
+						"spart" => "pronoun",
+						"lang" => "la",
 						"path" => [ get_pick(0,0), get_pick(1,1), "accusative" ]
 					],
 					[
 						"name"=>"qui",
+						"spart" => "pronoun",
+						"lang" => "la",
 						"path" => [ get_pick(0,0), get_pick(1,1), get_pick(2,0) ]
 					],
 					[
 						"name"=>"qui",
+						"spart" => "pronoun",
+						"lang" => "la",
 						"path" => [ get_pick(0,1), get_pick(1,0), get_pick(2,1) ]
 					],
 				],
@@ -155,7 +169,7 @@ $quiz_types = array_merge($quiz_types,[
 		],
 	],
 	"008" => [
-		"name"=>"Relative Pronouns",
+		//"name"=>"Relative Pronouns",
 		"category" => "Grammar",
 		"lang" => "la",
 		"options" => [[
@@ -511,7 +525,8 @@ $quiz_types = array_merge($quiz_types,[
 					[
 						"spart" => "verb",
 						"attr" => $df_exclude,
-						"path" => get_pick("path")
+						"lang" => "la",
+						"path" => get_pick("path"),
 					],
 					$OP_MULTIPLE_CHOICE
 				],
@@ -578,7 +593,7 @@ $quiz_types = array_merge($quiz_types,[
 		"name" => "Subjunctive matching",
 		"lang" => "la",
 		"category" => "Grammar",
-		"n_questions" => "auto",
+		"n_questions" => 1,
 		"options" => function(){return[
 			make_matching([
 				"Pluperfect Subjunctive"=>"portāvisset",

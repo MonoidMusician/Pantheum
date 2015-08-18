@@ -189,6 +189,8 @@ function match($l,$r,$flags,$silent=false) {
 	$regex = implode("($ignore)*", array_map("any_match_quoted",str_split($rs)));
 	$regex = "/^($ignore)*$regex\s*/i";
 	if (!$silent) var_dump($regex);
+	if (!$silent) echo "On subject:";
+	if (!$silent) var_dump($l);
 	$ret = preg_replace($regex,"",$l,1);
 	if (!$silent) echo "</ol>Result remaining:";
 	if (!$silent) var_dump($ret);
@@ -221,7 +223,7 @@ function compare_part($s, $i, $flags) {
 			$l = $j2 + strlen($r2) + 4;
 			continue;
 		}
-		if ($r0[0] === "*" or ($r0[0] === "\\" and $r0[1] === "*")) {
+		if ($r0 and ($r0[0] === "*" or ($r0[0] === "\\" and $r0[1] === "*"))) {
 			$capitalize = ($r0[0] === "*");
 			$r0 = substr($r0,1);
 		} else $capitalize = false;
@@ -304,7 +306,17 @@ function compare_part($s, $i, $flags) {
 			// Curly braces: try each pair
 			$rr = null;
 			$match_idx = null;
+			$first = true; $cont = false;
 			foreach ($opts as $idx => $opt) {
+				if (!$first) {
+					if ($opt === "\\|") break;
+					if ($opt === "" and array_key_exists($idx-1, $opts)) {
+						$cont = true;
+						continue;
+					}
+				}
+				$first = false;
+				if ($cont) {$cont=false;continue;}
 				$rrr = compare_syntax($opt, $i, $flags, $other);
 				if ($DEBUG_STRING_PHP) echo "<hr>";
 				if ($rrr === null) continue; else
@@ -374,6 +386,7 @@ function compare_syntax($ss, $i, $flags, &$backtrack=NULL) {
 	if ($DEBUG_STRING_PHP) echo "compare_syntax '$ss' and '$i'<ol>";
 	//echo " -> '$ss'";
 	$flags["unescaped"] = false;
+	$i = no_specials2($i);
 	if (strpos($ss, "\\") === false) {
 		$m = match($i,$ss,$flags);
 		if ($DEBUG_STRING_PHP) echo "</ol>";
@@ -534,14 +547,58 @@ function nanomacro($syntax, $dictionary, $escape=false) {
 // Return the default/shared dictionary.
 function nano_dfdict() {
 	return [
-		'a' => '[a[n]|the]',
 		'test' => 'This is argument 1: ${0}, and 2: ${1}, and 3: ${2}',
-		'quot' => ', “(${0})”,',
+
+		// Articles/possessives
+		'a' => '[a[n]|the]',
+		'my' => '[a[n]|the|my|mine]',
+		'its' => '[a[n]|the|its]',
+		'his' => '[a[n]|the|his]',
+		'her' => '[a[n]|the|her[s]]',
+		'your' => '[a[n]|the|your[s]]',
+		'their' => '[a[n]|the|their[s]]',
+		'some' => '[the|some]',
+
+		// Separating conjunctions (order L/R preserved)
+		'AND' => 'and {|}',
+		'OR'  => 'or  {|}',
+		'AUT' => 'aut {|}',
+		'ET'  => 'et  {|}',
+		'VEL' => 'vel {|}',
+
+		// Speaking... meh
+		'_q'     => '“${0}”',
+		'quot'   => '{, “{${0}}”,}',
+		'quot2'  => '{. “{${0}}”,}', // has a period at start
+		'quest'  => '{, “{${0}}?”}',
+		'quest2' => '{. “{${0}}?”}', // has a period at start
+
+		'_talk' =>  '{({${2}} {${0}} {to ${3}})|((${2}) (${1}) (${3}))}',
+		'_Talk' => '{*({${2}} {${0}} {to ${3}})|((${2}) (${1}) (${3}))}',
+		'say'  => '_\_talk$(say) $(tell|inform)',
+		'said' => '_\_talk$(said)$(told|informed)',
+		'says' => '_\_talk$(says)$(tells|informs)',
+		'Say'  => '_\_Talk$(say) $(tell|inform)',
+		'Said' => '_\_Talk$(said)$(told|informed)',
+		'Says' => '_\_Talk$(says)$(tells|informs)',
+
+		'_reply' =>  '{({${1}} {${0}} {to ${2}})|((${1}) (${0}) (${2}))}',
+		'_Reply' => '{*({${1}} {${0}} {to ${2}})|((${1}) (${0}) (${2}))}',
+		'reply'   => '_\_reply$(reply  |respond  |answer)',
+		'replies' => '_\_reply$(replies|responds |answers)',
+		'replied' => '_\_reply$(replied|responded|answered)',
+		'Reply'   => '_\_Reply$(reply  |respond  |answer)',
+		'Replies' => '_\_Reply$(replies|responds |answers)',
+		'Replied' => '_\_Reply$(replied|responded|answered)',
+
+		// Phrases/Clausae
+		'phrase' => ', ${0},',
+		'appos' => '{ {,${1},} {${0}}}', // appositives need to stay next to each other
+		'Appos' => '{*{,${1},} {${0}}}', // capitalized version
 		'perfactv' => ', (having (${0}) (${1})|who had (${0}) (${1})),',
 		'cum' => ', when ${0},',
-		'phrase' => ', ${0},',
-		'appos' => '{ {,${1},} {${0}}}',
-		'Appos' => '{*{,${1},} {${0}}}',
+
+		// Other helpers
 		'opts' => '({${0}} {${1}}|{${0}} {${2}})',
 	];
 }
@@ -676,7 +733,8 @@ function normalize_punctuation($str) {
 
 
 // Combine all three
-function compare_syntax3($syntax, $target, $dictionary, $matchall=false) {
+function compare_syntax3($syntax, $target, $dictionary=null, $matchall=false) {
+	if ($dictionary === null) $dictionary = nano_dfdict();
 	$syntax = nanomacro($syntax, $dictionary, 4);
 	$match = compare_syntax($syntax, $target, ["unescaped"=>true,"matchall"=>$matchall]);
 	return $match ? normalize_punctuation($match) : $match;

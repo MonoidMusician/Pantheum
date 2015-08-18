@@ -7,7 +7,7 @@ $quiz_types = array_merge($quiz_types, [
 		"lang" => "la",
 		"no_shuffle" => true,
 		"n_questions" => "auto",
-		"options" => function(){global$OP_USER_INPUT;return[[
+		"options" => [[
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
@@ -20,10 +20,10 @@ $quiz_types = array_merge($quiz_types, [
 				"correct" => [
 					"Syphāx and Celer were standing in the harbor. The friends were watching the mountain."
 				],
-				"expr" => '({*Syphāx and Celer} {were standing|stood} {(in|at) _a harbo[u]r}). ({*_a friends} {were (watching|looking at)} {_a mountain}).'
+				"expr" => '({*Syphāx and Celer} {were standing|stood} {(in|at) _a (port|harbo[u]r)}). ({*_a friends} {were (watching|looking at)} {_a mountain}).'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -35,10 +35,10 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Syphāx said to his friend, “I was selling slaves near the harbor. Suddenly I heard sounds.”"],
-				"expr" => '_opts $(Syphāx) $(said} {to ${2}) $(told} {${1}) $([his|the|a] friend) _quot$({*I} {was selling} {[the] slaves} {near the harbor}) {_quot({*suddenly} {I} {heard} {[the|some] (sounds|noises)})}.'
+				"expr" => '{_Said$(Syphāx)$(_his friend) _quot$(*I} {was selling} {_some slaves} {near the (port|harbo[u]r)) {} _quot2$(*suddenly} {I} {heard} {_some (sounds|noises)).'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -50,10 +50,10 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Celer replied to Syphāx, “You heard sounds. I felt tremors. I was walking near the mountain.”"],
-				"expr" => '{Celer} {replied|responded} {to Syphāx} {_quot$({*you} {heard} {sounds|noises})} {._quot$({*I} {felt|sensed} {[the|some] (tremors|shake(s|ing))}.)} {. _quot$({*I} {was walking} {near _a mountain}.)}.'
+				"expr" => '_Replied$(Celer)$(Syphāx) _quot$(*you} {heard} {sounds|noises) {} _quot2$(*I} {felt|sensed} {_some (tremors|shak(es|ing)).) {} _quot2$(*I} {was walking} {near _a mountain).'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -68,7 +68,7 @@ $quiz_types = array_merge($quiz_types, [
 				"expr" => '({*were standing} {Poppæa and Lucriō} {(in[side]|at) _a atrium}). ({*worried} {were} {they}).'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -80,10 +80,10 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Poppæa said to Lucriō, “I was in the forum. I was searching for a toga for you. I caught sight of a marvelous cloud.”"],
-				"expr" => '_opts$(Poppæa)$(said} {to Lucriō)$(told Lucriō) {_quot$({*I} {was} {in _a forum})} {_quot$(_opts$(*I} {for you)$(was (look|search)ing} {for ${2})$(was seeking ${1}) $(_a toga).)} {_quot$({*I} {saw|caught sight of} {_a (wonderful|marvelous|strange|odd|weird) cloud}.)}.'
+				"expr" => '_Said$(Poppæa)$(Lucriō) _quot$({*I} {was} {in _a forum}) {_quot$(_opts$(*I} {for you)$(was (look|search)ing} {for ${2})$(was seeking ${1}) $(_a toga).)} {_quot$({*I} {saw|caught sight of} {_a (wonderful|marvelous|strange|odd|weird) cloud}.)}.'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -95,10 +95,10 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Lucriō replied to Poppæa, “You caught sight of a cloud. I felt ashes. I saw flames.”"],
-				"expr" => '{Lucriō} {replied|responded} {to Poppæa} {_quot$({*you} {caught sight of|saw} {_a cloud})} {._quot$({*I} {felt|sensed} {[the|some] (ash[es])}.)} {. _quot$({*I} {saw} {[the|some] flames}.)}.'
+				"expr" => '_Replied$(Lucriō)$(to Poppæa) _quot$(*you} {caught sight of|saw} {_a cloud) _quot2$(*I} {felt|sensed} {_some (ash[es])) _quot2$(*I} {saw} {_some flames).'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -110,18 +110,10 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Marcus and Quārtus were in the forum. Sulla hurried to the brothers."],
-				"acceptable" => permute_sentence_choices([
-					"Marcus and Quārtus were",
-					["in","inside","at"],
-					["the","a",""],
-					"forum. Sulla",
-					["hurried","rushed"],
-					["up to","to"],
-					["the brothers","brothers","them"]
-				])
+				"expr" => '({{Marcus} and {Quārtus}} {were} {(in[side]|at) _a forum}). ({Sulla} {hurried|rushed} {[up] to ([the] brothers|them)}).'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -133,28 +125,10 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["Sulla said to the brothers, “I was hurrying to the theater. I heard sounds and felt tremors. Did you hear sounds? Did you feel tremors?”."],
-				"acceptable" => permute_sentence_choices([
-					"Sulla",
-					["said to","told","asked"],
-					["the brothers,","brothers,"],
-					"“I was",
-					["hurrying","running"],
-					"to the theater. I heard",
-					["the","some",""],
-					["sounds","noises"],
-					"and",["","I"],"felt",
-					["the",""],
-					["tremors.","shaking"],
-					"Did you hear",
-					["the",""],
-					["sounds?","noises?"],
-					"Did you feel",
-					["the",""],
-					["tremors?”.","shakes?”.","shaking?”."]
-				])
+				"expr" => '_Said$(Sulla)$([the] brothers) _quot$(*I} {was (hurry|runn)ing} {to _a theater) _quot2$(*I} {heard} {_some (sounds|noises)} _AND {[I]} {felt} {tremors|shakes|shaking) _quest2$(*did you} {hear} {_some (sounds|noises)) _quest2$(*did you} {feel} {_some (tremors|shak(es|ing))).'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -166,49 +140,35 @@ $quiz_types = array_merge($quiz_types, [
 			],
 			"answer0" => [
 				"correct" => ["The brothers replied to Sulla, “We felt tremors and heard the sounds. We saw the marvelous cloud. We are worried.”"],
-				"acceptable" => permute_sentence_choices([
-					["The",""],
-					"brothers",
-					["replied","responded"],
-					"to Sulla, “We felt",
-					["the",""],
-					["tremors","shaking."],
-					"and",["We",""],"heard",
-					["the",""],
-					"sounds. We saw",
-					["the","a",""],
-					["wonderful","marvelous","strange","odd","weird"],
-					"cloud. We are worried.”"
-				])
+				"expr" => '_Replied$([the] brothers)$(Sulla) _quot$(*we} {felt} {_some (tremors|shakes|shaking)} _AND {[we]} {heard} {_some (sounds|noises)) _quot2$(*we} {saw} {_a (wonderful|marvelous|strange|odd|weird) cloud) _quot2$(*we} {are worried).'
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
-		]];}
+			"answer0-language" => "en",
+		]]
 	],
+
+
+
 	"modelsentences-19" => [
 		"name" => "Stage 19 Model Sentences",
 		"category" => "Model Sentences",
 		"lang" => "la",
 		"no_shuffle" => true,
 		"n_questions" => "auto",
-		"options" => function(){global$OP_USER_PARAGRAPH;return[[
+		"options" => [[
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
 				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_1_large.jpg' style='width: 205px;'><br>"),
-				format_word("1. hic vir est Aristō. Aristō est
-amīcus Barbillī. in vīllā
-splendidā habitat, sed
-miserrimus est.","la",true),
+				format_word("1. hic vir est Aristō. Aristō est amīcus Barbillī. in vīllā splendidā habitat, sed miserrimus est.","la",true),
 				HTML("<br><br>"),
 				$OP_USER_PARAGRAPH
 			],
 			"answer0" => [
 				"correct" => [
 					"This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid house, but he is very miserable."
-					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
 				],
-				"expr" => 'This [man] is Aristō. (Aristō|He) is (_a friend of Barbillus|Barbillus\' friend). (He|Aristō) ((lives|dwells|resides|remains|lingers) in|inhabits) _a (distinguished|noble|illustrious|bright|shining|glittering|brilliant|splendid|magnificent|sumptuous) (house|villa), but [he|Aristō] is (very|most) (miserable|unhappy|poor|wretched|pitiful|worthless|null|tragic|unfortunate|sick|tormenting).',
+				"expr" => '({*this [man]} {is} {Aristō}). ({*Aristō|he} {is} {_a friend of Barbillus|Barbillus\' friend}). ({*he|Aristō} {(lives|dwells|resides|remains|lingers) in|inhabits} {_a (distinguished|noble|illustrious|bright|shining|glittering|brilliant|splendid|magnificent|sumptuous) (house|villa)}), but ({[he|Aristō]} {is} {(very|most) (miserable|unhappy|poor|wretched|pitiful|worthless|null|tragic|unfortunate|sick|tormenting))}.',
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "en",
@@ -217,17 +177,13 @@ miserrimus est.","la",true),
 			"selections" => [],
 			"sentence" => [
 				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_2_large.jpg' style='width: 205px;'><br>"),
-				format_word("2. haec fēmina est Galatēa.
-Galatēa est uxor Aristōnis.
-Galatēa marītum saepe
-castīgat, numquam laudat.","la",true),
+				format_word("2. haec fēmina est Galatēa. Galatēa est uxor Aristōnis. Galatēa marītum saepe castīgat, numquam laudat.","la",true),
 				HTML("<br><br>"),
 				$OP_USER_PARAGRAPH
 			],
 			"answer0" => [
 				"correct" => [
 					"This woman is Galatēa. Galatēa is Aristō's wife. Galatēa often scolds her husband, she never praises him."
-					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
 				],
 				"expr" => '({*this [woman]} {is} {Galatēa}). ({Galatēa|she} {is} {_a (wife of Aristō|Aristō\'s wife)}). ({Galatēa} {often} {scolds} {[her|a|the] husband}), [but|and] ({[she]} {never} {prases} {him}|{never} {praising} {him}).',
 			],
@@ -238,36 +194,37 @@ castīgat, numquam laudat.","la",true),
 			"selections" => [],
 			"sentence" => [
 				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_3_large.jpg' style='width: 205px;'><br>"),
-				format_word("3. haec puella est Helena. Helena est fīlia Aristōnis et Galatēae.
-multī iuvenēs hanc puellam amant, quod pulcherrima est.","la",true),
+				format_word("3. haec puella est Helena. Helena est fīlia Aristōnis et Galatēae. multī iuvenēs hanc puellam amant, quod pulcherrima est.","la",true),
 				HTML("<br><br>"),
 				$OP_USER_PARAGRAPH
 			],
 			"answer0" => [
 				"correct" => [
 					"This girl is Helena. Helena is Aristō and Galatēa's daughter. Many young men love this girl, because she is very beautiful."
-					// This man is Aristō. Aristō is a friend of Barbillus. He lives in a splendid villa, but he is very miserable.
 				],
 				"expr" => '({*this [girl]} {is} {Helen[a]}). ({Helen[a]|she} {is} {_a (daughter of Aristō and Galatēa|Aristō and Galatēa\'s daughter)}). (Many (young men|boys) love (this girl|her|Helen[a])), because ({she} {is} {(very|most) (beautiful|pretty)}).',
 			],
 			"answer0-tooltip" => "English translation",
 			"answer0-language" => "en",
-		]];},
+		]]
 	],
+
+
+
 	"modelsentences-25" => [
 		"name" => "Stage 25 Model Sentences",
 		"category" => "Model Sentences",
 		"lang" => "la",
 		"no_shuffle" => true,
-		"n_questions" => "auto",
+		"n_questions" => 4,
 		"options" => function(){global$OP_USER_PARAGRAPH;return[[
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
 				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s25/ms1.jpg' style='width: 205px;'><br>"),
-				format_word("1. mīles legiōnis secundæ per castra ambulābat. subitō iuvenem ignōtum prope horreum latentem cōnspexit.
-“heus tū,” clāmāvit mīles, “quis es?”
-iuvenis nihil respondit. mīles iuvenem iterum rogāvit quis esset. iuvenis fūgit.","la"),
+				format_word("1. mīles legiōnis secundæ per castra ambulābat. subitō iuvenem ignōtum prope horreum latentem cōnspexit.","la"),
+				format_word("“heus tū,” clāmāvit mīles, “quis es?”","la"),
+				format_word("iuvenis nihil respondit. mīles iuvenem iterum rogāvit quis esset. iuvenis fūgit.","la"),
 				HTML("<br><br>"),
 				$OP_USER_PARAGRAPH
 			],
@@ -297,7 +254,7 @@ The",
 				])
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -333,7 +290,7 @@ The young man did not want to say what he was doing near the barn. The soldier l
 				])
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -363,7 +320,7 @@ Then the soldier explained how he had caught the",
 				])
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		],[
 			"help" => "Translate the sentence",
 			"selections" => [],
@@ -405,7 +362,7 @@ The",
 				])
 			],
 			"answer0-tooltip" => "English translation",
-			"answer0-language" => "",
+			"answer0-language" => "en",
 		]];}
 	],
 ]);

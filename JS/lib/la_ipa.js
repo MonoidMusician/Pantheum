@@ -44,10 +44,10 @@ var la_ipa = (function () {
 		return r.replace(/^\s*|\s(?=\s)|\s*$/g, "");
 	};
 	my.ASCIIize = function (r) {
-		return my.ae_oe(r).split("").map(function(a) {return a.match(/[^\u0000-\u007f]/)?"":a}).join("");
+		return my.ae_oe(my.sonusmedius(r)).split("").map(function(a) {return a.match(/[^\u0000-\u007f]/)?"":a}).join("");
 	};
-	my.schwa = function (r) {
-		return r.split("ə").join("i");
+	my.sonusmedius = function (r) {
+		return r.split("ⱶ").join("i");
 	};
 	my.ae_oe = function(r) {
 		return (
@@ -150,6 +150,8 @@ var la_ipa = (function () {
 				//.replace(/([aeiou])(n(?=[szfv])|m((?![.]|(?=[.][.])|k\u02B7e|ve)|(?![\w.])))/g,"$1\u0303\u02D0$2\u0325")
 				//.replace(/\u02B7(?=[ei\u025B\u026A])/g,"\u1DA3")
 				// Short vowels
+				.replace(/\u2C76(?=[mbpf])/g, "\u0289") // sonus medius rounded/labialized
+				.replace(/\u2C76/g, "\u0268") // sonus medius
 				.replace(/i(?![aeiou]|[\u02D0\u032F\u02D0])/g, "\u026A") // note: all vowels here, not just dipthongs
 				.replace(/e(?![eiu]\u032F|[\u0303\u032F\u02D0])/g, "\u025B")
 				.replace(/o(?![eiu]\u032F|[\u0303\u032F\u02D0])/g, "\u0254")
@@ -284,17 +286,17 @@ var la_ipa = (function () {
 	}
 	my.transforms = {
 		"Original": function(a){return a},
-		"No diacritics": my.mix(my.schwa, my.ASCIIize),
-		"CLC": my.mix(my.ae_oe, my.schwa, my.no_j),
+		"No diacritics": my.mix(my.sonusmedius, my.ASCIIize),
+		"CLC": my.mix(my.ae_oe, my.sonusmedius, my.no_j),
 		"Mark all vowels": my.mix(
 			my.undouble_vowels,
 			my.lower,
 			my.short_vowels,
 			my.orthography_j
 		),
-		"Silicus": my.mix(my.silicus, my.orthography_j),
-		"Nasal": my.mix(my.nasal, my.orthography_j),
-		"Silicus+Nasal": my.mix(my.nasal, my.silicus, my.orthography_j),
+		"Silicus": my.mix(my.silicus, my.sonusmedius, my.orthography_j),
+		"Nasal": my.mix(my.nasal, my.sonusmedius, my.orthography_j),
+		"Silicus+Nasal": my.mix(my.nasal, my.silicus, my.sonusmedius, my.orthography_j),
 		"Silicus+Eszett+Nasal": my.mix(my.nasal, my.eszett, my.silicus, my.orthography_j),
 		"qv": my.qv,
 		"fullwidth": my.mix(
@@ -346,7 +348,11 @@ var la_ipa = (function () {
 		my.selector = '.format-word-'+lang;
 		return my;
 	}
-	my.select_transformer("CLC");
+	my.select_transformer(
+		pantheum && pantheum.udata && pantheum.udata.la_ipa
+		? pantheum.udata.la_ipa
+		: "CLC"
+	);
 	//my.select_transformer("IPA transcription");
 	//my.transform = my.transforms["Silicus+Eszett+Nasal"];
 	//my.select_transformer("Greek");

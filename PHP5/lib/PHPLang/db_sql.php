@@ -26,6 +26,7 @@ class _SQLDB implements _DB
 		}
 		$stmt->close();
 		$this->sparts_by_lang = [];
+		$this->sparts = [];
 		$stmt = $mysqli->prepare("
 			SELECT DISTINCT word_lang,word_spart FROM words
 		");
@@ -42,13 +43,15 @@ class _SQLDB implements _DB
 				if (!array_key_exists($langid, $this->sparts_by_lang))
 					$this->sparts_by_lang[$langid] = [];
 				$this->sparts_by_lang[$langid][] = $spart;
+				if (!in_array($spart, $this->sparts))
+					$this->sparts[] = $spart;
 			}
 		}
 		$stmt->close();
 	}
 	function load_language($langid) {
 		global $data_dir;
-		$this->depaths[$langid] = read_depaths($data_dir . $langid . "/depaths.json");
+		$this->depaths[$langid] = read_depaths($data_dir . $langid . "/depaths.json", $langid);
 		/*if ($langid === "eo")
 			foreach ($this->depaths[$langid] as $key => $value) {
 				if (!$value->key2values) continue;

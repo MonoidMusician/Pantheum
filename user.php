@@ -17,6 +17,7 @@
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
+        <?php sro('/Includes/messages.php'); ?>
         <section id="content">
             <?php sro('/Pages/user.php'); ?>
         </section>

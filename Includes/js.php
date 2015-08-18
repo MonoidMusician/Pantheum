@@ -1,3 +1,11 @@
+<?php
+    require_once('/var/www/config.php');
+    sro('/Includes/session.php');
+    global $sudata;
+?>
+        <script>
+            var pantheum = {udata:<?= $sudata ? $sudata : 'null' ?>};
+        </script>
         <script type="text/javascript" src="/JS/lib/jquery.js"></script>
         <script type="text/javascript" src="/JS/lib/jCanvas.js"></script>
         <script type="text/javascript" src="/JS/lib/jTable.js"></script>

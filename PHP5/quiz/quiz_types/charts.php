@@ -109,27 +109,40 @@ $quiz_types = array_merge($quiz_types,[
 			"answer11-tooltip"=>"Enter form", 
 		]]
 	],
+	"hic-haec-hoc2" => [
+		"name" => "Haec, Hic, Hoc",
+		"category" => "Charts",
+		"lang" => "la",
+		"n_questions" => -1,
+		"options" => function(){return[
+			make_chart(WORD2("la","hic","pronoun"),null,["vocative","genitive","dative","ablative"]),
+		];}
+	],
 	"irregular-pronouns1" => [
 		"name" => "Irregular pronouns",
 		"category" => "Charts",
 		"lang" => "la",
-		"n_questions" => "auto",
-		"options" => function(){return[
-			make_chart(WORD2("la","hic","pronoun")),/*hic*/
-			make_chart(WORD2("la","iste","pronoun"),null,["vocative"]),/*iste*/
-			make_chart(WORD2("la","ille","pronoun")),/*ille*/
-			make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative"]),/*ego*/
-			make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative"]),/*tu*/
-			make_chart(WORD2("la","is","pronoun")),/*is*/
-		];}
+		"n_questions" => -6,
+		"options" => function(){
+			$gender = PICK(3,["masculine","feminine","neuter"])->rand();
+			return [
+				make_chart(WORD2("la","hic","pronoun")),
+				make_chart(WORD2("la","iste","pronoun"),null,["vocative"]),
+				make_chart(WORD2("la","ille","pronoun")),
+				make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative",$gender[0],$gender[1]]),
+				make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative",$gender[0],$gender[2]]),
+				make_chart(WORD2("la","is","pronoun"),null),
+			];
+		}
 	],
 	"irregular-verbs1" => [
 		"name" => "Irregular verbs",
 		"category" => "Charts",
 		"lang" => "la",
-		"n_questions" => "auto",
+		"n_questions" => -2,
 		"options" => function(){return[
-			make_chart(WORD2("la","volo","verb"),NULL,["infinitive","participle","subjunctive","future","pluperfect","future-perfect"]),
+			make_chart(WORD2("la","volo","verb"),NULL,["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
+			make_chart(WORD2("la","sum","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
 		];}
 	],
 ]);

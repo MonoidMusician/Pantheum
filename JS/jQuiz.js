@@ -13,6 +13,7 @@ function jQuiz() {
 	this.out_of = 0;
 	this.active = true;
 	this.scored = false; // Have we shown the user their score?
+	this.nextable = false;
 	this.current = 0;
 	this.next = 0;
 	this.last = 1;
@@ -28,16 +29,30 @@ function jQuiz() {
 		this.eurl = eurl;
 	};
 
+	this.refocus = function($html) {
+		if ($html === undefined) $html = $('#' + this.qelement);
+		var m = 0;
+		$html.find('[tabindex]').each(function() {
+			var i = -1*-$(this).attr('tabindex');
+			if (i > 0 && i > m) m = i;
+		});
+		$html.find('[data-tabindex]').each(function() {
+			var $this = $(this),
+			    t = 0-$this.attr('data-tabindex')*-1;
+			$this.attr('tabindex', m + t);
+			$this.removeAttr('data-tabindex');
+		});
+		var a = $html.find(':focus').blur();
+		var b = $html.find('[tabindex=1]:first').focus();
+		this.nextable = false;
+	}
+
 	this.getNextQuestion = function() {
-		$.ajaxSetup({async:false});
 		$.get(this.gurl, $.proxy(this.handleQuestion, this));
-		$.ajaxSetup({async:true});
 	};
 
 	this.submitQuestion = function() {
-		$.ajaxSetup({async:false});
 		$.post(this.surl, this.answers, $.proxy(this.handleResponse, this));
-		$.ajaxSetup({async:true});
 	};
 
 	this.handleQuestion = function(data) {
@@ -46,24 +61,24 @@ function jQuiz() {
 		this.questions[this.next] = jQuery.parseJSON(data);
 		this.current = this.next;
 		this.next += 1;
-		this.displayQuestion();
+		this.showQuestion();
 	};
 
 	this.handleResponse = function(data) {
-		if (data != '') {
-			var result = jQuery.parseJSON(data);
-			this.results[this.current] = result;
-			this.score += 0-(-result["subscore"]);
-			this.out_of += 0-(-result["out_of"]);
-			this.displayQuestion();
-		}
+		if (!data || data[0] != '{' || data[data.length-1] != '}')
+			return alert('Error: '+data);
+		var result = jQuery.parseJSON(data);
+		this.results[this.current] = result;
+		this.score += 0-(-result["subscore"]);
+		this.out_of += 0-(-result["out_of"]);
+		this.showQuestion();
 	};
 
 	this.buildHeader = function() {
 		var header = '<section id="' + this.qelement + '-top">';
 
 		if ((this.current - 1) >= 0) {
-			header += '<button tabindex="101" id="' + this.qelement + '-back">Back</button>';
+			header += '<button data-tabindex="2" id="' + this.qelement + '-back">Back</button>';
 		} else {
 			header += '<button id="' + this.qelement + '-back" class="disabled">Back</button>';
 		}
@@ -71,7 +86,7 @@ function jQuiz() {
 		header += '<span> ' + this.select() + ' / ' + this.last + ' </span>';
 
 		if ((this.current == (this.next-1)) && (this.results[this.current] == undefined)) {
-			header += '<button tabindex="100" id="' + this.qelement + '-submit">Submit</button>';
+			header += '<button data-tabindex="1" id="' + this.qelement + '-submit">Submit</button>';
 		} else if (this.current == this.last - 1) {
 			if (!this.scored)
 				header += '<button tabindex="1" id="' + this.qelement + '-next">Results</button>';
@@ -100,8 +115,10 @@ function jQuiz() {
 	}
 
 	this.parsePart = function(part) {
-		var tabindex = 0;
 		var result = '';
+
+		var ncorrect = ' autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"';
+		var ycorrect = ' spellcheck="true"';
 
 		if (part[0] == 'wrap') {
 			//pass
@@ -120,34 +137,38 @@ function jQuiz() {
 		} else {
 			if (this.results[this.current] == undefined) {
 				if (part[0] == 'input') {
-					result = '<input tabindex="'+(++tabindex)+'" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="autosizeable" type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
+					result = '<input tabindex="'+(++this.tabindex)+'"'+(part[4]!='en'?ncorrect:ycorrect)+' class="autosizeable" type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
 				} else if (part[0] == 'paragraph') {
-					result = '<textarea tabindex="'+(++tabindex)+'" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '" style="font-family:Linux Libertine;"></textarea>';
+					result = '<textarea tabindex="'+(++this.tabindex)+'" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '" style="font-family:Linux Libertine;"></textarea>';
 				} else if (part[0] == 'select') {
 					//result += '<select id="' + this.qelement + '-' + part[1] + '" title="' + part[2] + '">';
 					result += '<span id="' + this.qelement + part[1] + '" class="select select-bordered">';
+					var tabin = ' tabindex="'+(++this.tabindex)+'"';
 					for (var oid in part[3]) {
 						var option = part[3][oid];
 						result += '<label>';
-						result += '<input tabindex="'+(++tabindex)+'" class="inputlabel" type="radio"';
+						result += '<input'+tabin+' class="inputlabel" type="radio"';
 						result += 'name="'+this.qelement + '-' + part[1]+'"';
 						result += 'value="'+option+'" required>';
 						result += option;
 						result += '</label><br>';
 						//result += '<option>' + option + '</option>';
+						//var tabin = '';
 					}
 					result += '</span>';
 					//result += '</select>';
 				} else if (part[0] == 'matching-row') {
+					var tabin = ' tabindex="'+(++this.tabindex)+'"';
 					for (var oid in part[3]) {
 						var option = part[3][oid];
 						result += '<td><label>';
-						result += '<input tabindex="'+(++tabindex)+'" class="inputlabel" type="radio"';
+						result += '<input'+tabin+' class="inputlabel" type="radio"';
 						result += 'name="'+this.qelement + '-' + part[1]+'"';
 						result += 'value="'+option+'" required>';
 						result += (parseInt(oid)+1)+'.';
 						result += '</label></td>';
 						//result += '<option>' + option + '</option>';
+						//var tabin = '';
 					}
 				} else if (part[0] == 'matching') {
 					//result += '<select id="' + this.qelement + '-' + part[1] + '" title="' + part[2] + '">';
@@ -162,15 +183,17 @@ function jQuiz() {
 					for (var vid in part[3]) {
 						var left = part[3][vid];
 						result += '<tr><th>'+left+'</th>';
+						var tabin = ' tabindex="'+(++this.tabindex)+'"';
 						for (var oid in part[4]) {
 							var option = part[4][oid];
 							result += '<td><label>';
-							result += '<input tabindex="'+(++tabindex)+'" class="inputlabel" type="radio"';
+							result += '<input'+tabin+' class="inputlabel" type="radio"';
 							result += 'name="'+this.qelement + '-' + part[1]+'-'+vid+'"';
 							result += 'value="'+option+'" required>';
 							result += (parseInt(oid)+1)+'.';
 							result += '</label></td>';
 							//result += '<option>' + option + '</option>';
+							//var tabin = '';
 						}
 						result += '</tr>';
 					}
@@ -211,6 +234,7 @@ function jQuiz() {
 	};
 
 	this.buildBody = function() {
+		this.tabindex = 0; // for parsePart
 		var body = '<section id="' + this.qelement + '-content">';
 		body += '<p class="jquiz-question">';
 		for (var pid in this.questions[this.current]) {
@@ -259,22 +283,21 @@ function jQuiz() {
 		return body;
 	};
 
-	this.displayQuestion = function() {
-		this.scored = false;
-		var html = this.buildHeader() + this.buildBody();
+	this.show = function(type) {
+		this.scored = !!type;
+		var html = this.buildHeader() + (type == 0 ? this.buildBody() : this.buildScore());
 		var $html = $(html);
 		$('#' + this.qelement).html($html);
 		æ.format($html);
 		$html.find('input.autosizeable').autosizeInput();
+		this.refocus($html);
 	};
 
+	this.showQuestion = function() {
+		this.show(0);
+	}
 	this.showScore = function() {
-		this.scored = true;
-		var html = this.buildHeader() + this.buildScore();
-		var $html = $(html);
-		$('#' + this.qelement).html($html);
-		æ.format($html);
-		$html.find('input.autosizeable').autosizeInput();
+		this.show(1);
 	};
 
 	this.handleSubmit = function(data) {
@@ -308,7 +331,7 @@ function jQuiz() {
 			this.getNextQuestion();
 		} else {
 			this.current += 1;
-			this.displayQuestion();
+			this.showQuestion();
 		}
 	};
 
@@ -318,14 +341,14 @@ function jQuiz() {
 			this.current -= 1;
 		}
 
-		this.displayQuestion();
+		this.showQuestion();
 	};
 
 	this.handleNextField = function(e) {
-		if (e.which == 13) {
+		if (e.which == 13 && this.nextable === true) {
 			var next = $(':input:eq(' + ($(':input').index(e.target) + 1) + ')').focus();
 			if (!next.length) $('#' + this.qelement + '-submit').focus();/**/
-		}
+		} else this.nextable = true;
 	};
 
 	this.handlePage = function(data) {
@@ -336,10 +359,10 @@ function jQuiz() {
 	this.bindEvents = function() {
 		this.unbindEvents();
 
-		$(document).on('click',  '#' + this.qelement + '-back', $.proxy(this.handleBack, this));
+		$(document).on('click',  '#' + this.qelement + '-back',   $.proxy(this.handleBack, this));
 		$(document).on('click',  '#' + this.qelement + '-submit', $.proxy(this.handleSubmit, this));
-		$(document).on('click',  '#' + this.qelement + '-next', $.proxy(this.handleNext, this));
-		$(document).on('change', '#' + this.qelement + '-page', $.proxy(this.handlePage, this));
+		$(document).on('click',  '#' + this.qelement + '-next',   $.proxy(this.handleNext, this));
+		$(document).on('change', '#' + this.qelement + '-page',   $.proxy(this.handlePage, this));
 		$(document).on('keyup',  '#' + this.qelement + '-content input:text', $.proxy(this.handleNextField, this));
 	};
 
@@ -375,13 +398,13 @@ function jQuiz() {
 				this.next += 1;
 			}
 		}
-		this.displayQuestion();
+		this.showQuestion();
 		this.bindEvents();
 	};
 
 	this.goTo = function(index) {
 		this.current = index;
-		this.displayQuestion();
+		this.showQuestion();
 	};
 
 	this.endQuiz = function() {
@@ -389,9 +412,7 @@ function jQuiz() {
 			location.reload();
 			return;
 		}
-		$.ajaxSetup({async:false});
 		$.get(this.eurl, $.proxy(this.handleEnd, this));
-		$.ajaxSetup({async:true});
 	};
 
 	this.handleEnd = function(data) {
