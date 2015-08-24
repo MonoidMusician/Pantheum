@@ -47,7 +47,7 @@ if ($attr_t) {
 } elseif ($attr) {
 	$stmt .= "$op attr_tag LIKE '%".explode("=",$attr)[0]."%'";
 }
-$stmt .= " $group";
+$stmt .= " $group ORDER BY attr_tag, attr_value";
 //echo $stmt;
 $stmt = $mysqli->prepare($stmt);
 if (!$stmt)

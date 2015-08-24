@@ -16,7 +16,7 @@
 		$d = PRONUNCIATION(defaultDB(), NULL, $w);
 		$d->set_type("IPA");
 		$d->set_value($_GET["val"]);
-		error_log(var_export($d->value(),1)." should be ".var_export($_GET["val"],1));
+		//error_log(var_export($d->value(),1)." should be ".var_export($_GET["val"],1));
 		if ($_GET["path"]) {
 			$p = PATH($w, $_GET["path"]);
 			$d->set_path($p);

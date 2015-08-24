@@ -94,6 +94,7 @@ function jWord() {
 			"attr":normlist($('#enter-attrs').val()),
 			"lang":getselect2($('#enter-langs')),
 			"spart":getselect2($("#enter-sparts")),
+			"def":$("#enter-defs").val(),
 			"no_inflections":!!getcheckbox("no-inflections"),
 			"no_definitions":!!getcheckbox("no-definitions"),
 			"show_templates":!!getcheckbox("show-templates"),

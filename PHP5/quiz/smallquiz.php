@@ -74,7 +74,7 @@ $correct_index = array_values(array_filter($indices, function($i)use($options,$c
 	return ($options[$i] == $correct);
 }))[0];
 ?><div id="pantheumsmallquiz">
-<h3 style="margin-top:0px;margin-bottom:0.2em;">What does <?= display_word_name($word) ?> mean?</h3>
+<h3 style="margin-top:0px;margin-bottom:0.2em;"><?= display_word_name($word) ?> can mean...</h3>
 <div style="margin-bottom:0.2em;font-size:90%;" id="pantheumsmallquiz-time">
 	<a href="javascript:void(0)">
 	<span>&nbsp;</span>

@@ -151,6 +151,11 @@ function format_attr($tag,$value=NULL) {
 		if ($value === "person-1") return "1st person";
 		elseif ($value === "person-2") return "2nd person";
 		elseif ($value === "person-3") return "3rd person";
+	if ($tag === "case")
+		if ($value === "ablative") return "+ABL";
+		elseif ($value === "accusative") return "+ACC";
+		elseif ($value === "dative") return "+DAT";
+		elseif ($value === "dative-personal") return "+DAT (of persons)";
 	if ($tag === "declension")
 		if ($value === "decl-1") return "1st Declension";
 		elseif ($value === "decl-2") return "2nd Declension";
@@ -160,6 +165,7 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "decl-3-i") return "3rd Declension i-stem";
 		elseif ($value === "decl-2-neuter") return "2nd Declension Neuter";
 		elseif ($value === "decl-3-neuter") return "3rd Declension Neuter";
+		elseif ($value === "decl-3-i-neuter") return "3rd Declension Neuter i-stem";
 		elseif ($value === "decl-4-neuter") return "4th Declension Neuter";
 		elseif ($value === "adjective-12") return "1st/2nd Declension";
 		elseif ($value === "adjective-3-3") return "3rd Declension";
@@ -169,6 +175,11 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "conj-3") return "3rd Conjugation";
 		elseif ($value === "conj-3-io") return "3rd Conjugation i-stem";
 		elseif ($value === "conj-4") return "4th Conjugation";
+		elseif ($value === "conj-1-deponent") return "1st Conjugation Deponent";
+		elseif ($value === "conj-2-deponent") return "2nd Conjugation Deponent";
+		elseif ($value === "conj-3-deponent") return "3rd Conjugation Deponent";
+		elseif ($value === "conj-3-io-deponent") return "3rd Conjugation Deponent i-stem";
+		elseif ($value === "conj-4-deponent") return "4th Conjugation Deponent";
 	if ($tag === "clc-stage") {
 		$sp = explode("-", $value);
 		if (count($sp) === 1)

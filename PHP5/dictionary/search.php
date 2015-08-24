@@ -34,6 +34,11 @@
 			))
 			{ $attrs = []; }
 
+		if (!array_key_exists("def", $_GET) or !(
+			$defs = vec_norm(explode(";", $_GET["def"]), "trim")
+			))
+			{ $defs = []; }
+
 		if (!array_key_exists("id", $_GET) or !(
 			$ids = vec_norm(explode(",", $_GET["id"]), "trim")
 			))
@@ -57,7 +62,9 @@
 				$searcher = $searcher->lang($langs);
 			if ($sparts)
 				$searcher = $searcher->spart($sparts);
-			if ($no_definitions)
+			if ($defs)
+				$searcher = $searcher->definition_parse($defs);
+			else if ($no_definitions)
 				$searcher = $searcher->no_definitions();
 			if ($no_templates) $attrs[] = "!template";
 			foreach ($attrs as $attr) {

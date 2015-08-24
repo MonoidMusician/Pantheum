@@ -12,30 +12,40 @@
 	$db = defaultDB();
 	$editor = requireRank(3, FALSE);
 	if (count($_GET)) {
-		if (!array_key_exists("lang", $_GET) or !(
+		if (!array_key_exists("id", $_GET) or !(
+			$ids = vec_norm(explode(",", $_GET["id"]), "intval")
+			))
+			{ $ids = []; }
+
+		if ($ids) {
+			$langs = array_unique(array_map(function($w) {
+				$word = WORD($w);
+				return $word->lang();
+			}, $ids));
+		} else if (!array_key_exists("lang", $_GET) or !(
 			$langs = vec_norm(explode(",", $_GET["lang"]), "trim")
 			))
 			{ $langs = ['la']; }
 
-		if (!array_key_exists("name", $_GET) or !(
+		if ($ids or !array_key_exists("name", $_GET) or !(
 			$names = vec_norm(explode(",", $_GET["name"]), "trim")
 			))
 			{ $names = NULL; }
 
-		if (!array_key_exists("spart", $_GET) or !(
+		if ($ids or !array_key_exists("spart", $_GET) or !(
 			$sparts = vec_norm(explode(",", $_GET["spart"]), "trim")
 			))
 			{ $sparts = NULL; }
 
-		if (!array_key_exists("attr", $_GET) or !(
+		if ($ids or !array_key_exists("attr", $_GET) or !(
 			$attrs = vec_norm(explode(",", $_GET["attr"]), "trim")
 			))
 			{ $attrs = []; }
 
-		if (!array_key_exists("id", $_GET) or !(
-			$ids = vec_norm(explode(",", $_GET["id"]), "trim")
+		if ($ids or !array_key_exists("def", $_GET) or !(
+			$defs = vec_norm(explode(",", $_GET["def"]), "trim")
 			))
-			{ $ids = []; }
+			{ $defs = []; }
 	} else {
 		$langs = ["la"]; $names = $sparts = $ids = [];
 	}
@@ -66,18 +76,20 @@
 	<input id="enter-forms" type="text" value="<?= safe_get('form', $_GET) ?>" placeholder="form, ...">
 	<br>Language(s):
 	<select id="enter-langs" style="width: 300px;"></select>
-	<br>Attributes:
+	<br>Attribute(s):
 	<input id="enter-attrs" type="text" value="<?= safe_get('attr', $_GET) ?>" placeholder="[!]attr[=value], ...">
 	<br>Part(s) of speech:
 	<select id="enter-sparts" style="width: 300px;"></select>
+	<br>Definition(s):
+	<input id="enter-defs" type="text" value="<?= safe_get('def', $_GET) ?>" placeholder="definition_part; definition1, definition2,; ...">
 	
 	<br>
-	<input id="enter-ids" style="width: 100px;" type="text" value="<?= safe_get('id', $_GET) ?>" placeholder="id, ...">
+	ID: <input id="enter-ids" style="width: 100px;" type="text" value="<?= safe_get('id', $_GET) ?>" placeholder="id, ...">
 	<button onclick="dict.refreshEntries();">Search</button>
 	<?php if ($editor) { ?>
 	<button onclick="dict.addEntry(function(){dict.refreshEntries();});">Add</button>
 	<?php } ?>
-	<button onclick="$('#enter-attrs,#enter-ids,#enter-names,#enter-forms').val('');$('[name=enter-spart], [name=enter-lang]').prop('checked', false);">Clear fields</button>
+	<button onclick="$('#enter-attrs,#enter-ids,#enter-names,#enter-forms,#enter-langs,#enter-sparts').val('').change();">Clear fields</button>
 
 	<div class="navigation">
 		Show <select id="limit">
@@ -136,7 +148,7 @@
 
 <article id="dictionary"/>
 <script type="text/javascript">
-	$(document).on('keyup', '#enter-names, #enter-attrs, #enter-ids, #enter-forms', function(event) {
+	$(document).on('keyup', '#enter-names, #enter-attrs, #enter-ids, #enter-forms, #enter-defs', function(event) {
 		var val = $('#enter-attrs').val();
 		if (event.which == 13 && val[val.length-1] !== "=") {
 			$(this).blur();

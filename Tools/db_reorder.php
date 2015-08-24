@@ -24,7 +24,7 @@ $column = "word_id"; $table = $name."s";
 $order = "word_lang, word_name";
 $table2 = $table."2";
 $table2 = $table;
-$e = TRUE;
+$e = /*TRUE/*/FALSE/**/;
 
 global $mysqli;
 $max_id = NULL;

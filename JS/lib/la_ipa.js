@@ -127,6 +127,8 @@ var la_ipa = (function () {
 			.split("x").join("ks")
 			.split("c").join("k")
 			.split("v").join("w")
+			// Assimilations
+			.split("bs").join("ps")
 			// Convert sequences to IPA
 				// er allophone
 				/*.replace(/e(?=[.]?r)/g,"\u00E6")
@@ -197,15 +199,43 @@ var la_ipa = (function () {
 	my.qv = function (r) {
 		return r.split("qu").join("qv").split("Qu").join("Qv").split("QU").join("QV");
 	};
+	my.Llath = function (r) {
+		return (
+			r.split("i\u0304").join("j")
+			 .split("I\u0304").join("J")
+			 .split("u\u0304").join("w")
+			 .split("U\u0304").join("W")
+			 .split("v").join("w")
+			 .split("V").join("W")
+			 .split("ⱶ").join("ı") //sonus medius -> ih (i-dot)
+			 .split("gn").join("ñ") //enya
+			 .split("qu").join("ẇ") //wh (w-dot)
+			 .split("Qu").join("Ẇ") //wh (w-dot)
+			 .split("QU").join("Ẇ") //wh (w-dot)
+			 .split("ph").join("ṗ") //ph (p-dot)
+			 .split("Ph").join("Ṗ") //ph (p-dot)
+			 .split("PH").join("Ṗ") //ph (p-dot)
+			 .split("th").join("þ") //th (thorn)
+			 .split("Th").join("Þ") //th (thorn)
+			 .split("TH").join("Þ") //th (thorn)
+			 .split("ts").join("ŝ") //s-hat
+			 .split("TS").join("Ŝ") //s-hat
+			 .split("Ts").join("Ŝ") //s-hat
+			 .split("dz").join("ẑ") //z-hat
+			 .split("Dz").join("Ẑ") //z-hat
+			 .split("DZ").join("Ẑ") //z-hat
+		);
+	};
 	my.Greek = function (r) {
 		return (
 			r.replace(/us(?=[^w])/,"os")
 			 .replace(/um(?=[^w])/,"on")
-			 .split("\u0304").join("")
 			 .split("\u00E6").join("ai")
 			 .split("\u0153").join("oi")
 			 .split("\u00C6").join("Ai")
 			 .split("\u0152").join("Oi")
+			 .split("Qu").join("Κυ")
+			 .split("QU").join("ΚΥ")
 			 .split("ph").join("f")
 			 .split("th").join("θ")
 			 .split("ch").join("χ")
@@ -225,6 +255,7 @@ var la_ipa = (function () {
 			 .split("l").join("λ")
 			 .split("m").join("μ")
 			 .split("n").join("ν")
+			 .split("o\u0304").join("ω")
 			 .split("o").join("ο")
 			 .split("p").join("π")
 			 .split("qu").join("κυ")
@@ -246,22 +277,21 @@ var la_ipa = (function () {
 			 .split("X").join("Ξ")
 			 .split("A").join("Α")
 			 .split("B").join("Β")
-			 .split("C").join("k")
+			 .split("C").join("Κ")
 			 .split("D").join("Δ")
 			 .split("E\u0304").join("Η")
 			 .split("E").join("Ε")
 			 .split("F").join("Φ")
 			 .split("G").join("Γ")
-			 .split("I").join("j")
+			 .split("I").join("J")
 			 .split("J").join("Ι")
 			 .split("K").join("Κ")
 			 .split("L").join("Λ")
 			 .split("M").join("Μ")
 			 .split("N").join("Ν")
+			 .split("O\u0304").join("Ω")
 			 .split("O").join("Ο")
 			 .split("P").join("Π")
-			 .split("Qu").join("Κυ")
-			 .split("QU").join("ΚΥ")
 			 .split("R").join("Ρ")
 			 .split("S").join("Σ")
 			 .split("T").join("Τ")
@@ -269,7 +299,10 @@ var la_ipa = (function () {
 			 .split("V").join("Υ")
 			 .split("Y").join("Υ")
 			 .split("Z").join("Ζ")
-			 .replace(/σ(?![Α-Ωα-ω])/g, "ς")
+			 .split("\u0304").join("")
+			 .replace(/(^|[^Α-Ωα-ω])h([αειουωη])/gi, "$1$2\u0314")
+			 .replace(/(^|[^Α-Ωα-ω])([αειουωη])(?![\u0314])/gi, "$1$2\u0313")
+			 .replace(/σ(?![Α-Ωα-ω])/g, "ς") 
 		);
 	};
 	// Adapted from: https://sim0n.wordpress.com/2009/03/28/javascript-char-code-to-unicode-fullwidth-latin/
@@ -304,6 +337,7 @@ var la_ipa = (function () {
 			my.fullwidth
 		),
 		"Greek": my.Greek,
+		"Ļaþ": my.Llath,
 		"Finnish": my.mix(
 			my.double_vowels,
 			my.replasor("c","k"),

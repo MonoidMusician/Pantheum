@@ -224,7 +224,7 @@ function jQuiz() {
 						if (i == 3) result += " "+conj+" ";
 						else result += ", "+conj+" ";
 					else result += ", ";
-					result += this.results[this.current][part[1]][2];
+					result += this.results[this.current][part[1]][i];
 				}
 				if (i > 2) result += ')' + wrap['machine'][1];
 			}

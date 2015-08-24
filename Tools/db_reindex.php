@@ -22,7 +22,7 @@ if ($_GET["type"] === "pron") {
 }
 if (!$name) exit("No valid table supplied (<a href='?type=pron'>pron</a>, <a href='?type=form'>form<a/>, or <a href='?type=def'>def</a>)");
 $table2 = $table;
-$e = TRUE;
+$e = /*TRUE/*/FALSE/**/;
 
 global $mysqli;
 $max_id = NULL;

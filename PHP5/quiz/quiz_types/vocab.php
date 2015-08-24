@@ -2,8 +2,59 @@
 global $quiz_types;
 global $df_exclude;
 $quiz_types = array_merge($quiz_types,[
+	"random-definitions0" => [
+		"name" => "Full vocabulary (FR)",
+		"category" => "Vocabulary",
+		"lang" => "la",
+		"options" => [[
+			"help" => "Choose a correct definition for the given word",
+			"selections" => [
+				"word"=>function($_, $db, $path) {
+					$s = $db->searcher();
+					$s->stmt .= "
+						WHERE word_id IN (
+							SELECT word_id FROM definitions
+							WHERE def_lang = 'en'
+							AND def_type IS NULL
+						)
+						AND word_lang = 'la'
+						AND word_id NOT IN (
+							SELECT word_id FROM attributes
+							WHERE attr_tag = 'template' OR attr_tag = 'hidden'
+						)";
+					$s->args = [];
+					return $s->rand();
+				},
+			],
+			"sentence" => [
+				$OP_LQUOTE,
+				function($pick_db) { return format_word($pick_db["word"]->name()); },
+				$OP_RQUOTE, $OP_COLON,
+				$OP_USER_INPUT,
+			],
+			"answer0-language" => "en",
+			"answer0" => function($pick_db, $db) {
+				global $mysqli;
+				$query = $mysqli->prepare("
+					SELECT DISTINCT def_id FROM definitions
+					WHERE def_lang = 'en'
+					AND def_type IS NULL
+					AND word_id = (?)
+				");
+				$res = NULL;
+				sql_getmany($query, $res, ["i",$pick_db["word"]->id()]);
+				$query->close();
+				if (!$res) return NULL;
+				$ret = []; $ret2 = [];
+				foreach ($res as $r) $ret = array_merge($ret, explode("\n",definition(defaultDB(), $r)->value()));
+				foreach ($ret as $r) $ret2 = array_merge($ret2, array_map("trim",explode(",", $r)));
+				return ["correct"=>explode(",",$ret[0]),"acceptable"=>$ret2];
+			},
+			"answer0-tooltip"=>"Type correct definition",
+		]]
+	],
 	"random-definitions1" => [
-		"name" => "Define random words",
+		"name" => "Full vocabulary (MC)",
 		"category" => "Vocabulary",
 		"lang" => "la",
 		"options" => [[

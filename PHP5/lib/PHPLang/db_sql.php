@@ -156,6 +156,101 @@ class _SQL_searcher
 	function name_includes($name) {
 		return $this->includes_spredicate("word_name",$name);
 	}
+	function definition($def) {
+		if ($def) {
+			$expr = "EXISTS (SELECT 1 FROM definitions WHERE definitions.word_id = words.word_id AND def_value LIKE CONCAT('%',?,'%'))";
+			if (is_array($def) and count($def) === 1)
+				$def = $def[array_keys($def)[0]];
+			if (is_string($def)) {
+				$this->stmt .= $this->op . $expr;
+				$this->args[0] .= "s";
+				$this->args[] = $def;
+			} else {
+				$this->stmt .= $this->op . "(";
+				$op = "";
+				foreach ($def as $v) {
+					$this->stmt .= $op . $expr;
+					$this->args[0] .= "s";
+					$this->args[] = $v;
+					$op = " OR ";
+				}
+				$this->stmt .= ")";
+			}
+			$this->op = " AND ";
+		}
+		return $this;
+	}
+	function definition_includes($def) {
+		if ($def) {
+			$expr = "EXISTS (SELECT 1 FROM definitions WHERE definitions.word_id = words.word_id AND def_value LIKE CONCAT('%',?,'%'))";
+			if (is_array($def) and count($def) === 1)
+				$def = $def[array_keys($def)[0]];
+			if (is_string($def)) {
+				$this->stmt .= $this->op . $expr;
+				$this->args[0] .= "s";
+				$this->args[] = $def;
+			} else {
+				$this->stmt .= $this->op . "(";
+				$op = "";
+				foreach ($def as $v) {
+					$this->stmt .= $op . $expr;
+					$this->args[0] .= "s";
+					$this->args[] = $v;
+					$op = " OR ";
+				}
+				$this->stmt .= ")";
+			}
+			$this->op = " AND ";
+		}
+		return $this;
+	}
+	function definition_parse($def) {
+		if ($def) {
+			if (is_array($def) and count($def) === 1)
+				$def = $def[array_keys($def)[0]];
+
+			if (is_string($def)) {
+				$this->stmt .= $this->op;
+				$this->_def_parse($def);
+			} else {
+				$this->stmt .= $this->op . "(";
+				$op = "";
+				foreach ($def as $v) {
+					$this->stmt .= $op;
+					$this->_def_parse($v);
+					$op = " OR ";
+				}
+				$this->stmt .= ")";
+			}
+			$this->op = " AND ";
+		}
+		return $this;
+	}
+
+	function _def_parse($def) {
+		$def_exists = "EXISTS (SELECT 1 FROM definitions WHERE definitions.word_id = words.word_id AND ";
+		$expr = [
+			"def_value LIKE CONCAT('%',?,'%')",
+			"def_value REGEXP CONCAT('[[:<:]]',?,'[[:>:]]')",
+			"def_value REGEXP CONCAT('(^|,|;|\\n)\W*',?,'\W*($|,|;|\\n)')",
+		];
+		$type = endswith($def, ",") ? 2 : (endswith($def, "~") ? 0 : 1);
+		if (!$type) $def = substr($def,0,strlen($def)-1);
+
+		$def = vec_norm(explode(",", $def), "trim");
+
+		$this->stmt .= "(";
+		$op = "";
+		foreach ($def as $d) {
+			$this->stmt .= $op . $def_exists . $expr[$type] . ")";
+			$this->args[0] .= "s";
+			$this->args[] = $type ? preg_quote($d) : $d;
+			$op = " AND ";
+		}
+		$this->stmt .= ")";
+
+		return $expr[$type];
+	}
 	function lang($lang) {
 		return $this->_spredicate("word_lang", $lang);
 	}

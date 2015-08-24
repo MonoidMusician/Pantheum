@@ -24,15 +24,24 @@ class _WORD
 		#var_dump($this->id(), $this->lang(), $this->speechpart());
 		if ($mgr === NULL) {
 			if(!is_scalar($id)) _die("_WORD.id ".var_export($id,1)." needs to be scalar");
-			else $mgr = $db->get_mgrW($this);
+			// defer $this->_mgr = $db->get_mgrW($this); to $this->mgr()
 		}
 		$this->_mgr = $mgr;
-		$this->_path = PATH($mgr);
-		$this->path()->set_word($this);
+		$this->_path = NULL;
 		return $this;
 	}
-	function path() { return $this->_path; }
-	function mgr() { return $this->_mgr; }
+	function path() {
+		if ($this->_path === NULL) {
+			$this->_path = PATH($this->mgr());
+			$this->_path->set_word($this);
+		}
+		return $this->_path;
+	}
+	function mgr() {
+		if ($this->_mgr === NULL)
+			$this->_mgr = $this->db()->get_mgrW($this);
+		return $this->_mgr;
+	}
 	function db() { return $this->_db; }
 	function id() { return $this->_id; }
 	function __toString() {return $this->id().$this->name();}
@@ -388,7 +397,7 @@ function ISWORD($obj) {
 	return $obj instanceof _WORD;
 }
 function WORD() {
-	$db=NULL; $mgr=NULL; $id=NULL; $lang=NULL;
+	$db=defaultDB(); $mgr=NULL; $id=NULL; $lang=NULL;
 	$arg = func_get_args();
 	#var_dump($arg);
 	foreach ($arg as $a) {
