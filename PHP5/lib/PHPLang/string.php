@@ -14,6 +14,8 @@ sro('/PHP5/lib/PHPLang/make_example.php');
 
 global $DEBUG_STRING_PHP;
 $DEBUG_STRING_PHP = /*true/*/false/**/;
+global $LEVENSHTEIN;
+$LEVENSHTEIN = extension_loaded('damerau') ? "damerau_levenshtein" : "levenshtein";
 
 
 // $s = "{*test (this|that [system])}, {computer|machine}!";
@@ -114,11 +116,18 @@ function str_between($ls,$rs,$s,&$offset=0) {
 }
 function no_specials2($w,$extras="1-9/; ,\\n") {
 	$w = normalizer_normalize($w, Normalizer::FORM_D);
-	$w = str_replace("æ", "ae", $w);
+	/*$w = str_replace("æ", "ae", $w);
 	$w = str_replace("œ", "oe", $w);
 	$w = str_replace("Æ", "ae", $w);
 	$w = str_replace("Œ", "oe", $w);
-	$w = preg_replace("#[^A-Za-z$extras]#","", $w);
+	$w = str_replace("þ", "th", $w);
+	$w = str_replace("Þ", "th", $w);
+	$w = str_replace("ð", "th", $w);
+	$w = str_replace("Ð", "th", $w);
+	/*/
+	$w = transliterator_transliterate('Any-Latin; Latin-ASCII',$w); # TODO: use more on this function
+	/**/
+	$w = preg_replace("#[^\p{L}$extras]#ui","", $w);
 	return $w;
 }
 
@@ -168,7 +177,22 @@ function any_match_quoted($char) {
 		return "[$quot".any_match_quoted($other)."]";
 	return $quot;
 }
-function match($l,$r,$flags,$silent=false) {
+function dl_optimize($l,$r,&$best,$silent=true) {
+	global $LEVENSHTEIN;
+	$ll = substr($l, 0, strlen($r));
+	$best = $LEVENSHTEIN($ll,$r);
+	$result = $ll;
+	while (strlen($ll) < strlen($l)) {
+		$ll .= $l[strlen($ll)];
+		$dist = $LEVENSHTEIN($ll, $r);
+		if ($dist <= $best) {
+			$best = $dist;
+			$result = $ll;
+		} else break;
+	}
+	return $result;
+}
+function match($l,$r,$flags,&$dist,$silent=false) {
 	global $DEBUG_STRING_PHP;
 	$ls = sanitize($l,$flags);
 	$rs = sanitize($r,$flags);
@@ -179,15 +203,22 @@ function match($l,$r,$flags,$silent=false) {
 	}
 	if (!$silent) echo "Try match:<ol>";
 	if (!$silent) var_dump($ls,$rs);
-	if (strncmp($ls,$rs,strlen($rs))) {
-		if (!$silent) var_dump(strncmp($ls,$rs,strlen($rs)));
-		if (!$silent) echo "</ol>No match";
-		return null;
+	if (strncmp($ls,$rs,$len = strlen($rs))) {
+		if (!$silent) var_dump(strncmp($ls,$rs,$len));
+		$d = NULL;
+		$rn = dl_optimize($ls, $rs, $d, $silent);
+		if (!$silent) echo "Incurred distance of $d (+$dist) from \"$rs\" to \"$rn\".";
+		if ($dist+$d > $flags["max_distance"]) {
+			if (!$silent) echo "</ol>No match";
+			return null;
+		}
+		$dist += $d;
+		$rs = $rn;
 	}
-	$ignore = "[^\\w]";
+	$ignore = /*"\\W"/*/"\P{L}"/**/;
 	if (!safe_get("keephtml",$flags)) $ignore .= "|<[^>]*>";
 	$regex = implode("($ignore)*", array_map("any_match_quoted",str_split($rs)));
-	$regex = "/^($ignore)*$regex\s*/i";
+	$regex = "/^($ignore)*$regex($ignore)*/ui";
 	if (!$silent) var_dump($regex);
 	if (!$silent) echo "On subject:";
 	if (!$silent) var_dump($l);
@@ -196,11 +227,13 @@ function match($l,$r,$flags,$silent=false) {
 	if (!$silent) var_dump($ret);
 	return $ret;
 }
-function compare_part($s, $i, $flags) {
+
+
+function compare_part($s, $i, $flags, $dist=0) {
 	global $DEBUG_STRING_PHP;
 	if (strpos($s, "\\") === false) {
 		if ($DEBUG_STRING_PHP) echo "Simple:<ol>";
-		if (match($i,$s,$flags) === null)
+		if (match($i,$s,$flags,$dist) === null)
 		{if ($DEBUG_STRING_PHP) echo "</ol>False";return null;}
 		else {if ($DEBUG_STRING_PHP) echo "</ol>True ('$s')";return $s;}
 	}
@@ -236,18 +269,24 @@ function compare_part($s, $i, $flags) {
 	if ($DEBUG_STRING_PHP and $capitals) var_dump($capitals);
 	//if ($DEBUG_STRING_PHP and $opts) var_dump($opts);
 	$r = ""; $l = 0;
-	$backtrack = []; $failed_backtrack = [];
+	$backtrack = []; $failed_backtrack = []; $saved = NULL;
 	$back = function($forwards=false) use(
 		$s,&$i,&$r,&$l,&$next,&$arr,&$opts,&$capitals,
-		&$backtrack,&$failed_backtrack,$DEBUG_STRING_PHP
+		&$backtrack,&$dist,&$failed_backtrack,&$saved,
+		$DEBUG_STRING_PHP
 	) {
-		if (!$forwards) {
+		if (!$forwards and $forwards !== NULL) {
+			if ($saved !== NULL) {
+				list($i, $r, $l, $arr, $opts, $capitals, $dist) = $saved;
+				$saved = NULL;
+				return true;
+			}
 			while ($backtrack and in_array(sanitize2($backtrack[count($backtrack)-1]),$failed_backtrack))
 				array_pop($backtrack);
 			if (!$backtrack) return false;
 			$failed_backtrack[] = sanitize2($backtrack[count($backtrack)-1]);
 			if (count($failed_backtrack) > 6) return false;
-			list($i, $r, $l, $arr, $opts, $capitals) = array_pop($backtrack);
+			list($i, $r, $l, $arr, $opts, $capitals, $dist) = array_pop($backtrack);
 			if ($DEBUG_STRING_PHP) {
 				$remaining = substr($s,$l);
 				if ($l) $remaining = "...$remaining";
@@ -258,7 +297,9 @@ function compare_part($s, $i, $flags) {
 			}
 			return true;
 		} else {
-			$backtrack[] = [$i, $r, $next, $arr, $opts, $capitals];
+			$backtrack[] = [$i, $r, $l, $arr, $opts, $capitals, $dist];
+			if ($forwards === 2 or $forwards === null)
+				$saved = array_pop($backtrack);
 		}
 	};
 	while ($l < $lens) {
@@ -285,7 +326,7 @@ function compare_part($s, $i, $flags) {
 		if ($DEBUG_STRING_PHP) echo "<br>Fixed ($l to $j):";
 		if ($DEBUG_STRING_PHP) var_dump($rr);
 		if ($rr) {
-			$i = match($i,$rr,$flags);
+			$i = match($i,$rr,$flags,$dist);
 			if ($i === null) {
 				if ($back()) continue; else {
 					if ($DEBUG_STRING_PHP) echo "</ol>No match";
@@ -301,11 +342,11 @@ function compare_part($s, $i, $flags) {
 		$other = [];
 		if ($t) {
 			// Parentheses and brackets
-			$rr = compare_syntax($rn, $i, $flags, $other);
+			$rr = compare_syntax($rn, $i, $flags, $other, $dist);
 		} else {
 			// Curly braces: try each pair
 			$rr = null;
-			$match_idx = null;
+			$match_idx = null; $match_opt = null;
 			$first = true; $cont = false;
 			foreach ($opts as $idx => $opt) {
 				if (!$first) {
@@ -314,26 +355,44 @@ function compare_part($s, $i, $flags) {
 						$cont = true;
 						continue;
 					}
-				}
-				$first = false;
-				if ($cont) {$cont=false;continue;}
-				$rrr = compare_syntax($opt, $i, $flags, $other);
+					if ($cont) {$cont=false;continue;}
+				} else $first = false;
+				$o = []; // $other
+				$rrr = compare_syntax($opt, $i, $flags, $o, $dist);
 				if ($DEBUG_STRING_PHP) echo "<hr>";
 				if ($rrr === null) continue; else
 				if ($rr === null) {
 					// First result: use it
 					$rr = $rrr;
 					$match_idx = $idx;
+					$match_opt = $opt;
+					$other = $o;
 					unset($opts[$idx]);
 				} else {
-					$_opts = $opts;
-					$_capitals = $capitals;
-					$opts[$match_idx] = $rr;
+					$back(null);
+					$opts[$match_idx] = $opt;
+					$opts[$idx] = $match_opt;
+					ksort($opts);
 					$capitals[] = !!$capitalize;
+					$l = $j;
 					// Extra result
+					if ($DEBUG_STRING_PHP) {
+						echo "Extra result: $rrr<br>";
+					}
 					$back(true);
-					$opts = $_opts;
-					$capitals = $_capitals;
+					$back();
+				}
+				if ($o and $DEBUG_STRING_PHP) {
+					echo "<br>Some other results:";
+					var_dump($o);
+				}
+				foreach ($o as $aliud) {
+					$back(null);
+					$l = $next;
+					$r .= $aliud;
+					$i = match($i,$aliud,$flags,$dist,true);
+					$back(true);
+					$back();
 				}
 			}
 			array_shift($arr);
@@ -349,32 +408,27 @@ function compare_part($s, $i, $flags) {
 			}
 		else
 		$l=$next;
-		if ($t === 2) $back(true);
-		if ($other and $DEBUG_STRING_PHP) {
-			echo "<br>Some other results:";
-			var_dump($other);
-		}
-		foreach ($other as $aliud) {
-			$_r = $r;
-			$_i = $i;
-			$r .= $aliud;
-			$i = match($i,$aliud,$flags,true);
-			$back(true);
-			$r = $_r;
-			$i = $_i;
-		}
 		if ($capitalize) $rr = capitalize($rr);
 		$r .= $rr;
-		$i = match($i,$rr,$flags,true); // XXX: ugly hack?
-		if ($i === null) /*go ballastic*/ die("internal error");
-		if ($DEBUG_STRING_PHP) echo "<br>Remaining:";
+		$iii = $i;
+		$i = match($i,$rr,$flags,$dist,true);
+		if ($i === null) {
+			$d = $DEBUG_STRING_PHP;
+			$DEBUG_STRING_PHP = true;
+			match($iii, $rr, $flags, $dist);
+			/*go ballastic*/ echo("<div>internal error</div>");
+			$DEBUG_STRING_PHP = $d;
+			return null;
+		}
+		if ($DEBUG_STRING_PHP) echo "<br>Remaining (dist $dist):";
 		if ($DEBUG_STRING_PHP) var_dump($i);
+		if ($t === 2) $back(true);
 	}
 	if ($DEBUG_STRING_PHP) echo "</ol>";
 	return $r;
 }
 
-function compare_syntax($ss, $i, $flags, &$backtrack=NULL) {
+function compare_syntax($ss, $i, $flags, &$others=NULL, $dist=0) {
 	global $DEBUG_STRING_PHP;
 	if (safe_get("unescaped",$flags))
 		$ss = swap3($ss, [
@@ -386,11 +440,14 @@ function compare_syntax($ss, $i, $flags, &$backtrack=NULL) {
 	if ($DEBUG_STRING_PHP) echo "compare_syntax '$ss' and '$i'<ol>";
 	//echo " -> '$ss'";
 	$flags["unescaped"] = false;
+	if (safe_get("max_distance",$flags) == NULL)
+		$flags["max_distance"] = 0;
 	$i = no_specials2($i);
+
 	if (strpos($ss, "\\") === false) {
-		$m = match($i,$ss,$flags);
+		$m = match($i,$ss,$flags,$dist);
 		if ($DEBUG_STRING_PHP) echo "</ol>";
-		if ($m === null or ($matchall and $m))
+		if ($m === null or ($matchall and strlen($m)+$dist > $flags["max_distance"]))
 			return null;
 		else return $ss;
 	}
@@ -398,20 +455,26 @@ function compare_syntax($ss, $i, $flags, &$backtrack=NULL) {
 	$rr = null;
 	foreach (split1($ss) as $s) {
 		$r = compare_part($s, $i, $flags);
-		if ($r !== null and $backtrack !== null and !in_array($r, $backtrack)) {
-			$backtrack[] = $r;
+		if ($r !== null and $others !== null and !in_array($r, $others)) {
+			$others[] = $r;
 		}
 		if ($r !== null and ($rr === null or strlen($r) > strlen($rr) /* greediness */)) {
 			$rr = $r;
 		}
 		if ($DEBUG_STRING_PHP) echo "<hr>";
 	}
-	if ($backtrack !== null) $backtrack = array_values(array_diff($backtrack, [$rr]));
+	if ($others !== null) $others = array_values(array_diff($others, [$rr])); // remove "correct" match
 	if ($DEBUG_STRING_PHP) var_dump($rr);
 	if ($DEBUG_STRING_PHP) echo "</ol>";
 	if ($matchall) {
-		if ($DEBUG_STRING_PHP) echo compare_strings($rr, $i, $flags) ? "$rr ≈ $i" : "$rr !≈ $i";
-		if (!compare_strings($rr, $i, $flags)) return NULL;
+		$d = 0;
+		$m = match($i, $rr, $flags, $d, true);
+		if ($DEBUG_STRING_PHP) var_dump($d,$m,$i,$rr);
+		//if ($d !== $dist) die("internal error 2");
+		$dist = $d;
+		$r = strlen($m)+$dist <= $flags["max_distance"];
+		if ($DEBUG_STRING_PHP) echo $r ? "$rr ≈ $i" : "$rr !≈ $i";
+		if (!$r) return NULL;
 	}
 	return $rr;
 }
@@ -733,10 +796,10 @@ function normalize_punctuation($str) {
 
 
 // Combine all three
-function compare_syntax3($syntax, $target, $dictionary=null, $matchall=false) {
+function compare_syntax3($syntax, $target, $dictionary=null, $matchall=false, $distance=0, $lang=NULL) {
 	if ($dictionary === null) $dictionary = nano_dfdict();
 	$syntax = nanomacro($syntax, $dictionary, 4);
-	$match = compare_syntax($syntax, $target, ["unescaped"=>true,"matchall"=>$matchall]);
+	$match = compare_syntax($syntax, $target, ["unescaped"=>true,"matchall"=>$matchall,"max_distance"=>$distance,"lang"=>$lang]);
 	return $match ? normalize_punctuation($match) : $match;
 }
 ?>

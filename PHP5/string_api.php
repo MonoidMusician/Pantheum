@@ -16,7 +16,7 @@ global $DEBUG_STRING_PHP;
 $expression = nanomacro($syntax,$dict,4);
 $DEBUG_STRING_PHP = safe_get("debug", $_GET) === "true";
 ob_start();
-$result = compare_syntax3($syntax, $input, $dict, !!safe_get("matchall", $_GET));
+$result = compare_syntax3($syntax, $input, $dict, !!safe_get("matchall", $_GET), safe_get("dist", $_GET));
 $log = ob_get_contents();
 ob_end_clean();
 echo json_encode([

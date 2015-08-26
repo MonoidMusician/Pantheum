@@ -184,6 +184,7 @@ foreach ([
 <h2>Try it!</h2>
 <p>IT'S ALIVE!!</p>
 
+Damerau-Levenshtein error: <input id="dist" style="width:150px" type="number" placeholder="Max Distance">
 <label><input type="checkbox" id="debug">Debug</label>
 <label><input type="checkbox" checked id="matchall">Only match whole string</label>
 <br>
@@ -203,9 +204,9 @@ foreach ([
 $('#debug').on('change', function() {
 	$('#log').css('display', $(this).is(':checked') ? 'block' : 'none');
 }).trigger('change');
-$('#syntax,#input').on('keypress', function(e) {
+$('input').on('keypress', function(e) {
 	if (e.which !== 13) return;
-	$.get('PHP5/string_api.php',{"syntax":$('#syntax').val(),"input":$('#input').val(),"debug":"true","matchall":$('#matchall:checked').length})
+	$.get('PHP5/string_api.php',{"syntax":$('#syntax').val(),"dist":$('#dist').val(),"input":$('#input').val(),"debug":"true","matchall":$('#matchall:checked').length})
 	.done(function(data) {
 		data = JSON.parse(data);
 		$('#expression').text(data["expression"]);
