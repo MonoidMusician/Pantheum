@@ -156,6 +156,7 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "accusative") return "+ACC";
 		elseif ($value === "dative") return "+DAT";
 		elseif ($value === "dative-personal") return "+DAT (of persons)";
+		elseif ($value === "genitive") return "+GEN";
 	if ($tag === "declension")
 		if ($value === "decl-1") return "1st Declension";
 		elseif ($value === "decl-2") return "2nd Declension";
@@ -167,6 +168,7 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "decl-3-neuter") return "3rd Declension Neuter";
 		elseif ($value === "decl-3-i-neuter") return "3rd Declension Neuter i-stem";
 		elseif ($value === "decl-4-neuter") return "4th Declension Neuter";
+		elseif ($value === "decl-2-4") return "2nd/4th Declension";
 		elseif ($value === "adjective-12") return "1st/2nd Declension";
 		elseif ($value === "adjective-3-3") return "3rd Declension";
 	if ($tag === "conjugation")
@@ -258,13 +260,14 @@ function modify_options($w) {
 	return $s[0]." (".implode(", ", array_slice($s,1)).")";
 }
 
-function display_word_name($w) {
+function display_word_name($w, &$common=false) {
 	$lang = $w->lang();
 	$spart = $w->speechpart();
 	$name = NULL;
 	if ($lang === "la" and $spart === "noun") {
 		if ($genders = $w->path()->iterate("gender")) {
 			$name = [];
+			$common = true;
 			if ($name !== NULL and in_array($g = "masculine",$genders)) {
 				$key = PATH($w, "nominative/singular/$g");
 				if (!$key->hasvalue()) $name = NULL;
@@ -274,7 +277,7 @@ function display_word_name($w) {
 					if (!$key->hasvalue()) $name = NULL;
 					else $name[] = ($key->get());
 				}
-			}
+			} else $common = false;
 			if ($name !== NULL and in_array($g = "feminine",$genders)) {
 				$key = PATH($w, "nominative/singular/$g");
 				if (!$key->hasvalue()) $name = NULL;
@@ -284,7 +287,7 @@ function display_word_name($w) {
 					if (!$key->hasvalue()) $name = NULL;
 					else $name[] = ($key->get());
 				}
-			}
+			} else $common = false;
 			if ($name !== NULL and in_array($g = "neuter",$genders)) {
 				$key = PATH($w, "nominative/singular/$g");
 				if (!$key->hasvalue()) $name = NULL;
@@ -294,7 +297,11 @@ function display_word_name($w) {
 					if (!$key->hasvalue()) $name = NULL;
 					else $name[] = ($key->get());
 				}
+				$common = false;
 			}
+			if ($common and count($name) === 4 and $name[0] == $name[2] and $name[1] == $name[3])
+				$name = [$name[0], $name[1]];
+			else $common = false;
 		}
 	} elseif ($lang === "la" and $spart === "pronoun") {
 		if ($genders = $w->path()->iterate("gender")) {
@@ -348,20 +355,24 @@ function display_word_info($w, $can_edit=FALSE) {
 	$id = $w->id();
 	$lang = $w->lang();
 	$spart = $w->speechpart();
+	$common = false;
 	$w->clear_connections();
 	$connections = $w->connections();
 	$w->read_paths();
 	$w->read_attrs();
 	display_lang($w);
-	?><span class="word-name" id="word<?= $w->id() ?>_name"><?= display_word_name($w) ?></span>
+	?><span class="word-name" id="word<?= $w->id() ?>_name"><?= display_word_name($w,$common) ?></span>
 	<?php
-	$infos = [];
-	if ($lang === "la" and $spart === "noun" and ($genders = $w->path()->iterate("gender"))) {
+	if ($common) echo "c. ";
+	elseif ($lang === "la" and $spart === "noun" and ($genders = $w->path()->iterate("gender"))) {
 		$genders = array_map(function($a){return $a[0];}, $genders);
 		echo implode(".", $genders).". ";
 	}
+
+	$infos = [];
+	/*
 	$stem = $w->path();
-	/*if ($stem->hasvalue())
+	if ($stem->hasvalue())
 		$infos[] = format_word(str_replace("\n", ", ", $stem->get()));
 	*/
 	$infos[] = $spart;
@@ -837,6 +848,9 @@ function display_inflection($w, $hidden=TRUE) {
 			[<a href="javascript:void(0)" id="toggle-pronunciations<?= $w->id() ?>">show IPA</a>]<br><br>
 		</span><?php
 	}
+	?><span id="toggle-quizzing<?= $w->id() ?>_outer">
+		[<a href="javascript:void(0)" id="toggle-quizzing<?= $w->id() ?>">cover forms</a>]<br><br>
+	</span><?php
 	do_table(
 		$w,$values0,$values1,$values2,$values3,$values4,
 		"format_value",
@@ -881,7 +895,7 @@ function display_inflection($w, $hidden=TRUE) {
 	<script type="text/javascript">
 		$(function(){
 			var c = "<?= $w->id() ?>";
-			var selector = $('#word'+c+'_forms, #toggle-pronunciations'+c+'_outer');
+			var selector = $('#word'+c+'_forms, #toggle-pronunciations'+c+'_outer, #toggle-quizzing'+c+'_outer');
 			$('#toggle-forms'+c).click(function () {
 				selector.toggle();
 				var vis = $('#word'+c+'_forms').is(':visible');
@@ -897,6 +911,9 @@ function display_inflection($w, $hidden=TRUE) {
 				$('.word'+c+'_pronunciation').toggle();
 				$('#toggle-pronunciations'+c).text($('.word'+c+'_pronunciation').is(':visible') ? 'hide IPA' : 'show IPA');
 			});
+			$('#toggle-quizzing'+c).click(function () {
+				$('#word'+c+' td').addClass('hidden').on('click', function() {$(this).removeClass('hidden').off('click')});
+			});
 			$('.word'+c+'_pronunciation, #toggle-pronunciations').hide();
 		});
 	</script>
@@ -905,7 +922,7 @@ function display_inflection($w, $hidden=TRUE) {
 	ob_end_flush();
 }
 
-function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,$format_word,$get_link=NULL,$extras=NULL,$optimization=3) {
+function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,$format_word,$get_link=NULL,$extras=NULL,$optimization=0) {
 	?><div class="scrollable"><?php
 	if ($values1 and
        !$values2 and
@@ -1063,6 +1080,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 								. $val;
 						} elseif ($ditto and $optimization & 1) {
 							$val = "&nbsp;&nbsp;&nbsp;&nbsp;&#8243;"; # ditto mark
+							$val = "&nbsp;&#x2044;&nbsp;&#x2044;";
 							#echo "↓";
 						}
 						echo $val;
