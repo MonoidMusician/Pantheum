@@ -115,7 +115,8 @@ $quiz_types = array_merge($quiz_types,[
 		"lang" => "la",
 		"n_questions" => -1,
 		"options" => function(){return[
-			make_chart(WORD2("la","hic","pronoun"),null,["vocative","genitive","dative","ablative"]),
+			make_chart(WORD2("la","hic","pronoun"),null,["vocative"]),
+			make_chart(WORD2("la","qui","pronoun"),null,["vocative"]),
 		];}
 	],
 	"irregular-pronouns1" => [
