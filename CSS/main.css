@@ -369,6 +369,11 @@ table.inflection td {
 table.inflection ol {
     margin: 0px;
 }
+table.inflection td.hidden {
+    color: transparent;
+    background-color: #AAA;
+    border: 1px double black;
+}
 table.expansive td {
     height: 3.5em;
     white-space: nowrap;
