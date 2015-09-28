@@ -182,5 +182,13 @@ $answer = 'had hhaving';
 var_dump(compare_syntax3($syntax, $answer, $dict, true, 5));
 echo "took ".(microtime(true)-$stime)." seconds";
 echo "<hr>";
+$stime = microtime(true);
+$dict = [];
+$syntax = '{this} {is} {a} {sentence} {{which} {is} {this}}';
+$answer = 'sentence which this is this is a';
+var_dump(compare_syntax3($syntax, $answer, $dict, true, 2));
+var_dump(compare_syntax3($syntax, $answer, $dict, true, 5));
+echo "took ".(microtime(true)-$stime)." seconds";
+echo "<hr>";
 echo "took ".(microtime(true)-$START)." seconds total";
 ?>

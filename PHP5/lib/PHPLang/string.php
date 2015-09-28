@@ -368,6 +368,7 @@ function compare_part($s, $i, $flags, $dist=0) {
 					$match_opt = $opt;
 					$other = $o;
 					unset($opts[$idx]);
+					ksort($opts);
 				} else {
 					$back(null);
 					$opts[$match_idx] = $opt;
@@ -381,18 +382,21 @@ function compare_part($s, $i, $flags, $dist=0) {
 					}
 					$back(true);
 					$back();
-				}
-				if ($o and $DEBUG_STRING_PHP) {
-					echo "<br>Some other results:";
-					var_dump($o);
-				}
-				foreach ($o as $aliud) {
-					$back(null);
-					$l = $next;
-					$r .= $aliud;
-					$i = match($i,$aliud,$flags,$dist,true);
-					$back(true);
-					$back();
+					if ($o and $DEBUG_STRING_PHP) {
+						echo "<br>Some other results:";
+						var_dump($o);
+					}
+					foreach ($o as $aliud) {
+						$back(null);
+						$opts[$match_idx] = $opt;
+						unset($opts[$idx]);
+						ksort($opts);
+						$l = $next;
+						$r .= $aliud;
+						$i = match($i,$aliud,$flags,$dist,true);
+						$back(true);
+						$back();
+					}
 				}
 			}
 			array_shift($arr);
@@ -408,6 +412,14 @@ function compare_part($s, $i, $flags, $dist=0) {
 			}
 		else
 		$l=$next;
+		if ($t === 2) $back(true);
+		foreach ($other as $aliud) {
+			$back(null);
+			$r .= $aliud;
+			$i = match($i,$aliud,$flags,$dist,true);
+			$back(true);
+			$back();
+		}
 		if ($capitalize) $rr = capitalize($rr);
 		$r .= $rr;
 		$iii = $i;
