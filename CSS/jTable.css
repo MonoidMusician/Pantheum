@@ -30,11 +30,11 @@
 **/
 
 /**
- * Sample style sheet. 
+ * 10/08/2015 - Updated to match Latin site
 **/
 
 .jTableHeadTdCheckbox, .jTableHeadTdCanvas, .jTableHeadTd {
-    border-bottom: 2px solid #4466AA;
+    border-bottom: 2px solid #A00;
 }
 
 .jTableHeadTd {
@@ -42,7 +42,7 @@
 }
 
 .jTableFootTdCheckbox, .jTableFootTdCanvas, .jTableFootTd {
-    border-top: 2px solid #4466AA;
+    border-top: 2px solid #A00;
 }
 
 .jTableFootTd {
@@ -70,7 +70,7 @@
 }
 
 .jTableEditing input:focus {
-    border: 1px solid #4466AA !important;
+    border: 1px solid #A00 !important;
 }
 
 .jTableInputInvalid {
@@ -86,7 +86,7 @@
     -webkit-border-radius: 2px;
     border-radius: 2px;
     
-    background-color: #4466AA;
+    background-color: #A00;
     color: #ffffff;
     
     font-weight: bold;
@@ -104,7 +104,7 @@
 }
 
 .jTableUControlsInput:focus, .jTableLControlsInput:focus {
-    border: 1px solid #4466AA;
+    border: 1px solid #A00;
 }
 
 
