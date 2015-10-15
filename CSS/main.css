@@ -18,6 +18,10 @@
     font-weight: bold;
     font-style: italic;
 }
+@font-face {
+    font-family: "Tengwar";
+    src: url(/Fonts/tengtelc.ttf);
+}
 
 html,body {
     border: none;

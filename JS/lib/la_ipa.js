@@ -162,6 +162,186 @@ var la_ipa = (function () {
 				.replace(/[.][.]+/g, ".")
 		);
 	};
+	my.tengwar_map = (function() {
+		var c = String.fromCodePoint, i = 0xE000-1;
+		return {
+			tinco: c(i+=1),
+			parma: c(i+=1),
+			calma: c(i+=1),
+			quesse: c(i+=1),
+			ando: c(i+=1),
+			umbar: c(i+=1),
+			anga: c(i+=1),
+			ungwe: c(i+=1),
+			thuule: c(i+=1),
+			formen: c(i+=1),
+			harma: c(i+=1),
+			hwesta: c(i+=1),
+			anto: c(i+=1),
+			ampa: c(i+=1),
+			anca: c(i+=1),
+			unque: c(i+=1),
+			nuumen: c(i+=1),
+			malta: c(i+=1),
+			ngoldo: c(i+=1),
+			nwalme: c(i+=1),
+			oore: c(i+=1),
+			vala: c(i+=1),
+			anna: c(i+=1),
+			vilya: c(i+=1),
+			Tinco: c(i+=1),
+			Parma: c(i+=1),
+			Calma: c(i+=1),
+			Quesse: c(i+=1),
+			Ando: c(i+=1),
+			Umbar: c(i+=1),
+			Anga: c(i+=1),
+			Ungue: c(i+=1),
+			roomen: c(i+=1),
+			arda: c(i+=1),
+			lambe: c(i+=1),
+			alda: c(i+=1),
+			silme: c(i+=1),
+			Silme: c(i+=1),
+			aare: c(i+=1),
+			Aare: c(i+=1),
+			hyarmen: c(i+=1),
+			Hwesta: c(i+=1),
+			yanta: c(i+=1),
+			uure: c(i+=1),
+			__: c(i+=1),
+			halla: c(i+=1),
+			_: c(i+=1),
+			a: "\uE040",
+			A: "\uE055",
+			a_: "\uE032",
+			e: "\uE046",
+			E: "\uE046\uE046",
+			e_: "\uE02A",
+			i: "\uE044",
+			I: "\uE042",
+			i_: "\uE02E",
+			o: "\uE04A",
+			O: "\uE04A\uE04A",
+			o_: "\uE016",
+			u: "\uE04C",
+			U: "\uE04C\uE04C",
+			u_: "\uE02B",
+			nasalize: "\uE050",
+			geminate: "\uE051",
+			andaith: "\uE046", // XXX: \u0301 ?
+		};
+	})();
+	my.tengwar = function(r) {
+		if (!$('#tengwar-font').length)
+			$('head').append('<style id="tengwar-font">.format-word-la { font-family: Tengwar !important; font-weight: normal !important; }</style>')
+		var t = my.tengwar_map;
+		return (
+			r.toLowerCase()
+			.split("j").join(t.yanta)
+			.replace(/([ao]e|[ae]u|[e]i)(?![\u0304\u0308])/g, function(a) {
+				return t[a[0]+"_"]+t[a[1]];
+			})
+			.replace(/m\b/g, t.vala) // final m is weaker, hence vala for malta
+			.replace(/n\b/g, t.oore) // final n is weaker, hence oore for nuumen
+			.replace(/([aeiou])([aeiou])\u0304/g, function(_,a,b) {
+				return a + t.__ + t[b];
+			})
+			.replace(/([aeiou])([aeiou])/g, function(_,a,b) {
+				return a + t._ + t[b];
+			})
+			.replace(/\b([aeiou])\u0304/g, function(a,b) {
+				return t.__ + t[b];
+			})
+			.replace(/\b([aeiou])/g, function(a,b) {
+				return t._ + t[b];
+			})
+			.replace(/h([aeiou])\u0304/g, function(a,b) {
+				return t.halla + t.__ + t[b];
+			})
+			.replace(/h([aeiou])/g, function(a,b) {
+				return t.halla + t._ + t[b];
+			})
+			.replace(/([aeiou])\u0304/g, function(a,b) {
+				return t[b.toUpperCase()];
+			})
+			.replace(/([aeiou])/g, function(a,b) {
+				return t[b];
+			})
+			.replace(/[mn]([pbtdckg])/g, "$1"+t.nasalize)
+			.split("q"+t.u).join(t.quesse)
+			.split("g"+t.u).join(t.ungwe)
+			.split("q"+t.nasalize+t.u).join(t.quesse+t.nasalize)
+			.split("g"+t.nasalize+t.u).join(t.ungwe+t.nasalize)
+
+			.replace(/([tdpbqgckfnmlr])\1/g, "$1"+t.geminate)
+			.replace(/([tdpbqgck])r/g, "$1"+t.roomen)
+			.replace(/([tdpbqgck])l/g, "$1"+t.lambe)
+
+			.split("x").join("ks")
+			.split("t").join(t.tinco)
+			.split("d").join(t.ando)
+			.split("p").join(t.parma)
+			.split("b").join(t.umbar)
+			.split("gn").join(t.ngoldo+t.nuumen)
+			.split("c").join(t.calma)
+			.split("k").join(t.calma)
+			.split("g").join(t.anga)
+			.split("f").join(t.formen)
+			.split("ph").join(t.formen)
+			.split("v").join(t.vilya)
+			.split("n").join(t.nuumen)
+			.split("m").join(t.malta)
+			.split("l").join(t.alda)
+			.split("r").join(t.arda)
+			.split("ss").join(t.aare)
+			.replace(new RegExp(t.aare+"(?="+[t.a,t.A,t.e,t.E,t.i,t.I,t.o,t.O,t.u,t.U].join("|")+")","g"), t.Aare)
+			.split("s").join(t.silme)
+			.replace(new RegExp(t.silme+"(?="+[t.a,t.A,t.e,t.E,t.i,t.I,t.o,t.O,t.u,t.U].join("|")+")","g"), t.Silme)
+
+			.split("\u0308").join("")
+		);
+	};
+	my.tengwar_carriers = function(r) {
+		var t = my.tengwar_map;
+		return (
+			r
+			.split(t.A).join(t.__+t.a)
+			.split(t.E).join(t.__+t.e)
+			.split(t.I).join(t.__+t.i)
+			.split(t.O).join(t.__+t.o)
+			.split(t.U).join(t.__+t.u)
+			.split(t.Aare+t.__).join(t.aare+t.__)
+			.split(t.Silme+t.__).join(t.silme+t.__)
+		)
+	};
+	my.tengwar_beleriand = function(r) {
+		var t = my.tengwar_map;
+		return (
+			r
+			.split(t.a_+t.e).join(t.a_+t.e_)
+			.split(t.o_+t.e).join(t.o_+t.e_)
+			.split(t._).join("")
+			.split(t.Aare).join(t.aare)
+			.split(t.Silme).join(t.silme)
+			.split(t.e).join(t.e_)
+			.split(t.A).join(t.a_+t.andaith)
+			.split(t.__+t.a).join(t.a_+t.andaith)
+			.split(t.E).join(t.e_+t.andaith)
+			.split(t.__+t.e).join(t.e_+t.andaith)
+			.split(t.I).join(t.i_+t.andaith)
+			.split(t.__+t.i).join(t.i_+t.andaith)
+			.split(t.O).join(t.o_+t.andaith)
+			.split(t.__+t.o).join(t.o_+t.andaith)
+			.split(t.U).join(t.u_+t.andaith)
+			.split(t.__+t.u).join(t.u_+t.andaith)
+			.split(t.a).join(t.a_)
+			.split(t.i).join(t.i_)
+			.split(t.o).join(t.o_)
+			.split(t.u).join(t.u_)
+			.replace(new RegExp("(["+t.tinco+t.ando+t.parma+t.umbar+t.calma+t.anga+t.quesse+t.ungwe+"])"+t.geminate,"g"), "$1$1")
+		)
+	};
 	my.IPA_eccl = function (r) {
 		return (
 			r
@@ -338,6 +518,8 @@ var la_ipa = (function () {
 		),
 		"Greek": my.Greek,
 		"Ļaþ": my.Llath,
+		"Tengwar": my.mix(my.sonusmedius, my.ae_oe, my.orthography_j, my.tengwar, my.tengwar_carriers),
+		"Tengwar Beleriand": my.mix(my.sonusmedius, my.ae_oe, my.orthography_j, my.tengwar, my.tengwar_beleriand),
 		"Finnish": my.mix(
 			my.double_vowels,
 			my.replasor("c","k"),
@@ -370,6 +552,7 @@ var la_ipa = (function () {
 	};
 	my.transform_key = my.old_transform = null;
 	my.select_transformer = function(nomen) {
+		$('#tengwar-font').remove();
 		my.transform_key = nomen;
 		my.transform = my.transforms[nomen];
 		return my;
