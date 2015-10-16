@@ -27,7 +27,7 @@ a.jpage-anchor {
 }
 
 a.jpage-anchor:hover {
-    color: #4466FA;
+    color: #A00;
     text-decoration: none;
 }
 
@@ -39,8 +39,8 @@ a.jpage-anchor:hover {
 }
 
 #alTable-tbody tr td {
-    border-bottom: 1px dotted #4466AA;
-    border-left: 1px dotted #4466AA;
+    border-bottom: 1px dotted #A00;
+    border-left: 1px dotted #A00;
 }
 
 #alTable-tbody tr td {
@@ -52,8 +52,8 @@ a.jpage-anchor:hover {
 }
 
 #adTable-tbody tr td {
-    border-bottom: 1px dotted #4466AA;
-    border-left: 1px dotted #4466AA;
+    border-bottom: 1px dotted #A00;
+    border-left: 1px dotted #A00;
 }
 
 #adTable-tbody tr td {
