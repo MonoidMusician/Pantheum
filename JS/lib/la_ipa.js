@@ -227,9 +227,10 @@ var la_ipa = (function () {
 			u: "\uE04C",
 			U: "\uE04C\uE04C",
 			u_: "\uE02B",
+			j: "\uE02A\uE045",
 			nasalize: "\uE050",
 			geminate: "\uE051",
-			andaith: "\uE046", // XXX: \u0301 ?
+			andaith: "\u0301", // XXX: \u0301 ?
 		};
 	})();
 	my.tengwar = function(r) {
@@ -238,12 +239,12 @@ var la_ipa = (function () {
 		var t = my.tengwar_map;
 		return (
 			r.toLowerCase()
-			.split("j").join(t.yanta)
+			.replace(/m\b/g, t.vala) // final m is weaker, hence vala for malta
+			.replace(/n\b/g, t.oore) // final n is weaker, hence oore for nuumen
+			.split("j").join(t.j)
 			.replace(/([ao]e|[ae]u|[e]i)(?![\u0304\u0308])/g, function(a) {
 				return t[a[0]+"_"]+t[a[1]];
 			})
-			.replace(/m\b/g, t.vala) // final m is weaker, hence vala for malta
-			.replace(/n\b/g, t.oore) // final n is weaker, hence oore for nuumen
 			.replace(/([aeiou])([aeiou])\u0304/g, function(_,a,b) {
 				return a + t.__ + t[b];
 			})
@@ -269,6 +270,14 @@ var la_ipa = (function () {
 				return t[b];
 			})
 			.replace(/[mn]([pbtdckg])/g, "$1"+t.nasalize)
+			.split("q"+t.u+t.__).join(t.quesse)
+			.split("g"+t.u+t.__).join(t.ungwe)
+			.split("q"+t.nasalize+t.u+t.__).join(t.quesse+t.nasalize)
+			.split("g"+t.nasalize+t.u+t.__).join(t.ungwe+t.nasalize)
+			.split("q"+t.u+t._).join(t.quesse)
+			.split("g"+t.u+t._).join(t.ungwe)
+			.split("q"+t.nasalize+t.u+t._).join(t.quesse+t.nasalize)
+			.split("g"+t.nasalize+t.u+t._).join(t.ungwe+t.nasalize)
 			.split("q"+t.u).join(t.quesse)
 			.split("g"+t.u).join(t.ungwe)
 			.split("q"+t.nasalize+t.u).join(t.quesse+t.nasalize)
@@ -319,12 +328,9 @@ var la_ipa = (function () {
 		var t = my.tengwar_map;
 		return (
 			r
-			.split(t.a_+t.e).join(t.a_+t.e_)
-			.split(t.o_+t.e).join(t.o_+t.e_)
 			.split(t._).join("")
 			.split(t.Aare).join(t.aare)
 			.split(t.Silme).join(t.silme)
-			.split(t.e).join(t.e_)
 			.split(t.A).join(t.a_+t.andaith)
 			.split(t.__+t.a).join(t.a_+t.andaith)
 			.split(t.E).join(t.e_+t.andaith)
@@ -336,10 +342,13 @@ var la_ipa = (function () {
 			.split(t.U).join(t.u_+t.andaith)
 			.split(t.__+t.u).join(t.u_+t.andaith)
 			.split(t.a).join(t.a_)
+			.split(t.e).join(t.e_)
 			.split(t.i).join(t.i_)
 			.split(t.o).join(t.o_)
 			.split(t.u).join(t.u_)
-			.replace(new RegExp("(["+t.tinco+t.ando+t.parma+t.umbar+t.calma+t.anga+t.quesse+t.ungwe+"])"+t.geminate,"g"), "$1$1")
+			.replace(new RegExp("([^ ])"+t.geminate,"g"), "$1$1")
+			.split(t.j).join(t.__)
+			.split(t.andaith).join(t.e) // HACK
 		)
 	};
 	my.IPA_eccl = function (r) {
