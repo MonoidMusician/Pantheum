@@ -21,13 +21,13 @@ li.jpage-li {
     padding: 0;
 }
 
-a.jpage-anchor {
-    color: #232323;
+section#content a.jpage-anchor {
+    color: #545454;
     text-decoration: none;
 }
 
-a.jpage-anchor:hover {
-    color: #A00;
+section#content a.jpage-anchor:hover {
+    color: #DA7B00;
     text-decoration: none;
 }
 
