@@ -128,7 +128,7 @@ section#content {
     background-color: #efefef;
 }
 section#content a {
-    color: #A00;
+    color: #DA7B00;
     text-decoration: none;
 }
 
@@ -195,8 +195,12 @@ input:active:not(.select2-search__field),
 button:focus:not(.disabled),
 button:active:not(.disabled),
 .select2-container--default.select2-container--focus .select2-selection--multiple {
-    border: 1px solid #3E6FD2 !important;
+    border: 1px solid #D29C3E !important;
 }
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #EAB75E !important;
+}
+
 button::-moz-focus-inner,
 input[type="reset"]::-moz-focus-inner,
 input[type="button"]::-moz-focus-inner,
