@@ -20,9 +20,11 @@ foreach ($quiz_types as $id=>$q) {
 	if (!array_key_exists($k,$cat)) $cat[$k] = [];
 	$cat[$k][] = $id;
 }
-?><div class="select"><?php
+?>
+<br>
+<div class="select quiz-category-select"><?php
 foreach ($cat as $k=>$vs) {
-	?><label><input name="quiz-category" type="radio" value="<?= $k ?>"
+	?><label class="quiz-category-label"><input class="quiz-category-radio" name="quiz-category" type="radio" value="<?= $k ?>"
 	<?php
 		if ($k === "All") {
 			$onclick = '$("[name=quiz-types]").parent().show();update_tabs();';

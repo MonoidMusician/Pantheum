@@ -493,6 +493,27 @@ div.floater-message a {
     font-weight: bold;
 }
 
+.quiz-category-radio {
+    display: none;
+}
+
+.quiz-category-select {
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.quiz-category-label {
+    font-weight: bold;
+    color: #A00;
+    border-bottom: 2px solid #A00;
+    
+    padding: 5px;
+    margin-right: 2.5px;
+    margin-left: 2.5px;
+    margin-top: 10px;
+}
+
 sup.ordinal {font-size: 65%;}
 
 @media only screen 
