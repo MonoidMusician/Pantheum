@@ -23,8 +23,9 @@ foreach ($quiz_types as $id=>$q) {
 ?>
 <br>
 <div class="select quiz-category-select"><?php
+$i = 0;
 foreach ($cat as $k=>$vs) {
-	?><label class="quiz-category-label"><input class="quiz-category-radio" name="quiz-category" type="radio" value="<?= $k ?>"
+	?><input id="quiz-category<?= $i ?>" name="quiz-category" type="radio" value="<?= $k ?>"
 	<?php
 		if ($k === "All") {
 			$onclick = '$("[name=quiz-types]").parent().show();update_tabs();';
@@ -36,7 +37,8 @@ foreach ($cat as $k=>$vs) {
 			echo "onclick='$onclick'";
 		}
 	?>
-	><?= htmlspecialchars($k);?></label><?php
+	><label for="quiz-category<?= $i ?>"><?= htmlspecialchars($k);?></label><?php
+	$i += 1;
 }
 ?></div><br><?php
 $first = TRUE;

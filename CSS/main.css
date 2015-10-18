@@ -497,7 +497,7 @@ div.floater-message a {
     font-weight: bold;
 }
 
-.quiz-category-radio {
+input[name=quiz-category] {
     display: none;
 }
 
@@ -507,15 +507,19 @@ div.floater-message a {
     padding-right: 5px;
 }
 
-.quiz-category-label {
-    font-weight: bold;
-    color: #A00;
+.quiz-category-select label {
+    color: #C33;
     border-bottom: 2px solid #A00;
     
     padding: 5px;
     margin-right: 2.5px;
     margin-left: 2.5px;
     margin-top: 10px;
+}
+
+input[name=quiz-category]:checked + label {
+    font-weight: bold;
+    color: #A00;
 }
 
 sup.ordinal {font-size: 65%;}
