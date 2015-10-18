@@ -243,10 +243,11 @@ function word_link($w,$hide_lang=false) {
 	</script><?php
 }
 
-function word_link2($w, $text=NULL, $no_format=false) {
+function word_link2($w, $text=NULL, $no_format=false, $new_tab=false) {
 	if ($text === NULL) $text = $w->name();
 	if (!$no_format) $text = format_word($text,$w->lang(), true);
-	return '<a href="dictionary.php?lang='.$w->lang().'&spart='.$w->speechpart().'&name='.$w->name().'">'.$text.'</a>';
+	if ($new_tab) $target=' target="_blank"'; else $target='';
+	return '<a'.$target.' href="dictionary.php?lang='.$w->lang().'&spart='.$w->speechpart().'&name='.$w->name().'">'.$text.'</a>';
 }
 
 function display_lang($lang) {

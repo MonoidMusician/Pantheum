@@ -28,7 +28,7 @@ $challenge = function($spart,$lang='la') {
 			"sentence" => [$OP_USER_INPUT],
 			"answer0" => function($pick_db) {
 				$map = function($w) use($pick_db) {
-					return word_link2($pick_db["word"], $w, true);
+					return word_link2($pick_db["word"], $w, true, true);
 				};
 				return array_map($map,explode("\n",$pick_db["form"]));
 			},
