@@ -163,7 +163,7 @@ var la_ipa = (function () {
 		);
 	};
 	my.tengwar_map = (function() {
-		var c = String.fromCodePoint, i = 0xE000-1;
+		var c = String.fromCodePoint || String.fromCharCode, i = 0xE000-1;
 		return {
 			tinco: c(i+=1),
 			parma: c(i+=1),
@@ -235,7 +235,7 @@ var la_ipa = (function () {
 	})();
 	my.tengwar = function(r) {
 		if (!$('#tengwar-font').length)
-			$('head').append('<style id="tengwar-font">.format-word-la { font-family: Tengwar !important; font-weight: normal !important; }</style>')
+			$('head').append('<style id="tengwar-font">.format-word-la { font-family: Tengwar !important; font-weight: normal !important; }</style>');
 		var t = my.tengwar_map;
 		return (
 			r.toLowerCase()
@@ -322,7 +322,7 @@ var la_ipa = (function () {
 			.split(t.U).join(t.__+t.u)
 			.split(t.Aare+t.__).join(t.aare+t.__)
 			.split(t.Silme+t.__).join(t.silme+t.__)
-		)
+		);
 	};
 	my.tengwar_beleriand = function(r) {
 		var t = my.tengwar_map;
@@ -349,7 +349,7 @@ var la_ipa = (function () {
 			.replace(new RegExp("([^ ])"+t.geminate,"g"), "$1$1")
 			.split(t.j).join(t.__)
 			.split(t.andaith).join(t.e) // HACK
-		)
+		);
 	};
 	my.IPA_eccl = function (r) {
 		return (
