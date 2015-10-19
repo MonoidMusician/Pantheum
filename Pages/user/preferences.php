@@ -8,7 +8,7 @@
 ?>
 <h2>Preferences</h2>
 
-Language:
+<span data-i18n="ui.change_language">Language:</span>
 <select id="lang" style="width: 200px">
     <option value="en">English</option>
     <option value="la">Latin</option>
@@ -29,6 +29,8 @@ Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugn
 <script>
 $('#lang').select2({
     minimumResultsForSearch: Infinity
+}).val(pantheum.udata["language"]).change().on('change', function() {
+    i18n.setLng($(this).val(), pantheum._private.i18nload);
 });
 $('#la_ipa').select2({
     minimumResultsForSearch: Infinity,
@@ -39,7 +41,15 @@ $('#la_ipa').select2({
 
 $('#save').on('click', function() {
     $.post('/PHP5/user/udata-set.php', {'key':'la_ipa','value':$('#la_ipa').val()}, function(data) {
-        if (data === "success") successTip("Preferences updated successfully");
+        if (data === "success") {
+            $.post('/PHP5/user/udata-set.php', {'key':'language','value':$('#lang').val()}, function(data) {
+                if (data === "success") successTip("Preferences updated successfully");
+                else if (data === "1") errorTip("Unknown error. (Try again or report to webmaster.)");
+                else if (data === "2") errorTip("Bad parameters.");
+                else if (data === "3") errorTip("Unknown user. Try logging out and back in.");
+                else if (data === "4") errorTip("You have been logged out. Please log in and try again.");
+            });
+        }
         else if (data === "1") errorTip("Unknown error. (Try again or report to webmaster.)");
         else if (data === "2") errorTip("Bad parameters.");
         else if (data === "3") errorTip("Unknown user. Try logging out and back in.");

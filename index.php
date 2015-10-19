@@ -15,7 +15,6 @@
         <title>Home | Latin</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
-        <script type="text/javascript" src="/JS/lib/jquery.js"></script>
         <script type="text/javascript" src="/JS/lib/jquery.countdown.min.js"></script>
     </head>
     <body>
@@ -24,7 +23,7 @@
             <?php sro('/Pages/home.php'); ?>
             <article class="secondary">
                 <h1>
-                    <span>Quick quiz</span>
+                    <span data-i18n="quick_quiz">Quick quiz</span>
                     <?php sro('/PHP5/dictionary/select-lang.php'); ?>
                 </h1>
                 <?php sro('/PHP5/quiz/smallquiz.php'); ?>

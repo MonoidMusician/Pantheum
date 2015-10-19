@@ -4,7 +4,7 @@
     global $sudata;
 ?>
         <script>
-            var pantheum = {udata:<?= $sudata ? $sudata : 'null' ?>};
+            var pantheum = {udata:<?= $sudata ? $sudata : 'null' ?>,_private:{}};
         </script>
         <script type="text/javascript" src="/JS/lib/jquery.js"></script>
         <script type="text/javascript" src="/JS/lib/jCanvas.js"></script>
@@ -22,8 +22,18 @@
         <script type="text/javascript" src="/JS/lib/compat.js"></script>
         <script type="text/javascript" src="/JS/lib/unorm.js"></script>
         <script type="text/javascript" src="/JS/lib/la_ipa.js"></script>
+        <script type="text/javascript" src="/JS/lib/i18next.js"></script>
         <script type="text/javascript" src="/JS/lib/jquery.autosize.input.min.js"></script>
-        <!-- <script type="text/javascript" src="/JS/lib/date.js"></script> --> <!-- conflicts with d3 transitions :( -->
         <script type="text/javascript" src="/JS/lib/jstorage.min.js"></script>
         <script type="text/javascript" src="/JS/view.js"></script>
+        <script>
+            pantheum._private.i18nload = function(err, t) {
+                $('body').i18n();
+            };
+            i18n.init({
+                fallbackLng: 'en'
+            }, pantheum._private.i18nload);
+            if (pantheum.udata && pantheum.udata["language"])
+                i18n.setLng(pantheum.udata["language"], pantheum._private.i18nload);
+        </script>
 

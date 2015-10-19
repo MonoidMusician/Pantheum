@@ -1,0 +1,29 @@
+{
+  "app": {
+    "name": "Pantheum"
+  },
+  "nav": {
+    "home": "Domus",
+    "quiz": "Exāmina",
+    "settings": "Præferentiæ",
+    "login": "Conventum aperīre",
+    "logout": "Conventum conclūdere",
+    "admin": "Administrātiō"
+  },
+  "link": {
+    "latin_websites": "Tēlariī Locī Latinī",
+    "sentence_viewer": "Sententiārum Spectātiō",
+    "dictionary": "Dictiōnārium",
+    "add_words": "Addere verba"
+  },
+  "msg": {
+    "Welcome": "Salvē",
+    "welcome": "Salūtāris ad Pantheum, quod exāmina et dictiōnārium Latina habet, creātum ab Nicholā Scheel et Alex Scheel.",
+    "loggedin": "Grātiās tibi, conventum aperīre. Tuī responsūs servābuntur."
+  },
+  "can_mean": "potest significāre",
+  "quick_quiz": "Celere exāmen",
+  "ui": {
+    "change_language": "Seligere linguam: "
+  }
+}

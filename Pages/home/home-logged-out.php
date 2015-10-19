@@ -5,14 +5,14 @@
     sro('/Includes/functions.php');
 ?>
 <header>
-    <h1>Welcome</h1>
+    <h1 data-i18n="msg.Welcome">Welcome</h1>
 </header>
 <article>
     <p>
-        Welcome to the Pantheum, quizzes and a dictionary for Latin, created by Nick Scheel with website design by Alex Scheel.<br><br>
-        <button class="large" onclick="window.location.href='/links.php';">Latin websites</button><br>
-        <button class="large" onclick="window.location.href='/sentence.php';">Sentence Viewer</button><br>
-        <button class="large" onclick="window.location.href='/dictionary.php';">Dictionary</button><br>
+        <span data-i18n="msg.welcome">Welcome to the Pantheum, quizzes and a dictionary for Latin, created by Nick Scheel with website design by Alex Scheel.</span><br><br>
+        <button data-i18n="link.latin_websites" class="large" onclick="window.location.href='/links.php';">Latin websites</button><br>
+        <button data-i18n="link.sentence_viewer" class="large" onclick="window.location.href='/sentence.php';">Sentence Viewer</button><br>
+        <button data-i18n="link.dictionary" class="large" onclick="window.location.href='/dictionary.php';">Dictionary</button><br>
 
         Please <a href="/login.php">log in</a> to save scores.
     </p>
