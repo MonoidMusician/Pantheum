@@ -146,4 +146,16 @@ $quiz_types = array_merge($quiz_types,[
 			make_chart(WORD2("la","sum","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
 		];}
 	],
+	"irregular-verbs-latinII" => [
+		"name" => "Latin II Irregular verbs",
+		"category" => "Charts",
+		"lang" => "la",
+		"n_questions" => -4,
+		"options" => function(){return[
+			make_chart(WORD2("la","sum","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
+			make_chart(WORD2("la","possum","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
+			make_chart(WORD2("la","volo","verb"),NULL,["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
+			make_chart(WORD2("la","nolo","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
+		];}
+	],
 ]);
