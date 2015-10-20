@@ -6,8 +6,8 @@
     
     requireLoggedIn(TRUE);
 ?>
-<h2>Overview</h2>
+<h2 data-i18n="overview">Overview</h2>
 
-Username: <?= $suname ?>
+<span data-i18n>Username</span>: <?= $suname ?>
 <br>
-Rank: <?= getNamedRank($srank) ?>
+<span data-i18n>Rank</span>: <?= getNamedRank($srank) ?>

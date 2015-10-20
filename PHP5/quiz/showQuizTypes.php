@@ -37,7 +37,7 @@ foreach ($cat as $k=>$vs) {
 			echo "onclick='$onclick'";
 		}
 	?>
-	><label for="quiz-category<?= $i ?>"><?= htmlspecialchars($k);?></label><?php
+	><label for="quiz-category<?= $i ?>" data-i18n="quiz.category.<?= $k ?>"><?= htmlspecialchars($k);?></label><?php
 	$i += 1;
 }
 ?></div><br><?php

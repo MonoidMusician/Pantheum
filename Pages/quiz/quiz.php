@@ -7,12 +7,12 @@
     global $sql_stmts, $suid;
 ?>
 <header>
-    <h1>Quiz</h1>
+    <h1 data-i18n>Quiz</h1>
 </header>
 <article id="quiz">
     <?php
         if (requireLoggedIn(FALSE)) {
-            ?> Review and resume previous quizzes <a href="quizzes.php">here</a>. <?php
+            ?> <span data-i18n="quiz.loggedin">Review and resume previous quizzes</span> <a href="quizzes.php" data-i18n="ui.here">here</a>. <?php
             $quizzes = [];
             sql_getmany($sql_stmts["user_id->quiz_id reversed"], $quizzes, ["i", $suid]);
             foreach ($quizzes as $i => $q) {
@@ -21,19 +21,19 @@
             if (count($quizzes) == 1) $pl = ""; else $pl = "zes";
             if (count($quizzes)) echo "You have ".count($quizzes)." quiz$pl to complete.";
         } else {
-            ?> You are not logged in. Your scores cannot be saved. <?php
+            ?> <span data-i18n="quiz.loggedout">You are not logged in. Your scores cannot be saved.</span> <?php
         }
     ?>
-    <br>
-    Quiz me on:
+    <br><br>
+    <span data-i18n="quiz.subject">Quiz me on</span>:
     <?php
         sro('/PHP5/quiz/showQuizTypes.php');
     ?>
     <br>
-    Number of questions:
+    <span data-i18n="quiz.number_of_questions">Number of questions</span>:
     <input type="number" class="small" id="quiz-number" value="10" min="1">
     <br>
-    <button id="start" onclick="startQuiz();">
+    <button id="start" onclick="startQuiz();" data-i18n="quiz.start">
         Start the Quiz
     </button>
 </article>

@@ -55,44 +55,44 @@
 	if ($limit > 50) $limit = 50;
 ?>
 <header>
-	<h1>Dictionary</h1>
-	<h4>Find words by name, attributes, language, and/or part of speech</h4>
+	<h1 data-i18n>Dictionary</h1>
+	<h4 data-i18n="dictionary.description">Find words by name, attributes, language, and/or part of speech</h4>
 </header>
 	<div id="search-form">
 	<!--<span class="select">-->
 	<?php $noinfl = (!array_key_exists("no_inflections",$_GET) or $_GET["no_inflections"] !== "true") ? "" : "checked"; ?>
 	<?php $nodefs = (!array_key_exists("no_definitions",$_GET) or $_GET["no_definitions"] !== "true") ? "" : "checked"; ?>
 	<?php $showtmpls = (!array_key_exists("show_templates",$_GET) or $_GET["show_templates"] !== "true") ? "" : "checked"; ?>
-	<!--<div>--><label><input name="no-inflections" type="checkbox" <?= $noinfl ?>>Hide inflection</label><!--</div>-->
-	<!--<div>--><label><input name="show-templates" type="checkbox" <?= $showtmpls ?>>Show declensions/conjugations</label><!--</div>-->
+	<!--<div>--><label><input name="no-inflections" type="checkbox" <?= $noinfl ?>><span data-i18n="dictionary.hide_inflection">Hide inflection</span></label><!--</div>-->
+	<!--<div>--><label><input name="show-templates" type="checkbox" <?= $showtmpls ?>><span data-i18n="dictionary.show_decl_conj">Show declensions/conjugations</span></label><!--</div>-->
 	<?php if (requireRank(3, FALSE)) { ?>
-		<!--<div>--><label><input name="no-definitions" type="checkbox" <?= $nodefs ?>>Show only words without definitions</label><!--</div>-->
+		<!--<div>--><label><input name="no-definitions" type="checkbox" <?= $nodefs ?>><span data-i18n="dictionary.show_no_defs">Show only words without definitions</span></label><!--</div>-->
 	<?php } ?>
 	<!--</span>-->
 	<br>
-	<br>Name(s):
+	<br><span data-i18n="dictionary.names">Name(s)</span>:
 	<input id="enter-names" type="text" value="<?= safe_get('name', $_GET) ?>" placeholder="name, ...">
-	<br>Form(s):
+	<br><span data-i18n="dictionary.forms">Form(s)</span>:
 	<input id="enter-forms" type="text" value="<?= safe_get('form', $_GET) ?>" placeholder="form, ...">
-	<br>Language(s):
+	<br><span data-i18n="dictionary.languages">Languages(s)</span>:
 	<select id="enter-langs" style="width: 300px;"></select>
-	<br>Attribute(s):
+	<br><span data-i18n="dictionary.attributes">Attribute(s)</span>:
 	<input id="enter-attrs" type="text" value="<?= safe_get('attr', $_GET) ?>" placeholder="[!]attr[=value], ...">
-	<br>Part(s) of speech:
+	<br><span data-i18n="dictionary.parts_of_speech">Part(s) of speech</span>:
 	<select id="enter-sparts" style="width: 300px;"></select>
-	<br>Definition(s):
+	<br><span data-i18n="dictionary.definitions">Definition(s)</span>:
 	<input id="enter-defs" type="text" value="<?= safe_get('def', $_GET) ?>" placeholder="definition_part; definition1, definition2,; ...">
 	
 	<br>
 	ID: <input id="enter-ids" style="width: 100px;" type="text" value="<?= safe_get('id', $_GET) ?>" placeholder="id, ...">
-	<button onclick="dict.refreshEntries();">Search</button>
+	<button onclick="dict.refreshEntries();" data-i18n="ui.search">Search</button>
 	<?php if ($editor) { ?>
-	<button onclick="dict.addEntry(function(){dict.refreshEntries();});">Add</button>
+	<button onclick="dict.addEntry(function(){dict.refreshEntries();});" data-i18n="ui.add">Add</button>
 	<?php } ?>
-	<button onclick="$('#enter-attrs,#enter-ids,#enter-names,#enter-forms,#enter-langs,#enter-sparts').val('').change();">Clear fields</button>
+	<button onclick="$('#enter-attrs,#enter-ids,#enter-names,#enter-forms,#enter-langs,#enter-sparts').val('').change();" data-i18n="ui.clear_fields">Clear fields</button>
 
 	<div class="navigation">
-		Show <select id="limit">
+		<span data-i18n="dictionary.show">Show</span> <select id="limit">
 		<?php
 			$_ = [5,10,20,50];
 			if (!in_array($limit,$_)) {
@@ -103,7 +103,7 @@
 				?><option <?= ($__===$limit?"selected":"") ?>><?= $__ ?></option><?php
 			}
 		?>
-		</select> results from
+		</select> <span data-i18n="dictionary.results_from">results from</span>
 			<span class="actionable" id="goto-first" title="First results">&lt;&lt;</span>
 			<span class="actionable" id="goto-prev"  title="Previous results">&lt;</span>
 			<input placeholder="<?= $start; ?>" type="number" value="<?= $start; ?>" min="0" id="start-at" style="width: 80px;">
@@ -142,7 +142,7 @@
 				$('#start-at').val(next);
 				dict.refreshEntries();
 			});
-		</script> (out of <span id="number-entries">0</span>).
+		</script> (<span data-i18n="ui.out_of">out of</span> <span id="number-entries">0</span>).
 		</div>
 	</div>
 

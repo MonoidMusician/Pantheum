@@ -6,9 +6,9 @@
     
     requireLoggedIn(TRUE);
 ?>
-<h2>Preferences</h2>
+<h2 data-i18n="preferences">Preferences</h2>
 
-<span data-i18n="ui.change_language">Language:</span>
+<span data-i18n="ui.change_language">Language</span>:
 <select id="lang" style="width: 200px">
     <option value="en">English</option>
     <option value="la">Latin</option>
@@ -16,7 +16,7 @@
 <br>
 <br>
 
-Word formatting:
+<span data-i18n="word_formatting">Word formatting:</span>
 <select id="la_ipa" style="width: 200px">
 </select>
 <br>
@@ -24,7 +24,7 @@ Word formatting:
 Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugnātus‣, et hoc īnflexum: aestⱶmāvissem. Jussa!
 </span>
 
-<button id="save">Save</button>
+<button id="save" data-i18n="ui.save">Save</button>
 
 <script>
 $('#lang').select2({

@@ -7,7 +7,7 @@
     requireRank(1);
 ?>
 <header id="aheader">
-    <h2 id="atitle">Admin Control Panel</h2>
+    <h2 id="atitle" data-i18n>Admin Control Panel</h2>
 </header>
 <div id="apage" class="scrollable">
     <nav id="anav">
@@ -28,16 +28,16 @@
         }
         
         var cpage = new jPage();
-        cpage.init('acontent');
+        cpage.init('acontent', pantheum._private.i18nload);
         cpage.setPages([
-            ["#overview", "Overview", "Overview | Admin Control Panel | Latin", "/Pages/admin/overview.php", true],
-            ["#users", "Users", "Users | Admin Control Panel | Latin", "/Pages/admin/users.php", true],
-            ["#user", "User", "User | Admin Control Panel | Latin", ["/Pages/admin/user.php", ["id"]], false],
-            ["#words", "Words", "Words | Admin Control Panel | Latin", "/Pages/admin/words.php", true],
-            ["#word", "word", "Word | Admin Control Panel | Latin", ["/Pages/admin/word.php", ["id"]], false],
-            ["#logs", "Logs", "Logs | Admin Control Panel | Latin", "/Pages/admin/logs.php", true],
-            ["#hexer", "Hexer", "Hexer | Admin Control Panel | Latin", "/Pages/admin/hexer.php", true],
-            ["#deleted", "Deleted", "Deleted | Admin Control Panel | Latin", "/Pages/admin/deleted.php", true],
+            ["#overview", "<span data-i18n='Overview'>Overview</span>", "Overview | Admin Control Panel | Latin", "/Pages/admin/overview.php", true],
+            ["#users", "<span data-i18n='Users'>Users</span>", "Users | Admin Control Panel | Latin", "/Pages/admin/users.php", true],
+            ["#user", "<span data-i18n='User'>User</span>", "User | Admin Control Panel | Latin", ["/Pages/admin/user.php", ["id"]], false],
+            ["#words", "<span data-i18n='Words'>Words</span>", "Words | Admin Control Panel | Latin", "/Pages/admin/words.php", true],
+            ["#word", "<span data-i18n='Word'>Word</span>", "Word | Admin Control Panel | Latin", ["/Pages/admin/word.php", ["id"]], false],
+            ["#logs", "<span data-i18n='Logs'>Logs</span>", "Logs | Admin Control Panel | Latin", "/Pages/admin/logs.php", true],
+            ["#hexer", "<span data-i18n='Hexer'>Hexer</span>", "Hexer | Admin Control Panel | Latin", "/Pages/admin/hexer.php", true],
+            ["#deleted", "<span data-i18n='Deleted'>Deleted</span>", "Deleted | Admin Control Panel | Latin", "/Pages/admin/deleted.php", true],
         ], dpage);
         cpage.setNavigation('anav', 'ul');
         cpage.setBasepath('');

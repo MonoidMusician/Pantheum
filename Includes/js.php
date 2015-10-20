@@ -28,6 +28,7 @@
         <script type="text/javascript" src="/JS/view.js"></script>
         <script>
             pantheum._private.i18nload = function(err, t) {
+                if (err) console.log(err);
                 $('body').i18n();
             };
             i18n.init({
