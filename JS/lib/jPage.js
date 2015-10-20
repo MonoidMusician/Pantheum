@@ -86,9 +86,11 @@ function jPage() {
     this.nelement = "";
     this.basepath = "";
     this.storage = {};
+    this.callback = undefined;
     
-    this.init = function(pelement) {
+    this.init = function(pelement, callback) {
         this.pelement = pelement;
+        this.callback = callback;
     }
     
     this.setPages = function(page, starting) {
@@ -194,6 +196,8 @@ function jPage() {
     
     this.handlePage = function(data) {
         $('#' + this.pelement).html(data);
+        if (this.callback)
+            this.callback();
     }
     
     this.returnGET = function() {
