@@ -32,8 +32,11 @@
             };
             i18n.init({
                 fallbackLng: 'en'
-            }, pantheum._private.i18nload);
-            if (pantheum.udata && pantheum.udata["language"])
-                i18n.setLng(pantheum.udata["language"], pantheum._private.i18nload);
+            });
+            i18n.setLng(
+                pantheum.udata && pantheum.udata["language"]
+                ? pantheum.udata["language"]
+                : 'en', pantheum._private.i18nload
+            );
         </script>
 
