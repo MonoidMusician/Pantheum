@@ -1,4 +1,5 @@
 $(function() {
+	if ($('article:first:last').length) return;
 	$w = $(window);
 	var min_width = 800;
 	$('article:first').css('min-width', $('article:first :input').width()+'px');

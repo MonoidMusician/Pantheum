@@ -135,6 +135,9 @@ section#content a {
 article:not(.secondary) {
     float: left;
 }
+article#dictionary ,article#quiz {
+    width: 100% !important;
+}
 article + article.secondary {
     float: right;
     margin-right: 2em;
