@@ -78,7 +78,7 @@ class _QUIZ
 		return $time_finished;
 	}
 	function is_authorized() {
-		global $sql_stmts;
+		global $sql_stmts, $suid;
 		if (quiz_auth()) return TRUE;
 		$user_id = $this->user_id();
 		if ($user_id !== NULL and $user_id == $suid) return TRUE;

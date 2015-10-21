@@ -21,9 +21,11 @@ function jQuiz() {
 	this.gurl = '';
 	this.surl = '';
 	this.eurl = '';
+	this.loading = false;
 
 	this.init = function(qelement, gurl, surl, eurl) {
 		this.qelement = qelement;
+		this.loading_elements = '#' + qelement + '-next, #' + qelement + '-submit';
 		this.gurl = gurl;
 		this.surl = surl;
 		this.eurl = eurl;
@@ -56,6 +58,8 @@ function jQuiz() {
 	};
 
 	this.handleQuestion = function(data) {
+		this.loading = false;
+		$(this.loading_elements).attr('disabled', false);
 		if (!data || data[0] != '[' || data[data.length-1] != ']')
 			return alert('Error: '+data);
 		this.questions[this.next] = jQuery.parseJSON(data);
@@ -65,6 +69,8 @@ function jQuiz() {
 	};
 
 	this.handleResponse = function(data) {
+		this.loading = false;
+		$(this.loading_elements).attr('disabled', false);
 		if (!data || data[0] != '{' || data[data.length-1] != '}')
 			return alert('Error: '+data);
 		var result = jQuery.parseJSON(data);
@@ -301,6 +307,7 @@ function jQuiz() {
 	};
 
 	this.handleSubmit = function(data) {
+		if (this.loading) return;
 		this.answers = {};
 		for (var pid in this.questions[this.current]) {
 			var part = this.questions[this.current][pid];
@@ -320,14 +327,19 @@ function jQuiz() {
 				return;
 			}
 		}
+		this.loading = true;
+		$('#' + this.qelement + '-submit').attr('disabled', true);
 		this.submitQuestion();
 	};
 
 	this.handleNext = function(data) {
+		if (this.loading) return;
 		if (this.current == this.last - 1) {
 			if (!this.scored) this.showScore();
 			else this.endQuiz();
 		} else if (this.current == (this.next-1)) {
+			this.loading = true;
+			$('#' + this.qelement + '-next').attr('disabled', true);
 			this.getNextQuestion();
 		} else {
 			this.current += 1;
@@ -336,6 +348,7 @@ function jQuiz() {
 	};
 
 	this.handleBack = function(data) {
+		if (this.loading) return; // maybe not necessary, but safer
 		if (this.current == 0) {
 		} else {
 			this.current -= 1;
@@ -352,6 +365,7 @@ function jQuiz() {
 	};
 
 	this.handlePage = function(data) {
+		if (this.loading) return;
 		this.goTo(data.target.value - 1);
 	};
 
@@ -367,6 +381,7 @@ function jQuiz() {
 	};
 
 	this.unbindEvents = function() {
+		this.loading = false;
 		$(document).off('click',  '#' + this.qelement + '-back');
 		$(document).off('click',  '#' + this.qelement + '-submit');
 		$(document).off('click',  '#' + this.qelement + '-next');
