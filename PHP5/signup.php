@@ -9,7 +9,7 @@
         logEvent('signup', 'logged-in', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
         die('1');
     }
-    
+
     $username = cleanInput('/[^a-zA-Z0-9]/', $_POST['u']);
     $password = cleanInput('/[^a-zA-Z0-9]/', $_POST['p']);
     $cpassword = cleanInput('/[^a-zA-Z0-9]/', $_POST['c']);
@@ -21,20 +21,20 @@
         logEvent('signup', 'invalid-code-' . $vc, encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
         die('2');
     }
-    
-    
+
+
     if (($username != $_POST['u']) || !(($username == '') || ($password != '') || ($cpassword != '') || ($email != '') || ($code != '')) || (count($_POST) < 5) || (count($_POST) > 6)) {
         logEvent('signup', 'blank-input', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
         die('4');
     }
-    
-    
+
+
     if ($password != $cpassword) {
         logEvent('signup', 'password-mismatch', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
         die('5');
     }
-    
-    
+
+
     $M_query = "SELECT * FROM users WHERE username='$username';";
     $M_result = $mysqli->query($M_query);
     $M_count = $M_result->num_rows;
@@ -43,8 +43,8 @@
         logEvent('signup', 'exists-username', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}"));
         die('3');
     }
-    
-    
+
+
     $M_querye = "SELECT * FROM users WHERE email='$email';";
     $M_resulte = $mysqli->query($M_querye);
     $M_counte = $M_resulte->num_rows;
@@ -53,8 +53,8 @@
         logEvent('signup', 'exists-email', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}, M_querye: `$M_querye`, M_rowe: ['" . implode("','", array_keys($M_rowe)) . "'], {'" . implode("', '", $M_rowe) . "'}"));
         die('9');
     }
-    
-    
+
+
     $time = time()-60*3;
     $ip = $_SERVER['REMOTE_ADDR'];
     $M_query1 = "SELECT COUNT(*) FROM logs WHERE ip='$ip' AND script='signup' AND type!='success' AND type!='logged-in' AND type!='exists' AND time>$time;";
@@ -65,7 +65,7 @@
         logEvent('signup', 'spamming', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`"));
         die('6');
     }
-    
+
     if ($classid !== NULL) {
         $M_queryL = "SELECT * FROM classes WHERE class_id='$classid';";
         $M_resultL = $mysqli->query($M_queryL);
@@ -74,35 +74,37 @@
             die('10');
         }
     }
-    
-    
-    
+
+
+
     if (strlen($password) != strlen(hash('md5', 'pi'))) {
         $password = strtolower(hash('md5', hasher(hasher($_POST['p'])) . hasher(hasher($username))));
     }
-    
+
     $id = '';
     $join = time();
     $seccode = hash('sha256', rand() . $username . rand() . $join . rand() . $ip . rand());
-    
-    if ($classid === NULL)
-        $M_query2 = "INSERT INTO users (username, password, email, createip, joindate, multisession, rank) VALUES ('$username', '$password', '$email', '$ip', '$join', 't', '4')";
-    else $M_query2 = "INSERT INTO users (username, password, email, createip, joindate, multisession, rank, class) VALUES ('$username', '$password', '$email', '$ip', '$join', 't', '4', '$classid')";
+
+    if ($classid === NULL) {
+        $M_query2 = "INSERT INTO users (username, password, email, createip, joindate, rank) VALUES ('$username', '$password', '$email', '$ip', '$join', '4')";
+    } else {
+        $M_query2 = "INSERT INTO users (username, password, email, createip, joindate, rank, class) VALUES ('$username', '$password', '$email', '$ip', '$join', '4', '$classid')";
+    }
     $M_result2 = $mysqli->query($M_query2);
     if (!$M_result2) {
         logEvent('signup', 'create-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`, M_query2: `$M_query2`"));
         die('7');
     }
-    
-    
+
+
     $M_query3 = "SELECT * FROM users WHERE username='$username' AND email='$email' AND createip='$ip' AND joindate='$join';";
     $M_result3 = $mysqli->query($M_query3);
     if (!$M_result3) {
         logEvent('signup', 'select-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`, M_query2: `$M_query2`, M_query3: `$M_query3`"));
         die('7');
     }
-    
-    
+
+
     $M_row3 = $M_result3->fetch_assoc();
     $password = strtolower(hash('md5', hasher(hasher($M_row3['createip'] . $password . $M_row3['id']))));
     $M_query4 = "UPDATE users SET password='$password' WHERE username='$username' AND email='$email' AND createip='$ip' AND joindate='$join' AND id='" . $M_row3['id'] . "';";

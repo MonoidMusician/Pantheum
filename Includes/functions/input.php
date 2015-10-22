@@ -2,7 +2,7 @@
     require_once('/var/www/config.php');
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
-    
+
     function cleanInput($type, $input) {
         if ($type == "comment") {
             return encodeHex($input);
@@ -17,8 +17,12 @@
         return array_shift($zinput);
     }
 
+    /*
+    Currently unused.
+
     function decodeHex($output) {
         $zoutput = $output;
         return pack('H*', str_replace('\x', '', str_replace(' ', '', $zoutput)));
     }
+    */
 ?>
