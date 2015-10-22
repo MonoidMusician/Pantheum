@@ -8,7 +8,7 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Settings | Latin</title>
+        <title>Settings | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <link rel="stylesheet" type="text/css" href="/CSS/user.css">

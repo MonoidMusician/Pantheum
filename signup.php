@@ -8,7 +8,7 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Sign up | Latin</title>
+        <title>Sign up | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
     </head>

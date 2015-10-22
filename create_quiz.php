@@ -8,7 +8,7 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Quiz Creator | Latin</title>
+        <title>Quiz Creator | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="/JS/jQuiz.js"></script>

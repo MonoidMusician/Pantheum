@@ -12,7 +12,7 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Home | Latin</title>
+        <title>Home | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="/JS/lib/jquery.countdown.min.js"></script>

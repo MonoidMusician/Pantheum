@@ -8,7 +8,7 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Admin | Latin</title>
+        <title>Admin | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <link rel="stylesheet" type="text/css" href="/CSS/admin.css">
         <?php sro('/Includes/js.php'); ?>

@@ -8,7 +8,7 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>String library | Latin</title>
+        <title>String library | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <link rel="stylesheet" type="text/css" href="/CSS/sentence.css">
         <?php sro('/Includes/js.php'); ?>

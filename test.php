@@ -12,7 +12,7 @@ sro('/PHP5/lib/PHPLang/display.php');
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Test | Latin</title>
+        <title>Test | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="/JS/jWord.js"></script>
