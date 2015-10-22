@@ -80,7 +80,7 @@ $correct_index = array_values(array_filter($indices, function($i)use($options,$c
 	<span>&nbsp;</span>
 	</a>
 </div>
-<span id="pantheumsmallquiz-answer" class="select select-bordered">
+<span id="pantheumsmallquiz-answer" class="select select-bordered reverse-indent-label">
 	<label><input name="pantheumsmallquiz" class="inputlabel" type="radio" value="<?= $indices[0] ?>" required><?= $options[$indices[0]] ?></label><br>
 	<label><input name="pantheumsmallquiz" class="inputlabel" type="radio" value="<?= $indices[1] ?>" required><?= $options[$indices[1]] ?></label><br>
 	<label><input name="pantheumsmallquiz" class="inputlabel" type="radio" value="<?= $indices[2] ?>" required><?= $options[$indices[2]] ?></label><br>
