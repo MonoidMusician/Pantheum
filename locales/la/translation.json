@@ -5,7 +5,7 @@
   "nav": {
     "home": "Domus",
     "quiz": "Exāmuncula",
-    "settings": "Postiīonēs",
+    "settings": "Postiōnēs",
     "login": "Insalūtāre",
     "logout": "Exsalūtāre",
     "admin": "Administrātiō"
@@ -14,7 +14,9 @@
     "latin_websites": "Tēlāriī Locī Latinī",
     "sentence_viewer": "Sententiārum Spectātiō",
     "dictionary": "Dictiōnārium",
-    "add_words": "Addere verba"
+    "add_words": "Addere verba",
+    "admin": "Administrātiō",
+    "settings": "Positiōnēs"
   },
   "Dictionary": "Dictiōnārium",
   "Quiz": "Examunculum",
@@ -24,6 +26,7 @@
   "Preferences": "Præferentiæ",
   "Vocab": "Vocabulārium",
   "Quizzes": "Exāmuncula",
+  "Admin": "Administrātiō",
   "change_password": "Mutāre signum",
   "change_email": "Mutāre inscrīptiōnem",
   "word_formatting": "Verbōrum forma",
