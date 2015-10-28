@@ -227,14 +227,14 @@ function make_matching($map) {
 	return $ret;
 }/**/
 
-function make_chart($w,$values=NULL,$ignore=NULL) {
+function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart") {
 	if ($values === NULL) $values = word_table_values($w,$ignore);
 	list ($values0,$values1,$values2,$values3,$values4) = $values;
 	global $OP_USER_INPUT;
 	$w->read_paths();
 	$w->read_attrs();
 	$ret = [
-		"help" => "Fill in the chart for “".display_word_name($w)."”.",
+		"help" => "Fill in $legend for “".display_word_name($w)."”.",
 		"selections" => [],
 		"sentence" => [/*function($pick_db,$db) use($w,$values0,$values1,$values2,$values3,$values4) {
 

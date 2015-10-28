@@ -38,6 +38,8 @@ while ($idx === NULL or !array_key_exists($idx, $options)) {
 }
 
 $quiz = $options[$idx];
+if (is_callable($quiz))
+	$quiz = $quiz();
 
 $try = NULL; $recurse=0; $reason=NULL;
 $try = function() use($quiz,&$try,&$recurse,&$reason) {
