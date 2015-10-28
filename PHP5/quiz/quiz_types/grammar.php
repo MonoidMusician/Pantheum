@@ -6,33 +6,37 @@ $quiz_types = array_merge($quiz_types,[
 		"name" => "Nouns: number and case",
 		"lang" => "la",
 		"category" => "Grammar",
-		"options" => function(){return[
-			which3("la","noun","case",3,NULL,
-			       ["case"=>["vocative"=>0,
-			                 "locative"=>0,
-			                 "nominative"=>1,
-			                 "genitive"=>3,
-			                 "dative"=>3,
-			                 "ablative"=>4,
-			                 "accusative"=>2]]),
-			which("la","noun","number",NULL,
-			      ["case"=>["vocative"=>0,
-			                "locative"=>0,
-			                "nominative"=>1,
-			                "genitive"=>3,
-			                "dative"=>3,
-			                "ablative"=>4,
-			                "accusative"=>2]]),
-		];},
+		"options" => [
+			function(){return
+				which3("la","noun","case",3,NULL,
+					   ["case"=>["vocative"=>0,
+					             "locative"=>0,
+					             "nominative"=>1,
+					             "genitive"=>3,
+					             "dative"=>3,
+					             "ablative"=>4,
+					             "accusative"=>2]]);
+			},
+			function(){return
+				which("la","noun","number",NULL,
+				      ["case"=>["vocative"=>0,
+				                "locative"=>0,
+				                "nominative"=>1,
+				                "genitive"=>3,
+				                "dative"=>3,
+				                "ablative"=>4,
+				                "accusative"=>2]]);
+			},
+		]
 	],
 	"002" => [
 		"name" => "Verbs: tense and number",
 		"lang" => "la",
 		"category" => "Grammar",
-		"options" => function(){return[
-			which3("la","verb","tense",3,["indicative"]),
-			which3("la","verb","number",2,["indicative"]),
-		];},
+		"options" => [
+			function(){return which3("la","verb","tense",3,["indicative"]);},
+			function(){return which3("la","verb","number",2,["indicative"]);},
+		],
 	],
 	"complementary-infinitives" => [
 		"name" => "Complementary infinitives",
@@ -87,11 +91,13 @@ $quiz_types = array_merge($quiz_types,[
 		"category" => "Grammar",
 		"lang" => "la",
 		"options" => [
-			which("la","pronoun","gender",NULL,[
-			"case"=>["dative" => 0,"ablative"=>1,
-			         "accusative"=>3,"nominative"=>3,
-			         "genitive"=>1]
-			],"qui"),
+			function(){return
+				which("la","pronoun","gender",NULL,[
+				"case"=>["dative" => 0,"ablative"=>1,
+					     "accusative"=>3,"nominative"=>3,
+					     "genitive"=>1]
+				],"qui");
+			},
 			[
 				"help" => "Choose the pronoun that correctly 
 				           fills in the blank.

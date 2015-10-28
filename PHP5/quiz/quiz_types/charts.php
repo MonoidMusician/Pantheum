@@ -114,10 +114,10 @@ $quiz_types = array_merge($quiz_types,[
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -2,
-		"options" => function(){return[
-			make_chart(WORD2("la","hic","pronoun"),null,["vocative"]),
-			make_chart(WORD2("la","qui","pronoun"),null,["vocative"]),
-		];}
+		"options" => [
+			function(){return make_chart(WORD2("la","hic","pronoun"),null,["vocative"]);},
+			function(){return make_chart(WORD2("la","qui","pronoun"),null,["vocative"]);},
+		]
 	],
 	"irregular-pronouns1" => [
 		"name" => "Irregular pronouns",
@@ -127,12 +127,12 @@ $quiz_types = array_merge($quiz_types,[
 		"options" => function(){
 			$gender = PICK(3,["masculine","feminine","neuter"])->rand();
 			return [
-				make_chart(WORD2("la","hic","pronoun")),
-				make_chart(WORD2("la","iste","pronoun"),null,["vocative"]),
-				make_chart(WORD2("la","ille","pronoun")),
-				make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative",$gender[0],$gender[1]]),
-				make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative",$gender[0],$gender[2]]),
-				make_chart(WORD2("la","is","pronoun"),null),
+				function(){return make_chart(WORD2("la","hic","pronoun"));},
+				function(){return make_chart(WORD2("la","iste","pronoun"),null,["vocative"]);},
+				function(){return make_chart(WORD2("la","ille","pronoun"));},
+				function(){return make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative",$gender[0],$gender[1]]);},
+				function(){return make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative",$gender[0],$gender[2]]);},
+				function(){return make_chart(WORD2("la","is","pronoun"),null);},
 			];
 		}
 	],
@@ -141,10 +141,10 @@ $quiz_types = array_merge($quiz_types,[
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -2,
-		"options" => function(){return[
-			make_chart(WORD2("la","volo","verb"),NULL,["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
-			make_chart(WORD2("la","sum","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]),
-		];}
+		"options" => [
+			function(){return make_chart(WORD2("la","volo","verb"),NULL,["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]);},
+			function(){return make_chart(WORD2("la","sum","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]);},
+		]
 	],
 	"irregular-verbs-latinII" => [
 		"name" => "Latin II Irregular verbs",
