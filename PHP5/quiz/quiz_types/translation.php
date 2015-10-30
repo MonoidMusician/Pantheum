@@ -19,7 +19,7 @@ function make_expr($list) {
 }
 $quiz_types = array_merge($quiz_types,[
 	"trans001" => [
-		"name" => "English to Latin: Simple verbs",
+		"name" => "En to La: Simple verbs",
 		"category" => $category,
 		"lang" => "la",
 		"options" => [[
@@ -94,7 +94,7 @@ $quiz_types = array_merge($quiz_types,[
 		]],
 	],
 	"trans002" => [
-		"name" => "Latin to English: Simple sentences",
+		"name" => "La to En: Simple sentences",
 		"category" => $category,
 		"lang" => "la",
 		"options" => [[

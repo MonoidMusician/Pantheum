@@ -110,7 +110,7 @@ $quiz_types = array_merge($quiz_types,[
 		]]
 	],
 	"hic-haec-hoc2" => [
-		"name" => "Haec, Hic, Hoc; Quae, Qui, Quod",
+		"name" => "Hic, Qui",
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -2,
