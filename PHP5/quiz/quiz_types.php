@@ -62,35 +62,6 @@ function fn_or() {
 	};
 }
 
-/*function make_matching($map) {
-	global $OP_MULTIPLE_CHOICE;
-	global $OP_PARAGRAPH;
-	$ret = [
-		"help" => "Match each word to the one most similar in meaning",
-		"selections" => [
-			"choices"=>PICK(count($map),array_keys($map)),
-			"answers"=>$map,
-		],
-		"sentence" => [
-		],
-	];
-	for ($i=0;$i<count($map);$i++) {
-		$ret["sentence"] = array_merge($ret["sentence"], [
-			get_pick("choices",$i),
-			$OP_MULTIPLE_CHOICE,
-			$OP_PARAGRAPH
-		]);
-		$ret["choices$i"] = [
-			"correct" => get_matching("choices","answers",$i),
-		];
-		$ret["choices$i-tooltip"] = "Choose synonym";
-		for ($_=0;$_ < count($map);$_++) {
-			if ($i === $_) continue;
-			$ret["choices$i"][] = get_matching("choices","answers",$_);
-		}
-	}
-	return $ret;
-}*/
 function get_matching($i,$i2,$i3) {
 	return function ($_) use ($i,$i2,$i3) {
 		return $_[$i2][$_[$i][$i3]];
@@ -101,49 +72,7 @@ function get_matching2($i,$i2,$i3,$i4) {
 		return $_[$i2][$_[$i][$_[$i4][$i3]]];
 	};
 }
-/*function make_matching($map) {
-	global $OP_MULTIPLE_CHOICE;
-	global $OP_PARAGRAPH;
-	$ret = [
-		"help" => "Match each word to the one most similar in meaning",
-		"selections" => [
-			"choices"=>PICK(count($map),array_keys($map)),
-			"order"=>PICK(count($map),array_keys(array_keys($map))),
-			"answers"=>$map,
-		],
-		"sentence" => [
-		],
-	];
-	$ret["sentence"][] = "<div class='answers' style='float:right;'>";
-	for ($i=0;$i<count($map);$i++) {
-		$ret["sentence"][] = ($i+1).".";
-		$ret["sentence"][] = get_matching2("choices","answers",$i,"order");
-		$ret["sentence"][] = $OP_PARAGRAPH;
-	}
-	$ret["sentence"][] = "</div>";
-	for ($i=0;$i<count($map);$i++) {
-		$ret["sentence"] = array_merge($ret["sentence"], [
-			get_pick("choices",$i),
-			$OP_MULTIPLE_CHOICE,
-			$OP_PARAGRAPH
-		]);
-		$ret["choices$i"] = [
-			"no_shuffle" => true,
-		];
-		$ret["choices$i-tooltip"] = "Choose synonym";
-		for ($_=0;$_ < count($map);$_++) {
-			$v = ($_+1).".";
-			$v = [
-				"correct"=>function($pick_db) use ($i,$_){
-					return $i === $pick_db["order"][$_];
-				},
-				"value"=>$v
-			];
-			$ret["choices$i"][] = $v;
-		}
-	}
-	return $ret;
-}/*/
+
 function make_matching($map) {
 	global $OP_MATCHING_CHOICES;
 	global $OP_PARAGRAPH;
@@ -200,32 +129,7 @@ function make_matching($map) {
 	$ret["sentence"][] = HTML("</table>");
 	return $ret;
 }
-/*/
-function make_matching($map) {
-	global $OP_MATCHING;
-	global $OP_PARAGRAPH;
-	$ret = [
-		"help" => "Match each word to the one most similar in meaning",
-		"selections" => [
-			"choices"=>PICK(count($map),array_keys($map)),
-			"order"=>PICK(count($map),array_keys(array_keys($map))),
-			"answers"=>$map,
-		],
-		"sentence" => [
-			$OP_MATCHING,
-		],
-	];
-	$ret["matching0"] = function($pick_db) {
-		$ret = [[],[]];
-		foreach ($pick_db["order"] as $i) {
-			$ret[0][] = $pick_db["choices"][$i];
-			$ret[1][] = $pick_db["answers"][$pick_db["choices"][$i]];
-		}
-		return $ret;
-	};
-	$ret["matching0-tooltip"] = "Choose synonym";
-	return $ret;
-}/**/
+
 
 function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart") {
 	if ($values === NULL) $values = word_table_values($w,$ignore);
@@ -266,6 +170,7 @@ function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart") {
 	}
 	return $ret;
 }
+
 function which($lang,$spart,$key,$given=NULL,$rand=NULL,$name=NULL) {
 	global $OP_MULTIPLE_CHOICE;
 	global $OP_PARAGRAPH;
