@@ -361,9 +361,12 @@ a.word-ref {
 }
 
 abbr {
-    border-bottom: 1px dotted;
     cursor: help;
     font-variant: none;
+}
+abbr[title].symbolic {
+    border-bottom-width: 0 !important;
+    text-decoration: none !important;
 }
 
 table.inflection {

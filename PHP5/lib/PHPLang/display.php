@@ -43,12 +43,12 @@ function no_format($w) {
 // Format word for displaying based upon replacements
 // TODO: user settings, DB encoding
 function format_word($w, $lang=NULL, $all=false) {
-	if (!strlen($w)) return "—"; # em-dash
+	if (!strlen($w)) return '<abbr class="symbolic" title="This form does not exist">—</abbr>'; # em-dash
 	if (!is_string($lang)) $lang = "la";
 	if (!$all)
 		$w = explode("\n", $w)[0];
 	if ($lang)
-		return "<span class='format-word-$lang'>$w</span>";
+		return '<span class="format-word-$lang">'.$w.'</span>';
 	return $w;
 }
 function format_word1($w) { return format_word($w); }
