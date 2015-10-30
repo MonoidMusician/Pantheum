@@ -50,6 +50,8 @@ function word_table_values($w,$ignore=NULL) {
 			$moods = $w->path()->iterate("mood");
 			$values0 = [];
 			foreach ($moods as $_0) {
+				if ($ignore !== NULL and in_array($_0,$ignore))
+					continue;
 				$path = PATH($w,$_0);
 				if ($_0 === "indicative" or
 					$_0 === "subjunctive" or
@@ -93,6 +95,8 @@ function word_table_values($w,$ignore=NULL) {
 			$moods = $w->path()->iterate("mood");
 			$values0 = [];
 			foreach ($moods as $_0) {
+				if ($ignore !== NULL and in_array($_0,$ignore))
+					continue;
 				$path = PATH($w,$_0);
 				if ($_0 === "indicative" or
 					$_0 === "subjunctive") {
@@ -137,6 +141,8 @@ function word_table_values($w,$ignore=NULL) {
 			$moods = $w->path()->iterate("mood");
 			$values0 = [];
 			foreach ($moods as $_0) {
+				if ($ignore !== NULL and in_array($_0,$ignore))
+					continue;
 				$path = PATH($w,$_0);
 				if ($_0 === "indicative" or
 					$_0 === "subjunctive") {
@@ -181,6 +187,8 @@ function word_table_values($w,$ignore=NULL) {
 			$values0 = [];
 			$hacked = NULL;
 			foreach ($moods as $_0) {
+				if ($ignore !== NULL and in_array($_0,$ignore))
+					continue;
 				$path = PATH($w,$_0);
 				$name = NULL;
 				if ($_0 === "indicative") {
