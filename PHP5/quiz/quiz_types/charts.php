@@ -167,4 +167,13 @@ $quiz_types = array_merge($quiz_types,[
 			function(){return make_chart(WORD2("la","nolo","verb"),NULL, ["present","imperfect","infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"],"the PERFECT tense");},
 		],
 	],
+	"synopsis-latinIII-conj1" => [
+		"name" => "Latin III 1st Conjugation Synopsis",
+		"category" => "Charts",
+		"lang" => "la",
+		"n_questions" => -1,
+		"options" => [
+			function(){return make_chart(WORD2("la","amo","verb"),NULL, ["infinitive/future","infinitive/passive","perfect/passive","pluperfect/passive","participle","person-2","person-1","plural","supine","subjunctive","imperative","future","future-perfect"],"this synopsis");},
+		],
+	],
 ]);

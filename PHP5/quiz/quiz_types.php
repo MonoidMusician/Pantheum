@@ -154,7 +154,7 @@ function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart") {
 	};
 	ob_start();
 	do_table(
-		$w,$values0,$values1,$values2,$values3,$values4,
+		$w,$values0,$values1,$values2,$values3,$values4,$ignore,
 		"format_value",
 		$get_question,
 		NULL, NULL,

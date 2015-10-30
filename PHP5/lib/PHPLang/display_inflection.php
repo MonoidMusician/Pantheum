@@ -6,9 +6,40 @@ sro('/Includes/functions.php');
 
 sro('/PHP5/lib/PHPLang/common.php');
 
+function _ignore_optimize($ignore, $w) {
+	$r = $ignore;
+	usort($r, function($a,$b) {
+		$a = (string)$a;
+		$b = (string)$b;
+		$c = substr_count($a, "/");
+		$d = substr_count($d, "/");
+		if ($c < $d) return -1;
+		if ($c > $d) return  1;
+		return strcmp($a, $b);
+	});
+	$ret = [];
+	foreach ($r as $i) {
+		$p = PATH($w, $i);
+		if (!_in_ignore($p, $ret))
+			$ret[] = $p;
+	}
+	return $ret;
+}
+
+// Assumes _optimize_ignore has been called on $ignore
 function _do_ignore($l,$ignore) {
 	if (!$ignore or !$l) return $l;
 	$vec = is_vec($l);
+	$ig = array_map(function($p) {
+		if (ISPATH($p)) return (string)$p;
+		return $p;
+	}, $ignore);
+	$ignore = [];
+	foreach ($ig as $p) {
+		if (strpos($p,"/") === FALSE)
+			$ignore[] = $p;
+		else break; // safe because the list is sorted
+	}
 	foreach ($l as $k => $v) {
 		if (is_array($v)) {
 			$v = $l[$k] = _do_ignore($v,$ignore);
@@ -21,6 +52,38 @@ function _do_ignore($l,$ignore) {
 	return $l;
 }
 
+function _in_ignore($p,$ignore) {
+	if (!$ignore) return FALSE;
+	foreach ($ignore as $ig) {
+		$ig = ISPATH($ig)?$ig:PATH($p, $ig);
+		if ($p->issub($ig, TRUE))
+			return TRUE;
+	}
+	return FALSE;
+}
+
+function _filter_ignore($values, $ignore, $p, $empty=TRUE, $prev=NULL) {
+	$ret = [];
+	if (!$prev)
+		foreach ($values as $v)
+			if (!_in_ignore(PATH($p,$p,$v),$ignore))
+				$ret[] = $v;
+	else
+		foreach ($prev[0] as $k)
+			$ret[$k] = _filter_ignore($values, $ignore, PATH($p,$p,$k), $empty, array_slice($prev, 1));
+	if ($empty or $ret)
+		return $ret;
+	return [FALSE];
+}
+
+function _ignore_str($ignore) {
+	$s = [];
+	foreach ($ignore as $i)
+		$s[] = (string)$i;
+	return implode(";", $s);
+}
+
+// Parse the depath into the necessary row/column values for the table
 function word_table_values($w,$ignore=NULL) {
 	$w->read_paths();
 	$lang = $w->lang();
@@ -57,7 +120,7 @@ function word_table_values($w,$ignore=NULL) {
 					$_0 === "subjunctive" or
 					$_0 === "imperative") {
 					$values4 = $path->iterate("tense");
-					$values3 = $path->iterate("person");
+					$values3 = PATH($w,"indicative")->iterate("person");
 					$values2 = $path->iterate("number");
 					$values1 = $path->iterate("voice");
 					if (!$values1) $values1 = [FALSE];
@@ -238,9 +301,9 @@ function word_table_values($w,$ignore=NULL) {
 	}
 	$values0 = _do_ignore($values0,$ignore);
 	$values1 = _do_ignore($values1,$ignore);
+	$values4 = _do_ignore($values4,$ignore);
 	$values2 = _do_ignore($values2,$ignore);
 	$values3 = _do_ignore($values3,$ignore);
-	$values4 = _do_ignore($values4,$ignore);
 	return [$values0, $values1, $values2, $values3, $values4];
 }
 
@@ -278,7 +341,7 @@ function display_inflection($w, $hidden=TRUE) {
 		[<a href="javascript:void(0)" id="toggle-quizzing<?= $w->id() ?>">cover forms</a>]<br><br>
 	</span><?php
 	do_table(
-		$w,$values0,$values1,$values2,$values3,$values4,
+		$w,$values0,$values1,$values2,$values3,$values4,NULL,
 		"format_value",
 		function($v) use($w) {
 			return format_word($v,$w->lang(),true);
@@ -348,7 +411,7 @@ function display_inflection($w, $hidden=TRUE) {
 	ob_end_flush();
 }
 
-function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,$format_word,$get_link=NULL,$extras=NULL,$optimization=0) {
+function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$format_value,$format_word,$get_link=NULL,$extras=NULL,$optimization=0) {
 	?><div class="scrollable"><?php
 	if ($values1 and
        !$values2 and
@@ -364,11 +427,6 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 			?></td></tr><?php
 		}
 	} else {
-		if (!$values4) $values4 = [FALSE];
-		if (!$values3) $values3 = [FALSE];
-		if (!$values2) $values2 = [FALSE];
-		if (!$values1) $values1 = [FALSE];
-		if (!$values0) $values0 = [FALSE];
 		?><table class="text-left inflection" id="word<?= $w->id() ?>_forms"><?php
 		$first0=$last0=NULL; _get_first_last($values0,$first0,$last0);
 		foreach ($values0 as $_key=>$_0) {
@@ -436,6 +494,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 					?></th><?php
 					?></tr><?php
 				}
+				// Previous row (directly above)
 				$p_4 = NULL;
 				foreach ($values4 as $_4) {
 					?><tr><?php
@@ -451,6 +510,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 						$acc = []; $i=-1;
 						foreach ($values3 as $_3) {
 							$p = PATH($w, $_0,$_1,$_2,$_3,$_4);
+							if (_in_ignore($p,$ignore)) continue;
 							if ($i<0 or $p->get() != $last or !$last) {
 								$acc[] = []; $last = $p->get(); $i+=1;
 							}
@@ -460,6 +520,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$format_value,
 							$acc = [];
 							foreach ($values3 as $_3) {
 								$p = PATH($w, $_0,$_1,$_2,$_3,$_4);
+								if (_in_ignore($p,$ignore)) continue;
 								$acc[] = [[$p,2=>$_2,$_3]];
 							}
 						}
