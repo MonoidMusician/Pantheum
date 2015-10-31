@@ -920,7 +920,7 @@ function jTable() {
     this.newRowDrawCanvases = function() {
         if (this.editable == true) {
             for (var column in this.tcolumns) {
-                var name = this.fixname(this.tcolumns[column][success]);
+                var name = this.fixname(this.tcolumns[column][0]);
                 if (name == 'jcanvas') {
                     var codes = this.tcolumns[column][3];
                     var frame = codes;
