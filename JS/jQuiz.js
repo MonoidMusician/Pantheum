@@ -93,7 +93,7 @@ function jQuiz() {
 
 		if ((this.current == (this.next-1)) && (this.results[this.current] == undefined)) {
 			header += '<button data-tabindex="1" id="' + this.qelement + '-submit">Submit</button>';
-		} else if (this.current == this.last - 1) {
+		} else if (this.current >= this.last - 1) {
 			if (!this.scored)
 				header += '<button tabindex="1" id="' + this.qelement + '-next">Results</button>';
 			else if (this.active)
