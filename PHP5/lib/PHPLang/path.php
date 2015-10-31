@@ -113,12 +113,13 @@ class _PATH implements Countable
 		$recurse = function($vec) use(&$recurse) {
 			foreach ($vec as $a) {
 				if (is_callable($a)) $a = $a();
+				if (ISPATH($a)) $a = (string)$a;
 				if (!$a) {}
 				elseif (is_string($a)) {
 					foreach (explode("/", $a) as $_)
-						$this->add($_);
+						if ($_) $this->add($_);
 				} elseif (is_array($a))
-					if (count($a) === 2 and $this->mgr()->is_key($a[0]))
+					if (count($a) === 2 and is_string($a[0]) and $this->mgr()->is_key($a[0]))
 						$this->add($a);
 					else $recurse($a);
 				else _die("bad PATH.add2 argument of type ".gettype($a));

@@ -108,6 +108,7 @@ function format_key ($k) {
 	return str_replace("-", " ", ucfirst($k));
 }
 function format_value ($v) {
+	$v = explode("///", $v)[0];
 	if ($v === "person-1")
 		return "1st person";
 	if ($v === "person-2")

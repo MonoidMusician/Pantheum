@@ -6,27 +6,6 @@ sro('/Includes/functions.php');
 
 sro('/PHP5/lib/PHPLang/common.php');
 
-function _ignore_optimize($ignore, $w) {
-	$r = $ignore;
-	usort($r, function($a,$b) {
-		$a = (string)$a;
-		$b = (string)$b;
-		$c = substr_count($a, "/");
-		$d = substr_count($d, "/");
-		if ($c < $d) return -1;
-		if ($c > $d) return  1;
-		return strcmp($a, $b);
-	});
-	$ret = [];
-	foreach ($r as $i) {
-		$p = PATH($w, $i);
-		if (!_in_ignore($p, $ret))
-			$ret[] = $p;
-	}
-	return $ret;
-}
-
-// Assumes _optimize_ignore has been called on $ignore
 function _do_ignore($l,$ignore) {
 	if (!$ignore or !$l) return $l;
 	$vec = is_vec($l);
@@ -38,7 +17,6 @@ function _do_ignore($l,$ignore) {
 	foreach ($ig as $p) {
 		if (strpos($p,"/") === FALSE)
 			$ignore[] = $p;
-		else break; // safe because the list is sorted
 	}
 	foreach ($l as $k => $v) {
 		if (is_array($v)) {
@@ -64,23 +42,53 @@ function _in_ignore($p,$ignore) {
 
 function _filter_ignore($values, $ignore, $p, $empty=TRUE, $prev=NULL) {
 	$ret = [];
-	if (!$prev)
-		foreach ($values as $v)
-			if (!_in_ignore(PATH($p,$p,$v),$ignore))
-				$ret[] = $v;
-	else
-		foreach ($prev[0] as $k)
-			$ret[$k] = _filter_ignore($values, $ignore, PATH($p,$p,$k), $empty, array_slice($prev, 1));
+	if ($values !== NULL) {
+		if ($prev) {
+			$count = [];
+			$ret["_"] = [];
+			foreach ($prev[0] as $k) {
+				$ret[$k] = _filter_ignore($values, $ignore, PATH($p,$p,$k), $empty, array_slice($prev, 1));
+				// TODO: only works when count($prev) === 1
+				foreach ($ret[$k] as $v) {
+					$count[] = $v;
+				}
+			}
+			foreach ($values as $v) {
+				foreach ($count as $v2) {
+					if ($v === $v2) {
+						$ret["_"][] = $v;
+						break;
+					}
+				}
+			}
+		} else {
+			foreach ($values as $v) {
+				if (!$v or !_in_ignore(PATH($p,$p,$v),$ignore))
+					$ret[] = $v;
+			}
+		}
+	}
 	if ($empty or $ret)
 		return $ret;
 	return [FALSE];
 }
-
-function _ignore_str($ignore) {
-	$s = [];
-	foreach ($ignore as $i)
-		$s[] = (string)$i;
-	return implode(";", $s);
+function _filter_ignore2(&$values, $ignore, $p, $parallel, $prev=NULL) {
+	foreach ($values as $key=>&$valuesz)
+		$valuesz = _filter_ignore($valuesz, $ignore, PATH($p,$p,$key), TRUE, $prev?[$prev[$key]]:NULL);
+}
+function _fill($values, $parallel) {
+	$ret = [];
+	foreach ($parallel as $k) {
+		$ret[$k] = $values;
+	}
+	return $ret;
+}
+function is_fillable($v) {
+	if (!is_vec($v)) return FALSE;
+	foreach ($v as $k) {
+		if (is_array($k)) return FALSE;
+	}
+	return TRUE;
 }
 
 // Parse the depath into the necessary row/column values for the table
@@ -95,96 +103,134 @@ function word_table_values($w,$ignore=NULL) {
 	$values0 = NULL;
 	// values0 : table name
 	// values1 : major vertical
-	// values2 : major horizontal
-	// values3 : minor horizontal
-	// values4 : minor vertical
+	// values2 : minor vertical
+	// values3 : major horizontal
+	// values4 : minor horizontal
 	if ($lang === "la" or $lang === "grc") {
+
+
+
+
+
 		if (($spart === "noun") or
 			($spart === "adjective") or
 			($spart === "pronoun")) {
-			$values4 = $w->path()->iterate("case");
-			$values3 = $w->path()->iterate("gender");
-			$values2 = $w->path()->iterate("number");
 			if ($spart === "adjective")
 				$values1 = $w->path()->iterate("degree");
 			else $values1 = [];
+			$values2 = $w->path()->iterate("case");
+			$values3 = $w->path()->iterate("number");
+			$values4 = $w->path()->iterate("gender");
 			$values0 = [];
 		} elseif ($spart === "verb") {
-			$moods = $w->path()->iterate("mood");
-			$values0 = [];
+			$values0 = $moods = $w->path()->iterate("mood");
+			$values1 = [];
+			$values2 = [];
+			$values3 = [];
+			$values4 = [];
+			$hspan4 = [];
+			$persons = PATH($w,"indicative")->iterate("person");
+			$persons = _filter_ignore($persons, $ignore, PATH($w,"indicative"));
+			foreach ($persons as $_) $hspan4[] = FALSE;
+
 			foreach ($moods as $_0) {
 				if ($ignore !== NULL and in_array($_0,$ignore))
 					continue;
+				$vals4 =
+				$vals3 =
+				$vals2 =
+				$vals1 = NULL;
 				$path = PATH($w,$_0);
 				if ($_0 === "indicative" or
 					$_0 === "subjunctive" or
 					$_0 === "imperative") {
-					$values4 = $path->iterate("tense");
-					$values3 = PATH($w,"indicative")->iterate("person");
-					$values2 = $path->iterate("number");
-					$values1 = $path->iterate("voice");
+					$vals1 = $path->iterate("voice");
+					$vals2 = $path->iterate("tense");
+					$vals3 = $path->iterate("number");
+					$vals4 = PATH($w,"indicative")->iterate("person");
 					if (!$values1) $values1 = [FALSE];
 				} else if ($_0 === "participle") {
-					$values4 = $path->iterate("tense");
-					$values2 = $path->iterate("voice");
+					$vals1 = [""];
+					$vals2 = $path->iterate("tense");
+					$vals3 = $path->iterate("voice");
+					$vals4 = $hspan4;
 				} else if ($_0 === "infinitive") {
-					$values4 = $path->iterate("tense");
-					$values2 = $path->iterate("voice");
-					$values3 = [FALSE,FALSE,FALSE];
-					$values1 = [""];
+					$vals1 = [""];
+					$vals2 = $path->iterate("tense");
+					$vals3 = $path->iterate("voice");
+					$vals4 = $hspan4;
 				} else if ($_0 === "supine") {
-					$values4 = [FALSE];
-					$values2 = $path->iterate("supine-type");
-					$values3 = [FALSE,FALSE,FALSE];
-					$values1 = [""];
+					$vals1 = [""];
+					$vals2 = [FALSE];
+					$vals3 = $path->iterate("supine-type");
+					$vals4 = $hspan4;
 				}
-				$values0[$_0] = [$values1,$values2,$values3,$values4];
+				$values1[$_0] = $vals1;
+				$values2[$_0] = $vals2;
+				$values3[$_0] = $vals3;
+				$values4[$_0] = $vals4;
 			}
 		} elseif ($spart === "adverb") {
 			$values1 = $w->path()->iterate("degree");
 		}
+
+
+
+
+
+
 	} else
 	if ($lang === "fr") {
 		if (($spart === "noun") or
 			($spart === "adjective") or
 			($spart === "pronoun")) {
-			$values3 = $w->path()->iterate("gender");
-			$values2 = $w->path()->iterate("number");
 			if ($spart === "adjective")
 				$values1 = $w->path()->iterate("degree");
 			else $values1 = [];
+			$values3 = $w->path()->iterate("number");
+			$values4 = $w->path()->iterate("gender");
 			$values0 = [];
 		} elseif ($spart === "verb") {
-			$moods = $w->path()->iterate("mood");
-			$values0 = [];
+			$values0 = $moods = $w->path()->iterate("mood");
+			$values1 = [];
+			$values2 = [];
+			$values3 = [];
+			$values4 = [];
 			foreach ($moods as $_0) {
 				if ($ignore !== NULL and in_array($_0,$ignore))
 					continue;
+				$vals4 =
+				$vals3 =
+				$vals2 =
+				$vals1 = NULL;
 				$path = PATH($w,$_0);
 				if ($_0 === "indicative" or
 					$_0 === "subjunctive") {
-					$values4 = $path->iterate("tense");
-					$values3 = $path->iterate("person");
-					$values2 = $path->iterate("number");
-					if (!$values1) $values1 = [FALSE];
+					if (!$vals1) $vals1 = [FALSE];
+					$vals2 = $path->iterate("tense");
+					$vals3 = $path->iterate("number");
+					$vals4 = $path->iterate("person");
 				} else if ($_0 === "infinitive" or
 				           $_0 === "gerund") {
-					$values4 = [""];
-					$values2 = $path->iterate("type");
-					$values3 = [FALSE,FALSE,FALSE];
-					$values1 = [""];
+					$vals1 = [""];
+					$vals2 = [""];
+					$vals3 = $path->iterate("type");
+					$vals4 = [FALSE,FALSE,FALSE];
 				} else if ($_0 === "imperative") {
-					$values4 = [""];
-					$values3 = $path->iterate("person");
-					$values2 = $path->iterate("number");
-					$values1 = [""];
+					$vals1 = [""];
+					$vals2 = [""];
+					$vals3 = $path->iterate("number");
+					$vals4 = $path->iterate("person");
 				} else if ($_0 === "participle") {
-					$values4 = $path->iterate("gender");
-					$values3 = $path->iterate("number");
-					$values2 = $path->iterate("tense");
-					$values1 = [""];
+					$vals1 = [""];
+					$vals2 = $path->iterate("gender");
+					$vals3 = $path->iterate("tense");
+					$vals4 = $path->iterate("number");
 				}/**/
-				$values0[$_0] = [$values1,$values2,$values3,$values4];
+				$values1[$_0] = $vals1;
+				$values2[$_0] = $vals2;
+				$values3[$_0] = $vals3;
+				$values4[$_0] = $vals4;
 			}
 		} elseif ($spart === "adverb") {
 			$values1 = $w->path()->iterate("degree");
@@ -194,11 +240,11 @@ function word_table_values($w,$ignore=NULL) {
 		if (($spart === "noun") or
 			($spart === "adjective") or
 			($spart === "pronoun")) {
-			$values3 = $w->path()->iterate("gender");
-			$values2 = $w->path()->iterate("number");
 			if ($spart === "adjective")
 				$values1 = $w->path()->iterate("degree");
 			else $values1 = [];
+			$values3 = $w->path()->iterate("number");
+			$values4 = $w->path()->iterate("gender");
 			$values0 = [];
 		} elseif ($spart === "verb") {
 			$moods = $w->path()->iterate("mood");
@@ -209,26 +255,26 @@ function word_table_values($w,$ignore=NULL) {
 				$path = PATH($w,$_0);
 				if ($_0 === "indicative" or
 					$_0 === "subjunctive") {
-					$values4 = $path->iterate("tense");
-					$values3 = $path->iterate("person");
-					$values2 = $path->iterate("number");
 					if (!$values1) $values1 = [FALSE];
+					$values2 = $path->iterate("tense");
+					$values3 = $path->iterate("number");
+					$values4 = $path->iterate("person");
 				} else if ($_0 === "infinitive" or
 				           $_0 === "gerund") {
-					$values4 = [""];
+					$values1 = [""];
 					$values2 = [""];
-					$values3 = [FALSE,FALSE,FALSE];
-					$values1 = [""];
+					$values3 = [""];
+					$values4 = [FALSE,FALSE,FALSE];
 				} else if ($_0 === "imperative") {
-					$values4 = $path->iterate("imperative-mood");
-					$values3 = $path->iterate("person");
-					$values2 = $path->iterate("number");
 					$values1 = [""];
+					$values2 = $path->iterate("imperative-mood");
+					$values3 = $path->iterate("number");
+					$values4 = $path->iterate("person");
 				} else if ($_0 === "past-participle") {
-					$values4 = $path->iterate("gender");
-					$values3 = [false,false,false];
-					$values2 = $path->iterate("number");
 					$values1 = [""];
+					$values2 = $path->iterate("gender");
+					$values3 = $path->iterate("number");
+					$values4 = [false,false,false];
 				}
 				$values0[$_0] = [$values1,$values2,$values3,$values4];
 			}
@@ -240,11 +286,11 @@ function word_table_values($w,$ignore=NULL) {
 		if (($spart === "noun") or
 			($spart === "adjective") or
 			($spart === "pronoun")) {
-			$values4 = $w->path()->iterate("case");
-			$values3 = [];
-			$values2 = $w->path()->iterate("number");
-			$values1 = [];
 			$values0 = [];
+			$values1 = [];
+			$values2 = $w->path()->iterate("case");
+			$values3 = $w->path()->iterate("number");
+			$values4 = [];
 		} elseif ($spart === "verb") {
 			$moods = $w->path()->iterate("mood");
 			$values0 = [];
@@ -255,10 +301,10 @@ function word_table_values($w,$ignore=NULL) {
 				$path = PATH($w,$_0);
 				$name = NULL;
 				if ($_0 === "indicative") {
-					$values4 = [""];
-					$values3 = [FALSE,FALSE];
-					$values2 = $path->iterate("tense");
 					$values1 = [""];
+					$values2 = [""];
+					$values3 = $path->iterate("tense");
+					$values4 = [FALSE,FALSE];
 				} else if ($_0 === "infinitive" or
 				           $_0 === "conditional" or
 				           $_0 === "imperative") {
@@ -268,25 +314,25 @@ function word_table_values($w,$ignore=NULL) {
 					}
 					$hacked = $_0;
 					$name = "";
-					$values4 = [""];
-					$values3 = [FALSE,FALSE];
-					$values2 = [$_0];
 					$values1 = [""];
+					$values2 = [""];
+					$values3 = [$_0];
+					$values4 = [FALSE,FALSE];
 				} else if ($_0 === "adjectival-participle") {
-					$values4 = $path->iterate("case");
-					$values3 = $path->iterate("number");
-					$values2 = $path->iterate("tense");
 					$values1 = $path->iterate("voice");
+					$values2 = $path->iterate("case");
+					$values3 = $path->iterate("tense");
+					$values4 = $path->iterate("number");
 				} else if ($_0 === "nominal-participle") {
-					$values4 = $path->iterate("case");
-					$values3 = $path->iterate("number");
-					$values2 = $path->iterate("tense");
 					$values1 = $path->iterate("voice");
+					$values2 = $path->iterate("case");
+					$values3 = $path->iterate("tense");
+					$values4 = $path->iterate("number");
 				} else if ($_0 === "adverbial-participle") {
-					$values4 = [""];
-					$values3 = [FALSE,FALSE];
-					$values2 = $path->iterate("tense");
 					$values1 = $path->iterate("voice");
+					$values2 = [""];
+					$values3 = $path->iterate("tense");
+					$values4 = [FALSE,FALSE];
 				}
 				$values0[$_0] = [$values1,$values2,$values3,$values4];
 				if ($name !== NULL)
@@ -296,14 +342,31 @@ function word_table_values($w,$ignore=NULL) {
 	} else
 	if ($lang === "ith" && $spart === "root") {
 		$values0 = $w->path()->iterate("complement");
-		$values2 = $w->path()->iterate("formality");
-		$values4 = $w->path()->iterate("stem");
+		$values3 = $w->path()->iterate("formality");
+		$values2 = $w->path()->iterate("stem");
 	}
+	// values0 : table name
+	// values1 : major vertical
+	// values2 : minor vertical
+	// values3 : major horizontal
+	// values4 : minor horizontal
+	// #1,2,3,4 may depend on #0 (already done)
+	// #2       may depend on #1
+	// #4       may depend on #3
 	$values0 = _do_ignore($values0,$ignore);
-	$values1 = _do_ignore($values1,$ignore);
-	$values4 = _do_ignore($values4,$ignore);
-	$values2 = _do_ignore($values2,$ignore);
-	$values3 = _do_ignore($values3,$ignore);
+	if (is_vec($values1)) $values1 = _fill($values1, $values0);
+	if (is_vec($values2)) $values2 = _fill($values2, $values0);
+	if (is_vec($values3)) $values3 = _fill($values3, $values0);
+	if (is_vec($values4)) $values4 = _fill($values4, $values0);
+	_filter_ignore2($values1,$ignore,PATH($w),$values0);
+	_filter_ignore2($values2,$ignore,PATH($w),$values0,$values1);
+	_filter_ignore2($values3,$ignore,PATH($w),$values0);
+	_filter_ignore2($values4,$ignore,PATH($w),$values0,$values3);
+	/*var_dump($values0);
+	var_dump($values1);
+	var_dump($values2);
+	var_dump($values3);
+	var_dump($values4);*/
 	return [$values0, $values1, $values2, $values3, $values4];
 }
 
@@ -323,8 +386,8 @@ function display_inflection($w, $hidden=TRUE) {
 	$w->clear_connections();
 	$connections = $w->connections();
 	list ($values0, $values1, $values2, $values3, $values4) = word_table_values($w);
-	if (!$values0 and !$values1 and !$values2
-	and !$values3 and !$values4) {
+	if (!$values0 and !$values1 and !$values3
+	and !$values4 and !$values2) {
 		?><span id="word<?= $w->id() ?>_forms">(No inflection for this word)</span><?php
 		return;
 	}
@@ -430,32 +493,22 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
 		?><table class="text-left inflection" id="word<?= $w->id() ?>_forms"><?php
 		$first0=$last0=NULL; _get_first_last($values0,$first0,$last0);
 		foreach ($values0 as $_key=>$_0) {
-			if (is_array($_0)) {
-				$_values = $_0;
-				$values1 = $_values[0];
-				$values2 = $_values[1];
-				$values3 = $_values[2];
-				$values4 = $_values[3];
-				$_0 = $_key;
-				if (array_key_exists(4, $_values))
-					$name0 = $_values[4];
-				else $name0 = $_0;
-			} else $name0 = $_0;
+			$name0 = $_0; // FIXME
+			if (!$values1[$_0]) $values1[$_0] = [FALSE];
+			if (!$values2[$_0]) $values2[$_0] = [FALSE];
+			if (!$values3[$_0]) $values3[$_0] = [FALSE];
+			if (!$values4[$_0]) $values4[$_0] = [FALSE];
 			$path = PATH($w, $_0);
 			if ($_0 !== $first0) {
 				// Blank row to separate sub-tables based on $values0
 				?><tr><th>&nbsp;</th></tr><?php
 			}
-			$first1=$last1=NULL; _get_first_last($values1,$first1,$last1);
-			$first2=$last2=NULL; _get_first_last($values2,$first2,$last2);
-			$first3=$last3=NULL; _get_first_last($values3,$first3,$last3);
-			$first4=$last4=NULL; _get_first_last($values4,$first4,$last4);
 			// values0 : table name
 			// values1 : major vertical
-			// values2 : major horizontal
-			// values3 : minor horizontal
-			// values4 : minor vertical
-			$_1 = (count($values1) > 1 or $values1[0] !== FALSE);
+			// values2 : minor vertical
+			// values3 : major horizontal
+			// values4 : minor horizontal
+			$_1 = (count($values1[$_0]) > 1 or $values1[$_0][0] !== FALSE);
 			?><tr><?php
 			$hspan1 = $_1 !== FALSE ? 2 : 1;
 			if ($name0 === FALSE) {
@@ -463,30 +516,31 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
 			} else {
 				?><th colspan="<?= $hspan1 ?>" class="greatest"><?= $format_value($name0) ?></th><?php
 			}
-			if ($values2)
-			foreach ($values2 as $_2) {
-				?><th colspan="<?= count($values3) ?>" class="major"><?php
-				echo $format_value($_2);
+			if ($values3[$_0])
+			foreach ($values3[$_0] as $_3) {
+				?><th colspan="<?= count($values4[$_0][$_3]) ?>" class="major"><?php
+				echo $format_value($_3);
 				?></th><?php
 			}
 			?></tr><?php
-			if ($values3 and $values3[0] !== FALSE) {
+			if ($values4[$_0]["_"] and $values4[$_0]["_"][0] !== FALSE) {
 				?><tr><th colspan="<?= $hspan1 ?>">&nbsp;</th><?php
-				foreach ($values2 as $_2) {
-					if ($values3)
-					foreach ($values3 as $_3) {
+				foreach ($values3[$_0] as $_3) {
+					if ($values4[$_0][$_3])
+					foreach ($values4[$_0][$_3] as $_4) {
 						?><th class="minor"><?php
-						echo $format_value($_3);
+						echo $format_value($_4);
 						?></th><?php
 					}
 				}
 				?></tr><?php
-				$hspan3 = 1;
-			} elseif ($values3) {
-				$hspan3 = count($values3);
-				$values3 = [""];
-			} else $hspan3 = 1;
-			foreach ($values1 as $_1) {
+				$hspan4 = 1;
+			} elseif ($values4[$_0]["_"]) {
+				$hspan4 = count($values4[$_0]["_"]);
+				foreach ($values4[$_0] as &$v)
+					$v = [""];
+			} else $hspan4 = 1;
+			foreach ($values1[$_0] as $_1) {
 				if ($_1 !== FALSE) {
 					?><tr><?php
 					?><th colspan="2" class="major"><?php
@@ -495,59 +549,61 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
 					?></tr><?php
 				}
 				// Previous row (directly above)
-				$p_4 = NULL;
-				foreach ($values4 as $_4) {
+				$p_2 = NULL;
+				foreach ($values2[$_0][$_1] as $_2) {
 					?><tr><?php
 					if ($_1 !== FALSE) {
 						?><th>&nbsp;&nbsp;&nbsp;</th><?php
 					}
 					?><th class="minor"><?php
-					echo $format_value($_4);
+					echo $format_value($_2);
 					?></th><?php
 					$row = [];
 					$last = NULL;
-					foreach ($values2 as $_2) {
+					foreach ($values3[$_0] as $_3) {
 						$acc = []; $i=-1;
-						foreach ($values3 as $_3) {
-							$p = PATH($w, $_0,$_1,$_2,$_3,$_4);
-							if (_in_ignore($p,$ignore)) continue;
+						foreach ($values4[$_0][$_3] as $_4) {
+							$p = PATH($w, $_0,$_1,$_3,$_4,$_2);
 							if ($i<0 or $p->get() != $last or !$last) {
 								$acc[] = []; $last = $p->get(); $i+=1;
 							}
-							$acc[$i][] = [$p,2=>$_2,$_3];
+							$acc[$i][] = [$p,2=>$_3,$_4];
 						}
-						if (!($optimization & 2) or (count($acc) != 1 and count($acc) != count($values3))) {
+						if (!($optimization & 2) or (count($acc) != 1 and count($acc) != count($values4))) {
 							$acc = [];
-							foreach ($values3 as $_3) {
-								$p = PATH($w, $_0,$_1,$_2,$_3,$_4);
-								if (_in_ignore($p,$ignore)) continue;
-								$acc[] = [[$p,2=>$_2,$_3]];
+							foreach ($values4[$_0][$_3] as $_4) {
+								$p = PATH($w, $_0,$_1,$_3,$_4,$_2);
+								$acc[] = [[$p,2=>$_3,$_4]];
 							}
 						}
 						$row = array_merge($row, $acc);
 					}
+					$first1=$last1=NULL; _get_first_last($values1[$_0],     $first1,$last1);
+					$first2=$last2=NULL; _get_first_last($values2[$_0][$_1],$first2,$last2);
+					$first3=$last3=NULL; _get_first_last($values3[$_0],     $first3,$last3);
+					$first4=$last4=NULL; _get_first_last($values4[$_0][$_3],$first4,$last4);
 					foreach ($row as $val_group) {
 						$p = $val_group[0][0];
 						$_ = count($val_group)-1;
-						$_20 = $val_group[0][2];
-						$_30 = $val_group[0][3];
-						$_21 = $val_group[$_][2];
-						$_31 = $val_group[$_][3];
+						$_30 = $val_group[0][2];
+						$_40 = $val_group[0][3];
+						$_31 = $val_group[$_][2];
+						$_41 = $val_group[$_][3];
 						if ($_ === 0) {
-							$_2 = $_20; $_3 = $_30;
-							$ditto = ($p_4 and $p->get() and PATH($w, $_0,$_1,$_2,$_3,$p_4)->get() == $p->get());
+							$_3 = $_30; $_4 = $_40;
+							$ditto = ($p_2 and $p->get() and PATH($w, $_0,$_1,$_3,$_4,$p_2)->get() == $p->get());
 						} else {
-							$_2 = $_3 = NULL; $ditto = FALSE;
+							$_3 = $_4 = NULL; $ditto = FALSE;
 						}
-						?><td colspan="<?= $hspan3*count($val_group) ?>" <?php
+						?><td colspan="<?= $hspan4*count($val_group) ?>" <?php
 							$classes = "";
-							if (!$first3 or ($_30 === $first3))
+							if (!$first4 or ($_40 === $first4))
 								$classes .= " leftline";
-							if (!$last3 or ($_31 === $last3))
+							if (!$last4 or ($_41 === $last4))
 								$classes .= " rightline";
-							if (!$first4 or ($_4 === $first4)) $classes .= " topline";
-							if (!$last4 or ($_4 === $last4)) $classes .= " bottomline";
-							if ((!$first3 or ($_30 === $first3)) and $_20 !== $first2)
+							if (!$first2 or ($_2 === $first2)) $classes .= " topline";
+							if (!$last2 or ($_2 === $last2)) $classes .= " bottomline";
+							if ((!$first4 or ($_40 === $first4)) and $_30 !== $first3)
 								$classes .= " leftline";
 							echo " class='$classes' ";
 							if (count($val_group) > 1) echo " style='text-align: center;'";
@@ -559,7 +615,9 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
 							$link = "dictionary.php?id=".$link->id();
 						}
 						if ($link) { ?><a class="word-ref" href="<?= $link ?>"><?php }
-						$val = $format_word($p->get(),$p);
+						if (!_in_ignore($p, $ignore) or !$p->hasvalue())
+							$val = $format_word($p->get(),$p);
+						else $val = '<abbr class="symbolic" title="You\'ve not learned this yet">—</abbr>';
 						if (count($val_group) > 1) {
 							$val = ""
 								. "<span style='float: right;'>→</span>"
@@ -576,7 +634,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
 						?></td><?php
 					}
 					?></tr><?php
-					$p_4 = $_4;
+					$p_2 = $_2;
 				}
 			}
 		}

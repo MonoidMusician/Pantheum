@@ -173,7 +173,35 @@ $quiz_types = array_merge($quiz_types,[
 		"lang" => "la",
 		"n_questions" => -1,
 		"options" => [
-			function(){return make_chart(WORD2("la","amo","verb"),NULL, ["infinitive/future","infinitive/passive","perfect/passive","pluperfect/passive","participle","person-2","person-1","plural","supine","subjunctive","imperative","future","future-perfect"],"this synopsis");},
+			function(){
+				/*return make_chart(WORD2("la","amo","verb"),NULL, [
+					"infinitive/future",
+					"infinitive/perfect",
+					"infinitive/passive",
+					"subjunctive/perfect",
+					"subjunctive/pluperfect",
+					"perfect/passive",
+					"pluperfect/passive",
+					"person-2","person-1","plural",
+					"participle",
+					"supine",
+					"imperative",
+					"future",
+					"future-perfect"
+				],"this synopsis","using only the 3rd person singular");*/
+				return make_chart(WORD2("la","amo","verb"), [
+					[FALSE],
+					["infinitive","indicative///person-3/singular","subjunctive///person-3/singular"],
+					["present","imperfect","perfect","pluperfect"],
+					["active","passive"],
+					[""]
+				], [
+					"perfect/passive","pluperfect/passive",
+					"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
+					"infinitive/passive",
+					"subjunctive/present","subjunctive/perfect",
+				], "this synopsis","using only the 3rd person singular");
+			},
 		],
 	],
 ]);

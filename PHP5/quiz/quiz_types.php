@@ -131,14 +131,29 @@ function make_matching($map) {
 }
 
 
-function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart") {
-	if ($values === NULL) $values = word_table_values($w,$ignore);
-	list ($values0,$values1,$values2,$values3,$values4) = $values;
+function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart",$add=NULL) {
+	ob_start();
+	if ($values === NULL) {
+		$values = word_table_values($w,$ignore);
+		list ($values0,$values1,$values2,$values3,$values4) = $values;
+	} else {
+		list ($values0,$values1,$values2,$values3,$values4) = $values;
+		$values0 = _do_ignore($values0,$ignore);
+		if (is_fillable($values1)) $values1 = _fill($values1, $values0);
+		if (is_fillable($values2)) $values2 = _fill($values2, $values0);
+		if (is_fillable($values3)) $values3 = _fill($values3, $values0);
+		if (is_fillable($values4)) $values4 = _fill($values4, $values0);
+		_filter_ignore2($values1,$ignore,PATH($w),$values0);
+		_filter_ignore2($values2,$ignore,PATH($w),$values0,$values1);
+		_filter_ignore2($values3,$ignore,PATH($w),$values0);
+		_filter_ignore2($values4,$ignore,PATH($w),$values0,$values3);
+	}
 	global $OP_USER_INPUT;
 	$w->read_paths();
 	$w->read_attrs();
+	if ($add) $add = ", $add";
 	$ret = [
-		"help" => "Fill in $legend for “".display_word_name($w)."”.",
+		"help" => "Fill in $legend for “".display_word_name($w)."”$add.",
 		"selections" => [],
 		"sentence" => [/*function($pick_db,$db) use($w,$values0,$values1,$values2,$values3,$values4) {
 
@@ -152,7 +167,6 @@ function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart") {
 		$i++;
 		return '<input>';
 	};
-	ob_start();
 	do_table(
 		$w,$values0,$values1,$values2,$values3,$values4,$ignore,
 		"format_value",
