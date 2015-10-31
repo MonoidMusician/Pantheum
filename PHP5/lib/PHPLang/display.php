@@ -48,7 +48,7 @@ function format_word($w, $lang=NULL, $all=false) {
 	if (!$all)
 		$w = explode("\n", $w)[0];
 	if ($lang)
-		return '<span class="format-word-$lang">'.$w.'</span>';
+		return '<span class="format-word-'.$lang.'">'.$w.'</span>';
 	return $w;
 }
 function format_word1($w) { return format_word($w); }
