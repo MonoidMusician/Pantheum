@@ -5,7 +5,7 @@ sro('/Includes/session.php');
 sro('/Includes/functions.php');
 
 sro('/PHP5/lib/PHPLang/common.php');
-sro('/PHP5/lib/PHPLang/display_inflection.php');
+sro('/PHP5/lib/PHPLang/inflection_table.php');
 
 function _get_first_last($arr, &$first, &$last) {
 	if (!$arr) return;
