@@ -130,8 +130,8 @@ $quiz_types = array_merge($quiz_types,[
 				function(){return make_chart(WORD2("la","hic","pronoun"));},
 				function(){return make_chart(WORD2("la","iste","pronoun"),null,["vocative"]);},
 				function(){return make_chart(WORD2("la","ille","pronoun"));},
-				function(){return make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative",$gender[0],$gender[1]]);},
-				function(){return make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative",$gender[0],$gender[2]]);},
+				function()use($gender){return make_chart(WORD2("la","ego","pronoun"),null,["genitive","vocative",$gender[0],$gender[1]]);},
+				function()use($gender){return make_chart(WORD2("la","tu","pronoun"),null,["genitive","vocative",$gender[0],$gender[2]]);},
 				function(){return make_chart(WORD2("la","is","pronoun"),null);},
 			];
 		}

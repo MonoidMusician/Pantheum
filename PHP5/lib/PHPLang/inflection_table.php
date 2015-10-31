@@ -44,6 +44,7 @@ function _filter_ignore($values, $ignore, $p, $empty=TRUE, $prev=NULL) {
 	$ret = [];
 	if ($values !== NULL) {
 		if ($prev) {
+			if (!$prev[0]) $prev[0]=[false];
 			$count = [];
 			$ret["_"] = [];
 			foreach ($prev[0] as $k) {
@@ -354,6 +355,7 @@ function word_table_values($w,$ignore=NULL) {
 	// #2       may depend on #1
 	// #4       may depend on #3
 	$values0 = _do_ignore($values0,$ignore);
+	if (!$values0) $values0 = [false];
 	if (is_vec($values1)) $values1 = _fill($values1, $values0);
 	if (is_vec($values2)) $values2 = _fill($values2, $values0);
 	if (is_vec($values3)) $values3 = _fill($values3, $values0);
@@ -388,6 +390,13 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
 	} else {
 		?><table class="text-left inflection" id="word<?= $w->id() ?>_forms"><?php
 		$first0=$last0=NULL; _get_first_last($values0,$first0,$last0);
+		if (!$values0) {
+			$values0 = [FALSE];
+			$values1 = [$values1,"_"=>$values1];
+			$values2 = [$values2,"_"=>$values2];
+			$values3 = [$values3,"_"=>$values3];
+			$values4 = [$values4,"_"=>$values4];
+		}
 		foreach ($values0 as $_key=>$_0) {
 			$name0 = $_0; // FIXME
 			if (!$values1[$_0]) $values1[$_0] = [FALSE];
@@ -419,6 +428,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
 				?></th><?php
 			}
 			?></tr><?php
+			if (!array_key_exists("_",$values4[$_0])) $values4[$_0]["_"] = [];
 			if ($values4[$_0]["_"] and $values4[$_0]["_"][0] !== FALSE) {
 				?><tr><th colspan="<?= $hspan1 ?>">&nbsp;</th><?php
 				foreach ($values3[$_0] as $_3) {
