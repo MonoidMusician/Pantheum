@@ -144,8 +144,9 @@ article + article.secondary {
     width: calc(30% - 2em);
 }
 article + article:not(.secondary) {
-  /* float: none !important; */
-  clear: both;
+    /* float: none !important; */
+    clear: both;
+    padding-top: 30px;
 }
 .secondary {
     font-size: 90%;
