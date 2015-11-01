@@ -49,7 +49,7 @@
     cursor: pointer;
 }
 
-.jTableBodyCanvas {
+.jTableBodyCanvas, .jTableBodyCanvasNew {
     padding-left: 0;
     padding-right: 0;
     margin-left: auto;
@@ -58,9 +58,8 @@
     width: 20px;
 }
 
-.jTableEditing input {
+.jTableEditing input:not([type="checkbox"]):not([type="radio"]):not([type="number"]) {
     width: 200px;
-    height: 20px;
     
     border: 1px solid #e0e0e0;
     margin: 1px;

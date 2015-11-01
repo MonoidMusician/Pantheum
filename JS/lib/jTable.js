@@ -904,7 +904,7 @@ function jTable() {
                                 }
                                 result += '</select></td>';
                             } else {
-                                result += '<td id="' + this.telement + '-tbtr-new-td-' + pos + '" class="jTableBodyTdNew jTableEditing"><input id="' + this.telement + '-tbtr-new-td-' + pos + '-value" type="' + pos + '-field" class="jTableBodyTdInputNew jTableEditing"></td>';
+                                result += '<td id="' + this.telement + '-tbtr-new-td-' + pos + '" class="jTableBodyTdNew jTableEditing"><input id="' + this.telement + '-tbtr-new-td-' + pos + '-value" type="' + type + '" class="jTableBodyTdInputNew jTableBodyInputEditing"></td>';
                             }
                             break;
                     }
