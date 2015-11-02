@@ -335,7 +335,8 @@ function jQuiz() {
 	this.handleNext = function(data) {
 		if (this.loading) return;
 		if (this.current == this.last - 1) {
-			if (!this.scored) this.showScore();
+			if (!this.scored)
+				$.get(this.eurl, $.proxy(this.handleEnd, this));
 			else this.endQuiz();
 		} else if (this.current == (this.next-1)) {
 			this.loading = true;
@@ -423,14 +424,20 @@ function jQuiz() {
 	};
 
 	this.endQuiz = function() {
-		if (!this.active) {
+		if (!this.active || 1) {
 			location.reload();
 			return;
 		}
-		$.get(this.eurl, $.proxy(this.handleEnd, this));
+		$.get(this.eurl, $.proxy(this.handleEnd2, this));
 	};
 
 	this.handleEnd = function(data) {
+		if (data == 'success') {
+			this.showScore();
+		} else alert("Error: "+data);
+	}
+
+	this.handleEnd2 = function(data) {
 		if (data == 'success') {
 			location.reload();
 		} else alert("Error: "+data);
