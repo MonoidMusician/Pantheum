@@ -395,6 +395,7 @@ function jQuiz() {
 		this.last = last;
 		this.getNextQuestion();
 		this.bindEvents();
+		this.log('start', undefined, last);
 	};
 
 	this.review = function(data) {
@@ -434,6 +435,7 @@ function jQuiz() {
 	this.handleEnd = function(data) {
 		if (data == 'success') {
 			this.showScore();
+			this.log('end');
 		} else alert("Error: "+data);
 	}
 
@@ -443,4 +445,8 @@ function jQuiz() {
 		} else alert("Error: "+data);
 	}
 
+	this.log = function(action, label, value) {
+		if (window.ga)
+			ga('send', 'event', 'Quiz', action, label, value);
+	}
 }

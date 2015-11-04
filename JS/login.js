@@ -52,7 +52,9 @@ function loginSubmit(username, password, error) {
         $.post("/PHP5/login.php", { u: username, p: password }, function(data) {
             if (data == 'success') {
                 window.location.href = '/index.php';
-                $.jStorage.flush();
+                if (window.ga)
+                    ga('send', 'event', 'User', 'login', username);
+                if ($.jStorage) $.jStorage.flush();
             } else {
                 if (data == '1') {
                     $(error).html('Already logged in.');
@@ -85,6 +87,7 @@ function changePassword(username, old, new1, new2, error) {
         $.post("/PHP5/user/change-password.php", { u: username, p: old, n1: new1, n2: new2 }, function(data) {
             if (data == 'success') {
                 window.location.href = '/index.php';
+
                 $.jStorage.flush();
             } else {
                 if (data == '1') {
