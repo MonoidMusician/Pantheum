@@ -391,11 +391,11 @@ function jQuiz() {
 		$(document).off('keyup',  '#' + this.qelement + '-content input:text');
 	};
 
-	this.start = function(last) {
+	this.start = function(last, type) {
 		this.last = last;
 		this.getNextQuestion();
 		this.bindEvents();
-		this.log('start', undefined, last);
+		this.log('start', type, last);
 	};
 
 	this.review = function(data) {

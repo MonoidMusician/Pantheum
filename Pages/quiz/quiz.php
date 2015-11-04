@@ -58,7 +58,7 @@
                 else return;
             }
             if (data == 'success') {
-                quiz.start(last);
+                quiz.start(last, type);
             } else {
                 alert("Error: "+data);
             }
