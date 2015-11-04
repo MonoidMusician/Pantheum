@@ -20,6 +20,7 @@ if (!$q->completed()) {
 	}
 	quiz_setvalue("type", $type);
 }
+quiz_setvalue("current_answer", $q->answers());
 quiz_setvalue("last", $q->last());
 quiz_setvalue("score", $q->score());
 quiz_setvalue("out_of", $q->out_of());

@@ -643,6 +643,10 @@ $sql_stmts['quiz_id->options_n']= "SELECT options_n FROM quizzes WHERE quiz_id =
 
 $sql_stmts['quiz_id->options_n=']= "UPDATE quizzes SET options_n = (?) WHERE quiz_id = (?)";
 
+$sql_stmts['quiz_id->answers']= "SELECT answers FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->answers=']= "UPDATE quizzes SET answers = (?) WHERE quiz_id = (?)";
+
 $sql_stmts['user_id,last->new in quizzes']= "INSERT INTO quizzes (user_id,last) VALUES (?, ?)";
 $sql_stmts['last,user_id->new in quizzes']= "INSERT INTO quizzes (last,user_id) VALUES (?, ?)";
 

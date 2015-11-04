@@ -339,6 +339,12 @@
 {{{defineupdate|
     table=quizzes&to=options_n&from=quiz_id}}};
 
+{{{defineselect|
+    table=quizzes&to=answers&from=quiz_id}}};
+
+{{{defineupdate|
+    table=quizzes&to=answers&from=quiz_id}}};
+
 {{{defineinsert|
     table=quizzes&from=user_id,last}}};
 

@@ -235,8 +235,10 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 	}
 	$refresh();
 	#var_dump($selections, $result_json, $answers);
-	if (CURRENTQUIZ() !== NULL)
+	if (CURRENTQUIZ() !== NULL) {
 		CURRENTQUIZ()->add_question($result_json);
+		CURRENTQUIZ()->set_answers(quiz_getvalue("current_answer"));
+	}
 	echo json_encode($result_json);
 };
 $try();

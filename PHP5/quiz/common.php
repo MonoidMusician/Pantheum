@@ -144,6 +144,19 @@ class _QUIZ
 		sql_exec($sql_stmts["set score"], ["iii", $right, $total, &$this->_id]);
 		return TRUE;
 	}
+	function answers($answers=NULL) {
+		global $sql_stmts;
+		$answers = NULL;
+		sql_getone($sql_stmts["quiz_id->answers"], $answers, ["i", &$this->_id]);
+		if (!$answers) return NULL;
+		return json_decode($answers,true);
+	}
+	function set_answers($answers=NULL) {
+		global $sql_stmts;
+		if ($answers !== NULL) $answers = json_encode($answers);
+		sql_set($sql_stmts["quiz_id->answers="], $answers, ["i", &$this->_id]);
+		return TRUE;
+	}
 	function score() {
 		global $sql_stmts;
 		$score = NULL;

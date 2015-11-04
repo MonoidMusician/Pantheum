@@ -65,6 +65,7 @@
 	quiz_setvalue("score",$subscore+quiz_getvalue("score"));
 	quiz_setvalue("out_of",$out_of+quiz_getvalue("out_of"));
 	if (CURRENTQUIZ() !== NULL) {
+		CURRENTQUIZ()->set_answers(NULL);
 		CURRENTQUIZ()->add_score($subscore,$out_of);
 		CURRENTQUIZ()->add_result($result);
 	}
