@@ -1,22 +1,13 @@
 <?php
-sro('/PHP5/lib/Inflect.php');
+sro('/PHP5/lib/PHPLang/translation.php');
+
 global $quiz_types;
 global $df_exclude;
 $category = "Translation";
 function pluralize($noun) {
 	return Inflect::pluralize($noun);
 }
-function make_expr($list) {
-	if (!is_array($list)) {
-		if (is_string($list)) {
-			$list = str_replace("(","[",$list);
-			$list = str_replace(")","]",$list);
-		}
-		return $list;
-	}
-	if (count($list) === 1) return $list[0];
-	return "(".implode("|",array_map("make_expr",$list)).")";
-}
+
 $quiz_types = array_merge($quiz_types,[
 	"trans001" => [
 		"name" => "En to La: Simple verbs",
