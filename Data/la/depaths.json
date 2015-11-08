@@ -65,18 +65,6 @@
 			"fperf":"future-perfect",
 			"futur":"future"
 		},
-		"supine-type":{
-			"sup-I":"supine-1",
-			"sup-II":"supine-2",
-			"sup-1":"supine-1",
-			"sup-2":"supine-2",
-			"supin-I":"supine-1",
-			"supin-II":"supine-2",
-			"supin-1":"supine-1",
-			"supin-2":"supine-2",
-			"supine-I":"supine-1",
-			"supine-II":"supine-2"
-		},
 		"conjugation":{
 			"1":"conj-1",
 			"2":"conj-2",
@@ -88,7 +76,12 @@
 		"mood":{
 			"_values_":{
 				"supine":[
-					"supine-type"
+					{
+						"case":[
+							"accusative",
+							"ablative"
+						]
+					}
 				],
 				"infinitive":[
 					"voice",

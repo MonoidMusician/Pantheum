@@ -115,10 +115,6 @@ function format_value ($v) {
 		return "2nd person";
 	if ($v === "person-3")
 		return "3rd person";
-	if ($v === "supine-1")
-		return "Supine I";
-	if ($v === "supine-2")
-		return "Supine II";
 	if ($v === "complementary-1")
 		return "Comp. L";
 	if ($v === "complementary-2")
@@ -337,7 +333,7 @@ function display_word_name($w, &$common=false) {
 		foreach (["indicative/active/present/person-1/singular",
 		          "infinitive/active/present",
 		          "indicative/active/perfect/person-1/singular",
-		          "supine/supine-1"] as $_=>$key) {
+		          "supine/accusative"] as $_=>$key) {
 			$key = PATH($w,$key);
 			if (!$key->hasvalue()) {
 				if ($_ <= 1) {$name = NULL; break;}

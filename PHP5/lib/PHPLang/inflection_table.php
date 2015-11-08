@@ -163,7 +163,7 @@ function word_table_values($w,$ignore=NULL) {
 				} else if ($_0 === "supine") {
 					$vals1 = [""];
 					$vals2 = [FALSE];
-					$vals3 = $path->iterate("supine-type");
+					$vals3 = $path->iterate("case");
 					$vals4 = $hspan4;
 				}
 				$values1[$_0] = $vals1;
