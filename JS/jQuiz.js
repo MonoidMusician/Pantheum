@@ -4,6 +4,10 @@ function randomcase(string) {
 	return string.replace(/\w/g, function(i){return Math.random() > 0.5 ? i.toUpperCase() : i;});
 }
 
+function escapeHTML(s) {
+	return $('<div/>').text(s).html().split('"').join('&quot;');
+}
+
 function jQuiz() {
 	this.questions = [];
 	this.results = [];
@@ -155,7 +159,7 @@ function jQuiz() {
 						result += '<label>';
 						result += '<input'+tabin+' class="inputlabel" type="radio"';
 						result += 'name="'+this.qelement + '-' + part[1]+'"';
-						result += 'value="'+option+'" required>';
+						result += 'value="'+escapeHTML(option)+'" required>';
 						result += option;
 						result += '</label><br>';
 						//result += '<option>' + option + '</option>';
@@ -170,7 +174,7 @@ function jQuiz() {
 						result += '<td><label>';
 						result += '<input'+tabin+' class="inputlabel" type="radio"';
 						result += 'name="'+this.qelement + '-' + part[1]+'"';
-						result += 'value="'+option+'" required>';
+						result += 'value="'+escapeHTML(option)+'" required>';
 						result += (parseInt(oid)+1)+'.';
 						result += '</label></td>';
 						//result += '<option>' + option + '</option>';
@@ -195,7 +199,7 @@ function jQuiz() {
 							result += '<td><label>';
 							result += '<input'+tabin+' class="inputlabel" type="radio"';
 							result += 'name="'+this.qelement + '-' + part[1]+'-'+vid+'"';
-							result += 'value="'+option+'" required>';
+							result += 'value="'+escapeHTML(option)+'" required>';
 							result += (parseInt(oid)+1)+'.';
 							result += '</label></td>';
 							//result += '<option>' + option + '</option>';
