@@ -8,7 +8,7 @@
 	sro('/PHP5/lib/PHPLang/display.php');
 	sro('/PHP5/lib/PHPLang/string.php');
 
-header("access-control-allow-origin: *");
+if (!headers_sent()) header("access-control-allow-origin: *");
 
 global $mysqli;
 $actual_link = "https://latin.cipherboy.com/PHP5/quiz/smallquiz.php?$_SERVER[QUERY_STRING]";
