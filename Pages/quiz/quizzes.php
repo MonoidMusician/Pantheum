@@ -15,6 +15,11 @@
 <header>
     <h1>My Quizzes <?php if (!$master and quiz_auth()) echo "<a href='?master=true'>master</a>" ?></h1>
 </header>
+<article id="notice">
+    <h2>Sorry!</h2>
+    <p>Due to programmer incompetency, your quizzes as of November 7th were accidentally deleted and cannot be recovered. Your quizzes after that date should be shown below:
+    <p style="font-size: 50%;">I'll make sure it doesn't happen again.
+</article>
 <article id="quiz">
     <table style="border-spacing: 8px 2px;">
     <tr><th>Select</th>
