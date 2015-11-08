@@ -16,7 +16,7 @@
 <br>
 <br>
 
-<span data-i18n="word_formatting">Word formatting:</span>
+<span data-i18n="word_formatting">Word formatting</span>:
 <select id="la_ipa" style="width: 200px">
 </select>
 <br>

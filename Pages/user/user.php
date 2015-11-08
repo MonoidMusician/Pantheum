@@ -27,11 +27,11 @@
         var cpage = new jPage();
         cpage.init('ucontent', pantheum._private.i18nload);
         cpage.setPages([
-            ["#overview",    "<span data-i18n='Overview'>Overview</span>",       "Overview | Settings | Latin",    "/Pages/user/overview.php",    true],
-            ["#account",     "<span data-i18n='Account'>Account</span>",         "Account | Settings | Latin",     "/Pages/user/account.php",     true],
-            ["#preferences", "<span data-i18n='Preferences'>Preferences</span>", "Preferences | Settings | Latin", "/Pages/user/preferences.php", true],
-            ["#vocab",       "<span data-i18n='Vocab'>Vocab</span>",             "Vocab | Settings | Latin",       "/Pages/user/vocab.php",       true],
-            ["#quizzes",     "<span data-i18n='Quizzes'>Quizzes</span>",         "Quizzes | Settings | Latin",     "/Pages/user/quizzes.php",     true],
+            ["#overview",    i18n.translatable('Overview'),    "Overview | Settings | Latin",    "/Pages/user/overview.php",    true],
+            ["#account",     i18n.translatable('Account'),     "Account | Settings | Latin",     "/Pages/user/account.php",     true],
+            ["#preferences", i18n.translatable('Preferences'), "Preferences | Settings | Latin", "/Pages/user/preferences.php", true],
+            ["#vocab",       i18n.translatable('Vocab'),       "Vocab | Settings | Latin",       "/Pages/user/vocab.php",       true],
+            ["#quizzes",     i18n.translatable('Quizzes'),     "Quizzes | Settings | Latin",     "/Pages/user/quizzes.php",     true],
         ], dpage);
         cpage.setNavigation('unav', 'ul');
         cpage.setBasepath('');

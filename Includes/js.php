@@ -48,5 +48,10 @@
                 ? pantheum.udata["language"]
                 : 'en', pantheum._private.i18nload
             );
+            i18n.translatable = function(s) {
+                var s2 = i18n.t(s);
+                if (!s2) s2 = s;
+                return '<span data-i18n="'+s+'">'+s2+'</span>';
+            }
         </script>
 
