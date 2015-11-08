@@ -31,7 +31,7 @@
             ["#account",     i18n.translatable('Account'),     "Account | Settings | Latin",     "/Pages/user/account.php",     true],
             ["#preferences", i18n.translatable('Preferences'), "Preferences | Settings | Latin", "/Pages/user/preferences.php", true],
             ["#vocab",       i18n.translatable('Vocab'),       "Vocab | Settings | Latin",       "/Pages/user/vocab.php",       true],
-            ["#quizzes",     i18n.translatable('Quizzes'),     "Quizzes | Settings | Latin",     "/Pages/user/quizzes.php",     true],
+            //["#quizzes",     i18n.translatable('Quizzes'),     "Quizzes | Settings | Latin",     "/Pages/quiz/quizzes.php",     true],
         ], dpage);
         cpage.setNavigation('unav', 'ul');
         cpage.setBasepath('');
