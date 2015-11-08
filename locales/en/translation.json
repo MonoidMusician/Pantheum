@@ -1,17 +1,5 @@
 {
   "app": {
     "name": "Pantheum"
-  },
-  "nav": {
-    "home": "Home",
-    "page1": "Page One",
-    "page2": "Page Two"
-  },
-  "msg": {
-    "Welcome!": "Welcome!",
-    "translation": "Your language is English."
-  },
-  "ui": {
-    "change_language": "Select language: "
   }
 }
