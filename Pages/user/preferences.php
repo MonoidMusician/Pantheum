@@ -30,7 +30,8 @@ Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugn
 $('#lang').select2({
     minimumResultsForSearch: Infinity
 }).val(pantheum.udata["language"]).change().on('change', function() {
-    i18n.setLng($(this).val(), pantheum._private.i18nload);
+    pantheum.udata["language"] = $(this).val();
+    i18n.setLng(pantheum.udata["language"], pantheum._private.i18nload);
 });
 $('#la_ipa').select2({
     minimumResultsForSearch: Infinity,

@@ -37,8 +37,15 @@
         <script type="text/javascript" src="/JS/view.js"></script>
         <script>
             pantheum._private.i18nload = function(err, t) {
+                var lang = pantheum.udata && pantheum.udata["language"]
+                    ? pantheum.udata["language"]
+                    : 'en';
                 if (err) console.log(err);
                 $('body').i18n();
+                $('[data-i18n]').removeClass(function(index, css) {
+                    return (css.match(/(^|\s)format-word-\S+/g) || []).join(' ');
+                }).addClass('format-word-'+lang).attr('data-original-word0', '');
+                la_ipa.format();
             };
             i18n.init({
                 fallbackLng: 'en'
