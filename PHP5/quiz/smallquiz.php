@@ -8,8 +8,10 @@
 	sro('/PHP5/lib/PHPLang/display.php');
 	sro('/PHP5/lib/PHPLang/string.php');
 
+header("access-control-allow-origin: *");
+
 global $mysqli;
-$actual_link = "http://52.3.75.179/PHP5/quiz/smallquiz.php$_SERVER[REQUEST_URI]";
+$actual_link = "https://latin.cipherboy.com/PHP5/quiz/smallquiz.php?$_SERVER[QUERY_STRING]";
 $la = safe_get("lang",$_GET);
 if (!$la) $la = "la";
 
