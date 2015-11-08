@@ -75,55 +75,6 @@
 	},{
 		"mood":{
 			"_values_":{
-				"supine":[
-					{
-						"case":[
-							"accusative",
-							"ablative"
-						]
-					}
-				],
-				"infinitive":[
-					"voice",
-					{
-						"tense":[
-							"present",
-							"perfect",
-							"future"
-						]
-					},
-					"number",
-					"gender",
-					{
-						"case":[
-							"nominative",
-							"accusative"
-						]
-					}
-				],
-				"participle":[
-					"voice",
-					{
-						"tense":[
-							"present",
-							"perfect",
-							"future"
-						]
-					},
-					"number",
-					"gender",
-					{
-						"case":[
-							"vocative",
-							"nominative",
-							"accusative",
-							"ablative",
-							"dative",
-							"genitive",
-							"locative"
-						]
-					}
-				],
 				"indicative":[
 					"voice",
 					"tense",
@@ -157,13 +108,52 @@
 					"person",
 					"gender"
 				],
+				"participle":[
+					"voice",
+					{
+						"tense":[
+							"present",
+							"perfect",
+							"future"
+						]
+					},
+					"number",
+					"gender",
+					"case"
+				],
+				"infinitive":[
+					"voice",
+					{
+						"tense":[
+							"present",
+							"perfect",
+							"future"
+						]
+					},
+					"number",
+					"gender",
+					{
+						"case":[
+							"nominative",
+							"accusative"
+						]
+					}
+				],
 				"gerund":[
 					{
 						"case":[
 							"accusative",
-							"dative",
 							"ablative",
+							"dative",
 							"genitive"
+						]
+					}
+				],
+				"supine":[
+					{
+						"case":[
+							"accusative",
+							"ablative"
 						]
 					}
 				]

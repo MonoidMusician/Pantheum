@@ -129,10 +129,13 @@ function word_table_values($w,$ignore=NULL) {
 			$values2 = [];
 			$values3 = [];
 			$values4 = [];
+
 			$hspan4 = [];
 			$persons = PATH($w,"indicative")->iterate("person");
 			$persons = _filter_ignore($persons, $ignore, PATH($w,"indicative"));
 			foreach ($persons as $_) $hspan4[] = FALSE;
+
+			$hacked = NULL;
 
 			foreach ($moods as $_0) {
 				if ($ignore !== NULL and in_array($_0,$ignore))
@@ -143,8 +146,8 @@ function word_table_values($w,$ignore=NULL) {
 				$vals1 = NULL;
 				$path = PATH($w,$_0);
 				if ($_0 === "indicative" or
-					$_0 === "subjunctive" or
-					$_0 === "imperative") {
+				    $_0 === "subjunctive" or
+				    $_0 === "imperative") {
 					$vals1 = $path->iterate("voice");
 					$vals2 = $path->iterate("tense");
 					$vals3 = $path->iterate("number");
@@ -160,11 +163,30 @@ function word_table_values($w,$ignore=NULL) {
 					$vals2 = $path->iterate("tense");
 					$vals3 = $path->iterate("voice");
 					$vals4 = $hspan4;
-				} else if ($_0 === "supine") {
+				} else if ($_0 === "supine" or
+				           $_0 === "gerund") {
+					if ($hacked !== NULL) {
+						foreach ($values0 as $i=>$v) {
+							if ($v !== $_0) continue;
+							unset($values0[$i]);
+							break;
+						}
+						$values3[$hacked][] = $_0;
+						continue;
+					}
+					$hacked = "";
+					foreach ($values0 as $i=>$v) {
+						if ($v !== $_0) continue;
+						$values0[$i] = $hacked;
+						break;
+					}
+
 					$vals1 = [""];
-					$vals2 = [FALSE];
-					$vals3 = $path->iterate("case");
+					$vals2 = PATH($w,"gerund")->iterate("case");
+					$vals3 = [$_0];
 					$vals4 = $hspan4;
+
+					$_0 = $hacked;
 				}
 				$values1[$_0] = $vals1;
 				$values2[$_0] = $vals2;
@@ -310,7 +332,7 @@ function word_table_values($w,$ignore=NULL) {
 				           $_0 === "conditional" or
 				           $_0 === "imperative") {
 					if ($hacked) {
-						$values0[$hacked][1][] = $_0;
+						$values0[$hacked][2][] = $_0;
 						continue;
 					}
 					$hacked = $_0;
@@ -399,6 +421,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
 		}
 		foreach ($values0 as $_key=>$_0) {
 			$name0 = $_0; // FIXME
+			if ($name0 === " ") $name0 = FALSE;
 			if (!$values1[$_0]) $values1[$_0] = [FALSE];
 			if (!$values2[$_0]) $values2[$_0] = [FALSE];
 			if (!$values3[$_0]) $values3[$_0] = [FALSE];

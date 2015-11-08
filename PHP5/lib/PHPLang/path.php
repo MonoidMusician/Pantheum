@@ -116,7 +116,7 @@ class _PATH implements Countable
 				if (ISPATH($a)) $a = (string)$a;
 				if (!$a) {}
 				elseif (is_string($a)) {
-					foreach (explode("/", $a) as $_)
+					foreach (explode("/", trim($a)) as $_)
 						if ($_) $this->add($_);
 				} elseif (is_array($a))
 					if (count($a) === 2 and is_string($a[0]) and $this->mgr()->is_key($a[0]))
