@@ -183,6 +183,8 @@ function word_table_values($w,$ignore=NULL) {
 
 					$vals1 = [""];
 					$vals2 = PATH($w,"gerund")->iterate("case");
+					if (!$vals2)
+						$vals2 = PATH($w, "supine")->iterate("case");
 					$vals3 = [$_0];
 					$vals4 = $hspan4;
 
