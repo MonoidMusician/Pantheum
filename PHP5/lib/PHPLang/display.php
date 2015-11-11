@@ -43,12 +43,17 @@ function no_format($w) {
 // Format word for displaying based upon replacements
 // TODO: user settings, DB encoding
 function format_word($w, $lang=NULL, $all=false) {
-	if (!strlen($w)) return '<abbr class="symbolic" title="This form does not exist">—</abbr>'; # em-dash
+	if (ISPATH($w)) {
+		$id = " data-path='$w'";
+		$w = $w->get();
+	} else $id = "";
+	if (!strlen($w))
+		return '<abbr'.$id.' class="symbolic" title="This form does not exist">—</abbr>'; # em-dash
 	if (!is_string($lang)) $lang = "la";
 	if (!$all)
 		$w = explode("\n", $w)[0];
 	if ($lang)
-		return '<span class="format-word-'.$lang.'">'.$w.'</span>';
+		return '<span'.$id.' class="format-word-'.$lang.'">'.$w.'</span>';
 	return $w;
 }
 function format_word1($w) { return format_word($w); }
@@ -689,8 +694,8 @@ function display_inflection($w, $hidden=TRUE) {
 	do_table(
 		$w,$values0,$values1,$values2,$values3,$values4,NULL,
 		"format_value",
-		function($v) use($w) {
-			return format_word($v,$w->lang(),true);
+		function($v,$p) use($w) {
+			return format_word($p,$w->lang(),true);
 		},
 		function($p) use($connections) {
 			$p = (string)$p;
