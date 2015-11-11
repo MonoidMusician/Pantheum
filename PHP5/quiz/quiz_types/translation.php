@@ -5,7 +5,7 @@ global $quiz_types;
 global $df_exclude;
 $category = "Translation";
 function pluralize($noun) {
-	return Inflect::pluralize($noun);
+	return InflectN::pluralize($noun);
 }
 
 $quiz_types = array_merge($quiz_types,[
