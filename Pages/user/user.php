@@ -25,7 +25,7 @@
         }
         
         var cpage = new jPage();
-        cpage.init('ucontent', pantheum._private.i18nload);
+        cpage.init('ucontent', pantheum.update.bind(undefined, '#uheader, #upage'));
         cpage.setPages([
             ["#overview",    i18n.translatable('Overview'),    "Overview | Settings | Latin",    "/Pages/user/overview.php",    true],
             ["#account",     i18n.translatable('Account'),     "Account | Settings | Latin",     "/Pages/user/account.php",     true],

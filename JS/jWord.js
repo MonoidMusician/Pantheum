@@ -522,7 +522,7 @@ function jWord() {
 		var done = function(data) {
 			if (!cached) $.jStorage.set("word"+id, data);
 			var $data = $(data);
-			æ.format($data);
+			pantheum.update($data);
 			var s = $('#dictionary section#word'+id);
 			if (find !== undefined) {
 				var ss = s.find(find);
