@@ -998,11 +998,19 @@ class InflectV {
 
 	static public function thirdsingular($verb, $only_one=false) {
 		if ($verb == "be") return "is";
-		if ($verb == "have") return "has";
+		if ($verb == "have") return $only_one?"hath":"has|hath";
 		$verb = preg_replace("/[^aeiou]y$/", "i", $verb);
 		if (preg_match("/(i|o|ch|sh|ss|x)$/", $verb))
 			return $verb."es";
 		return $verb."s";
+	}
+
+	static public function secondsingular($verb, $only_one=false) {
+		if ($verb == "be") return $only_one?"art":"art|are";
+		if ($verb == "have") return $only_one?"hast":"hast|have|havest";
+		if ($verb[strlen($verb)-1] == "e")
+			return $verb."st";
+		return $verb."est";
 	}
 
 	static public function presentparticiple($verb, $only_one=false) {

@@ -517,12 +517,47 @@ function jWord() {
 		if (n) messageTip("Loading entries...", null);
 	};
 
+	this.tooltips = function(element, id) {
+		var my = this, $e = $(element);
+		$e.find('[data-path]').each(function() {
+			$(this).qtip({
+				style:{
+					classes: "qtip-light"
+				},
+				position:{
+					my: "center left",
+					at: "center right"
+				},
+				hide: {
+					fixed: true,
+					delay: 100,
+				},
+				content: {
+					text: 'Loading...',
+					ajax: {
+						url: my.api_path + 'translate.php',
+						type: 'GET',
+						data: {
+							id: id,
+							path: $(this).attr('data-path')
+						},
+						success: function(data, status) {
+							var text = data[0].toUpperCase() + data.slice(1);
+							this.set('content.text', text);
+						},
+					}
+				}
+			});
+		});
+	}
+
 	this.getWord = function(id, prev, callback, find, changed) {
 		var my = this, cached = false, data;
 		var done = function(data) {
 			if (!cached) $.jStorage.set("word"+id, data);
 			var $data = $(data);
 			pantheum.update($data);
+			my.tooltips($data,id);
 			var s = $('#dictionary section#word'+id);
 			if (find !== undefined) {
 				var ss = s.find(find);

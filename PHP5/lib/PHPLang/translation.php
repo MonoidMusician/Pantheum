@@ -24,6 +24,12 @@ function make_expr($list) {
 	return "(".implode("|",array_map("make_expr",$list)).")";
 }
 
+function _make_expr($str) {
+	if (is_string($str) and $str[0] != "(")
+		$str = explode("|", $str);
+	return make_expr($str);
+}
+
 function split_definitions($defs) {
 	if (is_array($defs)) return flatten(array_map("split_definitions", $defs));
 	return preg_split("/[,;\n]/", $defs);
@@ -50,6 +56,7 @@ function la_en($path, $only_one=false) {
 	$d2 = []; // past participle
 	$d3 = []; // 3s present
 	$d4 = []; // present participle
+	$d5 = []; // 2s present
 	$be = [];
 
 	foreach (split_definitions(cull_definitions($definitions,$path)) as $def) {
@@ -62,10 +69,11 @@ function la_en($path, $only_one=false) {
 			$a = $matches[1];
 			$b = $matches[2];
 			$d0[] = $def;
-			$d1[] = InflectV::preterite($a,$o).$b;
-			$d2[] = InflectV::pastparticiple($a,$o).$b;
-			$d3[] = InflectV::thirdsingular($a,$o).$b;
-			$d4[] = InflectV::presentparticiple($a,$o).$b;
+			$d1[] = _make_expr(InflectV::preterite($a,$o)).$b;
+			$d2[] = _make_expr(InflectV::pastparticiple($a,$o)).$b;
+			$d3[] = _make_expr(InflectV::thirdsingular($a,$o)).$b;
+			$d4[] = _make_expr(InflectV::presentparticiple($a,$o)).$b;
+			$d5[] = _make_expr(InflectV::secondsingular($a,$o)).$b;
 		}
 	}
 	if ($o) {
@@ -113,9 +121,9 @@ function la_en($path, $only_one=false) {
 		} elseif ($mood === "indicative" || $mood === "subjunctive") {
 			$p = [
 				"I", "we",
-				$o?"you":"(you|thou)",
-				$o?"you":"[all] (you|ye|y{$OP_APOS}all)",
-				$o?"s/he/it":"(he|she|it)",
+				$o?"thou":"(you|thou) [\(sg.\)]",
+				$o?"you":"[all] (you|ye|y{$OP_APOS}all) [\(pl.\)]",
+				$o?"She/he/it":"(he|she|it)",
 				"they",
 			];
 			$p = $p[2*($_p-1)+$pl];
@@ -124,12 +132,15 @@ function la_en($path, $only_one=false) {
 				$b = $o?"are":"(are|${OP_APOS}re)";
 				if ($p === "I") $b = $o?"am":"(am|${OP_APOS}m)";
 				elseif ($_p == 3 and !$pl) $b = $o?"is":"(is|${OP_APOS}s)";
+				elseif ($_p == 2 and !$pl) $b = $o?"art":"(are|art|${OP_APOS}rt|${OP_APOS}re)";
 				if ($psv) $b .= " being";
 				else $m = " ";
 				if (!$psv and $_p == 3 and !$pl) $d = $d3;
+				elseif (!$psv and $_p == 2 and !$pl) $d = "($d|$d5)";
 			} elseif ($tense === "imperfect") {
 				$b = "were";
-				if ($p === "I" or ($_p == "3" and !$pl)) $b = "was";
+				if ($p === "I" or ($_p == 3 and !$pl)) $b = "was";
+				elseif (!$o and $_p == 2 and !$pl) $b = "(were|wast)";
 				if ($psv) $b .= " being";
 			} elseif ($tense === "future") {
 				$m = $o?"will":"(will|${OP_APOS}ll)";

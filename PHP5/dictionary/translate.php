@@ -14,6 +14,6 @@
 		$w = WORD(defaultDB(), intval($_GET["id"]));
 		$w->read_paths();
 		$p = PATH($w, $_GET["path"]);
-		echo la_en($p, true);
+		echo la_en($p, !safe_get("all_forms",$_GET));
 	} else exit("\$_GET was invalid");
 ?>
