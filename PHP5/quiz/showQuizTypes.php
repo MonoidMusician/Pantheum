@@ -20,6 +20,9 @@ foreach ($quiz_types as $id=>$q) {
 	if (!array_key_exists($k,$cat)) $cat[$k] = [];
 	$cat[$k][] = $id;
 }
+
+$id = safe_get("id",$_GET);
+
 ?>
 <br>
 <div class="select quiz-category-select"><?php
@@ -27,9 +30,11 @@ $i = 0;
 foreach ($cat as $k=>$vs) {
 	?><input id="quiz-category<?= $i ?>" name="quiz-category" type="radio" value="<?= $k ?>"
 	<?php
+		if ($id===NULL?$k==="All":$k === safe_get("category",safe_get($id,$quiz_types)))
+			echo "checked ";
 		if ($k === "All") {
 			$onclick = '$("[name=quiz-types]").parent().show();update_tabs();';
-			echo "checked onclick='$onclick'";
+			echo "onclick='$onclick'";
 			$k = "Any category";
 		} else {
 			$expr = "[name=quiz-types][value=\\\"".implode("\\\"], [name=quiz-types][value=\\\"", $vs)."\\\"]";
@@ -42,7 +47,6 @@ foreach ($cat as $k=>$vs) {
 }
 ?></div><br><?php
 $first = TRUE;
-$id = safe_get("id",$_GET);
 $predicate = function($q) use(&$first,$id) {
 	if ($id===NULL) {
 		if ($first) {
@@ -85,30 +89,45 @@ update_tabs();
 $(function(){
 	$('input[name=quiz-types]:checked').click();
 	var max_height = 0, max_width = 0, min_height = Infinity;
+	var popstate = false;
 	$('input[name=quiz-types]').parent().each(function() {
 		var w = $(this).width()+2;
 		if (w > max_width) max_width = w;
+	}).on('click', function() {
+		if (popstate) return;
+		var id = $(this).find('input').val(), loc = "quiz.php";
+		if (id !== "random") loc += "?id="+id;
+		if (window.location.href != loc && (!window.history.state || window.history.state.id != id))
+			window.history.pushState({id:id}, "", loc);
+	});
+	window.addEventListener('popstate', function(event) {
+		popstate = true;
+		if (!event.state || !event.state.id)
+			$('input[name=quiz-types]:first').click();
+		else $('input[name=quiz-types][value='+event.state.id+']').click();
+		popstate = false;
 	});
 	$('input[name=quiz-types]').parent().css('width', max_width + 'px');
 	var container = $('#quiz-type-selection');
 	container.css('max-height', container.height() + 10 + 'px');
 	//container.css('width', (max_width*3 + 20) + 'px');
 	$(function() {
-	container.css('width', '100%');
-	$('input[name=quiz-category]:not(:first)').each(function() {
-		var $this=$(this);
-		$this.click();
-		update_tabs();
-		var h = container.height()+10;
-		if (h > max_height) max_height = h;
-		if (h < min_height) min_height = h;
-	});
-	container
-		.css('height', max_height + 'px')
-		.css('min-height', min_height + 'px')
-		.css('resize', 'vertical')
-		.css('width', '');
-	$('input[name=quiz-category]:first').click();
+		container.css('width', '100%');
+		var orig = $('input[name=quiz-category]:checked');
+		$('input[name=quiz-category]:not(:first)').each(function() {
+			var $this=$(this);
+			$this.click();
+			update_tabs();
+			var h = container.height()+10;
+			if (h > max_height) max_height = h;
+			if (h < min_height) min_height = h;
+		});
+		container
+			.css('height', max_height + 'px')
+			.css('min-height', min_height + 'px')
+			.css('resize', 'vertical')
+			.css('width', '');
+		orig.click();
 	});
 });
 </script><?php
