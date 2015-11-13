@@ -13,13 +13,7 @@ sro('/PHP5/lib/InflectV.php');
 
 function make_expr($list) {
 	if (!$list) return NULL;
-	if (!is_array($list)) {
-		if (is_string($list)) {
-			$list = str_replace("(","[",$list);
-			$list = str_replace(")","]",$list);
-		}
-		return $list;
-	}
+	if (!is_array($list)) return $list;
 	if (count($list) === 1) return $list[0];
 	return "(".implode("|",array_map("make_expr",$list)).")";
 }
@@ -64,7 +58,7 @@ function la_en($path, $only_one=false) {
 		$pl = $number === "singular" ? 0 : 1; // plural number
 		$st  = ($_p == 2 and !$pl) ? "st" : NULL; // singular/person-2
 		$eth = ($_p == 3 and !$pl) ? "eth": NULL; // singular/person-3
-		if (!$o) $st = "[st]";
+		if (!$o and $st) $st = "[st]";
 	}
 
 	$d0 = []; // present
@@ -72,6 +66,7 @@ function la_en($path, $only_one=false) {
 	$d2 = []; // past participle
 	$d3 = []; // present participle
 	$d4 = []; // 3s present / 2s present
+	$d5 = []; // 2s perfect (archaic)
 	$be = [];
 
 	foreach (split_definitions(cull_definitions($definitions,$path)) as $def) {
@@ -97,6 +92,11 @@ function la_en($path, $only_one=false) {
 					$d4[] = _make_expr(InflectV::thirdsingular($a,$o)).$b;
 			else
 				$d4[] = $def;
+			$d5[] = _make_expr(
+				InflectV::presentparticiple(
+					InflectV::preterite($a,$o),$o
+				)
+			).$b;
 		}
 	}
 	if ($o) {
@@ -111,6 +111,7 @@ function la_en($path, $only_one=false) {
 	$d2 = make_expr($d2);
 	$d3 = make_expr($d3);
 	$d4 = make_expr($d4);
+	$d5 = make_expr($d5);
 	$be = make_expr($be);
 
 	$d = $d0;
@@ -192,12 +193,12 @@ function la_en($path, $only_one=false) {
 
 			if ($tense === "present") {
 				$b = $is;
-				if ($psv) $b .= " being";
+				if ($psv) list($m,$b) = [$b,$b." being"];
 				else $m = " ";
 				if (!$psv and $_p != 1 and !$pl) $d = ($o or $_p==3)?$d4:"($d|$d4)";
 			} elseif ($tense === "imperfect") {
 				$b = $was;
-				if ($psv) $b .= " being";
+				if ($psv) list($m,$b) = [$b,$b." being"];
 			} elseif ($tense === "future") {
 				$m = $will;
 				if ($psv) $m .= " be";
@@ -207,7 +208,7 @@ function la_en($path, $only_one=false) {
 				$D = $d2;
 				if ($tense === "perfect")
 					if ($psv) list($b, $m) = [$was, "$has been"];
-					else list($m, $d) = ["", $st?InflectV::secondsingular($d1):$d1];
+					else list($b, $m, $d) = ["$has", " ", $st?"($d5|$d1)":$d1];
 				elseif ($tense === "pluperfect")
 					$m = "had$st" . ($psv?" been":"");
 				elseif ($tense === "future-perfect")
@@ -222,10 +223,10 @@ function la_en($path, $only_one=false) {
 			if (!$d and !$D) return NULL;
 			if (!$D) $b = NULL;
 			if (!$d) $m = NULL;
-			if ($b and (!$only_one or !$m))
-				if ($m !== NULL and !$only_one)
-					return "$p ($m $d|$b $D)";
-				else return "$p $b $D";
+			if ($b and (!$o or $m === NULL))
+				if ($o or $m === NULL)
+					return "$p $b $D";
+				else return "$p ($m $M $d|$b $D)";
 			elseif ($d) return "$p $m $M $d";
 			return NULL;
 		}
