@@ -519,16 +519,21 @@ function jWord() {
 
 	this.tooltips = function(element, id) {
 		var my = this, $e = $(element);
-		$e.find('[data-path]').each(function() {
+		$e.find('[data-path]:not([title])').each(function() {
 			$(this).qtip({
 				style:{
-					classes: "qtip-light"
+					classes: "qtip-light qtip-medium"
 				},
 				position:{
 					my: "center left",
 					at: "center right"
 				},
+				show: {
+					event: 'mouseenter',
+					solo: true,
+				},
 				hide: {
+					event: 'click mouseleave',
 					fixed: true,
 					delay: 100,
 				},
@@ -542,6 +547,7 @@ function jWord() {
 							path: $(this).attr('data-path')
 						},
 						success: function(data, status) {
+							data = data.trim();
 							var text = data[0].toUpperCase() + data.slice(1);
 							this.set('content.text', text);
 						},

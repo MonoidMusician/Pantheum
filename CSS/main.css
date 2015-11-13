@@ -534,6 +534,13 @@ input[name=quiz-category]:checked + label {
     color: #A00;
 }
 
+.qtip.qtip-medium {
+    font-size: 12pt !important;
+}
+.qtip {
+    font-size: 10pt !important;
+}
+
 sup.ordinal {font-size: 65%;}
 
 @media only screen
