@@ -144,7 +144,7 @@ $(function() {
 		word = word.is('.empty') ? '' : word.html().trim();
 		def  = def .is('.empty') ? '' : def .html().trim();
 		if (!word || !def) return;
-		$('#dict tr:not(.new)').each(function() {
+		tr.parents('tbody').find('tr:not(.new)').each(function() {
 			if (row) return;
 			var $this = $(this);
 			if ($this.find('td.word').text() == word)
@@ -425,6 +425,7 @@ $(function() {
 	$('#conv').on('keyup','td',function() {
 		var table = [
 			["ẇ","ʍ","wh"],
+			["ȑ","ʀ","rch"],
 			["ř","r̝","rzh"],
 			["č","ʧ","tsh"],
 			["ǰ","ʤ","dzh"],
