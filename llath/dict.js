@@ -42,7 +42,7 @@ $(function() {
 	function title(text, deco) {
 		if (deco === null || deco === undefined) deco  = "";
 		if (typeof deco === "string") deco = [deco, deco];
-		text = titlecase(text).replace(deco[0],"").replace(deco[1],"");
+		text = titlecase(text.replace(deco[0],"").replace(deco[1],""));
 		var first = text.codePointAt(0),
 			last = text.codePointAt(text.length - 1);
 		var adj = 57759; // distance from a to decorated a
