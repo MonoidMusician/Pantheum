@@ -100,7 +100,9 @@ $(function(){
 		if (window.location.href != loc && (!window.history.state || window.history.state.id != id))
 			window.history.pushState({id:id}, "", loc);
 	});
+	window.history.replaceState({id:$('input[name=quiz-types]:checked').val()}, "");
 	window.addEventListener('popstate', function(event) {
+		if (!event.state) return;
 		popstate = true;
 		if (!event.state || !event.state.id)
 			$('input[name=quiz-types]:first').click();
