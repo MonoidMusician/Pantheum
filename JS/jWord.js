@@ -466,11 +466,14 @@ function jWord() {
 	};
 	this.resetForm = function(form) {
 		$.each(form, function(q,val) {
-			if (typeof val === "boolean")
-				$(q).prop('checked', val);
-			else $(q).val(val);
+			var $q = $(q);
+			if (typeof val === "boolean") {
+				if ($q.is(':checked') != val)
+					$q.prop('checked', val);
+			} else if ($q.val() != val) {
+				$q.val(val).change();
+			}
 		});
-		//alert("done");
 	};
 
 	this.refreshEntries = function() {
@@ -716,15 +719,16 @@ function jWord() {
 	};
 
 	this.onpopstate = function(event) {
-		//console.log('popstate fired!');
+		if (!event.state) return;
 		$('#dictionary').empty();
-		t.updateContent(event.state.form, event.state.entries);
+		console.log(event.state);
+		this.updateContent(event.state.form, event.state.entries);
 	};
 
 	this.bindEvents = function() {
 		this.unbindEvents();
 		var t = this;
-		window.addEventListener('popstate', this.onpopstate);
+		window.addEventListener('popstate', $.proxy(this, 'onpopstate'));
 	};
 
 	this.unbindEvents = function() {
