@@ -321,7 +321,6 @@ $(function() {
 	});
 	function searching() {
 		var region = $('#dict tbody.ui-sortable').show();
-		console.log(region);
 		if (!ins[0] && !ins[1]) {
 			region.find('tr').show();
 			return;
