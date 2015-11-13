@@ -361,7 +361,7 @@ a.word-ref {
     font-style: italic;
 }
 
-abbr {
+abbr, span[data-path] {
     cursor: help;
     font-variant: none;
 }

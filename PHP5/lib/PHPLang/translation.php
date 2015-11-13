@@ -46,6 +46,7 @@ function la_en($path, $only_one=false) {
 	$definitions = $word->definitions();
 
 	$verb = ($spart === "verb");
+	$noun = ($spart === "noun");
 	if ($verb) {
 		$mood = $path->key_value("mood");
 		$tense = $path->key_value("tense");
@@ -81,6 +82,7 @@ function la_en($path, $only_one=false) {
 			$a = $matches[1];
 			$b = $matches[2];
 			$d0[] = $def;
+			if ($noun) $d1[] = _make_expr(InflectN::pluralize($a)).$b;
 			if (!$verb) continue;
 			$d1[] = _make_expr(InflectV::preterite($a,$o)).$b;
 			$d2[] = _make_expr(InflectV::pastparticiple($a,$o)).$b;
@@ -100,11 +102,11 @@ function la_en($path, $only_one=false) {
 		}
 	}
 	if ($o) {
-		$d0 = $d0[0];
-		$d1 = $d1[0];
-		$d2 = $d2[0];
-		$d3 = $d3[0];
-		$d4 = $d4[0];
+		if ($d0) $d0 = $d0[0];
+		if ($d1) $d1 = $d1[0];
+		if ($d2) $d2 = $d2[0];
+		if ($d3) $d3 = $d3[0];
+		if ($d4) $d4 = $d4[0];
 	}
 	$d0 = make_expr($d0);
 	$d1 = make_expr($d1);
@@ -172,7 +174,7 @@ function la_en($path, $only_one=false) {
 			// was were wast ...
 			$was = [
 				"was",
-				$o?"were":"(were|wast)",
+				$o?"wast":"(were|wast)",
 				"was",
 			];
 			if ($pl) $was = "were"; else $was = $was[$_p-1];
@@ -230,7 +232,22 @@ function la_en($path, $only_one=false) {
 			elseif ($d) return "$p $m $M $d";
 			return NULL;
 		}
-		return $d;
+	} else if ($noun) {
+		if ($path->key_value("number") == "plural") $d = $d1;
+		$t = $o?"the":"(a|an|the|some)";
+		$c = [
+			0 => "",
+			"vocative"   => "",
+			"nominative" => "",
+			"accusative" => "",
+			"ablative"   => $o?"from/by":"(from|by)",
+			"dative"     => $o?"to/for" :"(to|for)",
+			"genitive"   => "of",
+			"locative"   => "at",
+		];
+		$c = $c[$path->key_value("case")];
+		return "$c $t $d";
 	}
+	return $d;
 }
 ?>

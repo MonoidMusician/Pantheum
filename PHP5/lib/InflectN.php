@@ -55,7 +55,7 @@
   //   Added rule for potato -> potatoes
   //   Added rule for *us -> *uses
   
-  class Inflect
+  class InflectN
   {
       static $plural = array(
           '/(quiz)$/i'               => "$1zes",

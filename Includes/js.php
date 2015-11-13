@@ -7,7 +7,7 @@
             var pantheum = {udata:<?= $sudata ? $sudata : 'null' ?>,_private:{}};
         </script>
 <?php
-    if (!array_key_exists("devel",$_GET) and $_GET["devel"] != "false") {
+    if (!array_key_exists("devel",$_GET) or $_GET["devel"] != "false") {
 ?>
         <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
