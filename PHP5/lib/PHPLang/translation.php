@@ -32,7 +32,7 @@ function _make_expr($str) {
 
 function split_definitions($defs) {
 	if (is_array($defs)) return flatten(array_map("split_definitions", $defs));
-	return preg_split("/[,;\n]/", $defs);
+	return array_map("trim", preg_split("/[,;\n]/", $defs));
 }
 function cull_definitions($defs) {
 	return array_map(function($d) {
@@ -51,17 +51,34 @@ function la_en($path, $only_one=false) {
 	$spart = $word->speechpart();
 	$definitions = $word->definitions();
 
+	$verb = ($spart === "verb");
+	if ($verb) {
+		$mood = $path->key_value("mood");
+		$tense = $path->key_value("tense");
+		$voice = $path->key_value("voice");
+		$person = $path->key_value("person");
+		$number = $path->key_value("number");
+
+		$psv = ($voice === "passive"); // passive voice
+		$_p = $person[strlen($person)-1]; // person {1,2,3}
+		$pl = $number === "singular" ? 0 : 1; // plural number
+		$st  = ($_p == 2 and !$pl) ? "st" : NULL; // singular/person-2
+		$eth = ($_p == 3 and !$pl) ? "eth": NULL; // singular/person-3
+		if (!$o) $st = "[st]";
+	}
+
 	$d0 = []; // present
 	$d1 = []; // preterite
 	$d2 = []; // past participle
-	$d3 = []; // 3s present
-	$d4 = []; // present participle
-	$d5 = []; // 2s present
+	$d3 = []; // present participle
+	$d4 = []; // 3s present / 2s present
 	$be = [];
 
 	foreach (split_definitions(cull_definitions($definitions,$path)) as $def) {
+		if ($o and $d0) break;
 		$matches = [];
 		if (preg_match("/^be\s+/", $def)) {
+			if ($o and $be) continue;
 			$be[] = preg_replace("", "", $def);
 			continue;
 		}
@@ -69,11 +86,17 @@ function la_en($path, $only_one=false) {
 			$a = $matches[1];
 			$b = $matches[2];
 			$d0[] = $def;
+			if (!$verb) continue;
 			$d1[] = _make_expr(InflectV::preterite($a,$o)).$b;
 			$d2[] = _make_expr(InflectV::pastparticiple($a,$o)).$b;
-			$d3[] = _make_expr(InflectV::thirdsingular($a,$o)).$b;
-			$d4[] = _make_expr(InflectV::presentparticiple($a,$o)).$b;
-			$d5[] = _make_expr(InflectV::secondsingular($a,$o)).$b;
+			$d3[] = _make_expr(InflectV::presentparticiple($a,$o)).$b;
+			if (!$pl and $_p != 1)
+				if ($_p == 2)
+					$d4[] = _make_expr(InflectV::secondsingular($a,$o)).$b;
+				else
+					$d4[] = _make_expr(InflectV::thirdsingular($a,$o)).$b;
+			else
+				$d4[] = $def;
 		}
 	}
 	if ($o) {
@@ -88,22 +111,12 @@ function la_en($path, $only_one=false) {
 	$d2 = make_expr($d2);
 	$d3 = make_expr($d3);
 	$d4 = make_expr($d4);
-	$d5 = make_expr($d5);
 	$be = make_expr($be);
-	error_log($d0.','.$d1.','.$d2.','.$d3.','.$d4);
 
 	$d = $d0;
-	$D = $d4;
+	$D = $d3;
 
 	if ($spart === "verb") {
-		$mood = $path->key_value("mood");
-		$tense = $path->key_value("tense");
-		$voice = $path->key_value("voice");
-		$person = $path->key_value("person");
-		$number = $path->key_value("number");
-		$psv = ($voice === "passive");
-		$_p = $person[strlen($person)-1];
-		$pl = $number === "singular" ? 0 : 1;
 
 		$t = $v = $p = $b = $m = NULL;
 
@@ -122,19 +135,21 @@ function la_en($path, $only_one=false) {
 		} elseif ($mood === "participle") {
 			if ($tense === "future") {
 				$t = "about to";
-				$d4 = $d;
+				$d3 = $d;
 			}
 			elseif ($tense === "perfect") {
 				$t = "having";
-				$d4 = $d1;
+				$d3 = $d1;
 			}
 			if ($voice === "passive") {
 				if ($tense === "perfect") $v = "been";
 				else $v = "be";
-				$d4 = $d2;
+				$d3 = $d2;
 			}
-			return "$t $v $d4";
+			return "$t $v $d3";
 		} elseif ($mood === "indicative" || $mood === "subjunctive") {
+			$M = "";
+
 			$p = [
 				"I", "we",
 				$o?"thou":"(you|thou) [\(sg.\)]",
@@ -142,47 +157,68 @@ function la_en($path, $only_one=false) {
 				$o?"She/he/it":"(he|she|it)",
 				"they",
 			];
-			$p = $p[2*($_p-1)+$pl];
+			$p = safe_get(2*($_p-1)+$pl, $p); // ignore errors if person isn't provided
+
+
+			// am are is ...
+			$is = [
+				$o?"am":"(am|${OP_APOS}m)",
+				$o?"are":"(are|art|${OP_APOS}rt|${OP_APOS}re)",
+				$o?"is":"(is|${OP_APOS}s)",
+			];
+			if ($pl) $is = "are"; else $is = $is[$_p-1];
+
+			// was were wast ...
+			$was = [
+				"was",
+				$o?"were":"(were|wast)",
+				"was",
+			];
+			if ($pl) $was = "were"; else $was = $was[$_p-1];
+
+			// shall will wilt ...
+			$will = $o?"will":"(will|${OP_APOS}ll)";
+			if ($_p == 1) $will = $o?"shall":"(shall|will|${OP_APOS}ll)";
+			elseif ($_p == 2 and !$pl) $will = $o?"wilt":"(wilt|will|shall|${OP_APOS}ll)";
+
+			// has have hast ...
+			$has = "have";
+			if ($_p == 3 and !$pl) $has = $o?"hath":"(hath|has)";
+			elseif ($_p == 2 and !$pl) $has = $o?"hast":"(hast|havest|have)";
+
 			if ($psv) $d = $D = $d2;
+
+
+
 			if ($tense === "present") {
-				$b = $o?"are":"(are|${OP_APOS}re)";
-				if ($p === "I") $b = $o?"am":"(am|${OP_APOS}m)";
-				elseif ($_p == 3 and !$pl) $b = $o?"is":"(is|${OP_APOS}s)";
-				elseif ($_p == 2 and !$pl) $b = $o?"art":"(are|art|${OP_APOS}rt|${OP_APOS}re)";
+				$b = $is;
 				if ($psv) $b .= " being";
 				else $m = " ";
-				if (!$psv and $_p == 3 and !$pl) $d = $d3;
-				elseif (!$psv and $_p == 2 and !$pl) $d = $o?$d5:"($d|$d5)";
+				if (!$psv and $_p != 1 and !$pl) $d = ($o or $_p==3)?$d4:"($d|$d4)";
 			} elseif ($tense === "imperfect") {
-				$b = "were";
-				if ($p === "I" or ($_p == 3 and !$pl)) $b = "was";
-				elseif (!$o and $_p == 2 and !$pl) $b = "(were|wast)";
+				$b = $was;
 				if ($psv) $b .= " being";
 			} elseif ($tense === "future") {
-				$m = $o?"will":"(will|${OP_APOS}ll)";
-				if ($_p == 1) $m = $o?"shall":"(shall|will|${OP_APOS}ll)";
-				elseif ($_p == 2 and !$pl) $m = $o?"wilt":"(wilt|will|${OP_APOS}ll)";
+				$m = $will;
 				if ($psv) $m .= " be";
 				else $b = "$m be";
 			} else {
 				$d = $d2;
 				$D = $d2;
 				if ($tense === "perfect")
-					if ($psv) list($b, $m) = ["was", (($_p == "3" and !$pl)?"has":"have")." been"];
-					else list($m, $d) = ["", $d1];
+					if ($psv) list($b, $m) = [$was, "$has been"];
+					else list($m, $d) = ["", $st?InflectV::secondsingular($d1):$d1];
 				elseif ($tense === "pluperfect")
-					$m = "had".($psv?" been":"");
-				elseif ($tense === "future-perfect") {
-					$m = $o?"will":"(will|${OP_APOS}ll)";
-					if ($_p == 1) $m = $o?"shall":"(shall|will|${OP_APOS}ll)";
-					elseif ($_p == 2 and !$pl) $m = $o?"wilt":"(wilt|will|${OP_APOS}ll)";
-					$m .= " have".($psv?" been":"");
-				}
+					$m = "had$st" . ($psv?" been":"");
+				elseif ($tense === "future-perfect")
+					$m = $will . " have" . ($psv?" been":"");
 			}
-			if ($be and !$psv) {
+
+			if ($be and !$o and !$psv) {
 				$D = $D?"($D|$be)":$be;
 				$d = $d?"($d|be $be)":$be;
 			}
+
 			if (!$d and !$D) return NULL;
 			if (!$D) $b = NULL;
 			if (!$d) $m = NULL;
@@ -190,7 +226,7 @@ function la_en($path, $only_one=false) {
 				if ($m !== NULL and !$only_one)
 					return "$p ($m $d|$b $D)";
 				else return "$p $b $D";
-			elseif ($d) return "$p $m $d";
+			elseif ($d) return "$p $m $M $d";
 			return NULL;
 		}
 		return $d;
