@@ -6,6 +6,9 @@
         <script>
             var pantheum = {udata:<?= $sudata ? $sudata : 'null' ?>,_private:{}};
         </script>
+<?php
+    if (!array_key_exists("devel",$_GET) and $_GET["devel"] != "false") {
+?>
         <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -15,6 +18,9 @@
             ga('create', 'UA-69525223-1', 'auto');
             ga('send', 'pageview');
         </script>
+<?php
+    }
+?>
         <script type="text/javascript" src="/JS/lib/jquery.js"></script>
         <script type="text/javascript" src="/JS/lib/jCanvas.js"></script>
         <script type="text/javascript" src="/JS/lib/jTable.js"></script>
@@ -58,7 +64,6 @@
             pantheum.update = function(element) {
                 if (!element) element = 'body';
                 var $e = $(element);
-                console.log($e);
                 var lang = pantheum.lang();
                 $e.i18n();
                 $e.find('[data-i18n]').removeClass(function(index, css) {
