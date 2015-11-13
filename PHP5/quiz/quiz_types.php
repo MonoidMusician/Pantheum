@@ -131,7 +131,25 @@ function make_matching($map) {
 }
 
 
-function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart",$add=NULL) {
+
+// Make a word's inflection chart as a quiz
+// Arguments:
+//   $w
+//     WORD object to inflect.
+//   $values (default NULL => word_table_values($w,$ignore))
+//     List expanded to $values0..$values4 for the inflection table. See word_table_values()
+//     for more details on this format.
+//   $ignore (default NULL)
+//     PATHs to ignore when generating the table. (Can also include strings.)
+//   $legend (default "this chart")
+//     Description used for the help text.
+//   $add (default NULL)
+//     Extra words to add to the help text.
+//   $translate (default FALSE)
+//     TRUE or a list of PATHs/strings to ignore while translating. FALSE (and no other value)
+//     disables translation.
+function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart",$add=NULL,$translate=FALSE) {
+	if ($translate === TRUE) $translate = [];
 	ob_start();
 	if ($values === NULL) {
 		$values = word_table_values($w,$ignore);
@@ -160,12 +178,22 @@ function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart",$add=NULL)
 		}*/],
 	];
 	$i = 0;
-	$get_question = function($word) use(&$i,&$ret) {
+	$get_question = function($form,$path) use(&$i,&$ret,$translate) {
 		$ret["answer$i-hidden"] = TRUE;
-		$ret["answer$i"] = array_map("format_word",explode("\n",$word));
+		$ret["answer$i"] = array_map("format_word",explode("\n",$form));
 		$ret["answer$i-tooltip"] = "Enter form";
 		$i++;
-		return '<input>';
+		if ($translate === FALSE or _in_ignore($path,$translate))
+			return '<input>'; else
+		$ret["answer$i-hidden"] = TRUE;
+		$ret["answer$i"] = [
+			"correct" => [la_en($path, true)],
+			"expr" => la_en($path, false)
+		];
+		//error_log($path.json_encode($ret["answer$i"]));
+		$ret["answer$i-tooltip"] = "Translate";
+		$i++;
+		return '<input><br><input>';
 	};
 	do_table(
 		$w,$values0,$values1,$values2,$values3,$values4,$ignore,
