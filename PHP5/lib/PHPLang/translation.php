@@ -93,7 +93,7 @@ function la_en($path, $only_one=false) {
 			else
 				$d4[] = $def;
 			$d5[] = _make_expr(
-				InflectV::presentparticiple(
+				InflectV::secondsingular(
 					InflectV::preterite($a,$o),$o
 				)
 			).$b;
@@ -208,7 +208,7 @@ function la_en($path, $only_one=false) {
 				$D = $d2;
 				if ($tense === "perfect")
 					if ($psv) list($b, $m) = [$was, "$has been"];
-					else list($b, $m, $d) = ["$has", " ", $st?"($d5|$d1)":$d1];
+					else list($b, $m, $d) = ["$has", " ", $st?($o?$d5:"($d5|$d1)"):$d1];
 				elseif ($tense === "pluperfect")
 					$m = "had$st" . ($psv?" been":"");
 				elseif ($tense === "future-perfect")
