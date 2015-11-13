@@ -167,111 +167,67 @@ $quiz_types = array_merge($quiz_types,[
 			function(){return make_chart(WORD2("la","nolo","verb"),NULL, ["present","imperfect","infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"],"the PERFECT tense");},
 		],
 	],
+]);
+
+
+
+// SYNOPSES
+
+function make_synopsis($word) {
+	return function()use($word){
+		return make_chart(WORD2("la",$word,"verb"), [
+			[FALSE],
+			["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
+			["present","imperfect","perfect","pluperfect"],
+			["active","passive"],
+			[""]
+		], [
+			"perfect/passive","pluperfect/passive",
+			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
+			"infinitive/passive",
+			"subjunctive/present","subjunctive/perfect",
+		], "this synopsis","using only the 3rd person singular");
+	};
+}
+
+function make_synopsisT($word) {
+	return function()use($word){
+		return make_chart(WORD2("la",$word,"verb"), [
+			[FALSE],
+			["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
+			["present","imperfect","perfect","pluperfect"],
+			["active","passive"],
+			[""]
+		], [
+			"perfect/passive","pluperfect/passive",
+			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
+			"infinitive/passive",
+			"subjunctive/present","subjunctive/perfect",
+		], "this synopsis","using only the 3rd person singular", ["subjunctive"]);
+	};
+}
+
+$synopsis_words = [
+	"amo","sperno", "celo",
+	"habeo",
+	"mitto",
+	"perficio",
+	"audio"
+];
+
+$quiz_types = array_merge($quiz_types,[
 	"synopsis-latinIII" => [
 		"name" => "Latin III Synopsis",
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -1,
-		"options" => [
-			function(){
-				/*return make_chart(WORD2("la","amo","verb"),NULL, [
-					"infinitive/future",
-					"infinitive/perfect",
-					"infinitive/passive",
-					"subjunctive/perfect",
-					"subjunctive/pluperfect",
-					"perfect/passive",
-					"pluperfect/passive",
-					"person-2","person-1","plural",
-					"participle",
-					"supine",
-					"imperative",
-					"future",
-					"future-perfect"
-				],"this synopsis","using only the 3rd person singular");*/
-				return make_chart(WORD2("la","sperno","verb"), [
-					[FALSE],
-					["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
-					["present","imperfect","perfect","pluperfect"],
-					["active","passive"],
-					[""]
-				], [
-					"perfect/passive","pluperfect/passive",
-					"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-					"infinitive/passive",
-					"subjunctive/present","subjunctive/perfect",
-				], "this synopsis","using only the 3rd person singular");
-			},
-			function(){
-				return make_chart(WORD2("la","perficio","verb"), [
-					[FALSE],
-					["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
-					["present","imperfect","perfect","pluperfect"],
-					["active","passive"],
-					[""]
-				], [
-					"perfect/passive","pluperfect/passive",
-					"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-					"infinitive/passive",
-					"subjunctive/present","subjunctive/perfect",
-				], "this synopsis","using only the 3rd person singular");
-			},
-			function(){
-				return make_chart(WORD2("la","audio","verb"), [
-					[FALSE],
-					["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
-					["present","imperfect","perfect","pluperfect"],
-					["active","passive"],
-					[""]
-				], [
-					"perfect/passive","pluperfect/passive",
-					"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-					"infinitive/passive",
-					"subjunctive/present","subjunctive/perfect",
-				], "this synopsis","using only the 3rd person singular");
-			},
-			function(){
-				return make_chart(WORD2("la","celo","verb"), [
-					[FALSE],
-					["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
-					["present","imperfect","perfect","pluperfect"],
-					["active","passive"],
-					[""]
-				], [
-					"perfect/passive","pluperfect/passive",
-					"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-					"infinitive/passive",
-					"subjunctive/present","subjunctive/perfect",
-				], "this synopsis","using only the 3rd person singular");
-			},
-			function(){
-				return make_chart(WORD2("la","habeo","verb"), [
-					[FALSE],
-					["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
-					["present","imperfect","perfect","pluperfect"],
-					["active","passive"],
-					[""]
-				], [
-					"perfect/passive","pluperfect/passive",
-					"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-					"infinitive/passive",
-					"subjunctive/present","subjunctive/perfect",
-				], "this synopsis","using only the 3rd person singular");
-			},
-			function(){
-				return make_chart(WORD2("la","mitto","verb"), [
-					[FALSE],
-					["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
-					["present","imperfect","perfect","pluperfect"],
-					["active","passive"],
-					[""]
-				], [
-					"perfect/passive","pluperfect/passive",
-					"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-					"infinitive/passive",
-					"subjunctive/present","subjunctive/perfect",
-				], "this synopsis","using only the 3rd person singular");
-			},
-		],
+		"options" => array_map("make_synopsis",  $synopsis_words)
 	],
+	"synopsis-latinIII-translations" => [
+		"name" => "Synopsis + Translations",
+		"category" => "Charts",
+		"lang" => "la",
+		"n_questions" => -1,
+		"options" => array_map("make_synopsisT", $synopsis_words)
+	]
 ]);
