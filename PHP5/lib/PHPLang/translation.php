@@ -88,6 +88,7 @@ function la_en($path, $only_one=false) {
 	$d2 = make_expr($d2);
 	$d3 = make_expr($d3);
 	$d4 = make_expr($d4);
+	$d5 = make_expr($d5);
 	$be = make_expr($be);
 	error_log($d0.','.$d1.','.$d2.','.$d3.','.$d4);
 
@@ -118,6 +119,21 @@ function la_en($path, $only_one=false) {
 				$d = $d2;
 			}
 			return "to $t $v $d";
+		} elseif ($mood === "participle") {
+			if ($tense === "future") {
+				$t = "about to";
+				$d4 = $d;
+			}
+			elseif ($tense === "perfect") {
+				$t = "having";
+				$d4 = $d1;
+			}
+			if ($voice === "passive") {
+				if ($tense === "perfect") $v = "been";
+				else $v = "be";
+				$d4 = $d2;
+			}
+			return "$t $v $d4";
 		} elseif ($mood === "indicative" || $mood === "subjunctive") {
 			$p = [
 				"I", "we",
@@ -136,7 +152,7 @@ function la_en($path, $only_one=false) {
 				if ($psv) $b .= " being";
 				else $m = " ";
 				if (!$psv and $_p == 3 and !$pl) $d = $d3;
-				elseif (!$psv and $_p == 2 and !$pl) $d = "($d|$d5)";
+				elseif (!$psv and $_p == 2 and !$pl) $d = $o?$d5:"($d|$d5)";
 			} elseif ($tense === "imperfect") {
 				$b = "were";
 				if ($p === "I" or ($_p == 3 and !$pl)) $b = "was";
