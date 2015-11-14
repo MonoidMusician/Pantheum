@@ -231,3 +231,30 @@ $quiz_types = array_merge($quiz_types,[
 		"options" => array_map("make_synopsisT", $synopsis_words)
 	]
 ]);
+
+function make_nounchart($word) {
+	return function()use($word){
+		return make_chart(WORD2("la",$word,"noun"), NULL, ["vocative"]);
+	};
+}
+
+$synopsis_nouns = [
+	"ancilla","agricola","cena",
+	"servus","amicus","liber",
+	"bellum",
+	"canis",
+	"os","nomen",
+	"portus",
+	"res"
+];
+
+$quiz_types = array_merge($quiz_types,[
+	"noun-chart" => [
+		"name" => "Noun charts",
+		"category" => "Charts",
+		"lang" => "la",
+		"n_questions" => -1,
+		"options" => array_map("make_nounchart",  $synopsis_nouns)
+	],
+]);
+
