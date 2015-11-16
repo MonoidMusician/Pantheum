@@ -423,6 +423,7 @@ $(function() {
 
 	$('#conv').on('keyup','td',function() {
 		var table = [
+			["ẖ","ʔ","hh"],
 			["ẇ","ʍ","wh"],
 			["ȑ","ʀ","rch"],
 			["ř","r̝","rzh"],
