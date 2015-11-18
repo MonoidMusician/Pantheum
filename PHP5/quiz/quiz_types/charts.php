@@ -182,7 +182,8 @@ function make_synopsis($word) {
 			["active","passive"],
 			[""]
 		], [
-			"perfect/passive","pluperfect/passive",
+			//"perfect/passive",
+			"pluperfect/passive",
 			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
 			"infinitive/passive",
 			"subjunctive/present","subjunctive/perfect",
@@ -199,7 +200,8 @@ function make_synopsisT($word) {
 			["active","passive"],
 			[""]
 		], [
-			"perfect/passive","pluperfect/passive",
+			//"perfect/passive",
+			"pluperfect/passive",
 			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
 			"infinitive/passive",
 			"subjunctive/present","subjunctive/perfect",
