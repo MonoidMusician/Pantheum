@@ -117,11 +117,11 @@ $(function() {
 			row;
 		if (!pos) return;
 		$('#dict tr#pos td').html('');
-		pos = title(pos);
+		var rpos = title(pos);
 		$('#dict tr').each(function() {
 			if (row) return;
 			var $this = $(this);
-			if ($this.find('td').text().trim() == pos)
+			if ($this.find('td').text().trim() == rpos)
 				row = $this;
 		});
 		if (row) {
@@ -131,7 +131,7 @@ $(function() {
 			}, 1000);
 			return;
 		}
-		var new_tbody = '<tbody><tr class="pos"><td colspan="4" class="title">'+pos+'</td></tr>'+$('#dict tr.new:first')[0].outerHTML+'</tbody>';
+		var new_tbody = '<tbody><tr class="pos"><td colspan="4" class="title">'+rpos+'</td></tr><tr class="formula"><td colspan="2" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" contenteditable="true">'+pos+'</td><td colspan="2" class="def" contenteditable="true">'+pos+'</td></tr>'+$('#dict tr.new:first')[0].outerHTML+'</tbody>';
 		var $new_tbody = $(new_tbody).sortable(tbody_sort_opts);
 		$(this).parents('tbody').before($new_tbody);
 		update();
@@ -423,7 +423,6 @@ $(function() {
 
 	$('#conv').on('keyup','td',function() {
 		var table = [
-			["ẖ","ʔ","hh"],
 			["ẇ","ʍ","wh"],
 			["ȑ","ʀ","rch"],
 			["ř","r̝","rzh"],
