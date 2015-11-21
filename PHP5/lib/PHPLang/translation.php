@@ -38,8 +38,14 @@ function cull_definitions($defs) {
 
 function la_en($path, $only_one=false) {
 	global $OP_APOS;
+	global $sudata;
 
+	$arch = (safe_get("archtrans", json_decode($sudata,true)) == "true");
 	$o = $only_one;
+	$decide = function($archaic,$modern,$extra=NULL) use($o,$arch) {
+		if ($o) return $arch?$archaic:$modern;
+		return "($archaic|$modern|$extra)";
+	};
 
 	$word = $path->word();
 	$spart = $word->speechpart();
@@ -73,9 +79,9 @@ function la_en($path, $only_one=false) {
 	foreach (split_definitions(cull_definitions($definitions,$path)) as $def) {
 		if ($o and $d0) break;
 		$matches = [];
-		if (preg_match("/^be\s+/", $def)) {
+		if (preg_match("/^be(?:\s+|$)/", $def)) {
 			if ($o and $be) continue;
-			$be[] = preg_replace("", "", $def);
+			$be[] = preg_replace("/^be(?:\s+|$)/", "", $def) ?: " ";
 			continue;
 		}
 		if (preg_match("/^([a-zA-Z-]+)((?:[^a-zA-Z-].*)?)$/", $def, $matches)) {
@@ -108,12 +114,12 @@ function la_en($path, $only_one=false) {
 		if ($d3) $d3 = $d3[0];
 		if ($d4) $d4 = $d4[0];
 	}
-	$d0 = make_expr($d0);
-	$d1 = make_expr($d1);
-	$d2 = make_expr($d2);
-	$d3 = make_expr($d3);
-	$d4 = make_expr($d4);
-	$d5 = make_expr($d5);
+	$d0 = make_expr($d0) ?: "   ";
+	$d1 = make_expr($d1) ?: "    ";
+	$d2 = make_expr($d2) ?: "     ";
+	$d3 = make_expr($d3) ?: "      ";
+	$d4 = make_expr($d4) ?: "       ";
+	$d5 = make_expr($d5) ?: "        ";
 	$be = make_expr($be);
 
 	$d = $d0;
@@ -127,6 +133,33 @@ function la_en($path, $only_one=false) {
 			if ($tense === "future") $t = "be about to";
 			elseif ($tense === "perfect") {
 				$t = "have";
+				$d = $d2;
+			}
+			if ($voice === "passive") {
+				if ($tense === "perfect") $v = "been";
+				else $v = "be";
+				$d = $d2;
+			}
+
+			if ($be and (!$o or !trim($d)) and !$psv) {
+				$eb = [
+					$d0 => "be ",
+					$d2 => "been "
+				];
+				$BE = safe_get($d, $eb).$be;
+				if (!trim($d) or $o) $d = $BE;
+				else $d = "(".trim($d)."|$BE)";
+			}
+
+			return "to $t $v $d";
+		} elseif ($mood === "participle") {
+			$d = $d3;
+			if ($tense === "future") {
+				$t = "about to";
+				$d = $d0;
+			}
+			elseif ($tense === "perfect") {
+				$t = "having";
 				$d = $d1;
 			}
 			if ($voice === "passive") {
@@ -134,23 +167,22 @@ function la_en($path, $only_one=false) {
 				else $v = "be";
 				$d = $d2;
 			}
-			return "to $t $v $d";
-		} elseif ($mood === "participle") {
-			if ($tense === "future") {
-				$t = "about to";
-				$d3 = $d;
+
+			if ($be and (!$o or !trim($d)) and !$psv) {
+				$eb = [
+					$d0 => "be ",
+					$d1 => "have been ",
+					$d2 => "been ",
+					$d3 => " ",
+				];
+				$BE = safe_get($d, $eb).$be;
+				if (!trim($d) or $o) $d = $BE;
+				else $d = "(".trim($d)."|$BE)";
 			}
-			elseif ($tense === "perfect") {
-				$t = "having";
-				$d3 = $d1;
-			}
-			if ($voice === "passive") {
-				if ($tense === "perfect") $v = "been";
-				else $v = "be";
-				$d3 = $d2;
-			}
-			return "$t $v $d3";
+
+			return "$t $v $d";
 		} elseif ($mood === "indicative" || $mood === "subjunctive") {
+			$subj = ($mood === "subjunctive");
 			$M = "";
 
 			$p = [
@@ -166,28 +198,36 @@ function la_en($path, $only_one=false) {
 			// am are is ...
 			$is = [
 				$o?"am":"(am|${OP_APOS}m)",
-				$o?"are":"(are|art|${OP_APOS}rt|${OP_APOS}re)",
+				$decide(
+					$subj?"beest":"art",
+					"are",
+					"${OP_APOS}rt|${OP_APOS}re|".($subj?"art":"beest")
+				),
 				$o?"is":"(is|${OP_APOS}s)",
 			];
-			if ($pl) $is = "are"; else $is = $is[$_p-1];
+			if ($pl) $is = "are"; else $is = safe_get($_p-1, $is);
+			if ($subj and (!$o or ($arch and !$st)))
+				$is = $o?"be":"($is|be)";
 
 			// was were wast ...
 			$was = [
-				"was",
-				$o?"were":"(were|wast)",
-				"was",
+				($o and $subj)?"were":"was",
+				$decide($subj?"wert":"wast","were",$subj?"wast":"wert"),
+				($o and $subj)?"were":"was",
 			];
-			if ($pl) $was = "were"; else $was = $was[$_p-1];
+			if ($pl) $was = "were"; else $was = safe_get($_p-1, $was);
+			if ($subj and (!$o or ($arch and !$st)))
+				$was = $o?"were":"($was|were)";
 
 			// shall will wilt ...
 			$will = $o?"will":"(will|${OP_APOS}ll)";
 			if ($_p == 1) $will = $o?"shall":"(shall|will|${OP_APOS}ll)";
-			elseif ($_p == 2 and !$pl) $will = $o?"will":"(wilt|will|shall|${OP_APOS}ll)";
+			elseif ($_p == 2 and !$pl) $will = $decide("wilt","will","shall|${OP_APOS}ll");
 
 			// has have hast ...
 			$has = "have";
-			if ($_p == 3 and !$pl) $has = $o?"has":"(hath|has)";
-			elseif ($_p == 2 and !$pl) $has = $o?"have":"(hast|havest|have)";
+			if ($eth) $has = $decide("hath","has");
+			elseif ($_p == 2 and !$pl) $has = $decide("hast","have","havest");
 
 			if ($psv) $d = $D = $d2;
 
@@ -197,7 +237,12 @@ function la_en($path, $only_one=false) {
 				$b = $is;
 				if ($psv) list($m,$b) = [$b,$b." being"];
 				else $m = " ";
-				if (!$psv and $_p != 1 and !$pl) $d = ($o or $_p==3)?$d4:"($d|$d4)";
+				if (!$psv and $_p != 1 and !$pl) {
+					if ($_p == 3) $d = $d4;
+					elseif ($o)
+						$d = $arch ? $d4 : $d;
+					else $d = "($d|$d4)";
+				}
 			} elseif ($tense === "imperfect") {
 				$b = $was;
 				if ($psv) list($m,$b) = [$b,$b." being"];
@@ -208,24 +253,42 @@ function la_en($path, $only_one=false) {
 			} else {
 				$d = $d2;
 				$D = $d2;
-				if ($tense === "perfect")
+				if ($tense === "perfect") {
 					if ($psv) list($b, $m) = [$was, "$has been"];
-					else list($b, $m, $d) = ["$has", " ", $st?($o?$d5:"($d5|$d1)"):$d1];
+					else {
+						if ($st) $d1 = $decide($d5,$d1);
+						list($b, $m, $d) = [$has, " ", $d1];
+					}
+				}
 				elseif ($tense === "pluperfect")
-					$m = "had" . ($o?"":$st) . ($psv?" been":"");
+					$m = "had" . (($o and !$arch)?"":$st) . ($psv?" been":"");
 				elseif ($tense === "future-perfect")
 					$m = $will . " have" . ($psv?" been":"");
 			}
 
-			if ($be and !$o and !$psv) {
-				$D = $D?"($D|$be)":$be;
-				$d = $d?"($d|be $be)":$be;
-			}
+			if ($be and (!$o or !trim($d) or !trim($D)) and !$psv) {
+				$eb = [
+					$d1 => "have been ",
+					$d2 => "been ",
+					$d3 => " ",
+					$d4 => $is." ",
+					$d5 => "hast been ",
+				];
+				if (!in_array($D,$eb)) error_log(json_encode($D));
+				if (!in_array($d,$eb)) error_log(json_encode($d));
+				$BE = safe_get($D, $eb).$be;
+				if (!trim($D) or $o) $D = $BE;
+				else $D = "(".trim($D)."|$BE)";
+
+				$BE = safe_get($d, $eb).$be;
+				if (!trim($d) or $o) $d = $BE;
+				else $d = "(".trim($d)."|$BE)";
+			} else $be = NULL;
 
 			if (!$d and !$D) return NULL;
 			if (!$D) $b = NULL;
 			if (!$d) $m = NULL;
-			if ($b and (!$o or $m === NULL))
+			if ($b and (!$o or $m === NULL or $be !== NULL))
 				if ($o or $m === NULL)
 					return "$p $b $D";
 				else return "$p ($m $M $d|$b $D)";

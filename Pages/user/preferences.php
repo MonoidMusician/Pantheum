@@ -20,6 +20,11 @@
 <select id="la_ipa" style="width: 200px">
 </select>
 <br>
+
+<label><span data-i18n="archaic_translations">Archai&#x308;c translations</span>:
+<input id="archtrans" type="checkbox"></label>
+
+<br>
 <span id="word-format-ex" class="format-word-la">
 Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugnātus‣, et hoc īnflexum: aestⱶmāvissem. Jussa!
 </span>
@@ -39,22 +44,23 @@ $('#la_ipa').select2({
 }).val(la_ipa.transform_key).on('change', function() {
     la_ipa.select_transformer($(this).val()).format();
 }).trigger('change');
+if (pantheum.udata["archtrans"] == "true")
+    $('#archtrans').attr('checked', true);
 
 $('#save').on('click', function() {
-    $.post('/PHP5/user/udata-set.php', {'key':'la_ipa','value':$('#la_ipa').val()}, function(data) {
-        if (data === "success") {
-            $.post('/PHP5/user/udata-set.php', {'key':'language','value':$('#lang').val()}, function(data) {
-                if (data === "success") successTip("Preferences updated successfully");
-                else if (data === "1") errorTip("Unknown error. (Try again or report to webmaster.)");
-                else if (data === "2") errorTip("Bad parameters.");
-                else if (data === "3") errorTip("Unknown user. Try logging out and back in.");
-                else if (data === "4") errorTip("You have been logged out. Please log in and try again.");
-            });
-        }
+    var keys = [
+        {'key':'la_ipa','value':$('#la_ipa').val()},
+        {'key':'language','value':$('#lang').val()},
+        {'key':'archtrans','value':$('#archtrans').is(':checked')},
+    ]
+    var r = function(data) {
+        if (data === "success")
+        { if (keys.length) $.post('/PHP5/user/udata-set.php', keys.shift(), r); }
         else if (data === "1") errorTip("Unknown error. (Try again or report to webmaster.)");
         else if (data === "2") errorTip("Bad parameters.");
         else if (data === "3") errorTip("Unknown user. Try logging out and back in.");
         else if (data === "4") errorTip("You have been logged out. Please log in and try again.");
-    });
+    }
+    r('success');
 });
 </script>
