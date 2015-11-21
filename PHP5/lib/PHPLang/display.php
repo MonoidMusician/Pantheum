@@ -338,11 +338,14 @@ function display_word_name($w, &$common=false) {
 		foreach (["indicative/active/present/person-1/singular",
 		          "infinitive/active/present",
 		          "indicative/active/perfect/person-1/singular",
-		          "supine/accusative"] as $_=>$key) {
+		          "participle/perfect/passive"] as $_=>$key) {
 			$key = PATH($w,$key);
 			if (!$key->hasvalue()) {
 				if ($_ <= 1) {$name = NULL; break;}
-				else continue;
+				elseif ($_ == 3) {
+					$key = PATH($w,"supine/accusative");
+					if (!$key->hasvalue()) continue;
+				} else continue;
 			}
 			$name[] = $key->get();
 		}
