@@ -174,7 +174,7 @@ function la_en($path, $only_one=false) {
 			// was were wast ...
 			$was = [
 				"was",
-				$o?"wast":"(were|wast)",
+				$o?"were":"(were|wast)",
 				"was",
 			];
 			if ($pl) $was = "were"; else $was = $was[$_p-1];
@@ -182,12 +182,12 @@ function la_en($path, $only_one=false) {
 			// shall will wilt ...
 			$will = $o?"will":"(will|${OP_APOS}ll)";
 			if ($_p == 1) $will = $o?"shall":"(shall|will|${OP_APOS}ll)";
-			elseif ($_p == 2 and !$pl) $will = $o?"wilt":"(wilt|will|shall|${OP_APOS}ll)";
+			elseif ($_p == 2 and !$pl) $will = $o?"will":"(wilt|will|shall|${OP_APOS}ll)";
 
 			// has have hast ...
 			$has = "have";
-			if ($_p == 3 and !$pl) $has = $o?"hath":"(hath|has)";
-			elseif ($_p == 2 and !$pl) $has = $o?"hast":"(hast|havest|have)";
+			if ($_p == 3 and !$pl) $has = $o?"has":"(hath|has)";
+			elseif ($_p == 2 and !$pl) $has = $o?"have":"(hast|havest|have)";
 
 			if ($psv) $d = $D = $d2;
 
@@ -212,7 +212,7 @@ function la_en($path, $only_one=false) {
 					if ($psv) list($b, $m) = [$was, "$has been"];
 					else list($b, $m, $d) = ["$has", " ", $st?($o?$d5:"($d5|$d1)"):$d1];
 				elseif ($tense === "pluperfect")
-					$m = "had$st" . ($psv?" been":"");
+					$m = "had" . ($o?"":$st) . ($psv?" been":"");
 				elseif ($tense === "future-perfect")
 					$m = $will . " have" . ($psv?" been":"");
 			}
