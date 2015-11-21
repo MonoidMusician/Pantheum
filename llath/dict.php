@@ -68,7 +68,7 @@ if (array_key_exists("data",$_POST) and $_POST["data"]) {
 }
 ?>
 <content>
-<h1>Ļaþ: ictionar</h1>
+<h1>Ẇıļa: ictionar</h1>
 <table id="conv">
 <tr>
 <td class="empty" contenteditable="true" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off">Ļaþ orthography</td>
