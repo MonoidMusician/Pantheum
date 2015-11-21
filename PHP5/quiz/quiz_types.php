@@ -213,6 +213,68 @@ function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart",$add=NULL,
 	return $ret;
 }
 
+function make_chart2($w,$w2,$values=NULL,$ignore=NULL,$legend="this chart",$add=NULL,$basepath=NULL) {
+	ob_start();
+	if ($values === NULL) {
+		$values = word_table_values($w,$ignore);
+		list ($values0,$values1,$values2,$values3,$values4) = $values;
+	} else {
+		list ($values0,$values1,$values2,$values3,$values4) = $values;
+		$values0 = _do_ignore($values0,$ignore);
+		if (is_fillable($values1)) $values1 = _fill($values1, $values0);
+		if (is_fillable($values2)) $values2 = _fill($values2, $values0);
+		if (is_fillable($values3)) $values3 = _fill($values3, $values0);
+		if (is_fillable($values4)) $values4 = _fill($values4, $values0);
+		_filter_ignore2($values1,$ignore,PATH($w),$values0);
+		_filter_ignore2($values2,$ignore,PATH($w),$values0,$values1);
+		_filter_ignore2($values3,$ignore,PATH($w),$values0);
+		_filter_ignore2($values4,$ignore,PATH($w),$values0,$values3);
+	}
+	global $OP_USER_INPUT;
+	$w->read_paths();
+	$w->read_attrs();
+	$w2->read_paths();
+	if ($add) $add = ", $add";
+	$ret = [
+		"help" => "Fill in $legend for “".display_word_name($w)."” and “".display_word_name($w2)."”$add.",
+		"selections" => [],
+		"sentence" => [/*function($pick_db,$db) use($w,$values0,$values1,$values2,$values3,$values4) {
+
+		}*/],
+	];
+	$i = 0;
+	$get_question = function($form,$path) use(&$i,$w2,&$ret,$basepath) {
+		$ret["answer$i-hidden"] = TRUE;
+		$ret["answer$i"] = ["correct"=>[],"acceptable"=>[]];
+		$form2 = PATH($w2,$path,$basepath);
+		$form2 = $form2->get();
+		foreach (explode("\n",$form) as $f) foreach (explode("\n",$form2) as $f2) {
+			$ret["answer$i"]["correct"][] = $f." ".$f2;
+			$ret["answer$i"]["acceptable"][] = $f." ".$f2;
+			$ret["answer$i"]["acceptable"][] = $f2." ".$f;
+		}
+		$ret["answer$i-tooltip"] = "Enter form";
+		$i++;
+		return '<input>';
+	};
+	do_table(
+		$w,$values0,$values1,$values2,$values3,$values4,$ignore,
+		"format_value",
+		$get_question,
+		NULL, NULL,
+		0
+	);
+	$table = explode("<input>",ob_get_contents());
+	ob_clean();
+	$i = count($table)-1;
+	foreach ($table as $r) {
+		$ret["sentence"][] = HTML($r);
+		if ($i) $ret["sentence"][] = $OP_USER_INPUT;
+		$i-=1;
+	}
+	return $ret;
+}
+
 function which($lang,$spart,$key,$given=NULL,$rand=NULL,$name=NULL) {
 	global $OP_MULTIPLE_CHOICE;
 	global $OP_PARAGRAPH;

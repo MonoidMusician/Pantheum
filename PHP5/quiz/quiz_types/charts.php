@@ -120,7 +120,7 @@ $quiz_types = array_merge($quiz_types,[
 		]
 	],
 	"irregular-pronouns1" => [
-		"name" => "Irregular pronouns",
+		"name" => "Irregular Pronouns",
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -6,
@@ -137,7 +137,7 @@ $quiz_types = array_merge($quiz_types,[
 		}
 	],
 	"irregular-verbs1" => [
-		"name" => "Irregular verbs",
+		"name" => "Irregular Verbs",
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -2,
@@ -183,7 +183,7 @@ function make_synopsis($word) {
 			[""]
 		], [
 			//"perfect/passive",
-			"pluperfect/passive",
+			"subjunctive/pluperfect/passive",
 			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
 			"infinitive/passive",
 			"subjunctive/present","subjunctive/perfect",
@@ -201,7 +201,7 @@ function make_synopsisT($word) {
 			[""]
 		], [
 			//"perfect/passive",
-			"pluperfect/passive",
+			"subjunctive/pluperfect/passive",
 			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
 			"infinitive/passive",
 			"subjunctive/present","subjunctive/perfect",
@@ -210,10 +210,11 @@ function make_synopsisT($word) {
 }
 
 $synopsis_words = [
+	// !facio ago habeo
 	"amo","sperno", "celo",
-	"habeo",
-	"mitto",
-	"perficio",
+	"moneo","augeo",
+	"mitto","demitto",
+	"perficio","accipio",
 	"audio"
 ];
 
@@ -240,6 +241,12 @@ function make_nounchart($word) {
 	};
 }
 
+function make_nounadjchart($words) {
+	return function()use($words){
+		return make_chart2(WORD2("la",$words[0],"noun"), WORD2("la",$words[1],"adjective"), NULL, ["vocative"], "this chart", NULL, "positive");
+	};
+}
+
 $synopsis_nouns = [
 	"ancilla","agricola","cena",
 	"servus","amicus","liber",
@@ -250,13 +257,24 @@ $synopsis_nouns = [
 	"res"
 ];
 
+$synopsis_nounadjs = [
+	["cliens","bonus"],
+];
+
 $quiz_types = array_merge($quiz_types,[
 	"noun-chart" => [
-		"name" => "Noun charts",
+		"name" => "Noun Charts",
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -1,
 		"options" => array_map("make_nounchart",  $synopsis_nouns)
+	],
+	"noun-adjective-chart" => [
+		"name" => "Noun–Adjective Charts",
+		"category" => "Charts",
+		"lang" => "la",
+		"n_questions" => -1,
+		"options" => array_map("make_nounadjchart",  $synopsis_nounadjs)
 	],
 ]);
 
