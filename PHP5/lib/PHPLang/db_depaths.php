@@ -12,15 +12,22 @@ function read_depaths($path, $lang=NULL) {
 	} elseif ($parts === NULL) $parts = [];
 	$result = []; # DEPATHs generated
 	foreach (array_keys($parts) as $key)
-		init_values($key, $result, $parts);
+		init_values($key, $result, $parts, $lang);
 	$depaths = $json["depaths"]; # depath JSON representation
 	unset($json);
 	if (isset($depaths))
 		return make_depaths($result, $depaths, $parts, $lang);
 }
 # Initialize a part array.
-function init_values(&$key, &$result, &$parts) {
+function init_values(&$key, &$result, &$parts, $lang=NULL) {
+	global $sudata;
 	$values = &$parts[$key];
+	/*
+	if ($lang === "la" and $key === "case") {
+		$cases = trim(safe_get("cases", json_decode($sudata,true)));
+		if ($cases) $values['_values_'] = array_map("trim", explode(",", $cases));
+	}
+	/**/
 	# values
 	if (!isset($values['_values_'])) {
 		# make simple values based on aliases
@@ -84,9 +91,8 @@ function make_depaths(&$result, &$depaths, &$parts, $lang=NULL) {
 		foreach ($depath as $_) {
 			if (is_scalar($_))
 				add_key($duo, $_, $parts, $result);
-			else {
+			else
 				copy_onto($duo[0], reduced_values($_, $parts, $duo[1])[0]);
-			}
 		}
 		# link depath into result, update caller's record of the depaths
 		$depath = $result[$key] = DEPATH($duo[0], $duo[1], "$lang/$key");

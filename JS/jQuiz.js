@@ -37,6 +37,10 @@ function jQuiz() {
 
 	this.refocus = function($html) {
 		if ($html === undefined) $html = $('#' + this.qelement);
+		var n = 0;
+		$html.find('.autotabindex').each(function() {
+			$(this).attr('tabindex', ++n);
+		});
 		var m = 0;
 		$html.find('[tabindex]').each(function() {
 			var i = -1*-$(this).attr('tabindex');
@@ -147,13 +151,13 @@ function jQuiz() {
 		} else {
 			if (this.results[this.current] == undefined) {
 				if (part[0] == 'input') {
-					result = '<input tabindex="'+(++this.tabindex)+'"'+(part[4]!='en'?ncorrect:ycorrect)+' class="autosizeable" type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
+					result = '<input class="autotabindex autosizeable"'+(part[4]!='en'?ncorrect:ycorrect)+' type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
 				} else if (part[0] == 'paragraph') {
-					result = '<textarea tabindex="'+(++this.tabindex)+'" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '" style="font-family:Linux Libertine;"></textarea>';
+					result = '<textarea class="autotabindex" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '" style="font-family:Linux Libertine;"></textarea>';
 				} else if (part[0] == 'select') {
 					//result += '<select id="' + this.qelement + '-' + part[1] + '" title="' + part[2] + '">';
 					result += '<span id="' + this.qelement + part[1] + '" class="select select-bordered">';
-					var tabin = ' tabindex="'+(++this.tabindex)+'"';
+					var tabin = ' class="autotabindex"';
 					for (var oid in part[3]) {
 						var option = part[3][oid];
 						result += '<label>';
@@ -168,7 +172,7 @@ function jQuiz() {
 					result += '</span>';
 					//result += '</select>';
 				} else if (part[0] == 'matching-row') {
-					var tabin = ' tabindex="'+(++this.tabindex)+'"';
+					var tabin = ' class="autotabindex"';
 					for (var oid in part[3]) {
 						var option = part[3][oid];
 						result += '<td><label>';
@@ -193,7 +197,7 @@ function jQuiz() {
 					for (var vid in part[3]) {
 						var left = part[3][vid];
 						result += '<tr><th>'+left+'</th>';
-						var tabin = ' tabindex="'+(++this.tabindex)+'"';
+						var tabin = ' class="autotabindex"';
 						for (var oid in part[4]) {
 							var option = part[4][oid];
 							result += '<td><label>';
@@ -298,7 +302,7 @@ function jQuiz() {
 		var html = this.buildHeader() + (type == 0 ? this.buildBody() : this.buildScore());
 		var $html = $(html);
 		$('#' + this.qelement).html($html);
-		æ.format($html);
+		pantheum.update($html);
 		$html.find('input.autosizeable').autosizeInput();
 		this.refocus($html);
 	};

@@ -4,6 +4,8 @@
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
     
+    sro('/PHP5/lib/PHPLang/db.php');
+
     requireLoggedIn(TRUE);
 ?>
 <h2 data-i18n="preferences">Preferences</h2>
@@ -24,13 +26,32 @@
 <label><span data-i18n="archaic_translations">Archai&#x308;c translations</span>:
 <input id="archtrans" type="checkbox"></label>
 
-<br>
+<br><br>
+
+<span data-i18n="order_cases">Order of cases</span>:
+<div>
+<ul id="cases">
+<?php
+    foreach (defaultDB()->get_mgr("la","noun")->key2values["case"] as $case) {
+?>
+<li><span class="handle">=</span> <span class="value"><?= ucfirst($case) ?></span>
+<?php
+    }
+?>
+</ul>
+</div>
+
 <span id="word-format-ex" class="format-word-la">
 Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugnātus‣, et hoc īnflexum: aestⱶmāvissem. Jussa!
 </span>
 
 <button id="save" data-i18n="ui.save">Save</button>
 
+<style>
+#cases {
+    list-style-type: '=';
+}
+</style>
 <script>
 $('#lang').select2({
     minimumResultsForSearch: Infinity
@@ -47,11 +68,20 @@ $('#la_ipa').select2({
 if (pantheum.udata["archtrans"] == "true")
     $('#archtrans').attr('checked', true);
 
+$('#cases').sortable({
+    handle: '.handle',
+});
+
 $('#save').on('click', function() {
+    var cases = [];
+    $('#cases li').each(function() {
+        cases.push($(this).find('.value').text());
+    });
     var keys = [
         {'key':'la_ipa','value':$('#la_ipa').val()},
         {'key':'language','value':$('#lang').val()},
         {'key':'archtrans','value':$('#archtrans').is(':checked')},
+        {'key':'cases','value':cases.join(',').toLowerCase()},
     ]
     var r = function(data) {
         if (data === "success")

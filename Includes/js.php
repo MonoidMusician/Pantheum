@@ -3,9 +3,8 @@
     sro('/Includes/session.php');
     global $sudata;
 ?>
-        <script>
-            var pantheum = {udata:<?= $sudata ? $sudata : 'null' ?>,_private:{}};
-        </script>
+		<script>var pantheum = {udata:<?= $sudata ? $sudata : 'null' ?>,_private:{}};</script>
+        <script type="text/javascript" src="/JS/pantheum.js"></script>
 <?php
     if (!array_key_exists("devel",$_GET) or $_GET["devel"] != "false") {
 ?>
@@ -41,77 +40,7 @@
         <script type="text/javascript" src="/JS/lib/jquery.autosize.input.min.js"></script>
         <script type="text/javascript" src="/JS/lib/jstorage.min.js"></script>
         <script type="text/javascript" src="/JS/lib/jquery.qtip.min.js"></script>
+        <script type="text/javascript" src="/JS/lib/html.sortable.min.js"></script>
         <script type="text/javascript" src="/JS/view.js"></script>
-        <script>
-            pantheum.lang = function() {
-                return pantheum.udata && pantheum.udata["language"]
-                    ? pantheum.udata["language"]
-                    : 'en';
-            };
-            pantheum._private.i18nload = function(err, t) {
-                if (err) console.log(err);
-                pantheum.update();
-            };
-            i18n.init({
-                fallbackLng: 'en'
-            });
-            i18n.setLng(pantheum.lang(), pantheum._private.i18nload);
-            i18n.translatable = function(s) {
-                var s2 = i18n.t(s);
-                if (!s2) s2 = s;
-                return '<span data-i18n="'+s+'">'+s2+'</span>';
-            };
-            pantheum.update = function(element) {
-                if (!element) element = 'body';
-                var $e = $(element);
-                var lang = pantheum.lang();
-                $e.i18n();
-                $e.find('[data-i18n]').removeClass(function(index, css) {
-                    return (css.match(/(^|\s)format-word-\S+/g) || []).join(' ');
-                }).addClass('format-word-'+lang).attr('data-original-word0', '');
-                la_ipa.format($e);
-                $e.find('[title]:not(abbr):not(.actionable):not(.select2-selection__rendered)').qtip({
-                    style:{
-                        classes:"qtip-light"
-                    },
-                    position:{
-                        my:"center left",
-                        at:"center right"
-                    },
-                    hide: {
-                        fixed: true,
-                        delay: 100,
-                    }
-                });
-                $e.find('abbr[title]').qtip({
-                    style:{
-                        classes:"qtip-light qtip-abbr"
-                    },
-                    position:{
-                        at:"top center",
-                        my:"bottom center",
-                        adjust: {y:5},
-                    },
-                    hide: {
-                        fixed: true,
-                        delay: 100,
-                    }
-                });
-                $e.find('.actionable[title]').qtip({
-                    style:{
-                        classes:"qtip-light qtip-actionable"
-                    },
-                    position:{
-                        my:"top center",
-                        at:"bottom center",
-                        adjust: {y:-5},
-                    },
-                    hide: {
-                        fixed: true,
-                        delay: 100,
-                    }
-                });
-                return $e;
-            };
-        </script>
+        <script>pantheum.init()</script>
 
