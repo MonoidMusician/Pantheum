@@ -70,13 +70,41 @@
                     return (css.match(/(^|\s)format-word-\S+/g) || []).join(' ');
                 }).addClass('format-word-'+lang).attr('data-original-word0', '');
                 la_ipa.format($e);
-                $e.find('[title]').qtip({
+                $e.find('[title]:not(abbr):not(.actionable):not(.select2-selection__rendered)').qtip({
                     style:{
                         classes:"qtip-light"
                     },
                     position:{
                         my:"center left",
                         at:"center right"
+                    },
+                    hide: {
+                        fixed: true,
+                        delay: 100,
+                    }
+                });
+                $e.find('abbr[title]').qtip({
+                    style:{
+                        classes:"qtip-light qtip-abbr"
+                    },
+                    position:{
+                        at:"top center",
+                        my:"bottom center",
+                        adjust: {y:5},
+                    },
+                    hide: {
+                        fixed: true,
+                        delay: 100,
+                    }
+                });
+                $e.find('.actionable[title]').qtip({
+                    style:{
+                        classes:"qtip-light qtip-actionable"
+                    },
+                    position:{
+                        my:"top center",
+                        at:"bottom center",
+                        adjust: {y:-5},
                     },
                     hide: {
                         fixed: true,

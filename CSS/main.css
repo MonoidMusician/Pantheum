@@ -131,6 +131,10 @@ section#content a {
     color: #DA7B00;
     text-decoration: none;
 }
+.actionable {
+    color: #CC3333;
+    cursor: pointer;
+}
 
 article:not(.secondary) {
     float: left;
@@ -534,8 +538,12 @@ input[name=quiz-category]:checked + label {
     color: #A00;
 }
 
+
 .qtip.qtip-medium {
     font-size: 12pt !important;
+}
+.qtip.qtip-abbr {
+    font-weight: bold !important;
 }
 .qtip {
     font-size: 10pt !important;

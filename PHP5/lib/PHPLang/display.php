@@ -145,8 +145,8 @@ function format_spart($spart) {
 }
 function format_attr($tag,$value=NULL) {
 	if ($tag === "transitive")
-		if ($value === "true") return format_abbr("TR","transitive");
-		elseif ($value === "false") return format_abbr("NTR","intransitive");
+		if ($value === "true") return format_abbr("TR","Transitive");
+		elseif ($value === "false") return format_abbr("NTR","Intransitive");
 	if ($tag === "irregular")
 		if ($value === "true") return "irregular";
 		elseif ($value === "false") return "regular";

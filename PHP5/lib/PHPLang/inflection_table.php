@@ -42,7 +42,7 @@ function _in_ignore($p,$ignore) {
 
 function _filter_ignore($values, $ignore, $p, $empty=TRUE, $prev=NULL) {
 	$ret = [];
-	if ($values !== NULL) {
+	if ($values !== NULL and $values !== FALSE) {
 		if ($prev) {
 			if (!$prev[0]) $prev[0]=[false];
 			$count = [];
