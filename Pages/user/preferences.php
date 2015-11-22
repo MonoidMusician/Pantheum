@@ -47,11 +47,6 @@ Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugn
 
 <button id="save" data-i18n="ui.save">Save</button>
 
-<style>
-#cases {
-    list-style-type: '=';
-}
-</style>
 <script>
 $('#lang').select2({
     minimumResultsForSearch: Infinity
