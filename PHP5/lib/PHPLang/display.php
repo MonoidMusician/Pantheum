@@ -268,86 +268,121 @@ function display_word_name($w, &$common=false) {
 	$lang = $w->lang();
 	$spart = $w->speechpart();
 	$name = NULL;
-	if ($lang === "la" and $spart === "noun") {
-		if ($genders = $w->path()->iterate("gender")) {
+	if ($lang === "la") {
+		if ($spart === "noun") {
+			if ($genders = $w->path()->iterate("gender")) {
+				$name = [];
+				$common = true;
+				if ($name !== NULL and in_array($g = "masculine",$genders)) {
+					$key = PATH($w, "nominative/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else {
+						$name[] = ($key->get());
+						$key = PATH($w, "genitive/singular/$g");
+						if (!$key->hasvalue()) $name = NULL;
+						else $name[] = ($key->get());
+					}
+				} else $common = false;
+				if ($name !== NULL and in_array($g = "feminine",$genders)) {
+					$key = PATH($w, "nominative/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else {
+						$name[] = ($key->get());
+						$key = PATH($w, "genitive/singular/$g");
+						if (!$key->hasvalue()) $name = NULL;
+						else $name[] = ($key->get());
+					}
+				} else $common = false;
+				if ($name !== NULL and in_array($g = "neuter",$genders)) {
+					$key = PATH($w, "nominative/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else {
+						$name[] = ($key->get());
+						$key = PATH($w, "genitive/singular/$g");
+						if (!$key->hasvalue()) $name = NULL;
+						else $name[] = ($key->get());
+					}
+					$common = false;
+				}
+				if ($common and count($name) === 4 and $name[0] == $name[2] and $name[1] == $name[3])
+					$name = [$name[0], $name[1]];
+				else $common = false;
+			}
+		} elseif ($spart === "pronoun") {
+			if ($genders = $w->path()->iterate("gender")) {
+				$name = [];
+				if ($name !== NULL and in_array($g = "masculine",$genders)) {
+					$key = PATH($w, "nominative/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else $name[] = $key->get();
+				}
+				if ($name !== NULL and in_array($g = "feminine",$genders)) {
+					$key = PATH($w, "nominative/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else $name[] = $key->get();
+				}
+				if ($name !== NULL and in_array($g = "neuter",$genders)) {
+					$key = PATH($w, "nominative/singular/$g");
+					if (!$key->hasvalue()) $name = NULL;
+					else $name[] = $key->get();
+				}
+				if ((count($name) == 2 and $name[0] === $name[1])
+				 or (count($name) == 3 and $name[0] === $name[1] and $name[1] === $name[2])) {
+					$name = [$name[0]];
+					$key = PATH($w, "nominative/plural");
+					if ($key->hasvalue())
+						$name[] = $key->get();
+				}
+			}
+		} elseif ($spart === "adjective") {
 			$name = [];
-			$common = true;
-			if ($name !== NULL and in_array($g = "masculine",$genders)) {
-				$key = PATH($w, "nominative/singular/$g");
-				if (!$key->hasvalue()) $name = NULL;
-				else {
-					$name[] = ($key->get());
-					$key = PATH($w, "genitive/singular/$g");
-					if (!$key->hasvalue()) $name = NULL;
-					else $name[] = ($key->get());
+			$number = safe_get(0, PATH($w,"positive")->iterate("number"));
+			$keys = [
+				"" => [
+					"positive/nominative/$number/masculine",
+					"positive/nominative/$number/feminine",
+					"positive/nominative/$number/neuter",
+				],
+				"adjective-12" => [
+					"positive/nominative/$number/masculine",
+					"positive/nominative/$number/feminine",
+					"positive/nominative/$number/neuter",
+				],
+				"adjective-3" => [
+					"positive/nominative/$number/masculine",
+					"positive/nominative/$number/neuter",
+					"positive/genitive/$number/masculine",
+				],
+				"adjective-3-3" => [
+					"positive/nominative/$number/masculine",
+					"positive/nominative/$number/feminine",
+					"positive/nominative/$number/neuter",
+				],
+			];
+			$keys = $keys[ATTR($w,"declension")->get()];
+			foreach ($keys as $_=>$key) {
+				$key = PATH($w,$key);
+				if (!$key->hasvalue()) {
+					$name = NULL; break;
 				}
-			} else $common = false;
-			if ($name !== NULL and in_array($g = "feminine",$genders)) {
-				$key = PATH($w, "nominative/singular/$g");
-				if (!$key->hasvalue()) $name = NULL;
-				else {
-					$name[] = ($key->get());
-					$key = PATH($w, "genitive/singular/$g");
-					if (!$key->hasvalue()) $name = NULL;
-					else $name[] = ($key->get());
-				}
-			} else $common = false;
-			if ($name !== NULL and in_array($g = "neuter",$genders)) {
-				$key = PATH($w, "nominative/singular/$g");
-				if (!$key->hasvalue()) $name = NULL;
-				else {
-					$name[] = ($key->get());
-					$key = PATH($w, "genitive/singular/$g");
-					if (!$key->hasvalue()) $name = NULL;
-					else $name[] = ($key->get());
-				}
-				$common = false;
+				$name[] = $key->get();
 			}
-			if ($common and count($name) === 4 and $name[0] == $name[2] and $name[1] == $name[3])
-				$name = [$name[0], $name[1]];
-			else $common = false;
-		}
-	} elseif ($lang === "la" and $spart === "pronoun") {
-		if ($genders = $w->path()->iterate("gender")) {
+		} elseif ($spart === "verb") {
 			$name = [];
-			if ($name !== NULL and in_array($g = "masculine",$genders)) {
-				$key = PATH($w, "nominative/singular/$g");
-				if (!$key->hasvalue()) $name = NULL;
-				else $name[] = $key->get();
+			foreach (["indicative/active/present/person-1/singular",
+				      "infinitive/active/present",
+				      "indicative/active/perfect/person-1/singular",
+				      "participle/perfect/passive"] as $_=>$key) {
+				$key = PATH($w,$key);
+				if (!$key->hasvalue()) {
+					if ($_ <= 1) {$name = NULL; break;}
+					elseif ($_ == 3) {
+						$key = PATH($w,"supine/accusative");
+						if (!$key->hasvalue()) continue;
+					} else continue;
+				}
+				$name[] = $key->get();
 			}
-			if ($name !== NULL and in_array($g = "feminine",$genders)) {
-				$key = PATH($w, "nominative/singular/$g");
-				if (!$key->hasvalue()) $name = NULL;
-				else $name[] = $key->get();
-			}
-			if ($name !== NULL and in_array($g = "neuter",$genders)) {
-				$key = PATH($w, "nominative/singular/$g");
-				if (!$key->hasvalue()) $name = NULL;
-				else $name[] = $key->get();
-			}
-			if ((count($name) == 2 and $name[0] === $name[1])
-			 or (count($name) == 3 and $name[0] === $name[1] and $name[1] === $name[2])) {
-				$name = [$name[0]];
-				$key = PATH($w, "nominative/plural");
-				if ($key->hasvalue())
-					$name[] = $key->get();
-			}
-		}
-	} elseif ($lang === "la" and $spart === "verb") {
-		$name = [];
-		foreach (["indicative/active/present/person-1/singular",
-		          "infinitive/active/present",
-		          "indicative/active/perfect/person-1/singular",
-		          "participle/perfect/passive"] as $_=>$key) {
-			$key = PATH($w,$key);
-			if (!$key->hasvalue()) {
-				if ($_ <= 1) {$name = NULL; break;}
-				elseif ($_ == 3) {
-					$key = PATH($w,"supine/accusative");
-					if (!$key->hasvalue()) continue;
-				} else continue;
-			}
-			$name[] = $key->get();
 		}
 	}
 	if ($name === NULL) $name = $w->name();

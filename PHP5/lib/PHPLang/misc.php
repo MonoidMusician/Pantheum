@@ -189,7 +189,7 @@ class _ATTR
 		}
 		if (ISWORD($hash))
 			$hash = &$hash->attr_storage;
-		if (array_key_exists($this->key(), $hash))
+		if (array_key_exists($this->tag(), $hash))
 			return $hash[$this->tag()];
 	}
 	function remove($hash=NULL) {
@@ -200,11 +200,11 @@ class _ATTR
 			$hash = $this->word();
 		}
 		if ($hash === NULL) return NULL;
-		$r = $hash[$this->key()];
-		unset($hash[$this->key()]);
+		$r = $hash[$this->tag()];
+		unset($hash[$this->tag()]);
 		return $r;
 	}
-	function move($new, $hash) {return$new.set($this->remove($hash), $hash);}
+	function move($new, $hash) {return $new->set($this->remove($hash), $hash); }
 };
 
 

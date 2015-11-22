@@ -94,7 +94,7 @@ function is_fillable($v) {
 
 // Parse the depath into the necessary row/column values for the table
 function word_table_values($w,$ignore=NULL) {
-	$w->read_paths();
+	if (!$w->read_paths()) return [NULL,NULL,NULL,NULL,NULL];
 	$lang = $w->lang();
 	$spart = $w->speechpart();
 	$values4 =

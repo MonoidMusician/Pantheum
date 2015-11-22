@@ -234,6 +234,7 @@ function make_chart2($w,$w2,$values=NULL,$ignore=NULL,$legend="this chart",$add=
 	$w->read_paths();
 	$w->read_attrs();
 	$w2->read_paths();
+	$w2->read_attrs();
 	if ($add) $add = ", $add";
 	$ret = [
 		"help" => "Fill in $legend for “".display_word_name($w)."” and “".display_word_name($w2)."”$add.",
