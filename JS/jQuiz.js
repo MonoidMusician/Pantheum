@@ -19,7 +19,6 @@ function jQuiz() {
 	this.scored = false; // Have we shown the user their score?
 	this.nextable = false;
 	this.current = 0;
-	this.next = 0;
 	this.last = 1;
 	this.qelement = 'quiz';
 	this.gurl = '';
@@ -70,9 +69,8 @@ function jQuiz() {
 		$(this.loading_elements).attr('disabled', false);
 		if (!data || data[0] != '[' || data[data.length-1] != ']')
 			return alert('Error: '+data);
-		this.questions[this.next] = jQuery.parseJSON(data);
-		this.current = this.next;
-		this.next += 1;
+		this.current += 1;
+		this.questions[this.current] = jQuery.parseJSON(data);
 		this.showQuestion();
 	};
 
@@ -99,7 +97,7 @@ function jQuiz() {
 
 		header += '<span> ' + this.select() + ' / ' + this.last + ' </span>';
 
-		if ((this.current == (this.next-1)) && (this.results[this.current] == undefined)) {
+		if (this.results[this.current] == undefined) {
 			header += '<button data-tabindex="1" id="' + this.qelement + '-submit">Submit</button>';
 		} else if (this.current >= this.last - 1) {
 			if (!this.scored)
@@ -342,14 +340,20 @@ function jQuiz() {
 
 	this.handleNext = function(data) {
 		if (this.loading) return;
+		// Results/Finish/Return button
 		if (this.current == this.last - 1) {
+			// Results button
 			if (!this.scored)
-				$.get(this.eurl, $.proxy(this.handleEnd, this));
+				if (this.active) $.get(this.eurl, $.proxy(this.handleEnd, this));
+				else this.showScore();
+			// Finish/Return button
 			else this.endQuiz();
-		} else if (this.current == (this.next-1)) {
+		// Next button (generate new result)
+		} else if (this.questions[this.current+1] === undefined) {
 			this.loading = true;
 			$('#' + this.qelement + '-next').attr('disabled', true);
 			this.getNextQuestion();
+		// Next button (show next result/question)
 		} else {
 			this.current += 1;
 			this.showQuestion();
@@ -401,6 +405,7 @@ function jQuiz() {
 
 	this.start = function(last, type) {
 		this.last = last;
+		this.current = -1;
 		this.getNextQuestion();
 		this.bindEvents();
 		this.log('start', type, last);
@@ -413,16 +418,6 @@ function jQuiz() {
 		this.score = data['score'];
 		this.out_of = data['out_of'];
 		this.active = !data['completed'];
-		if (this.active) {
-			for (var i=0;i++;i<this.last) {
-				if (this.results[i] == undefined) {
-					this.next = i; break;
-				}
-			}
-			if (this.questions[this.next] != undefined) {
-				this.next += 1;
-			}
-		}
 		this.showQuestion();
 		this.bindEvents();
 	};
@@ -433,23 +428,14 @@ function jQuiz() {
 	};
 
 	this.endQuiz = function() {
-		if (!this.active || 1) {
-			location.reload();
-			return;
-		}
-		$.get(this.eurl, $.proxy(this.handleEnd2, this));
+		window.location.reload();
 	};
 
 	this.handleEnd = function(data) {
 		if (data == 'success') {
+			this.active = false;
 			this.showScore();
 			this.log('end');
-		} else alert("Error: "+data);
-	}
-
-	this.handleEnd2 = function(data) {
-		if (data == 'success') {
-			location.reload();
 		} else alert("Error: "+data);
 	}
 
