@@ -36,7 +36,7 @@
 		if (count($w)) {
 			echo "Word seems to be already added";
 		} else {
-			sql_exec($sql_stmts["word_lang,word_name,word_spart->new in words"], ["sss", $langs[0],$names[0],$sparts[0]]);
+			sql_exec(sql_stmt("word_lang,word_name,word_spart->new in words"), ["sss", $langs[0],$names[0],$sparts[0]]);
 			$w = defaultDB()->searcher()->name($names[0])->spart($sparts[0])->lang($langs[0])->all();
 			if (count($w) === 1) {
 				$w = $w[0];

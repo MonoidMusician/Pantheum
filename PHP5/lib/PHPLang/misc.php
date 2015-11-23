@@ -171,7 +171,7 @@ class _ATTR
 	function value() {
 		global $sql_stmts;
 		if (ISWORD($this->word()) and ISSQLDB($this->word()->db())) {
-			sql_getone($sql_stmts["word_id,attr_tag->attr_value"], $this->_value, ["is", $this->word()->id(), $this->tag()]);
+			sql_getone(sql_stmt("word_id,attr_tag->attr_value"), $this->_value, ["is", $this->word()->id(), $this->tag()]);
 		}
 		return $this->_value;
 	}

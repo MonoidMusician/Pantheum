@@ -24,8 +24,8 @@
         global $sql_stmts;
         $quizzes = [];
         $quizzes_data = [];
-        if ($master) sql_getmany($sql_stmts["all quizzes"], $quizzes, []);
-        else sql_getmany($sql_stmts["user_id->quiz_id reversed"], $quizzes, ["i", $suid]);
+        if ($master) sql_getmany(sql_stmt("all quizzes"), $quizzes, []);
+        else sql_getmany(sql_stmt("user_id->quiz_id reversed"), $quizzes, ["i", $suid]);
         foreach ($quizzes as &$q) {
             $q = QUIZ($q);
             $quizzes_data[$q->id()] = $q->completed();

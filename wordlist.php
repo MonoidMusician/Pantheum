@@ -9,9 +9,9 @@
 defaultDB()->load_language("tp");
 function make_word($name, $jp=NULL, $zh=NULL) {
 	global $sql_stmts;
-	sql_exec($sql_stmts["word_lang,word_name,word_spart->new in words"], ["sss","tp",$name,"multi"]);
+	sql_exec(sql_stmt("word_lang,word_name,word_spart->new in words"), ["sss","tp",$name,"multi"]);
 	$id = NULL;
-	sql_getone($sql_stmts["word_lang,word_name,word_spart->word_id"], $id, ["sss","tp",$name,"multi"]);
+	sql_getone(sql_stmt("word_lang,word_name,word_spart->word_id"), $id, ["sss","tp",$name,"multi"]);
 	$GLOBALS["word"] = WORD(defaultDB(), $id);
 	if ($jp) {
 		$a = ATTR("jp", $jp);

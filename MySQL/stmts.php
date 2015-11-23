@@ -1,9 +1,9 @@
 <?php
 /*
- * NOTE: this file is auto-generated, PLEASE do NOT edit!
- */
+	 * NOTE: this file is auto-generated, PLEASE do NOT edit!
+	 */
 
-$sql_stmts = [];
+	$sql_stmts = [];
 /************************
  * WORDS
  ************************/

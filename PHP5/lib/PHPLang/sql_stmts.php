@@ -5,6 +5,7 @@ sro('/Includes/session.php');
 sro('/Includes/functions.php');
 
 global $mysqli;
+global $sql_stmts;
 
 sro('/PHP5/lib/PHPLang/common.php');
 
@@ -308,38 +309,39 @@ class StmtsMacros {
 // Set up and parse stmts.sql
 $syntax = new StmtsMacros();
 $dir = "/var/www/MySQL/";
-$start = '/*
- * NOTE: this file is auto-generated, PLEASE do NOT edit!
- */
+$time = filemtime("$dir/stmts.sql");
+if (apcu_fetch("sqlstmts_time") == $time) {
+	$GLOBALS['sql_stmts'] = apcu_fetch("sqlstmts");
+} else {
+	$start = '/*
+	 * NOTE: this file is auto-generated, PLEASE do NOT edit!
+	 */
 
-$sql_stmts = [];';
-$end = 'return $sql_stmts;';
-$code = file_get_contents("$dir/stmts.sql");
-$code = $syntax->replace($code);
-if ($code)
-	file_put_contents("$dir/stmts.php", '<'.'?php'."\n".$start."\n".$code."\n".$end.'?'.'>');
-#echo "$code\n";
-$GLOBALS['sql_stmts'] = eval($start.$code.$end);
+	$sql_stmts = [];';
+	$end = 'return $sql_stmts;';
+	$code = file_get_contents("$dir/stmts.sql");
+	$code = $syntax->replace($code);
+	if ($code) {
+		file_put_contents("$dir/stmts.php", '<'.'?php'."\n".$start."\n".$code."\n".$end.'?'.'>');
+	}
+	#echo "$code\n";
+	$GLOBALS['sql_stmts'] = eval($start.$code.$end);
+	apcu_store("sqlstmts", $sql_stmts);
+	apcu_store("sqlstmts_time", $time);
+}
+
 global $sql_stmts;
 $list = [];
 foreach (array_keys($sql_stmts) as $name) {
 	$list[$name] = $value = $sql_stmts[$name];
-	if (!($sql_stmts[$name] = $mysqli->prepare($value))) {
-		echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
-		echo "\nStatement was: " . var_export($value, 1);
-	}
 	$aliases = [$syntax->_flip($name)];
 	$value = $sql_stmts[$name];
 	foreach ($aliases as $a)
 		$sql_stmts[$a] = $value;
 }
 array_walk($list, function (&$v,$k){$v="$k; $v";});
+
 file_put_contents("$dir/stmts.csv", implode("\n", $list));
-
-
-
-
-
 
 
 
@@ -347,7 +349,18 @@ file_put_contents("$dir/stmts.csv", implode("\n", $list));
 
 // PHP Statement Helpers
 
-
+function sql_stmt($name) {
+	global $sql_stmts, $mysqli;
+	if (is_string($sql_stmts[$name])) {
+		$value = $sql_stmts[$name];
+		if (!($sql_stmts[$name] = $mysqli->prepare($value))) {
+			echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+			echo "\nStatement was: " . var_export($value, 1);
+			return NULL;
+		}
+	}
+	return $sql_stmts[$name];
+}
 // Execute a prepared (and handle it)
 function &sql_getN($stmt, &$result, $params, $n) {
 	$result = NULL;

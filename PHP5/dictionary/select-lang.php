@@ -16,10 +16,10 @@
 	?><select><?php
 	foreach ($db->langs() as $l) {
 		$name = $l;
-		sql_getone($sql_stmts["lang_id->#words"], $words, ["s", $l]);
+		sql_getone(sql_stmt("lang_id->#words"), $words, ["s", $l]);
 		$c = count($words);
 		if ($words < 10) continue;
-		sql_getone($sql_stmts["lang_id->lang_dispname"], $name, ["s", $l]);
+		sql_getone(sql_stmt("lang_id->lang_dispname"), $name, ["s", $l]);
 		?><option <?php
 		if (in_array($l, $langs)) {
 			?>selected<?php

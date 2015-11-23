@@ -14,7 +14,7 @@
         if (requireLoggedIn(FALSE)) {
             ?> <span data-i18n="quiz.loggedin">Review and resume previous quizzes</span> <a href="quizzes.php" data-i18n="ui.here">here</a>. <?php
             $quizzes = [];
-            sql_getmany($sql_stmts["user_id->quiz_id reversed"], $quizzes, ["i", $suid]);
+            sql_getmany(sql_stmt("user_id->quiz_id reversed"), $quizzes, ["i", $suid]);
             foreach ($quizzes as $i => $q) {
                 if (QUIZ($q)->completed()) unset($quizzes[$i]);
             }

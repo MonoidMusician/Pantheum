@@ -90,9 +90,9 @@ class _SQLDB implements _DB
 		global $sql_stmts;
 		$id = NULL;
 		if ($spart === NULL)
-			sql_getone($sql_stmts["word_name,word_lang->word_id"], $id, ["ss",&$name,&$lang]);
+			sql_getone(sql_stmt("word_name,word_lang->word_id"), $id, ["ss",&$name,&$lang]);
 		else
-			sql_getone($sql_stmts["word_name,word_lang,word_spart->word_id"], $id, ["sss",&$name,&$lang,&$spart]);
+			sql_getone(sql_stmt("word_name,word_lang,word_spart->word_id"), $id, ["sss",&$name,&$lang,&$spart]);
 		return $id === NULL ? NULL : intval($id);
 	}
 	function is_lang($lang) {
@@ -104,7 +104,7 @@ class _SQLDB implements _DB
 	function sparts() {
 		global $sql_stmts;
 		$res = NULL;
-		sql_getmany($sql_stmts["all_sparts"], $res, []);
+		sql_getmany(sql_stmt("all_sparts"), $res, []);
 		if ($res)
 			$res = array_unique($res);
 		return $res;

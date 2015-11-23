@@ -24,7 +24,7 @@
 				} else echo "- More than one found, continuing<br>";
 			} else {
 				echo "Adding word: $name<br>";
-				sql_exec($sql_stmts["word_lang,word_name,word_spart->new in words"], ["sss", "la",$name,"verb"]);
+				sql_exec(sql_stmt("word_lang,word_name,word_spart->new in words"), ["sss", "la",$name,"verb"]);
 				$w = defaultDB()->searcher()->name($name)->spart("verb")->lang("la")->all();
 				if (count($w) === 1) {
 					$w = $w[0];

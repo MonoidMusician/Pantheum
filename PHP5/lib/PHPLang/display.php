@@ -215,7 +215,7 @@ function format_lang($lang) {
 	global $sql_stmts;
 	if (ISWORD($lang)) $lang = $lang->lang();
 	$name = $lang;
-	sql_getone($sql_stmts["lang_id->lang_dispname"], $name, ["s", $lang]);
+	sql_getone(sql_stmt("lang_id->lang_dispname"), $name, ["s", $lang]);
 	return $name;
 }
 

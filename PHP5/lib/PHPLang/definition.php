@@ -32,70 +32,70 @@ class _DEFINITION
 		global $sql_stmts;
 		$_form_tag = NULL;
 		if ($this->issql and $this->_id !== NULL)
-			return sql_getone($sql_stmts["def_id->form_tag"], $_form_tag, ["i", &$this->_id]); # still NULL if not found
+			return sql_getone(sql_stmt("def_id->form_tag"), $_form_tag, ["i", &$this->_id]); # still NULL if not found
 		return $_form_tag;
 	}
 	private function _getword() {
 		global $sql_stmts;
 		$_word_id = NULL;
 		if ($this->issql and $this->_id !== NULL)
-			return sql_getone($sql_stmts["def_id->word_id"], $_word_id, ["i", &$this->_id]); # still NULL if not found
+			return sql_getone(sql_stmt("def_id->word_id"), $_word_id, ["i", &$this->_id]); # still NULL if not found
 		return $_word_id;
 	}
 	function set_path($p) {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_exec($sql_stmts["def_id->form_tag="], ["is", &$this->_id, (string)$p]); # still NULL if not found
+			sql_exec(sql_stmt("def_id->form_tag="), ["is", &$this->_id, (string)$p]); # still NULL if not found
 		$this->_path = $p;
 	}
 	function remove() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			return sql_exec($sql_stmts["def_id->delete from definitions"], ["i", &$this->_id]); # still NULL if not found
+			return sql_exec(sql_stmt("def_id->delete from definitions"), ["i", &$this->_id]); # still NULL if not found
 	}
 	private $_src = NULL;
 	function src() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["def_id->def_src"], $this->_src, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("def_id->def_src"), $this->_src, ["i", &$this->_id]); # still NULL if not found
 		return $this->_src;
 	}
 	private $_type = NULL;
 	function type() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["def_id->def_type"], $this->_type, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("def_id->def_type"), $this->_type, ["i", &$this->_id]); # still NULL if not found
 		return $this->_type;
 	}
 	function set_type($type) {
 		$this->_type = $type;
 		if ($this->issql and $this->_id !== NULL)
-			sql_set($sql_stmts["def_id->def_type="], $this->_type, ["i", &$this->_id]);
+			sql_set(sql_stmt("def_id->def_type="), $this->_type, ["i", &$this->_id]);
 	}
 	private $_lang = NULL;
 	function lang() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["def_id->def_lang"], $this->_lang, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("def_id->def_lang"), $this->_lang, ["i", &$this->_id]); # still NULL if not found
 		return $this->_lang;
 	}
 	function set_lang($lang) {
 		$this->_lang = $lang;
 		if ($this->issql and $this->_id !== NULL)
-			sql_set($sql_stmts["def_id->def_lang="], $this->_lang, ["i", &$this->_id]);
+			sql_set(sql_stmt("def_id->def_lang="), $this->_lang, ["i", &$this->_id]);
 	}
 	private $_value = NULL;
 	function value() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["def_id->def_value"], $this->_value, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("def_id->def_value"), $this->_value, ["i", &$this->_id]); # still NULL if not found
 		return $this->_value;
 	}
 	function set_value($value) {
 		$value = preg_replace('/ {2,}/', ' ', trim($value));
 		$this->_value = $value;
 		if ($this->issql and $this->_id !== NULL)
-			sql_set($sql_stmts["def_id->def_value="], $this->_value, ["i", &$this->_id]);
+			sql_set(sql_stmt("def_id->def_value="), $this->_value, ["i", &$this->_id]);
 	}
 }
 

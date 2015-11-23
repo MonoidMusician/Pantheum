@@ -67,14 +67,14 @@ class _PATH implements Countable
 	function tag() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["form_id->form_tag"], $this->_tag, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("form_id->form_tag"), $this->_tag, ["i", &$this->_id]); # still NULL if not found
 		return $this->_tag;
 	}
 	private $_value = NULL;
 	function value() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["form_id->form_value"], $this->_value, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("form_id->form_value"), $this->_value, ["i", &$this->_id]); # still NULL if not found
 		return $this->_value;
 	}
 	function set_value($value) {
@@ -83,7 +83,7 @@ class _PATH implements Countable
 		/*if ($this->issql and $this->_id !== NULL)
 			error_log($this->_id." -> $value");/**/
 		if ($this->issql and $this->_id !== NULL)
-			sql_set($sql_stmts["form_id->form_value="], $this->_value, ["i", &$this->_id]);
+			sql_set(sql_stmt("form_id->form_value="), $this->_value, ["i", &$this->_id]);
 	}
 	function resolve_key_value($arg) {
 		$key = NULL; $value = NULL;
@@ -357,7 +357,7 @@ class _PATH implements Countable
 	function remove($hash=NULL) {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_exec($sql_stmts["form_id->delete from forms"], ["i", &$this->_id]);
+			sql_exec(sql_stmt("form_id->delete from forms"), ["i", &$this->_id]);
 		$hash = &$this->resolve_hash($hash);
 		if(FLAT_STORAGE) {
 			$ret = $hash[(string)$this];

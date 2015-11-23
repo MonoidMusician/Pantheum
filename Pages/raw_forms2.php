@@ -24,7 +24,7 @@ if (count($_GET)) {
         if ($v != "true") continue;
         $id = explode("_", $k, 2)[1];
         $id = intval($id);
-        sql_exec($sql_stmts["form_id->delete from forms"], ["i", $id]);
+        sql_exec(sql_stmt("form_id->delete from forms"), ["i", $id]);
     }
 
     $list = $db->find_all_words($_GET["name"], $_GET["lang"], $_GET["spart"]);

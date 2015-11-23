@@ -54,66 +54,66 @@ class _WORD
 	function name() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["word_id->word_name"], $this->_name, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("word_id->word_name"), $this->_name, ["i", &$this->_id]); # still NULL if not found
 		return $this->_name;
 	}
 	function set_name($name) {
 		global $sql_stmts;
 		$this->_name = $name;
 		if ($this->issql and $this->_id !== NULL)
-			sql_set($sql_stmts["word_id->word_name="], $this->_name, ["i", &$this->_id]);
+			sql_set(sql_stmt("word_id->word_name="), $this->_name, ["i", &$this->_id]);
 	}
 	private $_cached = NULL;
 	function cached() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["word_id->inflection_cache"], $this->_cached, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("word_id->inflection_cache"), $this->_cached, ["i", &$this->_id]); # still NULL if not found
 		return $this->_cached;
 	}
 	function set_cached($cached) {
 		global $sql_stmts;
 		$this->_cached = $cached;
 		if ($this->issql and $this->_id !== NULL)
-			sql_set($sql_stmts["word_id->inflection_cache="], $this->_cached, ["i", &$this->_id]);
+			sql_set(sql_stmt("word_id->inflection_cache="), $this->_cached, ["i", &$this->_id]);
 	}
 	private $_speechpart = NULL;
 	function speechpart() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["word_id->word_spart"], $this->_speechpart, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("word_id->word_spart"), $this->_speechpart, ["i", &$this->_id]); # still NULL if not found
 		return $this->_speechpart;
 	}
 	function set_speechpart($spart) {
 		global $sql_stmts;
 		$this->_speechpart = $spart;
 		if ($this->issql and $this->_id !== NULL)
-			sql_set($sql_stmts["word_id->word_spart="], $this->_speechpart, ["i", &$this->_id]);
+			sql_set(sql_stmt("word_id->word_spart="), $this->_speechpart, ["i", &$this->_id]);
 	}
 	private $_lang = NULL;
 	function lang() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["word_id->word_lang"], $this->_lang, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("word_id->word_lang"), $this->_lang, ["i", &$this->_id]); # still NULL if not found
 		return $this->_lang;
 	}
 	function set_lang($lang) {
 		global $sql_stmts;
 		$this->_lang = $lang;
 		if ($this->issql and $this->_id !== NULL)
-			sql_set($sql_stmts["word_id->word_lang="], $this->_lang, ["i", &$this->_id]);
+			sql_set(sql_stmt("word_id->word_lang="), $this->_lang, ["i", &$this->_id]);
 	}
 	private $_last_changed = NULL;
 	function last_changed() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["word_id->last_changed"], $this->_last_changed, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("word_id->last_changed"), $this->_last_changed, ["i", &$this->_id]); # still NULL if not found
 		return $this->_last_changed;
 	}
 	private $_info = NULL;
 	function info() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			sql_getone($sql_stmts["word_id->word_info_formatted"], $this->_info, ["i", &$this->_id]); # still NULL if not found
+			sql_getone(sql_stmt("word_id->word_info_formatted"), $this->_info, ["i", &$this->_id]); # still NULL if not found
 		return $this->_info;
 	}
 
@@ -126,7 +126,7 @@ class _WORD
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
 			$id = NULL;
-			sql_getone($sql_stmts["word_id,def_lang,def_value->def_id"], $id, ["iss", $this->_id, $def->lang(), $def->value()]);
+			sql_getone(sql_stmt("word_id,def_lang,def_value->def_id"), $id, ["iss", $this->_id, $def->lang(), $def->value()]);
 			$def = DEFINITION($this->db(), $id, $this);
 		}
 		return $def;
@@ -135,7 +135,7 @@ class _WORD
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
 			$added = []; # id's returned
-			sql_getmany($sql_stmts["word_id->def_id"], $added, ["i", $this->_id]);
+			sql_getmany(sql_stmt("word_id->def_id"), $added, ["i", $this->_id]);
 			foreach ($added as $def) {
 				$cont=FALSE;
 				foreach ($this->_definitions as $_def) {
@@ -151,8 +151,8 @@ class _WORD
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
 			if ($def->type())
-				sql_exec($sql_stmts["word_id,def_lang,def_value,form_tag,def_type->new in definitions"], ["issss", $this->_id, $def->lang(), $def->value(), (string)$def->path(), $def->type()]);
-			else sql_exec($sql_stmts["word_id,def_lang,def_value,form_tag->new in definitions"], ["isss", $this->_id, $def->lang(), $def->value(), (string)$def->path()]);
+				sql_exec(sql_stmt("word_id,def_lang,def_value,form_tag,def_type->new in definitions"), ["issss", $this->_id, $def->lang(), $def->value(), (string)$def->path(), $def->type()]);
+			else sql_exec(sql_stmt("word_id,def_lang,def_value,form_tag->new in definitions"), ["isss", $this->_id, $def->lang(), $def->value(), (string)$def->path()]);
 			$def = $this->get_def($def);
 		}
 		$this->_definitions[] = $def;
@@ -168,7 +168,7 @@ class _WORD
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
 			$id = NULL;
-			sql_getone($sql_stmts["word_id,pron_type,pron_value->pron_id"], $id, ["iss", $this->_id, $pron->type(), $pron->value()]);
+			sql_getone(sql_stmt("word_id,pron_type,pron_value->pron_id"), $id, ["iss", $this->_id, $pron->type(), $pron->value()]);
 			if ($id !== NULL) $pron = PRONUNCIATION($this->db(), $id, $this);
 		}
 		return $pron;
@@ -177,7 +177,7 @@ class _WORD
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
 			$added = []; # id's returned
-			sql_getmany($sql_stmts["word_id->pron_id"], $added, ["i", $this->_id]);
+			sql_getmany(sql_stmt("word_id->pron_id"), $added, ["i", $this->_id]);
 			foreach ($added as $pron) {
 				$cont=FALSE;
 				foreach ($this->_pronunciations as $_pron) {
@@ -192,7 +192,7 @@ class _WORD
 	function add_pronuncation($pron) {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
-			sql_exec($sql_stmts["word_id,pron_type,pron_value,form_tag->new in pronunciations"], ["isss", $this->_id, $pron->type(), $pron->value(), (string)$pron->path()]);
+			sql_exec(sql_stmt("word_id,pron_type,pron_value,form_tag->new in pronunciations"), ["isss", $this->_id, $pron->type(), $pron->value(), (string)$pron->path()]);
 			$pron = $this->get_pron($pron);
 			error_log(var_export($pron->id(),1));
 		}
@@ -209,7 +209,7 @@ class _WORD
 	function connections() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
-			$stmt = $sql_stmts["from_word_id->to_word_id,connect_type"];
+			$stmt = sql_stmt("from_word_id->to_word_id,connect_type");
 			if (!$stmt->bind_param("i", $this->_id)) {
 				echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
 				return $this->_connections;
@@ -238,7 +238,7 @@ class _WORD
 	function add_connection($connect) {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
-			sql_exec($sql_stmts["from_word_id,to_word_id,connect_type->new in connections"], ["iis", $this->_id, $connect->to()->id(), $connect->type()]);
+			sql_exec(sql_stmt("from_word_id,to_word_id,connect_type->new in connections"), ["iis", $this->_id, $connect->to()->id(), $connect->type()]);
 		}
 		$this->_connections[] = $connect;
 		return $connect;
@@ -246,7 +246,7 @@ class _WORD
 	function remove_connection($connect) {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
-			sql_exec($sql_stmts["from_word_id,to_word_id,connect_type->delete from connections"], ["iis", $this->_id, $connect->to()->id(), $connect->type()]);
+			sql_exec(sql_stmt("from_word_id,to_word_id,connect_type->delete from connections"), ["iis", $this->_id, $connect->to()->id(), $connect->type()]);
 		}
 	}
 
@@ -260,7 +260,7 @@ class _WORD
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
 			$added = []; # id's returned
-			sql_getmany($sql_stmts["word_id->form_id"], $added, ["i", $this->_id]);
+			sql_getmany(sql_stmt("word_id->form_id"), $added, ["i", $this->_id]);
 			foreach ($added as $path) {
 				$cont=FALSE;
 				foreach ($this->_paths as $_path) {
@@ -276,7 +276,7 @@ class _WORD
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
 			$id = NULL;
-			sql_getone($sql_stmts["word_id,form_tag,form_value->form_id"], $id, ["iss", $this->_id, (string)$path, $path->get()]);
+			sql_getone(sql_stmt("word_id,form_tag,form_value->form_id"), $id, ["iss", $this->_id, (string)$path, $path->get()]);
 			if ($id !== NULL) $path = PATH($path, $id);
 		}
 		return $path;
@@ -284,7 +284,7 @@ class _WORD
 	function add_path($path) {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
-			sql_exec($sql_stmts["word_id,form_tag,form_value->new in forms"], ["iss", $this->_id, (string)$path, $path->get()]);
+			sql_exec(sql_stmt("word_id,form_tag,form_value->new in forms"), ["iss", $this->_id, (string)$path, $path->get()]);
 			$path = $this->get_path($path);
 		}
 		$this->_paths[] = $path;
@@ -300,7 +300,7 @@ class _WORD
 		$p = PATH($this, $tag);
 		if ($this->issql) {
 			$tag = (string)$p;
-			sql_getone($sql_stmts["word_id,form_tag->form_id"], $_id, ["is", $this->_id, $tag]);
+			sql_getone(sql_stmt("word_id,form_tag->form_id"), $_id, ["is", $this->_id, $tag]);
 			if ($_id !== NULL)
 				return PATH($this, $_id);
 		}
@@ -325,7 +325,7 @@ class _WORD
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL) {
 			$added = []; # id's returned
-			sql_getmany($sql_stmts["word_id->attr_tag"], $added, ["i", $this->_id]);
+			sql_getmany(sql_stmt("word_id->attr_tag"), $added, ["i", $this->_id]);
 			foreach ($added as $attr) {
 				$cont=FALSE;
 				foreach ($this->_attrs as $_attr) {
@@ -341,7 +341,7 @@ class _WORD
 		global $sql_stmts;
 		$this->_attrs[] = $attr;
 		if ($this->issql and $this->_id !== NULL) {
-			sql_exec($sql_stmts["set attr"], ["iss", $this->_id, $attr->tag(), $attr->value()]);
+			sql_exec(sql_stmt("set attr"), ["iss", $this->_id, $attr->tag(), $attr->value()]);
 		}
 	}
 	function remove_attr($attr) {
@@ -352,7 +352,7 @@ class _WORD
 				unset($this->_attrs[$k]);
 		}
 		if ($this->issql and $this->_id !== NULL) {
-			sql_exec($sql_stmts["word_id,attr_tag->delete from attributes"], ["is", $this->_id, $attr->tag()]);
+			sql_exec(sql_stmt("word_id,attr_tag->delete from attributes"), ["is", $this->_id, $attr->tag()]);
 		}
 	}
 	function read_attrs() {
@@ -389,7 +389,7 @@ class _WORD
 	function remove() {
 		global $sql_stmts;
 		if ($this->issql and $this->_id !== NULL)
-			return sql_exec($sql_stmts["word_id->delete from words"], ["i", &$this->_id]); # still NULL if not found
+			return sql_exec(sql_stmt("word_id->delete from words"), ["i", &$this->_id]); # still NULL if not found
 	}
 }
 

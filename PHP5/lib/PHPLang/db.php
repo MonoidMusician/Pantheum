@@ -46,6 +46,7 @@ function DB($sql=FALSE) {
 }
 global $SQLDB;
 $SQLDB = DB(TRUE);
+
 #echo "\$SQLDB:\n";
 #var_dump($SQLDB);
 function defaultDB(){global$SQLDB;return$SQLDB;}
