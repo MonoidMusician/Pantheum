@@ -50,7 +50,7 @@ if (array_key_exists("data",$_POST) and $_POST["data"]) {
     if ($suid == 14) {
         $data = trim($_POST["data"]);
         if (startsWith($data, "<thead>") and endsWith($data, "</tbody>")) {
-            $safe = strip_tags($data, "<div><thead></thead><tbody><tr><td><span><input><br></br></input></span></td></tr></tbody></div>");
+            $safe = strip_tags($data, "<div><thead></thead><table><tbody><tr><td><span><input><br></br></input></span></td></tr></tbody></table></div>");
             if ($data == $safe) {
                 file_put_contents("dict.html", $safe);
                 ?><div id="status" class="success">success</div><?php
