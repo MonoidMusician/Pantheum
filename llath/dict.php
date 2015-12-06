@@ -18,7 +18,7 @@ function endsWith($haystack, $needle) {
 ?>
 <html><head>
     <meta charset="utf-8">
-<title>Llath: Dictionary</title>
+<title>Ullaa: Dictionary</title>
 <script>
 if (window.location.href.endsWith("dict.html"))
     window.location.href = window.location.href.replace(/html$/, "php");
@@ -68,7 +68,7 @@ if (array_key_exists("data",$_POST) and $_POST["data"]) {
 }
 ?>
 <content>
-<h1>Ẇıļa: ictionar</h1>
+<h1>ļā: ictionar</h1>
 <table id="conv">
 <tr>
 <td class="empty" contenteditable="true" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off">Ļaþ orthography</td>
