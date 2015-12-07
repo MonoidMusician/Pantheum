@@ -12,11 +12,20 @@
 	<h1>Tools</h1>
 </header>
 <article>
+<h2>Roman numerals</h2>
+<br>
 <input id="arabic-number" placeholder="Arabic Number" value="<?= safe_get('number', $_GET) ?>">
 = <input id="roman-number" placeholder="Roman Numeral">
-= <span id="output-uc"></span>
-= <span id="output-lc"></span>
+<span id="output-uc"></span>
+<span id="output-lc"></span>
 </article>
+
+<article>
+<h2>Roman time</h2>
+<br>
+
+</article>
+
 <script>
 // From http://blog.stevenlevithan.com/archives/javascript-roman-numeral-converter
 function romanize (num) {
@@ -98,17 +107,17 @@ function halfreromanize(str) {
 }
 
 var change = [function() {
-	var val = $(this).val(), result = val && (romanize(val) || "Error"), rr;
-	$('#output-uc').text(rr = reromanize(result));
-	$('#output-lc').text(rr.toLowerCase());
+	var val = $(this).val(), result = val && (romanize(val) || "Error"), rr = '= ' + reromanize(result);
+	$('#output-uc').text((!result || result == "Error") ? "" : rr);
+	$('#output-lc').text((!result || result == "Error") ? "" : rr.toLowerCase());
 	if (result === "Error")
 	{ $('#roman-number').attr('placeholder', result); result = "" }
 	else $('#roman-number').attr('placeholder', "Roman Numeral");
 	$('#roman-number') .val(halfreromanize(result));
 }, function() {
 	var val = $(this).val(), result = val && (deromanize(val) || "Error");
-	$('#output-uc').text(rr = reromanize(val));
-	$('#output-lc').text(rr.toLowerCase());
+	$('#output-uc').text(val ? rr = '= '+reromanize(val.toUpperCase()) : '');
+	$('#output-lc').text(val ? rr.toLowerCase() : '');
 	if (result === "Error")
 	{ $('#arabic-number').attr('placeholder', result); result = "" }
 	else $('#arabic-number').attr('placeholder', "Arabic Number");

@@ -8,10 +8,11 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Tools | Pantheum</title>
+        <title>Tools | Latin</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="/JS/jQuiz.js"></script>
+        <script type="text/javascript" src="/JS/lib/suncalc.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
