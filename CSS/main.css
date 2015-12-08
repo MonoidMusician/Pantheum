@@ -193,6 +193,9 @@ textarea {
     font: inherit;
 }
 
+input.medium {
+    width: 100px !important;
+}
 input.small {
     width: 50px !important;
     text-align: center;
