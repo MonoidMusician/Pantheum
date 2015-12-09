@@ -54,7 +54,7 @@
   line-height: 32px;
   padding: 0 10px;
   font-size: 15px;
-  color: #e2e2e2;
+  color: #e2e2e2 !important;
 }
 .cal caption a:hover {
   color: white;
@@ -93,7 +93,7 @@
   position: relative;
   width: 30px;
   line-height: 28px;
-  color: #666;
+  color: #666 !important;
   background-image: -webkit-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
   background-image: -moz-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
   background-image: -o-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
@@ -105,11 +105,11 @@
   background: #f3f3f3;
 }
 .cal td.off a {
-  color: #b3b3b3;
+  color: #b3b3b3 !important;
 }
 .cal td.active a, .cal td a:active {
   margin: -1px;
-  color: #f3f3f3;
+  color: #f3f3f3 !important;
   text-shadow: 0 1px rgba(0, 0, 0, 0.3);
   background: #6dafbf;
   border: 1px solid #598b94;
