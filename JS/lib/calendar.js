@@ -8,14 +8,7 @@
 	/* Date => "YYYY-MM-DD" */
 	if (typeof d3 == 'undefined') {
 		function dateToStr(d) {
-			/* fix month zero base */
-			var year = d.getFullYear();
-			var month = d.getMonth();
-			return year + "-" + (month + 1) + "-" + d.getDate();
-		};
-	} else {
-		function dateToStr(d) {
-			return d3.time.format.iso(d).split("T")[0];
+			return d.toISOString().split("T")[0];
 		};
 	}
 
@@ -45,23 +38,23 @@
 
 		function daysInMonth(d) {
 			var newDate = new Date(d);
-			newDate.setMonth(newDate.getMonth() + 1);
-			newDate.setDate(0);
-			return newDate.getDate();
+			newDate.setUTCMonth(newDate.getUTCMonth() + 1);
+			newDate.setUTCDate(0);
+			return newDate.getUTCDate();
 		}
 
 		_this.update = function (date) {
 			var mDate = new Date(date);
-			mDate.setDate(1); /* start of the month */
-			var day = mDate.getDay(); /* value 0~6: 0 -- Sunday, 6 -- Saturday */
-			mDate.setDate(mDate.getDate() - day) /* now mDate is the start day of the table */
+			mDate.setUTCDate(1); /* start of the month */
+			var day = mDate.getUTCDay(); /* value 0~6: 0 -- Sunday, 6 -- Saturday */
+			mDate.setUTCDate(mDate.getUTCDate() - day) /* now mDate is the start day of the table */
 
 			function dateToTag(d) {
 				var tag = $('<td><a href="javascript:void(0);"></a></td>');
 				var a = tag.find('a');
-				a.text(d.getDate());
+				a.text(d.getUTCDate());
 				a.data('date', dateToStr(d));
-				if (date.getMonth() != d.getMonth()) { // the bounday month
+				if (date.getUTCMonth() != d.getUTCMonth()) { // the bounday month
 					tag.addClass('off');
 				} else if (_this.data('date') == a.data('date')) { // the select day
 					tag.addClass('active');
@@ -75,7 +68,7 @@
 			var cols = Math.ceil((day + daysInMonth(date))/7);
 			for (var i = 0; i < cols; i++) {
 				var tr = $('<tr></tr>');
-				for (var j = 0; j < 7; j++, mDate.setDate(mDate.getDate() + 1)) {
+				for (var j = 0; j < 7; j++, mDate.setUTCDate(mDate.getUTCDate() + 1)) {
 					tr.append(dateToTag(mDate));
 				}
 				tBody.append(tr);
@@ -117,7 +110,7 @@
 
 		function updateTable(monthOffset) {
 			var date = strToDate(_this.find('.month').text());
-			date.setMonth(date.getMonth() + monthOffset);
+			date.setUTCMonth(date.getUTCMonth() + monthOffset);
 			_this.update(date);
 		};
 

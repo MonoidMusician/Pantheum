@@ -167,6 +167,7 @@ var dateToStr = function(d) {
 };
 
 var date = new Date(), lat = 0, lon = 0;
+date.setUTCDate(date.getDate());
 
 // Calendar
 var calendar = $('#calendar').calendar({date:date}).on('click', function() {
@@ -181,7 +182,9 @@ var update_date = function(d) {
 	displaytimes(date, +lat, +lon);
 };
 $('#today').on('click', function() {
-	update_date(new Date());
+	var d = new Date();
+	d.setUTCDate(d.getDate());
+	update_date(d);
 });
 $('#romefounding').on('click', function() {
 	update_date(new Date("-000753-04-22"));
