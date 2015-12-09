@@ -156,7 +156,10 @@ article + article:not(.secondary) {
     font-size: 90%;
     min-width: 200px;
 }
-
+.floating {
+    float: left;
+    padding: 10px;
+}
 
 input:not([type="checkbox"]):not([type="radio"]), button {
     border: 1px solid #aaaaaa;
