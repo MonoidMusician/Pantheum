@@ -9,10 +9,16 @@
     <head>
         <?php sro('/Includes/head.php'); ?>
         <title>Tools | Latin</title>
+        <link rel="stylesheet" type="text/css" href="/CSS/d3.compose.css">
+        <link rel="stylesheet" type="text/css" href="/CSS/calendar.css">
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="/JS/jQuiz.js"></script>
+        <script type="text/javascript" src="/JS/lib/d3.min.js"></script>
+        <script type="text/javascript" src="/JS/lib/d3.chart.js"></script>
+        <script type="text/javascript" src="/JS/lib/d3.compose-all.js"></script>
         <script type="text/javascript" src="/JS/lib/suncalc.js"></script>
+        <script type="text/javascript" src="/JS/lib/calendar.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
