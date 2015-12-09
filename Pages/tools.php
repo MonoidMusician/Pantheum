@@ -131,14 +131,14 @@ $('#roman-number') .on('keyup', change[1]).on('keydown', change[1]);
 <h2>Roman time</h2>
 <br>
 
-<div class="floating" style="width: 230px;">
+<div class="floating" style="width: 270px;">
 <h3>Location</h3>
 <input class="medium" id="latitude" placeholder="Latitude"><input class="medium" id="longitude" placeholder="Longitude">
 <button id="to-rome">In Rome</button>
 <button id="to-london">In London</button>
 <button id="hither">WhereAmI</button>
 </div>
-<div class="floating" style="width: 230px;">
+<div class="floating" style="width: 270px;">
 <h3>Date</h3>
 <input id="date" class="medium" type="text">
 <button id="today">Today</button>
