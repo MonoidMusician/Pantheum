@@ -2,26 +2,22 @@
 (function ($) {
 	/* "YYYY-MM[-DD]" => Date */
 	function strToDate(str) {
-		try {
-			var array = str.split('-');
-			var year = parseInt(array[0]);
-			var month = parseInt(array[1]);
-			var day = array.length > 2? parseInt(array[2]): 1 ;
-			if (year > 0 && month >= 0) {
-				return new Date(year, month - 1, day);
-			} else {
-				return null;
-			}
-		} catch (err) {}; // just throw any illegal format
+		return new Date(str);
 	};
 
 	/* Date => "YYYY-MM-DD" */
-	function dateToStr(d) {
-		/* fix month zero base */
-		var year = d.getFullYear();
-		var month = d.getMonth();
-		return year + "-" + (month + 1) + "-" + d.getDate();
-	};
+	if (typeof d3 == 'undefined') {
+		function dateToStr(d) {
+			/* fix month zero base */
+			var year = d.getFullYear();
+			var month = d.getMonth();
+			return year + "-" + (month + 1) + "-" + d.getDate();
+		};
+	} else {
+		function dateToStr(d) {
+			return d3.time.format.iso(d).split("T")[0];
+		};
+	}
 
 	$.fn.calendar = function (options) {
 		var _this = this;
@@ -87,7 +83,7 @@
 
 			/* set month head */
 			var monthStr = dateToStr(date).replace(/-\d+$/, '');
-			_this.find('.month').text(monthStr)
+			_this.find('.month').text(monthStr);
 		};
 
 		_this.getCurrentDate = function () {
