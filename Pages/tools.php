@@ -131,28 +131,32 @@ $('#roman-number') .on('keyup', change[1]).on('keydown', change[1]);
 <h2>Roman time</h2>
 <br>
 
-<div class="floating" style="width: 270px;">
-<h3>Location</h3>
-<input class="medium" id="latitude" placeholder="Latitude"><input class="medium" id="longitude" placeholder="Longitude">
-<button id="to-rome">In Rome</button>
-<button id="to-london">In London</button>
-<button id="hither">WhereAmI</button>
+<div>
+	<h3>Date</h3>
+	<input id="date" class="medium" type="text">
+	<button id="today">Today</button>
+	<button id="romefounding">Founding of Rome</button>
+	<div id="calendar" style="padding-top: 20px;"></div>
 </div>
-<div class="floating" style="width: 270px;">
-<h3>Date</h3>
-<input id="date" class="medium" type="text">
-<button id="today">Today</button>
-<button id="romefounding">Founding of Rome</button>
-<div id="calendar" style="padding-top: 20px;"></div>
+
+<div>
+	<h3>Location</h3>
+	<input class="medium" id="latitude" placeholder="Latitude"><input class="medium" id="longitude" placeholder="Longitude">
+	<button id="to-rome">In Rome</button>
+	<button id="to-london">In London</button>
+	<button id="hither">WhereAmI</button>
+
+	<div id="map" style="height: 300px;"></div>
 </div>
-<div class="floating">
-<h3>Results</h3>
-Sunrise:
-	<span id="sunrise"></span><br>
-Solar noon:
-	<span id="noon"></span><br>
-Sunset:
-	<span id="sunset"></span><br>
+
+<div>
+	<h3>Results</h3>
+	Sunrise:
+		<span id="sunrise"></span><br>
+	Solar noon:
+		<span id="noon"></span><br>
+	Sunset:
+		<span id="sunset"></span><br>
 </div>
 
 <br>
@@ -160,26 +164,27 @@ Sunset:
 <div id="solarchart" style="height: 500px; width: 800px; clear: both;"></div>
 
 <script>
+var initMap;
 $(function() {
 
 var dateToStr = function(d) {
 	return d3.time.format.iso(d).split("T")[0];
 };
 
-var date = new Date(), lat = 0, lon = 0;
+var date = new Date(), lat = 0, lng = 0;
 date.setUTCDate(date.getDate());
 
 // Calendar
 var calendar = $('#calendar').calendar({date:date}).on('click', function() {
 	$('input#date').val($(this).data('date'));
 	date = new Date($(this).data('date'));
-	displaytimes(date, +lat, +lon);
+	displaytimes(date, +lat, +lng);
 });
 var update_date = function(d) {
 	date = d; var s = dateToStr(date);
 	$('input#date').val(s);
 	calendar.data('date', s).update(date);
-	displaytimes(date, +lat, +lon);
+	displaytimes(date, +lat, +lng);
 };
 $('#today').on('click', function() {
 	var d = new Date();
@@ -187,7 +192,7 @@ $('#today').on('click', function() {
 	update_date(d);
 });
 $('#romefounding').on('click', function() {
-	update_date(new Date("-000753-04-22"));
+	update_date(new Date("-000753-04-21"));
 });
 $('#date').on('change', function() {
 	var d = new Date($(this).val());
@@ -226,9 +231,9 @@ var chart = d3.select('#solarchart').chart('Compose', function(data) {
 
 
 function convertDateToUTC(date) { return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()); }
-function displaytimes(date, lat, lon) {
-	var times = SunCalc.getTimes(date, lat, lon);
-	$('#latitude').val(lat); $('#longitude').val(lon);
+function displaytimes(date, lat, lng) {
+	var times = SunCalc.getTimes(date, lat, lng);
+	$('#latitude').val(lat); $('#longitude').val(lng);
 	var f = d3.time.format.utc("%0I:%M %p (UTC)");
 	$('#sunrise').text(f(times.sunrise));
 	$('#sunset' ).text(f(times.sunset));
@@ -269,7 +274,7 @@ function displaytimes(date, lat, lon) {
 	var i = 0; var avgnoon = 0;
 	for (var d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
 		i++;
-		var times = SunCalc.getTimes(d, lat, lon);
+		var times = SunCalc.getTimes(d, lat, lng);
 		var t1 = times.sunrise;
 		data[0].values.push({x:i,y:t1.getUTCHours() + t1.getUTCMinutes()/60});
 		var t2 = times.sunset;
@@ -293,17 +298,26 @@ function displaytimes(date, lat, lon) {
 
 	chart.draw(data);
 }
+
+// Location
+function update_map(latitude, longitude) {
+	lat = +latitude, lng = +longitude;
+	$('#latitude').val(lat);
+	$('#longitude').val(lng);
+	if (typeof map != 'undefined') map.setCenter({lat:lat,lng:lng});
+	displaytimes(date, lat, lng);
+}
 $('#latitude, #longitude').on('change', function() {
-	lat = $('#latitude').val(), lon = $('#longitude').val();
-	if (lat == +lat && lon == +lon)
-		displaytimes(date, +lat, +lon);
+	lat = $('#latitude').val(), lng = $('#longitude').val();
+	if (lat == +lat && lng == +lng)
+		update_map(lat, lng);
 });
-$('#to-rome'  ).on('click', function() {displaytimes(date, lat = 41.9, lon = 12.5)}).trigger('click');
-$('#to-london').on('click', function() {displaytimes(date, lat = 51.5, lon = -0.1)});
+$('#to-rome'  ).on('click', function() {update_map(41.9,12.5);}).trigger('click');
+$('#to-london').on('click', function() {update_map(51.5,-0.1);});
 if ("geolocation" in navigator) {
 	$('#hither').on('click', function() {
 		navigator.geolocation.getCurrentPosition(function(position) {
-			displaytimes(date, position.coords.latitude, position.coords.longitude);
+			update_map(position.coords.latitude, position.coords.longitude);
 		});
 	});
 } else {
@@ -313,9 +327,21 @@ if ("geolocation" in navigator) {
 
 update_date(date);
 
+var map;
+initMap = function() {
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: {lat: lat, lng: lng},
+		zoom: 5
+	});
+	google.maps.event.addListener(map, 'click', function(event) {
+        update_map(event.latLng.lat(),event.latLng.lng());
+    });
+}
 
 });
+
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2kxU6e0-_Wqgaac-IJ7ZI5X1gEaG6IsE&callback=initMap" async defer></script>
 
 </article>
 
