@@ -141,6 +141,7 @@ $('#roman-number') .on('keyup', change[1]).on('keydown', change[1]);
 
 <div>
 	<h3>Location</h3>
+	<input id="place">
 	<input class="medium" id="latitude" placeholder="Latitude"><input class="medium" id="longitude" placeholder="Longitude">
 	<button id="to-rome">In Rome</button>
 	<button id="to-london">In London</button>
@@ -304,7 +305,10 @@ function update_map(latitude, longitude) {
 	lat = +latitude, lng = +longitude;
 	$('#latitude').val(lat);
 	$('#longitude').val(lng);
-	if (typeof map != 'undefined') map.setCenter({lat:lat,lng:lng});
+	if (typeof map != 'undefined') {
+		map.setCenter({lat:lat,lng:lng});
+		marker.setPosition({lat:lat,lng:lng});
+	}
 	displaytimes(date, lat, lng);
 }
 $('#latitude, #longitude').on('change', function() {
@@ -327,21 +331,86 @@ if ("geolocation" in navigator) {
 
 update_date(date);
 
-var map;
+var map, marker;
 initMap = function() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: {lat: lat, lng: lng},
 		zoom: 5
 	});
-	google.maps.event.addListener(map, 'click', function(event) {
-        update_map(event.latLng.lat(),event.latLng.lng());
+    marker = new google.maps.Marker({
+		position: {lat:lat,lng:lng},
+		map: map, draggable: true,
+		title: "Drag me!",
+	});
+	google.maps.event.addListener(marker, 'dragend', function(event) {
+        update_map(marker.getPosition().lat(),marker.getPosition().lng());
     });
+
+	var input = document.getElementById('place');
+	var searchBox = new google.maps.places.SearchBox(input);
+	map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+	// Bias the SearchBox results towards current map's viewport.
+	map.addListener('bounds_changed', function() {
+		searchBox.setBounds(map.getBounds());
+	});
+
+	var markers = [];
+	// Listen for the event fired when the user selects a prediction and retrieve
+	// more details for that place.
+	searchBox.addListener('places_changed', function() {
+		var places = searchBox.getPlaces();
+
+		if (places.length == 0) {
+			return;
+		}
+
+		// Clear out the old markers.
+		markers.forEach(function(marker) {
+			marker.setMap(null);
+		});
+		markers = [];
+
+		if (places.length == 1) {
+			var loc = places[0].geometry.location;
+	        update_map(loc.lat(),loc.lng());
+			return;
+		}
+
+		// For each place, get the icon, name and location.
+		var bounds = new google.maps.LatLngBounds();
+		places.forEach(function(place) {
+			var icon = {
+				url: place.icon,
+				size: new google.maps.Size(71, 71),
+				origin: new google.maps.Point(0, 0),
+				anchor: new google.maps.Point(17, 34),
+				scaledSize: new google.maps.Size(25, 25)
+			};
+
+			// Create a marker for each place.
+			markers.push(new google.maps.Marker({
+				map: map,
+				icon: icon,
+				title: place.name,
+				position: place.geometry.location
+			}));
+
+			if (place.geometry.viewport) {
+				// Only geocodes have viewport.
+				bounds.union(place.geometry.viewport);
+			} else {
+				bounds.extend(place.geometry.location);
+			}
+		});
+		map.fitBounds(bounds);
+	});
 }
 
 });
 
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2kxU6e0-_Wqgaac-IJ7ZI5X1gEaG6IsE&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2kxU6e0-_Wqgaac-IJ7ZI5X1gEaG6IsE&callback=initMap&libraries=places" async defer></script>
 
 </article>
 
