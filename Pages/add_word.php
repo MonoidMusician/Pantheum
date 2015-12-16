@@ -206,7 +206,7 @@
 <a href="javascript:void(0)" onclick="insertAtCaret(last_active_element, 'ȳ');$(last_active_element).next().next().trigger('click.repl')">ȳ</a>
 <a href="javascript:void(0)" onclick="insertAtCaret(last_active_element, 'æ');$(last_active_element).next().next().trigger('click.repl')">æ</a>
 <a href="javascript:void(0)" onclick="insertAtCaret(last_active_element, 'œ');$(last_active_element).next().next().trigger('click.repl')">œ</a>
-[<a id="clearall" href="javascript:void(0)" onclick="$('input').each(function(){$(this).val('').trigger('keydown')});$('#definitions input').not(':first').parent().remove();$('#forms span:visible').first().trigger('click.repl');$('#wiktionary, #perseus').removeAttr('href')">clear all</a>]
+[<a id="clearall" href="javascript:void(0)" onclick="$('input').each(function(){$(this).val('').trigger('keydown')});add_definition({which:13}, true);add_relation({which:13}, true);$('#forms span:visible').first().trigger('click.repl');$('#wiktionary, #perseus').removeAttr('href')">clear all</a>]
  →
 <a id="wiktionary" target="_blank">Wiktionary</a>,
 <a id="perseus" target="_blank">Lewis & Short</a>
@@ -338,10 +338,9 @@ function insertAtCaret(txtarea, text) {
 	$(txtarea).trigger("keyup");
 }
 var add_definition, add_relation;
-var lock = false;
-$('#definitions').on('keyup', 'input', add_definition = function(e) {
-	//if (e.which == 8) $('#definitions input').last().trigger('focus');
-	if (lock || e.which != 13) return; lock=true; // hack
+var lock1 = false, lock2 = false;
+$('#definitions ').on('keyup', 'input', add_definition = function(e, dummy) {
+	if (lock1 || e.which != 13) return; lock1=true; // hack
 	//alert(e.which);
 	$('#definitions input').filter(function() {
 		return !$(this).val();
@@ -349,22 +348,23 @@ $('#definitions').on('keyup', 'input', add_definition = function(e) {
 	$('#definitions').append('<li><input placeholder="secondary">');
 	$('#definitions input').first().attr('placeholder','primary');
 	setTimeout(function() {
-		$('#definitions input').last().trigger('focus').autosizeInput();
-		lock = false;
+		var a = $('#definitions input').last().autosizeInput();
+		if (!dummy) a.trigger('focus');
+		lock1 = false;
 	}, 1);
 });
-$('#relations').on('keyup', 'input', add_relation = function(e) {
-	//if (e.which == 8) $('#definitions input').last().trigger('focus');
-	if (lock || e.which != 13) return; lock=true; // hack
-	//alert(e.which);
+$('#relations').on('keyup', 'input', add_relation = function(e, dummy) {
+	if (lock2 || e.which != 13) return; lock2=true; // hack
 	$('#relations input:not([type=checkbox])').filter(function() {
 		return !$(this).val();
 	}).parent().remove();
 	$('#relations').append('<li><input placeholder="type"><input placeholder="word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><label><input type="checkbox">Mutual</label>');
 	setTimeout(function() {
 		updater('#relations input:nth-last-child(2)', [], []);
-		$('#relations input:nth-last-child(2)').autosizeInput().prev().trigger('focus').autosizeInput();
-		$('#relations input:nth-last-child(2)').autocomplete(relation_autocomplete);
+		var a = $('#relations input:nth-last-child(2)').autosizeInput().prev().autosizeInput();
+		a.autocomplete(relation_autocomplete);
+		if (!dummy) a.trigger('focus');
+		lock2 = false;
 	}, 1);
 });
 
