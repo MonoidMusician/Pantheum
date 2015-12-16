@@ -415,11 +415,11 @@ $('#forms input').on('blur.repl', function(){
 	while (slug.endsWith(",")) slug = slug.slice(0,-1).trim();
 	if (!$this.prev().length || $this.prev().is('.present')) {
 		slug = æ.ASCIIize(slug.normalize('NFKD')), w = 'wiktionary.org/wiki/'+slug;
-		$('#wiktionary').attr('href','http://en.'+w+'#Latin');
+		$('#wiktionary').attr('href','https://en.'+w+'#Latin');
 		$('#iframe').parent().show();
 		if ($('#iframe').attr('data-slug') != slug) {
 			$('#iframe').attr('data-slug',slug);
-			$('#iframe').attr('src', 'http://en.m.'+w);
+			$('#iframe').attr('src', 'https://en.m.'+w);
 			lock_url = false;
 		}
 		$('#perseus').attr('href','http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry='+slug);
