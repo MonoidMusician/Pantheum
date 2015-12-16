@@ -219,16 +219,21 @@ var chart = d3.select('#solarchart').chart('Compose', function(data) {
 	};
 
 	var charts = [
-		d3c.lines('results', {
+		d3c.lines('times', {
 			data: data.data,
 			xScale: scales.x,
 			yScale: scales.y
-		})
+		}),
+		d3c.lines('dates', {
+			data: data.dates,
+			xScale: scales.x,
+			yScale: scales.y
+		}),
 	];
 
 	var xAxis = d3c.axis('xAxis', {scale: scales.x});
 	var yAxis = d3c.axis('yAxis', {scale: scales.y});
-	var legend = d3c.legend({charts: ['results']});
+	var legend = d3c.legend({charts: ['times','dates']});
 	var title = d3c.title('Sun times throughout the year');
 	var xAxisTitle = d3c.axisTitle('Day');
 	var yAxisTitle = d3c.axisTitle('Hour');
@@ -266,7 +271,7 @@ function displaytimes(date, lat, lng) {
 			prev = prev.y;
 		if (isNaN(t.getTime()))
 			return prev;
-		var t = t.getUTCHours() + t.getUTCMinutes()/60;
+		var t = t.getUTCHours() + t.getUTCMinutes()/60 + t.getUTCSeconds()/60/60;
 		if (prev === undefined) return t;
 		if (t > prev+6) t -= 24;
 		else if (t < prev-6) t += 24;
@@ -275,8 +280,10 @@ function displaytimes(date, lat, lng) {
 	$('#sunrise').text(f(times.sunrise));
 	$('#sunset' ).text(f(times.sunset));
 	$('#noon'   ).text(f(times.solarNoon));
-	$('#romanhour'   ).text(((getT(times.sunset)-getT(times.sunrise))/12).toFixed(2));
-	$('#romanminutes').text(((getT(times.sunset)-getT(times.sunrise))/12*60).toFixed(0));
+	var t = getT(times.sunset) - getT(times.sunrise);
+	if (t < 0) t += 24;
+	$('#romanhour'   ).text((t/12).toFixed(2));
+	$('#romanminutes').text((t/12*60).toFixed(0));
 
 
 	var data = [
@@ -288,8 +295,8 @@ function displaytimes(date, lat, lng) {
 		values: []
 	  },
 	  {
-		key: 'sunset',
-		name: 'Sunset (Duodecima Hora)',
+		key: 'hr3',
+		name: 'Tertia Hora',
 		values: []
 	  },
 	  {
@@ -298,36 +305,109 @@ function displaytimes(date, lat, lng) {
 		values: []
 	  },
 	  {
-		key: 'hr3',
-		name: 'Tertia Hora',
-		values: []
-	  },
-	  {
 		key: 'hr9',
 		name: 'Nona Hora',
 		values: []
-	  }
+	  },
+	  {
+		key: 'sunset',
+		name: 'Sunset (Duodecima Hora)',
+		values: []
+	  },
 	];
-	var year = date.getFullYear();
+	var dates = [
+	  {
+	  	key: 'today',
+	  	name: 'Selected Date',
+	  	values: []
+	  },
+	  {
+	  	key: 'solstice1',
+	  	name: 'Solstice',
+	  	values: []
+	  },
+	  {
+	  	key: 'solstice2',
+	  	name: 'Solstice',
+	  	values: []
+	  },
+	  {
+	  	key: 'equinox1',
+	  	name: 'Equinox',
+	  	values: []
+	  },
+	  {
+	  	key: 'equinox2',
+	  	name: 'Equinox',
+	  	values: []
+	  },
+	];
+	var year = date.getFullYear(), today;
 	var s = new Date(year, 0, 1), e = new Date(year, 12, 1);
 	var i = 0; var avgnoon = 0;
 	var _t4 = undefined, _t5 = undefined;
+	var days = [];
 	for (var d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
 		i++;
 		var times = SunCalc.getTimes(d, lat, lng);
-		var t1 = times.sunrise;
-		data[0].values.push({x:i,y:getT(t1, data[0].values)});
-		var t2 = times.sunset;
-		data[1].values.push({x:i,y:getT(t2, data[1].values)});
-		var t3 = times.solarNoon;
-		data[2].values.push({x:i,y:getT(t3, data[2].values)});
-		var t4 = 0.5*t1 + 0.5 * t3; t4 = getT(new Date(t4), _t4);
-		data[3].values.push({x:i,y:t4});
-		var t5 = 0.5*t2 + 0.5 * t3; t5 = getT(new Date(t5), _t5);
-		data[4].values.push({x:i,y:t5});
-		avgnoon += times.solarNoon.getUTCHours();
+		var t1 = getT(times.sunrise, data[0].values);
+		data[0].values.push({x:i,y:t1});
+		var t2 = getT(times.sunset, data[4].values);
+		if (t2 < t1) t2 += 24;
+		data[4].values.push({x:i,y:t2});
+		var t3 = getT(times.solarNoon, data[2].values);
+		if (t3 < t1) t3 += 24;
+		data[2].values.push({x:i,y:t3});
+		var t4 = 0.5 * t1 + 0.5 * t3;
+		if (t4 < t1) t4 += 24;
+		data[1].values.push({x:i,y:t4});
+		var t5 = 0.5 * t2 + 0.5 * t3;
+		if (t5 < t1) t5 += 24;
+		data[3].values.push({x:i,y:t5});
+		avgnoon += getT(times.solarNoon);
+		if (d.getMonth() == date.getMonth() && d.getDate() == date.getDate()) {
+			today = dates[0];
+			today.values.push({x:i,y:t1});
+			today.values.push({x:i,y:t2});
+		}
 		_t4 = t4; _t5 = t5;
+		days.push([d,t1,t2,t3,t4,t5,t2-t1,Math.abs(t2-t1-12)]);
 	}
+	var maxlux = 0, minlux = 0, eq1 = 0, eq2 = 0;
+	$.each(days, function(i,day) {
+		var lux = day[6], equi = day[7];
+		if (lux > days[maxlux][6]) maxlux = i;
+		else if (maxlux != 0 && lux == days[maxlux][6]) {
+			dates[1].values.push({'x':maxlux,'y':days[maxlux][1]});
+			dates[1].values.push({'x':maxlux,'y':days[maxlux][2]});
+		}
+		if (lux < days[minlux][6]) minlux = i;
+		else if (maxlux != 0 && lux == days[minlux][6])	{
+			dates[2].values.push({'x':minlux,'y':days[minlux][1]});
+			dates[2].values.push({'x':minlux,'y':days[minlux][2]});
+		}
+		if (i <= days.length/2) {
+			if (equi < days[eq1][7]) eq1 = i;
+			else if (eq1 != 0 && lux == days[eq1][6])	{
+				dates[3].values.push({'x':eq1,'y':days[eq1][1]});
+				dates[3].values.push({'x':eq1,'y':days[eq1][2]});
+			}
+		} else {
+			if (equi < days[eq2][7]) eq2 = i;
+			else if (eq2 != 0 && lux == days[eq2][6])	{
+				dates[4].values.push({'x':eq2,'y':days[eq2][1]});
+				dates[4].values.push({'x':eq2,'y':days[eq2][2]});
+			}
+		}
+	});
+	dates[1].values.push({'x':maxlux,'y':days[maxlux][1]});
+	dates[1].values.push({'x':maxlux,'y':days[maxlux][2]});
+	dates[2].values.push({'x':minlux,'y':days[minlux][1]});
+	dates[2].values.push({'x':minlux,'y':days[minlux][2]});
+	dates[3].values.push({'x':eq1,'y':days[eq1][1]});
+	dates[3].values.push({'x':eq1,'y':days[eq1][2]});
+	dates[4].values.push({'x':eq2,'y':days[eq2][1]});
+	dates[4].values.push({'x':eq2,'y':days[eq2][2]});
 	avgnoon /= (i-1);
 	var tz = Math.round(12 - avgnoon);
 	$.each(data, function(i,d) {
@@ -335,8 +415,13 @@ function displaytimes(date, lat, lng) {
 			pt.y += timezone;
 		});
 	});
+	$.each(dates, function(i,d) {
+		$.each(d.values, function(j,pt) {
+			pt.y += timezone;
+		});
+	});
 
-	chart.draw({data:data, range:[-tz+timezone,-tz+timezone+24]});
+	chart.draw({data:data, dates:dates, range:[-tz+timezone,-tz+timezone+24]});
 }
 
 
