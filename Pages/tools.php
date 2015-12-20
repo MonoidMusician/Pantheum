@@ -14,14 +14,38 @@
 <article>
 <h2>Roman numerals</h2>
 <br>
-<input id="arabic-number" placeholder="Arabic Number" value="<?= safe_get('number', $_GET) ?>">
+<input id="arabic-number" placeholder="Arabic Number" type="number" value="<?= safe_get('number', $_GET) ?>">
 = <input id="roman-number" placeholder="Roman Numeral">
 <span id="output-uc"></span>
 <span id="output-lc"></span>
 
+<br>
+<select id="gender" style="width: 150px;">
+<option>masculine
+<option>feminine
+<option>neuter
+</select>
+<select id="number" style="width: 100px;">
+<option>singular
+<option>plural
+</select>
+<select id="case" style="width: 200px;">
+<option>nominative
+<option>accusative
+<option>ablative
+<option>dative
+<option>genitive
+<option>vocative
+</select>
+<br>
+Cardinal: <span id="cardinal" class="format-word-la"></span>
+<br>
+Ordinal: <span id="ordinal" class="format-word-la"></span>
 
 <script>
 $(function() {
+
+
 // From http://blog.stevenlevithan.com/archives/javascript-roman-numeral-converter
 function romanize (num) {
 	if (!+num)
@@ -109,6 +133,7 @@ var change = [function() {
 	{ $('#roman-number').attr('placeholder', result); result = "" }
 	else $('#roman-number').attr('placeholder', "Roman Numeral");
 	$('#roman-number') .val(halfreromanize(result));
+	verbalize();
 }, function() {
 	var val = $(this).val(), result = val && (deromanize(val) || "Error");
 	$('#output-uc').text(val ? rr = '= '+reromanize(val.toUpperCase()) : '');
@@ -117,9 +142,253 @@ var change = [function() {
 	{ $('#arabic-number').attr('placeholder', result); result = "" }
 	else $('#arabic-number').attr('placeholder', "Arabic Number");
 	$('#arabic-number').val(result);
+	verbalize();
 }]
-$('#arabic-number').on('keyup', change[0]).on('keydown', change[0]).trigger('keyup');
+$('#arabic-number').on('keyup', change[0]).on('keydown', change[0]).on('change', change[0]);
 $('#roman-number') .on('keyup', change[1]).on('keydown', change[1]);
+
+
+
+$('select').select2({minimumResultsForSearch: Infinity});
+var adj12 = function(b) {
+	return {
+		'singular': {
+			'nominative': {
+				'masculine': b+'us',
+				'feminine':  b+'a',
+				'neuter':    b+'um'
+			},
+			'accusative': {
+				'masculine': b+'um',
+				'feminine':  b+'am',
+				'neuter':    b+'um'
+			},
+			'ablative': {
+				'masculine': b+'ō',
+				'feminine':  b+'ā',
+				'neuter':    b+'ō'
+			},
+			'dative': {
+				'masculine': b+'ō',
+				'feminine':  b+'æ',
+				'neuter':    b+'ō'
+			},
+			'genitive': {
+				'masculine': b+'ī',
+				'feminine':  b+'æ',
+				'neuter':    b+'ī'
+			},
+			'vocative': {
+				'masculine': b+'e',
+				'feminine':  b+'a',
+				'neuter':    b+'um'
+			}
+		},
+		'plural': {
+			'nominative': {
+				'masculine': b+'ī',
+				'feminine':  b+'æ',
+				'neuter':    b+'a'
+			},
+			'accusative': {
+				'masculine': b+'ōs',
+				'feminine':  b+'ās',
+				'neuter':    b+'a'
+			},
+			'ablative': {
+				'masculine': b+'īs',
+				'feminine':  b+'īs',
+				'neuter':    b+'īs'
+			},
+			'dative': {
+				'masculine': b+'īs',
+				'feminine':  b+'īs',
+				'neuter':    b+'īs'
+			},
+			'genitive': {
+				'masculine': b+'ōrum',
+				'feminine':  b+'ārum',
+				'neuter':    b+'ōrum'
+			},
+			'vocative': {
+				'masculine': b+'ī',
+				'feminine':  b+'æ',
+				'neuter':    b+'a'
+			}
+		}
+	}
+};
+var modify = function(forms, list) {
+	$.each(list, function(_,l) {
+		var f = forms, v = l.pop(), i;
+		while (l.length > 1)
+			f = f[l.pop()];
+		i = l.pop();
+		if (typeof f[i] !== 'object')
+			f[i] = v;
+		else {
+			$.each(f[i], function(k, _) {
+				f[i][k] = v;
+			});
+		}
+	});
+	return forms;
+};
+var cardinals = {
+	0: 'nihil',
+	1: modify(adj12('ūn'), [
+		['dative','singular','ūnī'],
+		['genitive','singular','ūnīus'],
+	]),
+	2: {
+		'nominative': {
+			'masculine': 'duo',
+			'feminine':  'duæ',
+			'neuter':    'duo',
+		},
+		'accusative': {
+			'masculine': 'duōs',
+			'feminine':  'duās',
+			'neuter':    'duo',
+		},
+		'ablative': {
+			'masculine': 'duōbus',
+			'feminine':  'duābus',
+			'neuter':    'duōbus',
+		},
+		'dative': {
+			'masculine': 'duōbus',
+			'feminine':  'duābus',
+			'neuter':    'duōbus',
+		},
+		'genitive': {
+			'masculine': 'duōrum',
+			'feminine':  'duārum',
+			'neuter':    'duōrum',
+		},
+		'vocative': {
+			'masculine': 'duo',
+			'feminine':  'duæ',
+			'neuter':    'duo',
+		},
+	},
+	3: {
+		'masculine': 'trēs',
+		'feminine':  'trēs',
+		'neuter':    'tria',
+		'ablative': 'tribus',
+		'dative':   'tribus',
+		'genitive': 'trium',
+	},
+	4: 'quattuor', 5: 'quīnque', 6: 'sex', 7: 'septem', 8: 'octō', 9: 'novem',
+	10: 'decem', 11: 'ūndecim', 12: 'duodecim', 13: 'tredecim', 14: 'quattuordecim',
+	15: 'quīndecim', 16: 'sēdecim', 17: 'septendecim',
+	20: 'vīgintī', 30: 'trīgintā', 40: 'quadrāgintā', 50: 'quīnquāgintā',
+	60: 'sexāgintā', 70: 'septuāgintā', 80: 'octōgintā', 90: 'nōnāgintā', 100: 'centum',
+	200: adj12('ducent')['plural'],
+	300: adj12('trecent')['plural'],
+	400: adj12('quadrigent')['plural'],
+	500: adj12('quīngent')['plural'],
+	600: adj12('sescent')['plural'],
+	700: adj12('septingent')['plural'],
+	800: adj12('octingent')['plural'],
+	900: adj12('nōngent')['plural'],
+};
+var ordinals = {
+	1: adj12('prīm'),
+	2: adj12('secund'),
+	3: adj12('terti'),
+	4: adj12('quārt'),
+	5: adj12('quīnt'),
+	6: adj12('sext'),
+	7: adj12('septim'),
+	8: adj12('octāv'),
+	9: adj12('nōn'),
+	10: adj12('decim'),
+	11: adj12('ūndecim'),
+	12: adj12('duodecim'),
+	20: adj12('vīcēsim'),
+	30: adj12('trīcēsim'),
+	40: adj12('quadrāgēsim'),
+	50: adj12('quīnquāgēsim'),
+	60: adj12('sexāgēsim'),
+	70: adj12('septuāgēsim'),
+	80: adj12('octōgēsim'),
+	90: adj12('nōnāgēsim'),
+	100: adj12('centēsim'),
+};
+var verbalize = function() {
+	var n = +$('#arabic-number').val(), cardinal, ordinal;
+	var ones = n % 10, tens = n - ones;
+	var number = $('#number').val();
+	var _case =  $('#case').val();
+	var gender = $('#gender').val();
+	var parse = function(verb) {
+		if (typeof verb === 'object' && number in verb)
+			verb = verb[number];
+		if (typeof verb === 'object' && _case  in verb)
+			verb = verb[_case];
+		if (typeof verb === 'object' && gender in verb)
+			verb = verb[gender];
+		if (typeof verb === 'object')
+			verb = null;
+		return verb;
+	};
+	var combine = function() {
+		var res = "";
+		for(var i = 0; i < arguments.length; i++) {
+			var a = arguments[i];
+			if (!a && a !== '') return;
+			res += a;
+		}
+		return res;
+	}
+	if (n > 0) {
+		ordinal  = parse(ordinals [n]);
+		cardinal = parse(cardinals[n]);
+
+		if (n > 10) {
+			if (!cardinal && n > 20 && ones in cardinals && tens in cardinals) {
+				cardinal = parse(cardinals[ones]);
+				if (cardinal) cardinal = cardinals[tens] + ' ' + cardinal;
+			}
+			if (!ordinal && ones in ordinals && tens in ordinals) {
+				ordinal = parse(ordinals[ones]);
+				var o1 = ordinal;
+				ordinal = parse(ordinals[tens]);
+				if (ordinal && o1)
+					if (n < 20) ordinal = o1 + ' ' + ordinal;
+					else ordinal += ' ' + o1;
+			}
+			var c, o;
+			if ((n % 10) == 8) {
+				c = combine('duodē',parse(cardinals[n+2]));
+				o = combine('duodē',parse(ordinals [n+2]));
+			} else if ((n % 10) == 9) {
+				c = combine('ūndē',parse(cardinals[n+1]));
+				o = combine('ūndē',parse(ordinals [n+1]));
+			}
+			if (c) {
+				if (cardinal) cardinal = cardinal + ' / ' + c;
+				else cardinal = c;
+			}
+			if (o) {
+				if (ordinal) ordinal = ordinal + ' / ' + o;
+				else ordinal = o;
+			}
+		}
+	}
+	if (!cardinal)
+		cardinal = '';
+	if (!ordinal)
+		ordinal = '';
+	$('#cardinal').text(cardinal).attr('data-original-word0', '');
+	$('#ordinal').text(ordinal).attr('data-original-word0', '');
+	la_ipa.format();
+};
+$('#case, #gender, #number').on('change', verbalize);
+
+$('#arabic-number').trigger('keyup');
 });
 </script>
 </article>
