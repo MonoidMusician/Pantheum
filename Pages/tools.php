@@ -43,9 +43,6 @@ Cardinal: <span id="cardinal" class="format-word-la"></span>
 Ordinal: <span id="ordinal" class="format-word-la"></span>
 
 <script>
-$(function() {
-
-
 // From http://blog.stevenlevithan.com/archives/javascript-roman-numeral-converter
 function romanize (num) {
 	if (!+num)
@@ -218,6 +215,74 @@ var adj12 = function(b) {
 		}
 	}
 };
+var adj3 = function(b) {
+	return {
+		'singular': {
+			'nominative': {
+				'masculine': b+'is',
+				'feminine':  b+'is',
+				'neuter':    b+'e'
+			},
+			'accusative': {
+				'masculine': b+'em',
+				'feminine':  b+'em',
+				'neuter':    b+'e'
+			},
+			'ablative': {
+				'masculine': b+'ī',
+				'feminine':  b+'ī',
+				'neuter':    b+'ī'
+			},
+			'dative': {
+				'masculine': b+'ī',
+				'feminine':  b+'ī',
+				'neuter':    b+'ī'
+			},
+			'genitive': {
+				'masculine': b+'isī',
+				'feminine':  b+'is',
+				'neuter':    b+'is'
+			},
+			'vocative': {
+				'masculine': b+'is',
+				'feminine':  b+'is',
+				'neuter':    b+'e'
+			}
+		},
+		'plural': {
+			'nominative': {
+				'masculine': b+'ēs',
+				'feminine':  b+'ēs',
+				'neuter':    b+'ēia'
+			},
+			'accusative': {
+				'masculine': b+'ēs',
+				'feminine':  b+'ēs',
+				'neuter':    b+'ia'
+			},
+			'ablative': {
+				'masculine': b+'ibus',
+				'feminine':  b+'ibus',
+				'neuter':    b+'ibus'
+			},
+			'dative': {
+				'masculine': b+'ibus',
+				'feminine':  b+'ibus',
+				'neuter':    b+'ibus'
+			},
+			'genitive': {
+				'masculine': b+'iu',
+				'feminine':  b+'ium',
+				'neuter':    b+'ium'
+			},
+			'vocative': {
+				'masculine': b+'ēs',
+				'feminine':  b+'ēs',
+				'neuter':    b+'ia'
+			}
+		}
+	}
+};
 var modify = function(forms, list) {
 	$.each(list, function(_,l) {
 		var f = forms, v = l.pop(), i;
@@ -317,6 +382,55 @@ var ordinals = {
 	90: adj12('nōnāgēsim'),
 	100: adj12('centēsim'),
 };
+var parse = function(verb, number, _case, gender) {
+	if (typeof verb === 'object' && number in verb)
+		verb = verb[number];
+	if (typeof verb === 'object' && _case  in verb)
+		verb = verb[_case];
+	if (typeof verb === 'object' && gender in verb)
+		verb = verb[gender];
+	if (typeof verb === 'object')
+		verb = null;
+	return verb;
+};
+var getordinal = function(n, number, _case, gender) {
+	var ones = n % 10, tens = n - ones, ordinal;
+	var parse = function(verb) {
+		if (typeof verb === 'object' && number in verb)
+			verb = verb[number];
+		if (typeof verb === 'object' && _case  in verb)
+			verb = verb[_case];
+		if (typeof verb === 'object' && gender in verb)
+			verb = verb[gender];
+		if (typeof verb === 'object')
+			verb = null;
+		return verb;
+	};
+	var combine = function() {
+		var res = "";
+		for(var i = 0; i < arguments.length; i++) {
+			var a = arguments[i];
+			if (!a && a !== '') return;
+			res += a;
+		}
+		return res;
+	}
+	if (n > 0) {
+		ordinal = parse(ordinals[n]);
+
+		if (n > 10) {
+			if (!ordinal && ones in ordinals && tens in ordinals) {
+				ordinal = parse(ordinals[ones]);
+				var o1 = ordinal;
+				ordinal = parse(ordinals[tens]);
+				if (ordinal && o1)
+					if (n < 20) ordinal = o1 + ' ' + ordinal;
+					else ordinal += ' ' + o1;
+			}
+		}
+	}
+	if (ordinal) return ordinal;
+};
 var verbalize = function() {
 	var n = +$('#arabic-number').val(), cardinal, ordinal;
 	var ones = n % 10, tens = n - ones;
@@ -389,7 +503,6 @@ var verbalize = function() {
 $('#case, #gender, #number').on('change', verbalize);
 
 $('#arabic-number').trigger('keyup');
-});
 </script>
 </article>
 
@@ -402,10 +515,16 @@ $('#arabic-number').trigger('keyup');
 
 <div>
 	<h3>Date</h3>
-	<input id="date" class="medium" type="text">
-	<button id="today">Today</button>
-	<button id="romefounding">Founding of Rome</button>
-	<div id="calendar" style="padding-top: 20px;"></div>
+	<div>
+		<span id="romandate" class="format-word-la"></span>
+	</div>
+	<div>
+		<input id="date" class="medium" type="text">
+		<button id="today">Today</button>
+		<button id="romefounding">Founding of Rome</button>
+	</div>
+	<div id="calendar" style="float: left; padding-top: 20px;"></div>
+	<div style="clear: both;"></div>
 </div>
 
 <div>
@@ -467,9 +586,6 @@ $('#arabic-number').trigger('keyup');
 <div id="solarchart" style="height: 500px; width: 800px; clear: both;"></div>
 
 <script>
-var initMap;
-$(function() {
-
 var dateToStr = function(d) {
 	return d3.time.format.iso(d).split("T")[0];
 };
@@ -724,16 +840,104 @@ $('#timezone').on('change', function() {
 });
 
 // Calendar
-var calendar = $('#calendar').calendar({date:date}).on('click', function() {
+var months = [
+	adj12('jānuāri'),
+	adj12('februāri'),
+	adj12('mārti'),
+	adj3('aprīl'),
+	adj12('māi'),
+	adj12('jūni'),
+	adj12('jūli'),
+	adj12('august'),
+	modify(adj3('septembr'), [
+		['nominative','singular','september']
+	]),
+	modify(adj3('octōbr'), [
+		['nominative','singular','octōber']
+	]),
+	modify(adj3('novembr'), [
+		['nominative','singular','november']
+	]),
+	modify(adj3('decembr'), [
+		['nominative','singular','december']
+	]),
+];
+var days = {
+	'ides': {
+		'nominative': 'īdūs',
+		'accusative': 'īdūs',
+		'ablative':   'īdibus',
+		'dative':     'īdibus',
+		'genitive':   'īduum',
+		'vocative':   'īdūs'
+	},
+	'kalends': {
+		'nominative': 'kalendæ',
+		'accusative': 'kalendās',
+		'ablative':   'kalendīs',
+		'dative':     'kalendīs',
+		'genitive':   'kalendārum',
+		'vocative':   'kalendæ'
+	},
+	'nones': {
+		'nominative': 'nōnæ',
+		'accusative': 'nōnās',
+		'ablative':   'nōnīs',
+		'dative':     'nōnās',
+		'genitive':   'nōnārum',
+		'vocative':   'nōnæ'
+	}
+};
+var weekdays = [
+	'Sōlis', 'Lūnæ', 'Martis', 'Mercuriī', 'Iovis', 'Veneris', 'Saturnī'
+];
+var nones = function(month) {
+	if (month == 2 || month == 4 || month == 6 || month == 9)
+		return 7;
+	return 5;
+};
+var getclass = function(date) {
+	var m = date.getUTCMonth(), d = date.getUTCDate();
+	if (d == 1) return 'kalends';
+	if (d == nones(m)) return 'nones';
+	if (d == nones(m)+8) return 'ides';
+};
+var romancalendar = function(date) {
+	var d = new Date(date);
+	for (var o = 0; !getclass(d); ++o, d.setDate(d.getDate() + 1)) {}
+	var c = getclass(d), m = d.getUTCMonth(), y = d.getUTCFullYear(), year = '', _case = 'accusative', pre = '';
+	if (o == 0) _case = 'ablative';
+	else if (o == 1) pre = 'prīdiē ';
+	else {
+		d.setDate(d.getDate() - 1);
+		if (m == 2 && o > 5 && d.getUTCDate() == 29)
+			o -= 1; // leap years have two VI ante Kal. Feb.
+		pre = 'diē ' + getordinal(o+1, 'singular', 'ablative', 'masculine') + ' ante ';
+	}
+	if (y > 0) {
+		year = ' annō dominī ' + romanize(y);
+	}
+	return weekdays[date.getUTCDay()] + ' ' + pre + Titlecase(days[c][_case]) + ' ' + Titlecase(months[m]['plural'][_case]['feminine']) + year;
+};
+var Romancalendar = function(date) {
+	$('#romandate').text(romancalendar(date)).attr('data-original-word0', '');
+	la_ipa.format();
+};
+function Titlecase(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+};
+var calendar = $('#calendar').calendar({date:date,classes:getclass}).on('click', function() {
 	$('input#date').val($(this).data('date'));
 	date = new Date($(this).data('date'));
 	displaytimes(date, +lat, +lng);
+	Romancalendar(date);
 });
 var update_date = function(d) {
 	date = d; var s = dateToStr(date);
 	$('input#date').val(s);
 	calendar.data('date', s).update(date);
 	displaytimes(date, +lat, +lng);
+	Romancalendar(d);
 };
 $('#today').on('click', function() {
 	var d = new Date();
@@ -785,7 +989,7 @@ if ("geolocation" in navigator) {
 update_date(date);
 
 var map, marker, input, searchBox;
-initMap = function() {
+var initMap = function() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: {lat: lat, lng: lng},
 		zoom: 5
@@ -859,8 +1063,6 @@ initMap = function() {
 		map.fitBounds(bounds);
 	});
 }
-
-});
 
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2kxU6e0-_Wqgaac-IJ7ZI5X1gEaG6IsE&callback=initMap&libraries=places" async defer></script>

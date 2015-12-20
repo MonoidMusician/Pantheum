@@ -128,3 +128,13 @@
   border-bottom: 0;
   margin-bottom: 0;
 }
+
+.cal td.ides:not(.off) a:not(:hover) {
+  background: blue;
+}
+.cal td.nones:not(.off) a:not(:hover) {
+  background: green;
+}
+.cal td.kalends:not(.off) a:not(:hover) {
+  background: yellow;
+}

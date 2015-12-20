@@ -60,6 +60,15 @@
 					tag.addClass('active');
 					_this.data('date', dateToStr(d));
 				}
+				var classes = opts.classes;
+				if (classes) {
+					if (typeof classes === 'function')
+						classes = classes(d);
+					if (typeof classes === 'string')
+						classes = classes.split(' ');
+					if (Array.isArray(classes))
+						$.each(classes, function(i,c) {tag.addClass(c)});
+				}
 				return tag;
 			};
 
@@ -129,6 +138,7 @@
 	$.fn.calendar.defaults = {
 		date: new Date(),
 		picker: false,
+		classes: '',
 	};
 
 	$.fn.datePicker = function () {
