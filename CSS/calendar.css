@@ -14,13 +14,12 @@
 
 
 .cal {
-  background-color: white;
+  background-color: #EFEFEF;
   display: block;
-  width: 216px;
-  -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  width: 218px;
   border-collapse: collapse;
   border-spacing: 0;
+  border: 1px solid #AAA;
 }
 
 .cal a {
@@ -31,6 +30,7 @@
   margin: 0;
   padding: 0;
   border: 0;
+  outline: 0;
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
@@ -38,26 +38,15 @@
 
 .cal caption {
   line-height: 32px;
-  font-weight: bold;
-  color: #e2e2e2;
+  color: #FFF;
   text-align: center;
-  text-shadow: 0 -1px black;
-  background: #333;
-  //background: rgba(0, 0, 0, 0.35);
-  border-top: 1px solid #333;
-  border-bottom: 1px solid #313131;
-  -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+  background: #AAA;
 }
 .cal caption a {
   display: block;
   line-height: 32px;
   padding: 0 10px;
-  font-size: 15px;
-  color: #e2e2e2 !important;
-}
-.cal caption a:hover {
-  color: white;
+  color: #FFF !important;
 }
 .cal caption .prev {
   float: left;
@@ -65,10 +54,10 @@
 .cal caption .next {
   float: right;
 }
+
 .cal th, .cal td {
   width: 30px;
   text-align: center;
-  text-shadow: 0 1px rgba(255, 255, 255, 0.8);
 }
 .cal th:first-child, .cal td:first-child {
   border-left: 0;
@@ -76,45 +65,36 @@
 .cal th {
   line-height: 20px;
   font-size: 8px;
-  color: #696969;
+  color: #333;
   text-transform: uppercase;
-  background: #f3f3f3;
-  border-left: 1px solid #f3f3f3;
+  background: #EFEFEF;
 }
+
 .cal td {
   font-size: 11px;
   font-weight: bold;
-  border-top: 1px solid #c2c2c2;
-  border-left: 1px solid #c2c2c2;
+  border-top: 1px solid #AAA;
+  border-left: 1px solid #AAA;
 }
 .cal td a {
-  clear: both;
   display: block;
-  position: relative;
   width: 30px;
   line-height: 28px;
-  color: #666 !important;
-  background-image: -webkit-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
-  background-image: -moz-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
-  background-image: -o-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
-  background-image: linear-gradient(to bottom, #eaeaea, #e5e5e5 60%, #d9d9d9);
-  -webkit-box-shadow: inset 1px 1px rgba(255, 255, 255, 0.5);
-  box-shadow: inset 1px 1px rgba(255, 255, 255, 0.5);
-}
-.cal td a:hover, .cal td.off a {
-  background: #f3f3f3;
-}
-.cal td.off a {
-  color: #b3b3b3 !important;
+  color: #333 !important;
 }
 .cal td.active a, .cal td a:active {
-  margin: -1px;
-  color: #f3f3f3 !important;
-  text-shadow: 0 1px rgba(0, 0, 0, 0.3);
-  background: #6dafbf;
-  border: 1px solid #598b94;
-  -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+  color: #FFF !important;
+  background: #333 !important;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+}
+.cal td a:hover, .cal td.off a {
+  background: #FEFEFE;
+}
+.cal td.off a {
+  color: #CCC !important;
 }
 .cal td.active:first-child a, .cal td:first-child a:active {
   border-left: 0;
@@ -129,12 +109,11 @@
   margin-bottom: 0;
 }
 
-.cal td.ides:not(.off) a:not(:hover) {
-  background: blue;
-}
-.cal td.nones:not(.off) a:not(:hover) {
-  background: green;
+.cal td.ides:not(.off) a:not(:hover), .cal td.nones:not(.off) a:not(:hover) {
+  background: #C33;
+  color: #fff !important;
 }
 .cal td.kalends:not(.off) a:not(:hover) {
-  background: yellow;
+  background: #A00;
+  color: #fff !important;
 }
