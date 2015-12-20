@@ -211,11 +211,11 @@ function make_synopsisT($word) {
 
 $synopsis_words = [
 	// !facio ago habeo
-	"amo","sperno", "celo",
+	"sperno", "appello",
 	"moneo","augeo",
-	"mitto","demitto",
-	"perficio","accipio",
-	"audio"
+	"mitto","conduco",
+	"reficio","accipio",
+	"vincio"
 ];
 
 $quiz_types = array_merge($quiz_types,[
