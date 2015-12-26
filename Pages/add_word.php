@@ -362,7 +362,7 @@ $('#relations').on('keyup', 'input', add_relation = function(e, dummy) {
 	setTimeout(function() {
 		updater('#relations input:nth-last-child(2)', [], []);
 		var a = $('#relations input:nth-last-child(2)').autosizeInput().prev().autosizeInput();
-		a.autocomplete(relation_autocomplete);
+		a.next().autocomplete(relation_autocomplete);
 		if (!dummy) a.trigger('focus');
 		lock2 = false;
 	}, 1);
