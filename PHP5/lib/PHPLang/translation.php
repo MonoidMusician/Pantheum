@@ -310,6 +310,15 @@ function la_en($path, $only_one=false) {
 		];
 		$c = $c[$path->key_value("case")];
 		return "$c $t $d";
+	} else if ($spart === "adjective" || $spart === "adverb") {
+		$c = [
+			0 => "",
+			"positive"    => "",
+			"comparative" => $o?"quite/more":"(quite|rather|more)",
+			"superlative" => $o?"very/most" :"(very|most)",
+		];
+		$c = $c[$path->key_value("degree")];
+		return "$c $d";
 	}
 	return $d;
 }

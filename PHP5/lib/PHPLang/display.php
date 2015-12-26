@@ -81,6 +81,15 @@ function no_specials($w,$extras="1-9/; ,\\n") {
 	$w = preg_replace("#[^A-Za-z$extras]#","", $w);
 	return $w;
 }
+function fewer_specials($w,$strip="\u0304") {
+	$w = normalizer_normalize($w, Normalizer::FORM_D);
+	$w = str_replace("æ", "ae", $w);
+	$w = str_replace("œ", "oe", $w);
+	$w = str_replace("Æ", "ae", $w);
+	$w = str_replace("Œ", "oe", $w);
+	$w = str_replace($strip, "", $w);
+	return $w;
+}
 
 function strip_html($w) {
 	return preg_replace('/<[^>]*>/', '', $w);
@@ -98,14 +107,14 @@ function unformat_word($w) {
 	$w = str_replace("uu", "u", $w);
 	return normalize_spaces($w);
 }
-function slugify($w) {
-	$w = mb_strtolower(no_specials($w), "utf-8");
-	$w = str_replace("j", "i", $w);
-	$w = str_replace("aa", "a", $w);
-	$w = str_replace("ee", "e", $w);
-	$w = str_replace("ii", "i", $w);
-	$w = str_replace("oo", "o", $w);
-	$w = str_replace("uu", "u", $w);
+function slugify($w, $lang=NULL) {
+	if (ISWORD($w)) {
+		if ($lang === NULL) $lang = $w->lang();
+		$w = $w->name();
+	}
+	$w = mb_strtolower(fewer_specials($w), "utf-8");
+	if ($lang === "la")
+		$w = str_replace("j", "i", $w);
 	return normalize_spaces($w);
 }
 
@@ -423,14 +432,14 @@ function display_word_info($w, $can_edit=FALSE) {
 	}
 	?>(<?php echo implode("; ", $infos); ?>)<?php
 	if ($can_edit !== NULL and ($can_edit)) {
-		$slug = slugify($w->name());
+		$slug = slugify($w);
 		$class = "word${id}_toolbox";
 ?>
 		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_tools">tools</a>]
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
-				$('#word'+id+'_tools').on("click.tools", function() {
+				$('#word'+id+'_tools').on("mousedown", function() {
 					$('.<?= $class ?>').toggle();
 				});
 			});
@@ -478,8 +487,10 @@ function display_word_info($w, $can_edit=FALSE) {
 		(size: <?= count($w->paths()) ?>)
 		<div style="display: none;" class="<?= $class ?>">
 			&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="http://en.wiktionary.org/wiki/<?= $slug ?>#Latin" target="_blank">Wiktionary</a>,
-			<a href="http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry=<?= $slug ?>" target="_blank">Lewis & Short</a>
+			<a href="http://en.wiktionary.org/wiki/<?= $slug ?>#<?= format_lang($w) ?>" target="_blank">Wiktionary</a>
+			<?php if ($w->lang() === "la") { ?>
+				, <a href="http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry=<?= $slug ?>" target="_blank">Lewis & Short</a>
+			<?php } ?>
 			<br>&nbsp;&nbsp;&nbsp;&nbsp;
 			Pronunciation: <input id="word<?= $id ?>_pronunciation_tool"> <span></span>
 		</div>

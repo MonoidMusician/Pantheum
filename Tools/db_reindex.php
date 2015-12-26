@@ -1,4 +1,8 @@
 <?php
+@ini_set("output_buffering", "Off");
+@ini_set('implicit_flush', 1);
+@ini_set('zlib.output_compression', 0);
+
 	require_once('/var/www/config.php');
 	sro('/Includes/mysql.php');
 	sro('/Includes/session.php');
