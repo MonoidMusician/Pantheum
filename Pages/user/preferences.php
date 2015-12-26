@@ -3,7 +3,7 @@
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
-    
+
     sro('/PHP5/lib/PHPLang/db.php');
 
     requireLoggedIn(TRUE);
@@ -34,7 +34,7 @@
 <?php
     foreach (defaultDB()->get_mgr("la","noun")->key2values["case"] as $case) {
 ?>
-<li><span class="handle">=</span> <span class="value"><?= ucfirst($case) ?></span>
+<li><span class="value"><?= ucfirst($case) ?></span>
 <?php
     }
 ?>
@@ -63,9 +63,7 @@ $('#la_ipa').select2({
 if (pantheum.udata["archtrans"] == "true")
     $('#archtrans').attr('checked', true);
 
-$('#cases').sortable({
-    handle: '.handle',
-});
+$('#cases').sortable();
 
 $('#save').on('click', function() {
     var cases = [];

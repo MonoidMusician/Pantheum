@@ -72,3 +72,10 @@ section#content a.jpage-anchor:hover {
 .jTableBodyInputEditing[type="number"] {
     width: 50px !important;
 }
+
+span.value::before {
+    content: "= ";
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 15px;
+}
