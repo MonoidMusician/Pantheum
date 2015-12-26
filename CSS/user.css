@@ -73,6 +73,10 @@ section#content a.jpage-anchor:hover {
     width: 50px !important;
 }
 
+ul#cases {
+    list-style: none;
+}
+
 span.value::before {
     content: "= ";
     font-weight: bold;
