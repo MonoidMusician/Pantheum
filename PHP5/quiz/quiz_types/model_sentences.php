@@ -11,7 +11,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms1.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms1.jpg' style='width: 205px;'><br>"),
 				format_word("1. Syphāx et Celer in portū stābant. amīcī montem spectābant.","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -28,7 +28,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms2.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms2.jpg' style='width: 205px;'><br>"),
 				format_word("2. Syphāx amīcō dīxit, “ego prope portum servōs vēndēbam. ego subitō sonōs audīvī.”","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -43,7 +43,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms3.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms3.jpg' style='width: 205px;'><br>"),
 				format_word("3. Celer Syphācī respondit, “tū sonōs audīvistī. ego tremōrēs sēnsī. ego prope montem ambulābam.”","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -58,7 +58,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms4.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms4.jpg' style='width: 205px;'><br>"),
 				format_word("4. Poppæa et Lucriō in ātriō stābant. sollicitī erant.","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -73,7 +73,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms5.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms5.jpg' style='width: 205px;'><br>"),
 				format_word("5. Poppæa Lucriōnī dīxit, “ego in forō eram. ego tibi togam quærēbam. ego nūbem mīrābilem cōnspexī.”","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -88,7 +88,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms6.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms6.jpg' style='width: 205px;'><br>"),
 				format_word("6. Lucriō Poppææ respondit, “tū nūbem cōnspexistī. ego cinerem sēnsī. ego flammās vīdī.”","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -103,7 +103,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms7.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms7.jpg' style='width: 205px;'><br>"),
 				format_word("7. Marcus et Quārtus in forō erant. Sulla ad frātrēs contendit.","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -118,7 +118,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms8.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms8.jpg' style='width: 205px;'><br>"),
 				format_word("8. Sulla frātribus dīxit, “ego ad theātrum contendēbam. ego sonōs audīvī et tremōrēs sēnsī. vōs sonōs audīvistis? vōs tremōrēs sēnsistis?”","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -133,7 +133,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s12/ms9.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s12/ms9.jpg' style='width: 205px;'><br>"),
 				format_word("9. frātrēs Sullæ respondērunt, “nōs tremōrēs sēnsimus et sonōs audīvimus. nōs nūbem mīrābilem vīdimus. nōs sollicitī sumus.”","la"),
 				HTML("<br>"),
 				$OP_USER_INPUT
@@ -159,7 +159,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_1_large.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_1_large.jpg' style='width: 205px;'><br>"),
 				format_word("1. hic vir est Aristō. Aristō est amīcus Barbillī. in vīllā splendidā habitat, sed miserrimus est.","la",true),
 				HTML("<br><br>"),
 				$OP_USER_PARAGRAPH
@@ -176,7 +176,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_2_large.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_2_large.jpg' style='width: 205px;'><br>"),
 				format_word("2. haec fēmina est Galatēa. Galatēa est uxor Aristōnis. Galatēa marītum saepe castīgat, numquam laudat.","la",true),
 				HTML("<br><br>"),
 				$OP_USER_PARAGRAPH
@@ -193,7 +193,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_3_large.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s19/19_mod_sen_3_large.jpg' style='width: 205px;'><br>"),
 				format_word("3. haec puella est Helena. Helena est fīlia Aristōnis et Galatēae. multī iuvenēs hanc puellam amant, quod pulcherrima est.","la",true),
 				HTML("<br><br>"),
 				$OP_USER_PARAGRAPH
@@ -221,7 +221,7 @@ $quiz_types = array_merge($quiz_types, [
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s25/ms1.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s25/ms1.jpg' style='width: 205px;'><br>"),
 				format_word("1. mīles legiōnis secundæ per castra ambulābat. subitō iuvenem ignōtum prope horreum latentem cōnspexit.","la"),
 				format_word("“heus tū,” clāmāvit mīles, “quis es?”","la"),
 				format_word("iuvenis nihil respondit. mīles iuvenem iterum rogāvit quis esset. iuvenis fūgit.","la"),
@@ -259,7 +259,7 @@ The",
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s25/ms2.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s25/ms2.jpg' style='width: 205px;'><br>"),
 				format_word("2. mīles iuvenem petīvit et facile superāvit. “furcifer!” exclāmāvit. “quid prope horreum facis?”
 iuvenis dīcere nōlēbat quid prope horreum faceret. mīles eum ad centuriōnem dūxit.","la"),
 				HTML("<br><br>"),
@@ -295,7 +295,7 @@ The young man did not want to say what he was doing near the barn. The soldier l
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s25/ms3.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s25/ms3.jpg' style='width: 205px;'><br>"),
 				format_word("3. centuriō, iuvenem cōnspicātus, “hunc agnōscō!” inquit. “explōrātor Britannicus est, quem sæpe prope castra cōnspexī. quō modō eum cēpistī?”
 tum mīles explicāvit quō modō iuvenem cēpisset.","la"),
 				HTML("<br><br>"),
@@ -325,7 +325,7 @@ Then the soldier explained how he had caught the",
 			"help" => "Translate the sentence",
 			"selections" => [],
 			"sentence" => [
-				HTML("<img src='http://www.cambridgescp.com/singles/webbook/s25/ms4.jpg' style='width: 205px;'><br>"),
+				HTML("<img src='https://www.cambridgescp.com/singles/webbook/s25/ms4.jpg' style='width: 205px;'><br>"),
 				format_word("4. centuriō, ad iuvenem conversus, “cūr in castra vēnistī?” rogāvit. iuvenis tamen tacēbat.
     centuriō, ubi cognōscere nōn poterat cūr iuvenis in castra vēnisset, mīlitem iussit eum ad carcerem dūcere.
     iuvenis, postquam verba centuriōnis audīvit, “ego sum Vercobrix,” inquit, “fīlius prīncipis Deceanglōrum. vōbīs nōn decōrum est mē in carcere tenēre.”
