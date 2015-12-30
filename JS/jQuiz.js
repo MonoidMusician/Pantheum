@@ -1,12 +1,156 @@
 Plugins.AutosizeInput.getDefaultOptions().space = 30;
 
-function randomcase(string) {
-	return string.replace(/\w/g, function(i){return Math.random() > 0.5 ? i.toUpperCase() : i;});
-}
-
-function escapeHTML(s) {
+function jQuiz_escapeHTML(s) {
 	return $('<div/>').text(s).html().split('"').join('&quot;');
 }
+
+function jQuiz_checkanswer(name) {
+	return function(answer, callback) {
+		$.post('/PHP5/quiz/checkQuestion.php', {
+			name: name, answer: answer
+		}).done(function(truth) {
+			if (truth == 'true') truth = true;
+			else if (truth == 'false') truth = false;
+			else truth = 0;
+			callback(truth);
+		});
+	}
+}
+
+dynamicAnswer = (function() {
+	
+	function dynamicAnswer_scale(s) {
+		return s.replace(/\d+(\.\d+)?/g, function(n) {
+			return (+n)*rel;
+		});
+	};
+
+	var rel = 0.7;
+	var w = rel < 0.5 ? 2 : 4;
+	var m = ' '+(20+w/2)+' ', M = ' '+(20-w/2)+' ';
+	var loading = dynamicAnswer_scale('M4'+m+'L14'+m+'L36'+m+'M4'+M+'L14'+M+'L36'+M);
+	var Loading = dynamicAnswer_scale('M4'+m+'L20'+m+'L36'+m+'M4'+M+'L20'+M+'L36'+M);
+	var check = dynamicAnswer_scale('M4 20 L14 32 L36 4 M4 20 L14 32 L36 4');
+	var cross = dynamicAnswer_scale('M4 36 L20 20 L36 36 M4 4 L20 20 L36 4');
+	var t = 1500, d = 220;
+	var green = '#33CC33', red = '#CC3333', gray = '#BDBDBD';
+	var dash = '4,4', ease = ['sin-out', 'sin-in'];
+
+	var running = false;
+	var loop = function() {
+		if (!running) return;
+		d3.selectAll('svg.status').attr('stroke-dashoffset', 0).transition().ease('linear').duration(200).attr('stroke-dashoffset', 8)
+		.each("end", loop);
+	};
+
+	function dynamicAnswer(element, truth) {
+		var that = this;
+		var $t = $(element).filter(':first');
+
+		var a = $('<div>').insertAfter($t).css('display','inline-block').css('vertical-align', '-7px');
+		var correct = d3.select(a[0]).insert('svg').classed('status', true)
+			.style('width', 40*rel+'px').attr('width', 40*rel).attr('height', 40*rel).style('display', 'inline-block')
+			.append('path').attr('stroke-dasharray',dash)
+				.style('stroke-width', w+'px').style('fill', 'none')
+				.style('stroke', gray).attr('d', loading);
+
+		this.element = $t;
+		this.div = a;
+		this.path = correct;
+		// state
+		//    0:     hidden
+		//    null:  loading
+		//    true:  correct
+		//    false: incorrect
+		this.state = 0;
+		this.cache = {'':0};
+
+		this.init = function() {
+			if (!running) {running = true;loop();}
+			return this;
+		};
+		this.destroy = function() {
+			a.remove();
+			running = false;
+		};
+		this.set = function(state) {
+			if (state === true) this.check();
+			else if (state === false) this.cross();
+			else if (state === 0) this.hidden();
+			else this.loading();
+		};
+		this.setcached = function(v,state) {
+			if (v && (state === true || state === false))
+				this.cache[v] = state;
+			this.set(state);
+		};
+		this.update = function() {
+			var v = $t.val();
+			if (v in this.cache)
+				return this.set(this.cache[v]);
+			this.state = null;
+			var t = truth.call(this, v, $.proxy(this, 'setcached', v));
+			if (t === undefined && this.state !== null)
+				return this.state;
+			return t;
+		};
+		this.check = function() {
+			if (this.state === true) return;
+			this.state = true;
+			this.shown();
+			correct.attr('d', loading).attr('stroke-dasharray','');
+			$t.css('border-color', green);
+			correct.transition().duration(d).style('stroke', green).attr('d', check).ease('sin-out');
+		};
+		this.cross = function() {
+			if (this.state === false) return;
+			this.state = false;
+			this.shown();
+			correct.attr('d', Loading).attr('stroke-dasharray','');
+			$t.css('border-color', red);
+			correct.transition().duration(d).style('stroke', red).attr('d', cross).ease('sin-out');
+		};
+		this.loading = function() {
+			this.state = null;
+			var l = this.state ? loading : Loading;
+			this.shown();
+			$t.css('border-color', '');
+			correct.transition().duration(d).ease('sin-in')
+				.style('stroke', gray).attr('d', l)
+				.each("end", function() {
+					correct.attr('stroke-dasharray',dash)
+				});
+		};
+		this.hidden = function() {
+			this.state = 0;
+			this.div.css('visibility', 'hidden');
+			console.log(this.div);
+		};
+		this.shown = function() {
+			this.div.css('visibility', '');
+		};
+
+		this.hidden();
+
+		var timer;
+		this.timeout = 450;
+
+		$t.on('change', $.proxy(this, 'update'));
+		$t.on('keyup', function() {
+			var v = $t.val();
+			clearTimeout(timer);
+			if (v in that.cache)
+				that.set(that.cache[v]);
+			else {
+				that.shown();
+				timer = setTimeout($.proxy(that, 'update'), that.timeout);
+				that.loading();
+			}
+		});
+	}
+
+	return dynamicAnswer;
+})();
 
 function jQuiz() {
 	this.questions = [];
@@ -149,9 +293,9 @@ function jQuiz() {
 		} else {
 			if (this.results[this.current] == undefined) {
 				if (part[0] == 'input') {
-					result = '<input class="autotabindex autosizeable"'+(part[4]!='en'?ncorrect:ycorrect)+' type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '">';
+					result = '<input class="autotabindex dynamic autosizeable"'+(part[4]!='en'?ncorrect:ycorrect)+' type="text" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] /*+ '" title="' + part[3]/**/ + '">';
 				} else if (part[0] == 'paragraph') {
-					result = '<textarea class="autotabindex" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] + '" title="' + part[3] + '" style="font-family:Linux Libertine;"></textarea>';
+					result = '<textarea class="autotabindex" id="' + this.qelement + '-' + part[1] + '" placeholder="' + part[2] /*+ '" title="' + part[3]/**/ + '" style="font-family:Linux Libertine;"></textarea>';
 				} else if (part[0] == 'select') {
 					//result += '<select id="' + this.qelement + '-' + part[1] + '" title="' + part[2] + '">';
 					result += '<span id="' + this.qelement + part[1] + '" class="select select-bordered">';
@@ -161,7 +305,7 @@ function jQuiz() {
 						result += '<label>';
 						result += '<input'+tabin+' class="inputlabel" type="radio"';
 						result += 'name="'+this.qelement + '-' + part[1]+'"';
-						result += 'value="'+escapeHTML(option)+'" required>';
+						result += 'value="'+jQuiz_escapeHTML(option)+'" required>';
 						result += option;
 						result += '</label><br>';
 						//result += '<option>' + option + '</option>';
@@ -176,7 +320,7 @@ function jQuiz() {
 						result += '<td><label>';
 						result += '<input'+tabin+' class="inputlabel" type="radio"';
 						result += 'name="'+this.qelement + '-' + part[1]+'"';
-						result += 'value="'+escapeHTML(option)+'" required>';
+						result += 'value="'+jQuiz_escapeHTML(option)+'" required>';
 						result += (parseInt(oid)+1)+'.';
 						result += '</label></td>';
 						//result += '<option>' + option + '</option>';
@@ -201,7 +345,7 @@ function jQuiz() {
 							result += '<td><label>';
 							result += '<input'+tabin+' class="inputlabel" type="radio"';
 							result += 'name="'+this.qelement + '-' + part[1]+'-'+vid+'"';
-							result += 'value="'+escapeHTML(option)+'" required>';
+							result += 'value="'+jQuiz_escapeHTML(option)+'" required>';
 							result += (parseInt(oid)+1)+'.';
 							result += '</label></td>';
 							//result += '<option>' + option + '</option>';
@@ -302,6 +446,13 @@ function jQuiz() {
 		$('#' + this.qelement).html($html);
 		pantheum.update($html);
 		$html.find('input.autosizeable').autosizeInput();
+		var q = this.qelement+'-';
+		$html.find('input.dynamic').each(function() {
+			var a = $(this).attr('id');
+			if (!a.startsWith(q)) return;
+			a = a.slice(q.length);
+			new dynamicAnswer(this, jQuiz_checkanswer(a)).init();
+		});
 		this.refocus($html);
 	};
 

@@ -8,9 +8,10 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Quiz | Pantheum</title>
+        <title>Quiz | Latin</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
+        <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
         <script type="text/javascript" src="/JS/jQuiz.js"></script>
     </head>
     <body>
