@@ -155,7 +155,7 @@ function la_en($path, $only_one=false) {
 		} elseif ($mood === "participle") {
 			$d = $d3;
 			if ($tense === "future") {
-				$t = "about to";
+				$t = $o ? "about to" : "(about|going) to";
 				$d = $d0;
 			}
 			elseif ($tense === "perfect") {
