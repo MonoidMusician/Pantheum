@@ -307,6 +307,9 @@
     table=quizzes&to=last&from=quiz_id}}};
 
 {{{defineselect|
+    table=quizzes&to=mode&from=quiz_id}}};
+
+{{{defineselect|
     table=quizzes&to=score&from=quiz_id}}};
 
 {{{defineselect|
@@ -333,6 +336,9 @@
 {{{defineupdate|
     table=quizzes&to=results&from=quiz_id}}};
 
+{{{defineupdate|
+    table=quizzes&to=mode&from=quiz_id}}};
+
 {{{defineselect|
     table=quizzes&to=options_n&from=quiz_id}}};
 
@@ -350,6 +356,9 @@
 
 {{{defineinsert|
     table=quizzes&from=user_id,type,last}}};
+
+{{{defineinsert|
+    table=quizzes&from=user_id,type,last,mode}}};
 
 {{{define|user_id->last quiz_id|
     SELECT quiz_id FROM quizzes WHERE user_id = (?)

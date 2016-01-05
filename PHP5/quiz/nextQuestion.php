@@ -12,7 +12,7 @@ global $quiz_types;
 
 const QUIZ_MAX_RECURSE = 10;
 
-$type = safe_get(quiz_getvalue("quiz_type"),$quiz_types);
+$type = safe_get(quiz_getvalue("type"),$quiz_types);
 if (!is_array($type)) exit("bad quiz type, or session expired");
 $type_options = $type["options"];
 if (is_callable($type_options))

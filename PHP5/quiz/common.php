@@ -7,19 +7,19 @@ sro('/PHP5/lib/PHPLang/sql_stmts.php');
 global $suid;
 
 function quiz_setvalue($k,$v) {
-	return $_SESSION[$k] = $v;
+	return $_SESSION["quiz_".$k] = $v;
 }
 function quiz_getvalue($k) {
-	return safe_get($k,$_SESSION);
+	return safe_get("quiz_".$k,$_SESSION);
 }
 function quiz_poplist($k) {
-	return array_pop($_SESSION[$k]);
+	return array_pop($_SESSION["quiz_".$k]);
 }
 function quiz_appendlist($k,$v) {
-	$_SESSION[$k][] = $v;
+	$_SESSION["quiz_".$k][] = $v;
 }
 function quiz_addkey($k,$i,$v) {
-	return $_SESSION[$k][$i] = $v;
+	return $_SESSION["quiz_".$k][$i] = $v;
 }
 function quiz_auth() {
 	global $suid;
@@ -45,6 +45,14 @@ class _QUIZ
 	}
 	function set_last($last) {
 		sql_setone(sql_stmt("quiz_id->last="), $last, ["i", &$this->_id]);
+	}
+	function mode() {
+		$mode = NULL;
+		sql_getone(sql_stmt("quiz_id->mode"), $mode, ["i", &$this->_id]);
+		return $mode;
+	}
+	function set_mode($mode) {
+		sql_setone(sql_stmt("quiz_id->mode="), $mode, ["i", &$this->_id]);
 	}
 	function type() {
 		global $sql_stmts;
@@ -193,9 +201,10 @@ class _QUIZ
 		sql_getone(sql_stmt("quiz_id->results"), $results, ["i", &$this->_id]);
 		if (!$results) $results = "[]";
 		$results = json_decode($results);
-		return ["questions"=>$questions,"results"=>$results,"last"=>$this->last(),"score"=>$this->score(),"out_of"=>$this->out_of(),"completed"=>$this->completed()];
+		return ["questions"=>$questions,"results"=>$results,"last"=>$this->last(),"score"=>$this->score(),"out_of"=>$this->out_of(),"completed"=>$this->completed(),"mode"=>$this->mode()];
 	}
 }
+
 
 
 
@@ -205,10 +214,13 @@ function ISQUIZ($obj) {
 function QUIZ($id) {
 	return new _QUIZ($id);
 }
-function NEWQUIZ($type,$last) {
+function NEWQUIZ($type,$last,$mode=NULL) {
 	global $sql_stmts, $suid;
 	if (!$suid) return NULL;
-	sql_exec(sql_stmt("user_id,type,last->new in quizzes"), ["isi", $suid, $type, $last]);
+    if (!$mode)
+        sql_exec(sql_stmt("user_id,type,last->new in quizzes"), ["isi", $suid, $type, $last]);
+    else
+        sql_exec(sql_stmt("user_id,type,last,mode->new in quizzes"), ["isis", $suid, $type, $last, $mode]);
 	$id = NULL;
 	sql_getone(sql_stmt("user_id->last quiz_id"), $id, ["i",$suid]);
 	if ($id !== NULL) {

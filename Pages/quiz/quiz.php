@@ -50,7 +50,8 @@
         if (quiz_lock) return; else quiz_lock = true;
         var type = $('input[name=quiz-types]:checked').val();
         var last = $('#quiz-number').val();
-        $.get('/PHP5/quiz/startQuiz.php?type=' + encodeURIComponent(type) + '&last=' + last, function(data) {
+		var mode = $('#quiz-mode').val();
+        $.get('/PHP5/quiz/startQuiz.php?type=' + encodeURIComponent(type) + '&mode=' + encodeURIComponent(mode) + '&last=' + last, function(data) {
             quiz_lock = false;
             if (data == 'no-credit') {
                 if (confirm('Warning: your results will not be saved because you are not logged in. Do you want to continue?'))
@@ -58,7 +59,7 @@
                 else return;
             }
             if (data == 'success') {
-                quiz.start(last, type);
+                quiz.start(last, type, mode);
             } else {
                 alert("Error: "+data);
             }

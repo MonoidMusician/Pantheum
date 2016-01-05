@@ -75,7 +75,13 @@ foreach ($quiz_types as $k=>$v) {
 	echo htmlspecialchars($v["name"]);
 	?></label><?php
 }
-?></div><script>
+?></div><div>
+    Score answers per <select id="quiz-mode">
+        <option value="question">question</option>
+        <option value="page" selected>page</option>
+        <option value="quiz">quiz</option>
+    </select>
+</div><script>
 var prev_val = 10;
 function update_tabs() {
 	$('#quiz-type-selection br').remove();

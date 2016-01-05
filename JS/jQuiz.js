@@ -447,12 +447,13 @@ function jQuiz() {
 		pantheum.update($html);
 		$html.find('input.autosizeable').autosizeInput();
 		var q = this.qelement+'-';
-		$html.find('input.dynamic').each(function() {
-			var a = $(this).attr('id');
-			if (!a.startsWith(q)) return;
-			a = a.slice(q.length);
-			new dynamicAnswer(this, jQuiz_checkanswer(a)).init();
-		});
+		if (this.mode === 'question')
+			$html.find('input.dynamic').each(function() {
+				var a = $(this).attr('id');
+				if (!a.startsWith(q)) return;
+				a = a.slice(q.length);
+				new dynamicAnswer(this, jQuiz_checkanswer(a)).init();
+			});
 		this.refocus($html);
 	};
 
@@ -554,8 +555,9 @@ function jQuiz() {
 		$(document).off('keyup',  '#' + this.qelement + '-content input:text');
 	};
 
-	this.start = function(last, type) {
+	this.start = function(last, type, mode) {
 		this.last = last;
+		this.mode = mode;
 		this.current = -1;
 		this.getNextQuestion();
 		this.bindEvents();
@@ -566,6 +568,7 @@ function jQuiz() {
 		this.questions = data['questions'];
 		this.results = data['results'];
 		this.last = data['last'];
+		this.mode = data['mode'];
 		this.score = data['score'];
 		this.out_of = data['out_of'];
 		this.active = !data['completed'];
