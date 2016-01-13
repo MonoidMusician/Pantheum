@@ -223,6 +223,7 @@ function la_en($path, $only_one=false) {
 			$will = $o?"will":"(will|${OP_APOS}ll)";
 			if ($_p == 1) $will = $o?"shall":"(shall|will|${OP_APOS}ll)";
 			elseif ($_p == 2 and !$pl) $will = $decide("wilt","will","shall|${OP_APOS}ll");
+			if (!$o) $will = "($will|$is (going|about) to)";
 
 			// has have hast ...
 			$has = "have";
