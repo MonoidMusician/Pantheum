@@ -1,8 +1,9 @@
 function jWord() {
 	this.id2vals = {};
 	this.dependencies = {};
-	this.entries = {};
+	this.entries = {sorted:[],changed:{},max_length:0};
 	this.api_path = '/PHP5/dictionary/';
+	this.title = "Pantheum";
 	// "Register" dependencies of one path part on another, e.g.
 	// "supine-1" only shows when mood="supine" is selected.
 	this.register = function(id2vals, dependencies) {
@@ -105,6 +106,17 @@ function jWord() {
 			if (!h[p]) delete h[p];
 		}
 		return $.param(h);
+	};
+	this.gettitle = function() {
+		var t = this.title;
+		if (this.entries.sorted.length) {
+			var l = $(this.entries[this.entries.sorted[0]]).text();
+			if (this.entries.sorted.length == 1)
+				return l+" | "+t;
+			var r = $(this.entries[this.entries.sorted[this.entries.sorted.length-1]]).text();
+			return l+" … "+r+" | "+t;
+		}
+		return "Dictionary | "+t;
 	};
 	this.path = function(id, as_uri) {
 		if (as_uri === undefined) as_uri = true;
@@ -483,7 +495,9 @@ function jWord() {
 		var loc = this.searcher();
 		if (loc === undefined) return errorTip("Empty loc");
 		if (loc != this.last_loc) {
-			history.pushState(null, "", 'dictionary.php?'+loc);
+			var t = this.gettitle();
+			document.title = t;
+			history.pushState(null, t, 'dictionary.php?'+loc);
 			this.last_loc = loc;
 		}
 		$('#'+this.qelement+'-permalink').prop('href', 'dictionary.php?'+loc);
@@ -494,6 +508,8 @@ function jWord() {
 
 	this.updateContent = function(form, entries) {
 		//alert(entries.sorted);
+		document.title = this.gettitle();
+		console.log(document.title);
 		history.replaceState({'entries':entries,'form':form}, document.title, document.location.href);
 		//alert(form);
 		this.resetForm(form);
