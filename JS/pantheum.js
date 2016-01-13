@@ -60,7 +60,6 @@ pantheum.update = function(element) {
 		}
 	});
 	$e.find('.inflection').each(function() {
-		console.log(this);
 		pantheum.sortword(this);
 	});
 	return $e;
