@@ -15,6 +15,7 @@ $dict = nano_dfdict();
 global $DEBUG_STRING_PHP;
 $expression = nanomacro($syntax,$dict,4);
 $DEBUG_STRING_PHP = safe_get("debug", $_GET) === "true";
+$permutation = permute_syntax($expression);
 ob_start();
 $result = compare_syntax3($syntax, $input, $dict, !!safe_get("matchall", $_GET), safe_get("dist", $_GET));
 $log = ob_get_contents();
@@ -23,5 +24,6 @@ echo json_encode([
 	"expression"=>$expression,
 	"result"=>$result,
 	"log"=>$log,
+	"permutation"=>$permutation,
 ]);
 

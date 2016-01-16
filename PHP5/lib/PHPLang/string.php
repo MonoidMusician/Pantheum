@@ -24,21 +24,21 @@ $LEVENSHTEIN = extension_loaded('damerau') ? "damerau_levenshtein" : "levenshtei
 // $s = "{*now} {(the majority of|most [of]) [the] Pompeian(s|i)} {were} {despairing|disparaging} {about (the[ir [own]] city|Pompeii)}";
 function permute_syntax($s) {
 	$ll = [];
-	$r = [];
+	$r = [""];
 	$j = strlen($s);
-	for ($i=0; $i++; $i<$j) {
+	for ($i=0; $i<$j; ++$i) {
+		$c = $s[$i];
 		if ($c == ")") {
 			array_pop($ll);
 			continue;
 		}
-		$c = $s[$l];
 		$r2 = &$r;
 		foreach ($ll as $l) {
 			$r2 = &$r2[$l];
 		}
 		if ($c == "(" or $c == "[") {
 			$ll[] = count($r2);
-			$r2[] = [];
+			$r2[] = [""];
 		} else if ($c == "]") {
 			$r2[] = "";
 			array_pop($ll);
@@ -46,6 +46,7 @@ function permute_syntax($s) {
 			$r2[] = "";
 		} else $r2[count($r2)-1].=$c;
 	}
+	return $r;
 }
 
 function swap($s,$s1,$s2) {
