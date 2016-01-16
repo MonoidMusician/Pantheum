@@ -58,11 +58,11 @@ window.Combo = (function() {
 			s = s.split(r).join('\\'+r);
 		return s;
 	}
-    function getrepr(v) {
-        if (Array.isArray(v)) return '('+v.map(getrepr).join('|')+')';
-        if (typeof v === 'string') return escape(v);
-        return v.data.map(getrepr).join('');
-    }
+	function getrepr(v) {
+		if (Array.isArray(v)) return '('+v.map(getrepr).join('|')+')';
+		if (typeof v === 'string') return escape(v);
+		return v.data.map(getrepr).join('');
+	}
 
 	function Combo() {
 		this.clear();
@@ -79,9 +79,9 @@ window.Combo = (function() {
 	Combo.prototype.gen = function() {
 		return [...this];
 	};
-    Combo.prototype.repr = function() {
-        return getrepr(this);
-    };
+	Combo.prototype.repr = function() {
+		return getrepr(this);
+	};
 	Combo.prototype.pre = function() {
 		var arg = new Array(arguments.length);
 		for (let i=0; i<arg.length; ++i) arg[i] = arguments[i];

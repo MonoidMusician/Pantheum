@@ -26,32 +26,32 @@
 </article>
 <script>
 function make_ordered_hash() {
-    var keys = [];
-    var vals = {};
-    return {
-        push: function(k,v) {
-            if (!(k in vals)) keys.push(k);
-            vals[k] = v;
-        },
-        insert: function(pos,k,v) {
-            if (!vals[k]) {
-                keys.splice(pos,0,k);
-                vals[k] = v;
-            }
-        },
-        val: function(k) {return vals[k]},
-        length: function(){return keys.length},
-        keys: function(){return keys},
-        values: function(){return vals},
-        jsonify: function(){
-            var ret="{";
-            $.each(keys, function(i,k) {
-                if (i) ret += ",";
-                ret += JSON.stringify(k)+":"+JSON.stringify(vals[k]);
-            });
-            return ret+"}";
-        },
-    };
+	var keys = [];
+	var vals = {};
+	return {
+		push: function(k,v) {
+			if (!(k in vals)) keys.push(k);
+			vals[k] = v;
+		},
+		insert: function(pos,k,v) {
+			if (!vals[k]) {
+				keys.splice(pos,0,k);
+				vals[k] = v;
+			}
+		},
+		val: function(k) {return vals[k]},
+		length: function(){return keys.length},
+		keys: function(){return keys},
+		values: function(){return vals},
+		jsonify: function(){
+			var ret="{";
+			$.each(keys, function(i,k) {
+				if (i) ret += ",";
+				ret += JSON.stringify(k)+":"+JSON.stringify(vals[k]);
+			});
+			return ret+"}";
+		},
+	};
 };
 	$(document).on('keyup', '#enter-sentence', function(event) {
 		if (event.which == 13) {

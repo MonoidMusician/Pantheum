@@ -1,3 +1,3 @@
 <?php
-    sro('/Pages/quiz/quiz.php');
+	sro('/Pages/quiz/quiz.php');
 ?>
