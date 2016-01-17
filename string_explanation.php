@@ -15,6 +15,7 @@
 		<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
 		<script type="text/javascript" src="/JS/lib/jquery.autocomplete.js"></script>
 		<script type="text/javascript" src="/JS/combo.js"></script>
+		<script type="text/javascript" src="/JS/parser.js"></script>
 	</head>
 	<body>
 		<?php sro('/Includes/header.php'); ?>
