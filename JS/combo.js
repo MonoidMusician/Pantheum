@@ -1,7 +1,11 @@
 "use strict";
 window.Combo = (function() {
+	function issimple(a) {
+		var t = typeof a;
+		return t === 'string' || a === null || t === 'undefined';
+	}
 	function filterer(v) {
-		return v !== null && (Array.isArray(v) ? v.length !== 0 : true);
+		return /*v !== null &&*/ (Array.isArray(v) ? v.length !== 0 : true);
 	}
 	function mapper(v) {
 		if (Array.isArray(v))
@@ -13,15 +17,36 @@ window.Combo = (function() {
 	function filter(arg) {
 		for (let i in arg)
 			if (arg[i] === undefined) return;
-		return arg.filter ? arg.filter(filterer).map(mapper) : arg;
+		return issimple(arg) ? arg : (arg.filter ? arg.filter(filterer).map(mapper) : arg);
 	}
 	// All string arguments become a list of strings
 	function parseArg(arg) {
+		return arg;
 		if (arg === undefined || arg.length === 1)
 			return arg;
 		for (let i in arg)
 			if (typeof arg[i] !== 'string') return arg;
 		return [arg];
+	}
+	function* _iterate() {
+		if (!arguments.length) yield '';
+		else {
+			var arg = new Array(arguments.length-1);
+			var one = arguments[0];
+			for (let i=0; i<arg.length; ++i) arg[i] = arguments[i+1];
+			if (issimple(one)) {
+				if (arg.length)
+					for (let l of _iterate.apply(null, arg))
+						yield [one].concat(l);
+				else yield [one];
+			} else {
+				if (arg.length)
+					for (let r of _iterate.apply(null, arg))
+						for (let l of one)
+							yield* _iterate.apply(null, [l].concat(r));
+				else for (let l of one) yield* _iterate(l);
+			}
+		}
 	}
 	function* iterate() {
 		if (!arguments.length) yield '';
@@ -29,28 +54,30 @@ window.Combo = (function() {
 			var arg = new Array(arguments.length-1);
 			var one = arguments[0];
 			for (let i=0; i<arg.length; ++i) arg[i] = arguments[i+1];
-			if (typeof one == 'string') {
+			if (issimple(one)) {
 				if (arg.length)
 					for (let l of iterate.apply(null, arg))
 						yield one + l;
 				else yield one;
 			} else {
 				if (arg.length)
-					for (let l of iterate.apply(null, arg))
-						for (let r of one)
-							yield* iterate(r,l);
-				else for (let r of one) yield* iterate(r);
+					for (let r of iterate.apply(null, arg))
+						for (let l of one)
+							yield* iterate(l,r);
+				else for (let l of one) yield* iterate(l);
 			}
 		}
 	}
 	function getlength(v) {
+		if (!v) return 1;
 		if (Array.isArray(v)) return v.reduce(function(a,b) {return a + getlength(b);}, 0);
-		if (typeof v === 'string') return 1;
+		if (issimple(v)) return 1;
 		return v.length;
 	}
 	function getsingle(v) {
+		if (!v) return '';
 		if (Array.isArray(v)) return getsingle(v[0]);
-		if (typeof v === 'string') return v;
+		if (issimple(v)) return v;
 		return v.single;
 	}
 	function escape(s) {
@@ -59,6 +86,7 @@ window.Combo = (function() {
 		return s;
 	}
 	function getrepr(v) {
+		if (!v) return '';
 		if (Array.isArray(v)) return '('+v.map(getrepr).join('|')+')';
 		if (typeof v === 'string') return escape(v);
 		return v.data.map(getrepr).join('');
@@ -75,6 +103,9 @@ window.Combo = (function() {
 	};
 	Combo.prototype[Symbol.iterator] = function*() {
 		yield* iterate.apply(null, this.data);
+	};
+	Combo.prototype.raw = function*() {
+		yield* _iterate.apply(null, this.data);
 	};
 	Combo.prototype.gen = function() {
 		return [...this];
@@ -116,6 +147,10 @@ window.Combo = (function() {
 	return Combo;
 })();
 window.PermuteOrder = (function() {
+	function issimple(a) {
+		var t = typeof a;
+		return t === 'string' || a === null || t === 'undefined';
+	}
 	function parseArg(arg) {
 		if (arg === undefined || arg.length === 1)
 			return arg;
@@ -123,7 +158,7 @@ window.PermuteOrder = (function() {
 			return arg[0];
 		return arg;
 	}
-	function* iterate() {
+	function* _iterate() {
 		if (!arguments.length) yield '';
 		else {
 			var arg = new Array(arguments.length);
@@ -151,8 +186,12 @@ window.PermuteOrder = (function() {
 					}
 				}
 			};
-			for (let i of inner(arg)) yield i.join('');
+			yield* inner(arg);
 		}
+	}
+	function* iterate() {
+		for (let i of _iterate.apply(this, arguments))
+			yield i.join('');
 	}
 	function PermuteOrder() {
 		this.clear();
@@ -164,6 +203,9 @@ window.PermuteOrder = (function() {
 	};
 	PermuteOrder.prototype[Symbol.iterator] = function*() {
 		yield* iterate.apply(null, this.data);
+	};
+	PermuteOrder.prototype.raw = function*() {
+		yield* _iterate.apply(null, this.data);
 	};
 	PermuteOrder.prototype.gen = function() {
 		return [...this];
@@ -177,7 +219,7 @@ window.PermuteOrder = (function() {
 		for (let a of arg) {
 			this.data.unshift(a);
 			this.length *= this.data.length;
-			if (typeof a !== 'string') this.length *= a.length;
+			if (!issimple(a)) this.length *= a.length;
 		}
 		return this.data;
 	};
@@ -190,10 +232,78 @@ window.PermuteOrder = (function() {
 		for (let a of arg) {
 			this.data.push(a);
 			this.length *= this.data.length;
-			if (typeof a !== 'string') this.length *= a.length;
+			if (!issimple(a)) this.length *= a.length;
 		}
 		return this.data;
 	};
 
 	return PermuteOrder;
+})();
+window.Mixed = (function() {
+	function concat(a) {
+		if (typeof a === 'string') return a;
+		var r = '';
+		for (let b of a) r += concat(b);
+		return b;
+	}
+	function Mixed() {
+		this.c = [];
+		this.p = [];
+	}
+	var make_combo = function(arg) {
+		var C = Combo.bind.apply(Combo, [null].concat(arg));
+		return new C();
+	};
+	var make_permute = function(arg) {
+		var P = PermuteOrder.bind.apply(PermuteOrder, [null].concat(arg));
+		return new P();
+	};
+	Mixed.prototype[Symbol.iterator] = function*() {
+		for (let v of this.raw()) yield v.join('');
+	};
+	Mixed.prototype.raw = function*() {
+		for (let C of this.C.raw()) {
+			for (let P of this.P.raw()) {
+				let c = C.slice(0);
+				let i=0, j=0;1
+				for (; i<c.length; ++i)
+					if (C[i] == null)
+						c[i] = P[j++];
+				yield c;
+			}
+		}
+	};
+	Mixed.prototype.post = function() {
+		// TODO: optimize
+		var arg = new Array(arguments.length);
+		for (let i=0; i<arg.length; ++i) arg[i] = arguments[i];
+		for (let a of arg) {
+			this.c.push(a);
+		}
+		return this;
+	};
+	Mixed.prototype.post_permute = function() {
+		// TODO: optimize
+		var arg = new Array(arguments.length);
+		for (let i=0; i<arg.length; ++i) arg[i] = arguments[i];
+		for (let a of arg) {
+			this.c.push(null);
+			this.p.push(a);
+		}
+		return this;
+	};
+	Mixed.prototype.generate = function() {
+		this.C = make_combo(this.c);
+		this.P = make_permute(this.p);
+		this.length = this.C.length * this.P.length;
+		return this;
+	};
+	Mixed.prototype.pre = 'TODO';
+	Mixed.prototype.pre_permute = 'TODO';
+	Mixed.prototype.simplify = function() {
+		this.generate();
+		if (this.p.length) return this;
+		return this.C;
+	}
+	return Mixed;
 })();

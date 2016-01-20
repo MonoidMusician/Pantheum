@@ -1,4 +1,13 @@
 "use strict";
+window.swap_escaping = function(s) {
+	s = s.split('\\\\');
+	for (let r of ['{','}','(',')','[',']','|'])
+		s = s.map(function(a) {
+			var l = '\\'+r;
+			return a.split(l).map(function(b){return b.split(r).join(l)}).join(r);
+		});
+	return s.join('\\\\');
+};
 window.parser = (function() {
 	// Ugly hack around no lookbehind support: capture a single non backslash character
 	var meta = /(^|[^\\])(\\\\)*(\\)/.source;
@@ -21,13 +30,18 @@ window.parser = (function() {
 		return r.index + off + (r[2]?r[2].length:0);
 	};
 	function getfirst(s, regexes, startAt) {
+		var t = null, i = s.length;
 		for (let type in regexes) {
 			let r = regexes[type];
 			r.lastIndex = startAt;
 			var j = search2(s, r, false);
-			return [type,j];
+			if (j < i) {
+				t = type; i = j;
+			}
 		}
-		return null;
+		if (t == null)
+			return null;
+		return [t,i];
 	}
 	function level_content(s, regex, xeger, startAt) {
 		if (startAt === undefined) startAt = 0;
@@ -64,67 +78,143 @@ window.parser = (function() {
 		return s.substr(L, R-L);
 	}
 	function* split1(s) {
-		var l = 0, s = '', m = false;
+		var l = 0, r = '', m = false;
 		for (let c of s.split('')) {
-			if (c === '\\' && !m)
-			{m=true;continue}
-			if (m && c != '\\') {
-				m=false;
-				switch(c) {
-					case '|':
-						if (l == 0) {
-							yield s;
-							s = '';
-							continue;
-						} else
+			if (c === '\\' && !m) {
+				m = true;
+				continue;
+			} else
+			if (m) {
+				m = false;
+				if (c == '|' && l == 0) {
+					yield r;
+					r = '';
+					continue;
+				} else
+				if (c != '\\') {
+					switch(c) {
+						case '{':
+						case '(':
+						case '[':
+							l += 1;
 							break;
-					case '{':
-					case '(':
-					case '[':
-						l += 1;
-						break;
-					case '}':
-					case ')':
-					case ']':
-						l -= 1;
-						break;
+						case '}':
+						case ')':
+						case ']':
+							l -= 1;
+							break;
+					}
 				}
 				c = '\\'+c;
 			}
-			s += c;
+			r += c;
 		}
-		yield s;
+		yield r;
 	}
 	function parser(s) {
-		this.position = 0;
 		this.s = s;
 		this.udata = {};
 	}
 	parser.prototype.inner_part = function(s) {
-		this.push();
+		this.PUSH();
 		var pos = 0;
-		var m = getfirst(s, regexes, pos);
+		var m = getfirst(s, regexes, pos), c;
 		while (m != null) {
 			var type = m[0]; var jump = m[1] - pos;
-			if (jump) this.add(this.TEXT(s.substr(pos, jump)));
-			if (type === 0)
-				this.add(this.BRACE(this.inner(c = level_content(s, brace, ecarb, pos+jump))));
-			else if (type === 1)
-				this.add(this.PAREN(this.inner(c = level_content(s, paren, nerap, pos+jump))));
-			else if (type === 2)
-				this.add(this.BRCKT(this.inner(c = level_content(s, brckt, tkcrb, pos+jump))));
-			pos += c.length + 4; // 4 = "\\{\\}".length;
+			if (jump) this.ADD(this.TEXT(s.substr(pos, jump)));
+			if (type == 0) {
+				c = level_content(s, brace, ecarb, pos);
+				this.ADD(this.BRACE(this.inner(c)));
+			} else if (type == 1) {
+				c = level_content(s, paren, nerap, pos);
+				this.ADD(this.PAREN(this.inner(c)));
+			} else if (type == 2) {
+				c = level_content(s, brckt, tkcrb, pos);
+				this.ADD(this.BRCKT(this.inner(c)));
+			} else c = " ";
+			pos += jump + c.length + 4; // 4 = "\\{\\}".length;
 			m = getfirst(s, regexes, pos);
 		}
-		if (pos < s.length) this.add(this.TEXT(s.substr(pos)));
-		return this.pop();
+		if (pos < s.length) this.ADD(this.TEXT(s.substr(pos)));
+		return this.POP();
 	}
 	parser.prototype.inner = function(s) {
-		return this.CHOICES([...function*() {
+		var my = this;
+		return this.CHOICES([...(function*() {
 			for (let S of split1(s)) {
-				yield this.inner_part(S);
+				yield my.inner_part(S);
 			}
-		}]);
+		})()]);
+	}
+	parser.prototype.parse = function() {
+		return this.inner(this.s);
 	}
 	return parser;
 })();
+
+function reconstruct(s) {
+	var p = new parser(s);
+	p.udata.result = [''];
+	p.PUSH = function(){this.udata.result.push('')};
+	p.POP = function(){return this.udata.result.pop()};
+	p.ADD = function(a){this.udata.result[this.udata.result.length-1] += a};
+	p.TEXT = function(a){return a};
+	p.BRACE = function(a){return '\\{'+a+'\\}'};
+	p.PAREN = function(a){return '\\('+a+'\\)'};
+	p.BRCKT = function(a){return '\\['+a+'\\]'};
+	p.CHOICES = function(a){return a.join('\\|');};
+	return p.parse();
+}
+
+function tree(s) {
+	var p = new parser(s);
+	var simplify = function(a){return (!Array.isArray(a) || a.length > 1) ? a : a[0]};
+	p.udata.result = [];
+	p.PUSH = function(){this.udata.result.push([])};
+	p.POP = function(){return simplify(this.udata.result.pop())};
+	p.ADD = function(a){this.udata.result[this.udata.result.length-1].push(a)};
+	p.TEXT = function(a){return a};
+	p.BRACE = function(a){return {type:'brace',data:simplify(a)}};
+	p.PAREN = function(a){return {type:'paren',data:simplify(a)}};
+	p.BRCKT = function(a){return {type:'brckt',data:simplify(a)}};
+	p.CHOICES = function(a){return a.length>1?{type:'choices',data:a}:a};
+	return p.parse();
+}
+
+function permute(s) {
+	var t = tree(s);
+	if (typeof t === 'string') return [t];
+	var permutate = function(t) {
+		if (typeof t === 'string') return t;
+		if (!Array.isArray(t)) {
+			switch (t.type) {
+				case 'brckt':
+					if (typeof t.data === 'string')
+						return new Combo(t.data, '');
+					return new Combo([permutate(t.data),'']);
+				case 'paren':
+				case 'brace':
+					return permutate(t.data);
+				case 'choices':
+					return new (Combo.bind.apply(Combo, [null].concat([t.data.map(permutate)])))();
+			}
+			console.log(t);
+		}
+		var M = new Mixed();
+		var _permutate = function(r) {
+			for (let m of r) {
+				if (typeof m === 'string')
+					M.post(m);
+				else if (Array.isArray(m))
+					_permutate(m);
+				else if (m.type === 'brace')
+					M.post_permute(permutate(m.data));
+				else
+					M.post(permutate(m));
+			}
+		}; _permutate(t);
+		M = M.simplify();
+		return M;
+	};
+	return permutate(t);
+}
