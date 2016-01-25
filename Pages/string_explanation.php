@@ -49,15 +49,15 @@ code.string {
 <p>Additionally, a dictionary is provided from PHP (a mapping from names to replacements for rule #1). Here's a sample dictionary, used for the following exempla:
 <?php
 $dict = nano_dfdict();
-echo "<dl>";
+?><dl style="max-height: 300px; overflow: auto;"><?php
 foreach ($dict as $k=>$v) {
-	echo "<dt>";
+	?><dt><?php
 	dump_string($k);
-	echo " ⇒ </dt><dd>";
+	?> ⇒ </dt><dd><?php
 	echo2($v);
-	echo "</dd>";
+	?></dd><?php
 }
-echo "</dl>";
+?></dl><?php
 ?>
 
 <p>Here are some exempla to illustrate how it works.
@@ -68,11 +68,11 @@ foreach ([
 	['_a centurion said _quot$(Hey there!).','The function "quot" can put nice quotes around our argument:'],
 	['_a centurion _perfactv$(seen)$(_a guard).','We can use macros for translation patterns with many alternatives, like participles:'],
 ] as $example) {
-	echo "<li>";
+	?><li><?php
 	echo2($example[0]);
 	echo "${example[1]}";
 	echo2(nanomacro($example[0], $dict, 4));
-	echo "<br>";
+	?><br><?php
 }
 ?>
 </ul>
@@ -89,11 +89,11 @@ foreach ([
 	'“Let us go to Rome!” “We will have fun there”, he said.',
 	'“I do not know, will we?”, the other replied , once he heard this, .',
 ] as $example) {
-	echo "<li>";
+	?><li><?php
 	echo2($example);
 	echo "becomes";
 	echo2(normalize_punctuation($example));
-	echo "<br>";
+	?><br><?php
 }
 ?>
 </ul>
@@ -145,13 +145,13 @@ foreach ([
 	['{*venistine} {ex foro} {[tu]}?','uenistine·tu·ex·foro'],
 	['{*[a[n]|the] centurion} {, (having (caught sight of) ([a[n]|the] young man)|who had (caught sight of) ([a[n]|the] young man)),} {said} {, “I recognize (this [man|guy]|him)!”,}.','thecenturionhavingcaughtsightoftheyoungmansaidirecognizehim']
 ] as $example) {
-	echo "<li>";
+	?><li><?php
 	echo2($example[0]);
 	echo "matches";
 	echo2($example[1]);
 	echo "creating";
 	echo2(compare_syntax($example[0],$example[1],["unescaped"=>true]));
-	echo "<br>";
+	?><br><?php
 }
 ?>
 </ul>
@@ -168,7 +168,7 @@ foreach ([
 	['_opts$(*thou} {not} {me)$(dost} {know)$(knowest).','thou not me knowest'],
 	['_Appos$(_a centurion)$(having seen _a child) {wept} _quot$({*have mercy} {on me} {,O deity,}).','the centurion having seen the child wept on me have mercy O deity']
 ] as $example) {
-	echo "<li>";
+	?><li><?php
 	echo2($example[0]);
 	echo "makes this syntax";
 	echo2(nanomacro($example[0], $dict, 4));
@@ -176,7 +176,7 @@ foreach ([
 	echo2($example[1]);
 	echo "creating";
 	echo2(compare_syntax3($example[0],$example[1],$dict));
-	echo "<br>";
+	?><br><?php
 }
 ?>
 </ul>
@@ -199,7 +199,8 @@ Damerau-Levenshtein error: <input id="dist" style="width:150px" type="number" pl
 </span>
 <div id="log">
 </div>
-
+<div id="permutations" style="max-height: 300px; overflow: auto;">
+</div>
 <script>
 $('#debug').on('change', function() {
 	$('#log').css('display', $(this).is(':checked') ? 'block' : 'none');
@@ -212,6 +213,14 @@ $('input').on('keypress', function(e) {
 		$('#expression').text(data["expression"]);
 		$('#result').text(data["result"]);
 		$('#log').html(data["log"]);
+	});
+	var permutations = permute(swap_escaping($('#syntax').val()));
+	if (permutations.length > 300) $('#permutations').text(permutations.length+' permutations');
+	permutations = permutations.gen_unique();
+	if (permutations.length > 100) $('#permutations').text(permutations.length+' permutations');
+	$('#permutations').html('<ul>');
+ 	permutations.forEach(function(p) {
+		$('#permutations > ul').append('<li>'+p);
 	});
 });
 </script>

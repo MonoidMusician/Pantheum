@@ -190,7 +190,7 @@ function permute(s) {
 			switch (t.type) {
 				case 'brckt':
 					if (typeof t.data === 'string')
-						return new Combo(t.data, '');
+						return new Combo([t.data, '']);
 					return new Combo([permutate(t.data),'']);
 				case 'paren':
 				case 'brace':
@@ -202,12 +202,17 @@ function permute(s) {
 		}
 		var M = new Mixed();
 		var _permutate = function(r) {
+			var n = 0;
+			for (let m of r) {
+				if (m.type === 'brace') n += 1;
+				if (n > 1) break;
+			}
 			for (let m of r) {
 				if (typeof m === 'string')
 					M.post(m);
 				else if (Array.isArray(m))
 					_permutate(m);
-				else if (m.type === 'brace')
+				else if (m.type === 'brace' && n > 1)
 					M.post_permute(permutate(m.data));
 				else
 					M.post(permutate(m));
@@ -217,4 +222,16 @@ function permute(s) {
 		return M;
 	};
 	return permutate(t);
+}
+
+function match(s, m, d) {
+	var D = d+1, M = null;
+	for (let match of permute(s)) {
+		let distance = damerau_levenshtein(match, m, Infinity).steps;
+		if (distance < D) {
+			M = match;
+			D = distance;
+		}
+	}
+	return M;
 }
