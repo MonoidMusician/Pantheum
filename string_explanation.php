@@ -17,6 +17,7 @@
 		<script type="text/javascript" src="/JS/lib/damerau-levenshtein.js"></script>
 		<script type="text/javascript" src="/JS/combo.js"></script>
 		<script type="text/javascript" src="/JS/parser.js"></script>
+		<script type="text/javascript" src="/JS/string.js"></script>
 	</head>
 	<body>
 		<?php sro('/Includes/header.php'); ?>

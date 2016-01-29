@@ -199,6 +199,11 @@ Damerau-Levenshtein error: <input id="dist" style="width:150px" type="number" pl
 </span>
 <div id="log">
 </div>
+<style>
+#permutations li.match {
+	color: #06A4F5;
+}
+</style>
 <div id="permutations" style="max-height: 300px; overflow: auto;">
 </div>
 <script>
@@ -207,7 +212,10 @@ $('#debug').on('change', function() {
 }).trigger('change');
 $('input').on('keypress', function(e) {
 	if (e.which !== 13) return;
-	$.get('PHP5/string_api.php',{"syntax":$('#syntax').val(),"dist":$('#dist').val(),"input":$('#input').val(),"debug":"true","matchall":$('#matchall:checked').length})
+	var syntax = $('#syntax').val(),
+	    dist = $('#dist').val(),
+	    input = $('#input').val();
+	$.get('PHP5/string_api.php',{"syntax":syntax,"dist":dist,"input":input,"debug":"true","matchall":$('#matchall:checked').length})
 	.done(function(data) {
 		data = JSON.parse(data);
 		$('#expression').text(data["expression"]);
@@ -219,8 +227,14 @@ $('input').on('keypress', function(e) {
 	permutations = permutations.gen_unique();
 	if (permutations.length > 100) $('#permutations').text(permutations.length+' permutations');
 	$('#permutations').html('<ul>');
+	var added = new Set();
  	permutations.forEach(function(p) {
-		$('#permutations > ul').append('<li>'+p);
+		var b = normalize_punctuation(p);
+		if (added.has(b)) return;
+		added.add(b);
+		var cls = '';
+		if (match(input, b, dist) !== null) cls = 'match';
+		$('#permutations > ul').append('<li class="'+cls+'">'+b);
 	});
 });
 </script>

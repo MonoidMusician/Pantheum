@@ -31,7 +31,13 @@ Permutator.escape = function(s) {
 		s = s.split(r).join('\\'+r);
 	return s;
 };
-window.Combo = (function() {
+Permutator.make_combo = function(arg) {
+	return new (Function.prototype.bind.apply(Permutator.Combo, [null].concat(arg)))();
+};
+Permutator.make_permute = function(arg) {
+	return new (Function.prototype.bind.apply(Permutator.PermuteOrder, [null].concat(arg)))();
+};
+Permutator.Combo = (function() {
 	function filterer(v) {
 		return (Array.isArray(v) ? v.length !== 0 : true);
 	}
@@ -168,7 +174,7 @@ window.Combo = (function() {
 
 	return Combo;
 })();
-window.PermuteOrder = (function() {
+Permutator.PermuteOrder = (function() {
 	function parseArg(arg) {
 		if (arg === undefined || arg.length === 1)
 			return arg;
@@ -264,7 +270,7 @@ window.PermuteOrder = (function() {
 
 	return PermuteOrder;
 })();
-window.Mixed = (function() {
+Permutator.Mixed = (function() {
 	function concat(a) {
 		if (typeof a === 'string') return a;
 		var r = '';
@@ -274,16 +280,9 @@ window.Mixed = (function() {
 	function Mixed() {
 		this.c = [];
 		this.p = [];
+		this.b = [];
 	}
 	Permutator.derived(Mixed);
-	var make_combo = function(arg) {
-		var C = Combo.bind.apply(Combo, [null].concat(arg));
-		return new C();
-	};
-	var make_permute = function(arg) {
-		var P = PermuteOrder.bind.apply(PermuteOrder, [null].concat(arg));
-		return new P();
-	};
 	function getrepr(v) {
 		if (!v) return '';
 		if (Array.isArray(v)) return '\\'+v.map(getrepr).join('\\')+'\\';
@@ -307,13 +306,29 @@ window.Mixed = (function() {
 		for (let v of this.raw()) yield v.join('');
 	};
 	Mixed.prototype.raw = function*() {
-		for (let C of this.C.raw()) {
-			for (let P of this.P.raw()) {
+		var next = function(l, carry) {
+			var r = P[l];
+			var carry = (carry || this.b[l]);
+			if (!r) return carry ? carry : r;
+			if (carry)
+				r = r.replace(/\w/, function(a) {
+					return a.toUpperCase();
+				});
+			return r;
+		};
+		for (var C of this.C.raw()) {
+			for (var P of this.P.raw()) {
 				let c = C.slice(0);
-				let i=0, j=0;
-				for (; i<c.length; ++i)
-					if (C[i] == null)
-						c[i] = P[j++];
+				let i=0, j=0, carry = false;
+				for (; i<c.length; ++i) {
+					if (C[i] == null) {
+						c[i] = next.call(this, j++, carry);
+						if (c[i] === true) {
+							carry = true;
+							c[i] = "";
+						} else carry = false;
+					}
+				}
 				yield c;
 			}
 		}
@@ -324,7 +339,7 @@ window.Mixed = (function() {
 	Mixed.prototype.post = function() {
 		for (let i=0; i<arguments.length; ++i) {
 			var a = arguments[i];
-			if (a instanceof Combo && a.data.length === 1)
+			if (a instanceof Permutator.Combo && a.data.length === 1)
 				a = a.data[0];
 			this.c.push(a);
 		}
@@ -334,12 +349,21 @@ window.Mixed = (function() {
 		for (let i=0; i<arguments.length; ++i) {
 			this.c.push(null);
 			this.p.push(arguments[i]);
+			this.b.push(false);
+		}
+		return this;
+	};
+	Mixed.prototype.post_Permute = function() {
+		for (let i=0; i<arguments.length; ++i) {
+			this.c.push(null);
+			this.p.push(arguments[i]);
+			this.b.push(true);
 		}
 		return this;
 	};
 	Mixed.prototype.generate = function() {
-		this.C = make_combo(this.c).simplify();
-		this.P = make_permute(this.p).simplify();
+		this.C = Permutator.make_combo(this.c).simplify();
+		this.P = Permutator.make_permute(this.p).simplify();
 		this.length = this.C.length * this.P.length;
 		return this;
 	};

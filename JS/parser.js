@@ -184,26 +184,36 @@ function tree(s) {
 function permute(s) {
 	var t = tree(s);
 	if (typeof t === 'string') return [t];
+	var capital = function(d) {
+		if (!d) return false;
+		if (typeof d === "string") return d[0] === "*";
+		return capital(d[0]);
+	}, decapital = function(d) {
+		if (typeof d === "string") return d.slice(1);
+		if (Array.isArray(d)) d[0] = decapital(d[0]);
+		return d;
+	};
 	var permutate = function(t) {
 		if (typeof t === 'string') return t;
 		if (!Array.isArray(t)) {
 			switch (t.type) {
 				case 'brckt':
 					if (typeof t.data === 'string')
-						return new Combo([t.data, '']);
-					return new Combo([permutate(t.data),'']);
+						return new Permutator.Combo([t.data, '']);
+					return new Permutator.Combo([permutate(t.data),'']);
 				case 'paren':
 				case 'brace':
 					return permutate(t.data);
 				case 'choices':
-					return new (Combo.bind.apply(Combo, [null].concat([t.data.map(permutate)])))();
+					return new (Permutator.Combo.bind.apply(Permutator.Combo, [null].concat([t.data.map(permutate)])))();
 			}
 			console.log(t);
 		}
-		var M = new Mixed();
+		var M = new Permutator.Mixed();
 		var _permutate = function(r) {
 			var n = 0;
 			for (let m of r) {
+				if (typeof m !== 'object') continue;
 				if (m.type === 'brace') n += 1;
 				if (n > 1) break;
 			}
@@ -212,8 +222,11 @@ function permute(s) {
 					M.post(m);
 				else if (Array.isArray(m))
 					_permutate(m);
+				else if (typeof m !== 'object') continue;
 				else if (m.type === 'brace' && n > 1)
-					M.post_permute(permutate(m.data));
+					if (capital(m.data))
+						M.post_Permute(permutate(decapital(m.data)));
+					else M.post_permute(permutate(m.data));
 				else
 					M.post(permutate(m));
 			}
