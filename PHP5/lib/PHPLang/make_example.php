@@ -177,13 +177,10 @@ function do_template($temp, $db=NULL, &$pick_db=NULL, &$reason=NULL) {
 	$reason = NULL;
 	$ignore = NULL;
 	$reset = [];
-	if (!is_array($pick_db) and $pick_db !== NULL)
-		$pick_db = _process_value($pick_db);
 	if (is_array($pick_db)) {
 		$reset = [];
 		foreach ($pick_db as $k=>$_)
 			$reset[$k] = _process_value($_,$reset,$db);
-			#$reset[$k] = $_;
 	}
 	while ($repeats < 1 and $sentence === NULL) {
 		$repeats += 1;
@@ -197,7 +194,6 @@ function do_template($temp, $db=NULL, &$pick_db=NULL, &$reason=NULL) {
 				$sentence[$k] = $res;
 		}
 	}
-	#var_dump($pick_db);
 	if ($sentence !== NULL)
 		return array_values($sentence);
 };

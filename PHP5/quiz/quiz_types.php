@@ -11,6 +11,7 @@ sro('/PHP5/quiz/common.php');
 
 global $df_exclude;
 $df_exclude = ["!template"=>NULL, "!hidden"=>NULL, "!irregular"=>NULL];
+
 function get_pick($i,$i2=NULL) {
 	return function ($_) use ($i,$i2) {
 		return $i2===NULL ? $_[$i] : $_[$i][$i2];
@@ -169,13 +170,18 @@ function make_chart($w,$values=NULL,$ignore=NULL,$legend="this chart",$add=NULL,
 	global $OP_USER_INPUT;
 	$w->read_paths();
 	$w->read_attrs();
-	if ($add) $add = ", $add";
+	if (is_string($add) && $add) $add = ", $add";
 	$ret = [
-		"help" => "Fill in $legend for “".display_word_name($w)."”$add.",
+		"help" => !is_callable($legend) && !is_callable($add) ? "Fill in $legend for “".display_word_name($w)."”$add." : function($pick_db,$db)use($w,$add,$legend) {
+			if (is_callable($add)) {
+				$add = $add($pick_db,$db);
+				if ($add) $add = ", $add";
+			}
+			if (is_callable($legend)) $legend = $legend($pick_db,$db);
+			return "Fill in ".$legend." for “".display_word_name($w)."”$add.";
+		},
 		"selections" => [],
-		"sentence" => [/*function($pick_db,$db) use($w,$values0,$values1,$values2,$values3,$values4) {
-
-		}*/],
+		"sentence" => [],
 	];
 	$i = 0;
 	$get_question = function($form,$path) use(&$i,&$ret,$translate) {

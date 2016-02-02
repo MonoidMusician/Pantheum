@@ -173,9 +173,9 @@ $quiz_types = array_merge($quiz_types,[
 
 // SYNOPSES
 
-function make_synopsis($word) {
-	return function()use($word){
-		return make_chart(WORD2("la",$word,"verb"), [
+function make_synopsis($word, $translation=FALSE) {
+	return function()use($word, $translation){
+		$ret = make_chart(WORD2("la",$word,"verb"), [
 			[FALSE],
 			["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
 			["present","imperfect","perfect","pluperfect"],
@@ -187,26 +187,21 @@ function make_synopsis($word) {
 			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
 			"infinitive/passive",
 			"subjunctive/present","subjunctive/perfect",
-		], "this synopsis","using only the 3rd person singular");
+		], "this synopsis",function($pick_db) {
+			$a = [
+				0 => "3rd person",
+				"" => "3rd person",
+				"person-1" => "1st person",
+				"person-2" => "2nd person",
+				"person-3" => "3rd person",
+			];
+			return "using only the ".$a[safe_get("option-person",$pick_db)]." ".(safe_get("option-number",$pick_db)?:"singular");
+		}, $translation);
+		return $ret;
 	};
 }
-
 function make_synopsisT($word) {
-	return function()use($word){
-		return make_chart(WORD2("la",$word,"verb"), [
-			[FALSE],
-			["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
-			["present","imperfect","perfect","pluperfect"],
-			["active","passive"],
-			[""]
-		], [
-			//"perfect/passive",
-			"subjunctive/pluperfect/passive",
-			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-			"infinitive/passive",
-			"subjunctive/present","subjunctive/perfect",
-		], "this synopsis","using only the 3rd person singular", ["subjunctive"]);
-	};
+	return make_synopsis($word, ["subjunctive"]);
 }
 
 $synopsis_words = [
@@ -224,14 +219,48 @@ $quiz_types = array_merge($quiz_types,[
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -1,
-		"options" => array_map("make_synopsis",  $synopsis_words)
+		"options" => array_map("make_synopsis",  $synopsis_words),
+		"user_selections" => [
+			"person" => [
+				"name" => "Person",
+				"values" => [
+					"person-1" => "1st Person",
+					"person-2" => "2nd Person",
+					"person-3" => "3rd Person",
+				]
+			],
+			"number" => [
+				"name" => "Number",
+				"values" => [
+					"singular" => "Singular",
+					"plural" => "Plural",
+				]
+			]
+		],
 	],
 	"synopsis-latinIII-translations" => [
 		"name" => "Synopsis + Translations",
 		"category" => "Charts",
 		"lang" => "la",
 		"n_questions" => -1,
-		"options" => array_map("make_synopsisT", $synopsis_words)
+		"options" => array_map("make_synopsisT", $synopsis_words),
+		"user_selections" => [
+			"person" => [
+				"name" => "Person",
+				"values" => [
+					"person-1" => "1st Person",
+					"person-2" => "2nd Person",
+					"person-3" => "3rd Person",
+				]
+			],
+			"number" => [
+				"name" => "Number",
+				"values" => [
+					"singular" => "Singular",
+					"plural" => "Plural",
+				]
+			]
+		],
 	]
 ]);
 
