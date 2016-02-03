@@ -6,9 +6,9 @@ sro('/Includes/functions.php');
 
 sro('/PHP5/lib/PHPLang/make_example.php');
 sro('/PHP5/lib/PHPLang/display.php');
+
 sro('/PHP5/quiz/common.php');
-include_once('quiz_types.php');
-include_once('QuizType.php');
+sro('/PHP5/quiz/quiz_types.php');
 global $quiz_types;
 
 const QUIZ_MAX_RECURSE = 10;
