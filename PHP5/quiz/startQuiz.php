@@ -27,6 +27,14 @@ if ($type !== NULL and $last and
 	quiz_setvalue("score",0);
 	quiz_setvalue("out_of",0);
 	quiz_setvalue("options_n", TRUE);
+	$options = [];
+	if (safe_get("user_selections", $quiz))
+		foreach ($quiz["user_selections"] as $k=>$desc) {
+			$v = safe_get("selected-$k", $_GET);
+			// TODO: validate
+			$options["selected-$k"] = $v;
+		}
+	quiz_setvalue("selections", $options);
 	if (NEWQUIZ($type,$last) !== NULL) {
 		exit("success");
 	} else exit("no-credit");

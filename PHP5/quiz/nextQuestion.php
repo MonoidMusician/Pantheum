@@ -18,11 +18,13 @@ if (is_array($type)) $type = new MultiCompatQuizType($type);
 if (!$type instanceof QuizType)
 	exit("bad quiz type, or session expired");
 
+$type->merge_selections(quiz_getvalue("selections"));
+
 $idx = NULL; $i=0; $quiz = NULL;
 while ($idx === NULL || ($quiz = $type->get_option($idx)) === NULL) {
 	if (!quiz_getvalue("options_n") or quiz_getvalue("options_n") === true) {
 		$opts = $type->get_options_n();
-		if (!safe_get("no_shuffle", $type))
+		if (!$type->no_shuffle)
 			shuffle($opts);
 		else $opts = array_reverse($opts);
 		quiz_setvalue("options_n", $opts);
@@ -32,6 +34,8 @@ while ($idx === NULL || ($quiz = $type->get_option($idx)) === NULL) {
 		CURRENTQUIZ()->set_options_n(quiz_getvalue("options_n"));
 	if ($i++ > 12) exit("ran out of indices");
 }
+
+$quiz->merge_selections(quiz_getvalue("selections"));
 
 $try = NULL; $recurse=0; $reason=NULL;
 $try = function() use($quiz,&$try,&$recurse,&$reason) {
@@ -65,6 +69,9 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			$_mini = [];
 		}
 	};
+	$dopick = function($answer,$mode=TRUE) use(&$reason,&$selections) {
+		return $mode ? do_pick($answer, NULL, $selections, $reason) : _process_value($answer, $selections, defaultDB());
+	};
 	foreach ($sentence as $word) {
 		if (ISHTML($word)) {
 			$refresh();
@@ -75,8 +82,8 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			$shuffle = true;
 			$stop = FALSE;
 			$correct = [];
-			$choices = $quiz->get_answers()["choices$n"];
-			$lang = safe_get("choices$n-language", $quiz->get_answers());
+			$choices = $quiz->get_other("choices$n");
+			$lang = safe_get("choices$n-language", $quiz->get_others());
 			if (is_callable($choices)) {
 				$choices = $choices($selections, defaultDB());
 			}
@@ -84,14 +91,13 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				$reason = "choices were not in an array (".gettype($choices).")";
 				return $try();
 			}
-			if (safe_get("choices$n-no-shuffle",$quiz->get_answers()) or safe_get("no_shuffle",$choices)) {
+			if (safe_get("choices$n-no-shuffle",$quiz->get_others()) or safe_get("no_shuffle",$choices)) {
 				$shuffle = false;
 				unset($choices["no_shuffle"]);
 			}
-			$results = array_map(function($answer,$key) use(&$selections,&$stop,&$reason,&$correct,$lang) {
+			$results = array_map(function($answer,$key) use($dopick,&$selections,&$stop,&$reason,&$correct,$lang) {
 				if ($stop) return;
-				if (is_callable($answer)) $answer = _process_value($answer,$selections,defaultDB());
-				$ret = do_pick($answer, NULL, $selections, $reason);
+				$ret = $dopick($answer,TRUE);
 				if ($ret === NULL)
 					$stop = TRUE; else
 				if ($key === "correct" or (
@@ -115,15 +121,15 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				$r = format_word($r,$lang);
 
 			$type = ($word === $OP_MULTIPLE_CHOICE) ? "select" : "matching-row";
-			$result_json[] = [$type, "answer$n", $quiz->get_answers()["choices$n-tooltip"], $results];
+			$result_json[] = [$type, "answer$n", $quiz->get_other("choices$n-tooltip"), $results];
 			$n += 1;
 
 		} elseif ($word === $OP_MATCHING) {
 			$refresh(1);
 			$shuffle = true;
 			$stop = FALSE;
-			$choices = $quiz->get_answers()["matching$n"];
-			$lang = safe_get("matching$n-language", $quiz->get_answers());
+			$choices = $quiz->get_other("matching$n");
+			$lang = safe_get("matching$n-language", $quiz->get_others());
 			if (is_callable($choices)) {
 				$choices = $choices($selections, defaultDB());
 			}
@@ -161,14 +167,14 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			}
 			foreach ($answers as &$r)
 				$r = format_word($r,$lang);
-			$result_json[] = ["matching", "answer$n", $quiz->get_answers()["matching$n-tooltip"], $left, $answers];
+			$result_json[] = ["matching", "answer$n", $quiz->get_other("matching$n-tooltip"), $left, $answers];
 			$n += 1;
 
 		} elseif ($word === $OP_USER_INPUT || $word === $OP_USER_PARAGRAPH) {
 			$refresh(1);
 			$stop = FALSE;
-			$answers = $quiz->get_answers()["answer$n"];
-			$lang = safe_get("answer$n-language", $quiz->get_answers());
+			$answers = $quiz->get_other("answer$n");
+			$lang = safe_get("answer$n-language", $quiz->get_others());
 			if (is_callable($answers)) {
 				$answers = $answers($selections, defaultDB());
 			}
@@ -176,9 +182,9 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 				$reason = "answers were not in an array";
 				return $try();
 			}
-			$process = function($answer) use(&$selections,&$stop,&$reason,&$correct,$lang) {
+			$process = function($answer) use($dopick,&$stop,&$correct,$lang) {
 				if ($stop) return;
-				$ret = do_pick($answer, NULL, $selections, $reason);
+				$ret = $dopick($answer, TRUE);
 				if ($ret === NULL)
 					$stop = TRUE;
 				else $ret = format_word($ret,$lang);
@@ -198,7 +204,7 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 			and is_string($answers["expr"])) {
 				$results = [
 					"correct"=>array_map($process, $answers["correct"]),
-					"expr"=>do_pick($answers["expr"], NULL, $selections, $reason)
+					"expr"=>$dopick($answers["expr"], TRUE)
 				];
 			} else
 				$results = array_map($process, $answers);
@@ -208,7 +214,15 @@ $try = function() use($quiz,&$try,&$recurse,&$reason) {
 
 			quiz_addkey("current_answer","answer$n",$results);
 
-			$result_json[] = [$word === $OP_USER_INPUT?"input":"paragraph", "answer$n", $quiz->get_answers()["answer$n-tooltip"], $quiz->get_answers()["answer$n-tooltip"], $lang];
+			$result_json[] = [$word === $OP_USER_INPUT?"input":"paragraph", "answer$n", $quiz->get_other("answer$n-tooltip"), $quiz->get_other("answer$n-tooltip"), $lang];
+			$n += 1;
+
+		} else if ($word instanceof Answers) {
+			$refresh(1);
+			$answers = $word->process($dopick,$reason);
+			if ($answers === NULL) return $try();
+			quiz_addkey("current_answer", $answers->name, $answers->serialize_PHP());
+			$result_json[] = $answers->serialize_JSON();
 			$n += 1;
 
 		} else $_mini[] = $word;

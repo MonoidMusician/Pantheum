@@ -8,7 +8,8 @@ sro('/PHP5/lib/PHPLang/make_example.php');
 sro('/PHP5/lib/PHPLang/display.php');
 sro('/PHP5/lib/PHPLang/common.php');
 sro('/PHP5/quiz/common.php');
-include_once('quiz_types.php');
+sro('/PHP5/quiz/quiz_types.php');
+sro('/PHP5/quiz/QuizType.php');
 
 global $quiz_types;
 $cat = ["All"=>[]];
@@ -70,6 +71,7 @@ foreach ($quiz_types as $k=>$v) {
 			else $n = count($v["options"]);
 		$onclick = 'var prev_val = $("#quiz-number").val();$("#quiz-number").val(Math.abs('.$n.')).attr("disabled",'.$n.' > 0)';
 	} else $onclick = 'if ($("#quiz-number").attr("disabled"))$("#quiz-number").removeAttr("disabled").val(prev_val);else prev_val = $("#quiz-number").val()';
+	$onclick .= ';$("#selections").toggle(!!$("#selections ul").hide().filter("#'.$k.'-selections").show().length);';
 	echo "onclick='$onclick'"; ?>
 	><?php
 	echo htmlspecialchars($v["name"]);

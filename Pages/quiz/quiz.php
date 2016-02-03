@@ -27,7 +27,7 @@
 	<br><br>
 	<span data-i18n="quiz.subject">Quiz me on</span>:
 	<?php sro('/PHP5/quiz/showQuizTypes.php'); ?>
-	<div id="options">
+	<div id="selections">
 		<span>Options</span>:
 		<?php sro('/PHP5/quiz/showQuizOptions.php'); ?>
 	</div><div>
@@ -57,9 +57,9 @@
 		var last = $('#quiz-number').val();
 		var mode = $('#quiz-mode').val();
 		var options = '';
-		$('#options').find('select, input').filter(':visible').each(function() {
-			var $this = $(this), id = $this.attr('data-option'), value = $this.val();
-			if (!id.startsWith('option-')) id = 'option-' + id;
+		$('#selections').find('select, input').filter(':visible').each(function() {
+			var $this = $(this), id = $this.attr('data-selection'), value = $this.val();
+			if (!id.startsWith('selected-')) id = 'selected-' + id;
 			options += '&'+id+'='+value;
 		});
 		$.get('/PHP5/quiz/startQuiz.php?type=' + encodeURIComponent(type) + '&mode=' + encodeURIComponent(mode) + '&last=' + last + options, function(data) {

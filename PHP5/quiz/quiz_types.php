@@ -7,7 +7,10 @@ sro('/Includes/functions.php');
 sro('/PHP5/lib/PHPLang/make_example.php');
 sro('/PHP5/lib/PHPLang/display.php');
 sro('/PHP5/lib/PHPLang/string.php');
+
 sro('/PHP5/quiz/common.php');
+sro('/PHP5/quiz/QuizType.php');
+sro('/PHP5/quiz/Answers.php');
 
 global $df_exclude;
 $df_exclude = ["!template"=>NULL, "!hidden"=>NULL, "!irregular"=>NULL];

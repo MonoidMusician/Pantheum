@@ -18,6 +18,7 @@ class QuizType {
 	public $sentence   = [];
 	public $answers    = [];
 	public $wrap       = [];
+	public $others     = [];
 	function get_options_n() {return [0];}
 	function get_option($n) {return $this;}
 	function merge_selections($vec) {
@@ -29,6 +30,9 @@ class QuizType {
 	function get_help() {return $this->help;}
 	function get_sentence() {return $this->sentence;}
 	function get_answers() {return $this->answers;}
+	function pop_answer() {return array_pop($this->answers);}
+	function get_others() {return $this->others;}
+	function get_other($k) {return $this->others[$k];}
 }
 
 class MultiQuizType extends QuizType {
@@ -47,8 +51,10 @@ class CompatQuizType extends QuizType {
 		$this->name = safe_get("name", $old);
 		$this->help = safe_get("help", $old);
 		$this->selections = safe_get("selections", $old);
+		if (!$this->selections) $this->selections = [];
 		$this->sentence = safe_get("sentence", $old);
-		$this->answers = $old;
+		$this->others = $old;
+		$this->no_shuffle = safe_get("no_shuffle", $old);
 	}
 	private function _process_value($v) {
 		return _process_value($v, $this->selections, defaultDB());
@@ -76,11 +82,12 @@ class MultiCompatQuizType extends MultiQuizType {
 			if (!array_key_exists("condition", $opt) || $opt["condition"]())
 				$this->options[] = $opt;
 		}
+		$this->no_shuffle = safe_get("no_shuffle", $old);
 	}
 	function get_option($n) {
 		$o = $this->options[$n];
 		if (is_callable($o))
 			$o = $o();
-		return new CompatQuizType($o);
+		return is_array($o) ? new CompatQuizType($o) : $o;
 	}
 }

@@ -66,10 +66,11 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 		return $t->rand($db);
 	elseif (is_string($t)) return $t;
 	elseif (is_callable($t)) {
-		$ret = _process_value($t,$pick_db,$db);
-		if ($ret === NULL)
+		$t = _process_value($t,$pick_db,$db);
+		if ($t === NULL) {
 			$reason = "custom function returned NULL";
-		return $ret;
+			return $t;
+		} else return do_pick($t, $db, $pick_db, $reason);
 	}
 	elseif (array_key_exists("condition", $t) and !$t["condition"]($pick_db, $db, null))
 		return FALSE;

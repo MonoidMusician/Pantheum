@@ -1,4 +1,6 @@
 <?php
+sro('/PHP5/quiz/quiz_types.php');
+
 global $quiz_types;
 global $df_exclude;
 $quiz_types = array_merge($quiz_types,[
@@ -173,7 +175,56 @@ $quiz_types = array_merge($quiz_types,[
 
 // SYNOPSES
 
+class Synopsis extends QuizType {
+	public $person;
+	public $number;
+	function __construct($word, $translation=FALSE) {
+		$this->word = $word;
+		$this->translation = $translation;
+		$this->others = NULL;
+	}
+	function merge_selections($selections) {
+		$this->person = safe_get("selected-person", $selections);
+		$this->number = safe_get("selected-number", $selections);
+		if (!$this->person) $this->person = "person-3";
+		if (!$this->number) $this->number = "singular";
+	}
+	function get_others() {
+		if ($this->others === NULL) {
+			$add = "using only the ";
+			$a = [
+				"person-1" => "1st person",
+				"person-2" => "2nd person",
+				"person-3" => "3rd person",
+			];
+			$add .= $a[$this->person]." ".$this->number;
+			$this->others = make_chart($this->word, [
+				[FALSE],
+				["indicative///$this->person/$this->number","subjunctive///$this->person/$this->number","infinitive"],
+				["present","imperfect","perfect","pluperfect"],
+				["active","passive"],
+				[""]
+			], [
+				//"perfect/passive",
+				"subjunctive/pluperfect/passive",
+				"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
+				"infinitive/passive",
+				"subjunctive/present","subjunctive/perfect",
+			], "this synopsis", $add, $this->translation);
+		}
+		return $this->others;
+	}
+	function get_other($k) {return $this->get_others()[$k];}
+	function get_help() {
+		return $this->get_other("help");
+	}
+	function get_sentence() {
+		return $this->get_other("sentence");
+	}
+}
+
 function make_synopsis($word, $translation=FALSE) {
+	return new Synopsis(WORD2("la",$word,"verb"), $translation);
 	return function()use($word, $translation){
 		$ret = make_chart(WORD2("la",$word,"verb"), [
 			[FALSE],
@@ -195,7 +246,7 @@ function make_synopsis($word, $translation=FALSE) {
 				"person-2" => "2nd person",
 				"person-3" => "3rd person",
 			];
-			return "using only the ".$a[safe_get("option-person",$pick_db)]." ".(safe_get("option-number",$pick_db)?:"singular");
+			return "using only the ".$a[safe_get("selected-person",$pick_db)]." ".(safe_get("selected-number",$pick_db)?:"singular");
 		}, $translation);
 		return $ret;
 	};

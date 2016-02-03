@@ -16,16 +16,15 @@ global $quiz_types;
 foreach ($quiz_types as $id=>$quiz_type) {
 	$options = safe_get("user_selections", $quiz_type);
 	if (!$options) continue;
-	?><ul id="<?= $id ?>-options"><?php
+	?><ul id="<?= $id ?>-selections"><?php
 	foreach ($options as $optionid => $option) {
 		$name = safe_get("name", $option);
 		if (!$name) $name = $optionid;
 		echo "<li>".$name.": ";
 		$opts = safe_get("values", $option);
 		if ($opts) {
-			?><select data-option="<?= $optionid ?>"><?php
+			?><select data-selection="<?= $optionid ?>"><?php
 			foreach ($opts as $optid => $opt) {
-				error_log($optid);
 				if (is_integer($optid)) $optid = $opt;
 				?><option value="<?= $optid ?>"><?= $opt ?></option><?php
 			}
