@@ -73,6 +73,25 @@ $quiz_types = array_merge($quiz_types,[
 class Synopsis extends QuizType {
 	public $person;
 	public $number;
+	public static $uselections = [
+		"person" => [
+			"name" => "Person",
+			"values" => [
+				"random" => "Random",
+				"person-1" => "1st Person",
+				"person-2" => "2nd Person",
+				"person-3" => "3rd Person",
+			]
+		],
+		"number" => [
+			"name" => "Number",
+			"values" => [
+				"random" => "Random",
+				"singular" => "Singular",
+				"plural" => "Plural",
+			]
+		]
+	];
 	function __construct($word, $translation=FALSE) {
 		$this->word = $word;
 		$this->translation = $translation;
@@ -190,6 +209,19 @@ class VerbFormTranslation extends QuizType {
 
 class TenseConjugation extends QuizType {
 	public $tense;
+	public static $tenses = [
+		"indicative/present",
+		"indicative/imperfect",
+		"indicative/future",
+		"indicative/perfect",
+		"indicative/pluperfect",
+		"indicative/future-perfect",
+		//"subjunctive/present",
+		"subjunctive/imperfect",
+		//"subjunctive/perfect",
+		"subjunctive/pluperfect",
+	];
+	public static $tense_names;
 	function __construct($word, $translation=FALSE) {
 		$this->word = $word;
 		$this->translation = $translation;
@@ -199,18 +231,7 @@ class TenseConjugation extends QuizType {
 		$this->tense = safe_get("selected-mood-tense", $selections);
 		if (!$this->tense) $this->tense = "person-3";
 		if ($this->tense === "random")
-			$this->tense = PICK([
-				"indicative/present",
-				"indicative/imperfect",
-				"indicative/future",
-				"indicative/perfect",
-				"indicative/pluperfect",
-				"indicative/future-perfect",
-				//"subjunctive/present",
-				"subjunctive/imperfect",
-				//"subjunctive/perfect",
-				"subjunctive/pluperfect",
-			]);
+			$this->tense = PICK(self::$tenses);
 	}
 	function get_others() {
 		if ($this->others === NULL) {
@@ -241,7 +262,13 @@ class TenseConjugation extends QuizType {
 	function get_sentence() {
 		return $this->get_other("sentence");
 	}
+	static function init() {
+		foreach (self::$tenses as $t) {
+			self::$tense_names[$t] = format_path($t);
+		}
+	}
 }
+TenseConjugation::init();
 
 function make_synopsis($word, $translation=FALSE) {
 	return new Synopsis(WORD2("la",$word,"verb"), $translation);
@@ -272,25 +299,23 @@ $quiz_types = array_merge($quiz_types,[
 		"lang" => "la",
 		"n_questions" => -1,
 		"options" => array_map("make_synopsis",  $synopsis_words),
-		"user_selections" => [
-			"person" => [
-				"name" => "Person",
-				"values" => [
-					"random" => "Random",
-					"person-1" => "1st Person",
-					"person-2" => "2nd Person",
-					"person-3" => "3rd Person",
-				]
-			],
-			"number" => [
-				"name" => "Number",
-				"values" => [
-					"random" => "Random",
-					"singular" => "Singular",
-					"plural" => "Plural",
-				]
-			]
-		],
+		"user_selections" => Synopsis::$uselections,
+	],
+	"synopsis-latinIII-translations" => [
+		"name" => "Synopsis + Translations",
+		"category" => "Charts",
+		"lang" => "la",
+		"n_questions" => -1,
+		"options" => array_map("make_synopsisT", $synopsis_words),
+		"user_selections" => Synopsis::$uselections,
+	],
+	"verb-form-translation" => [
+		"name" => "Verb Form Translation",
+		"category" => "Translation",
+		"lang" => "la",
+		"n_questions" => -5,
+		"options" => array_map("make_verbform_translation", $synopsis_words),
+		"user_selections" => Synopsis::$uselections,
 	],
 	"conjugate-tense" => [
 		"name" => "Conjugate Verb Tense",
@@ -302,73 +327,10 @@ $quiz_types = array_merge($quiz_types,[
 			"mood-tense" => [
 				"name" => "Mood and Tense",
 				"default" => "indicative/future",
-				"values" => [
-					"indicative/present" => "Present Indicative",
-					"indicative/imperfect" => "Imperfect Indicative",
-					"indicative/future" => "Future Indicative",
-					"indicative/perfect" => "Perfect Indicative",
-					"indicative/pluperfect" => "Pluperfect Indicative",
-					"indicative/future-perfect" => "Future-perfect Indicative",
-					//"subjunctive/present" => "Present Subjunctive",
-					"subjunctive/imperfect" => "Imperfect Subjunctive",
-					//"subjunctive/perfect" => "Perfect Subjunctive",
-					"subjunctive/pluperfect" => "Pluperfect Subjunctive"
-				]
+				"values" => TenseConjugation::$tense_names
 			]
 		],
 	],
-	"synopsis-latinIII-translations" => [
-		"name" => "Synopsis + Translations",
-		"category" => "Charts",
-		"lang" => "la",
-		"n_questions" => -1,
-		"options" => array_map("make_synopsisT", $synopsis_words),
-		"user_selections" => [
-			"person" => [
-				"name" => "Person",
-				"values" => [
-					"random" => "Random",
-					"person-1" => "1st Person",
-					"person-2" => "2nd Person",
-					"person-3" => "3rd Person",
-				]
-			],
-			"number" => [
-				"name" => "Number",
-				"values" => [
-					"random" => "Random",
-					"singular" => "Singular",
-					"plural" => "Plural",
-				]
-			]
-		],
-	],
-	"verb-form-translation" => [
-		"name" => "Verb Form Translation",
-		"category" => "Translation",
-		"lang" => "la",
-		"n_questions" => -5,
-		"options" => array_map("make_verbform_translation", $synopsis_words),
-		"user_selections" => [
-			"person" => [
-				"name" => "Person",
-				"values" => [
-					"random" => "Random",
-					"person-1" => "1st Person",
-					"person-2" => "2nd Person",
-					"person-3" => "3rd Person",
-				]
-			],
-			"number" => [
-				"name" => "Number",
-				"values" => [
-					"random" => "Random",
-					"singular" => "Singular",
-					"plural" => "Plural",
-				]
-			]
-		],
-	]
 ]);
 
 function make_nounchart($word) {
