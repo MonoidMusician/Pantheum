@@ -114,6 +114,8 @@ function jWord() {
 			if (this.entries.sorted.length == 1)
 				return l+" | "+t;
 			var r = $(this.entries[this.entries.sorted[this.entries.sorted.length-1]]).text();
+			if (this.entries.sorted.length == 2)
+				return l+", "+r+" | "+t;
 			return l+" … "+r+" | "+t;
 		}
 		return "Dictionary | "+t;
@@ -411,7 +413,7 @@ function jWord() {
 		this.gurl = gurl;
 		this.surl = surl;
 	};
-	
+
 	this.previewEntries = function(callback) {
 		var my = this, serv = this.previewEntries_service;
 		serv.pending = true;
@@ -738,6 +740,7 @@ function jWord() {
 		if (!event.state) return;
 		$('#dictionary').empty();
 		console.log(event.state);
+		this.entries = event.state.entries;
 		this.updateContent(event.state.form, event.state.entries);
 	};
 
