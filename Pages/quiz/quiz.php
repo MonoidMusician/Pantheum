@@ -32,9 +32,9 @@
 		<?php sro('/PHP5/quiz/showQuizOptions.php'); ?>
 	</div><div>
 		Score answers per <select id="quiz-mode">
-			<option value="question">question</option>
-			<option value="page" selected>page</option>
-			<option value="quiz">quiz</option>
+			<option value="question" selected>question</option>
+			<option value="page">page</option>
+			<!--<option value="quiz">quiz</option>-->
 		</select>
 	</div>
 	<span data-i18n="quiz.number_of_questions">Number of questions</span>:

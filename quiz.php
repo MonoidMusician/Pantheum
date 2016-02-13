@@ -8,7 +8,7 @@
 <html>
     <head>
         <?php sro('/Includes/head.php'); ?>
-        <title>Quiz | Latin</title>
+        <title>Quiz | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
         <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>

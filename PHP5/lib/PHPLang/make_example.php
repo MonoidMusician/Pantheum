@@ -76,30 +76,33 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 		return FALSE;
 	elseif (array_key_exists("value", $t))
 		return _process_value($t["value"],$pick_db,$db);
-	$searcher = $db->searcher();
-	#var_dump(array_keys($searcher->master));
-	if (array_key_exists("name", $t))
-		$searcher = $searcher->name(_process_value($t["name"],$pick_db,$db));
-	if (array_key_exists("language", $t))
-		$searcher = $searcher->lang(_process_value($t["language"],$pick_db,$db));
-	elseif (array_key_exists("lang", $t))
-		$searcher = $searcher->lang(_process_value($t["lang"],$pick_db,$db));
-	if (array_key_exists("speechpart", $t))
-		$searcher = $searcher->partofspeech(_process_value($t["speechpart"],$pick_db,$db));
-	elseif (array_key_exists("spart", $t))
-		$searcher = $searcher->partofspeech(_process_value($t["spart"],$pick_db,$db));
 
-	if (array_key_exists("attr", $t))
-		foreach ($t["attr"] as $k=>$v) {
-			$v = _process_value($v,$pick_db,$db);
-			if ($reverse = (substr($k, 0, 1) === "!")) {
-				$k = substr($k, 1);
-				$m = "only_without_attr";
-			} else $m = "only_with_attr";
-			$searcher = $searcher->$m($v!==NULL?ATTR($k,$v):ATTR($k));
-		}
+	if (!($word = safe_get("word", $t))) {
+		$searcher = $db->searcher();
+		#var_dump(array_keys($searcher->master));
+		if (array_key_exists("name", $t))
+			$searcher = $searcher->name(_process_value($t["name"],$pick_db,$db));
+		if (array_key_exists("language", $t))
+			$searcher = $searcher->lang(_process_value($t["language"],$pick_db,$db));
+		elseif (array_key_exists("lang", $t))
+			$searcher = $searcher->lang(_process_value($t["lang"],$pick_db,$db));
+		if (array_key_exists("speechpart", $t))
+			$searcher = $searcher->partofspeech(_process_value($t["speechpart"],$pick_db,$db));
+		elseif (array_key_exists("spart", $t))
+			$searcher = $searcher->partofspeech(_process_value($t["spart"],$pick_db,$db));
 
-	$word = $searcher->rand();
+		if (array_key_exists("attr", $t))
+			foreach ($t["attr"] as $k=>$v) {
+				$v = _process_value($v,$pick_db,$db);
+				if ($reverse = (substr($k, 0, 1) === "!")) {
+					$k = substr($k, 1);
+					$m = "only_without_attr";
+				} else $m = "only_with_attr";
+				$searcher = $searcher->$m($v!==NULL?ATTR($k,$v):ATTR($k));
+			}
+
+		$word = $searcher->rand();
+	}
 	if (!ISWORD($word)) {
 		$reason = "could not find a word with name ".var_export($t["name"],1)." and attrs ".var_export(safe_get("attr",$t),1);
 		return;
@@ -131,6 +134,8 @@ function do_pick($t, $db, &$pick_db, &$reason) {
 		$ret = $path->hasvalue() ? $path->get() : $word->name();
 		if (array_key_exists("store", $t))
 			$pick_db[$t["store"]] = $ret;
+		if (array_key_exists("store_path", $t))
+			$pick_db[$t["store_path"]] = $path;
 		return format_word($ret,$word->lang());
 	} else {
 		$reason = "path '$path' didn't exist in word with id <a target='_blank' href='dictionary.php?id=".$word->id()."'>".$word->id()."</a> or was NULL";

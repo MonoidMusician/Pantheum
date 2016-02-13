@@ -4,113 +4,6 @@ sro('/PHP5/quiz/quiz_types.php');
 global $quiz_types;
 global $df_exclude;
 $quiz_types = array_merge($quiz_types,[
-	"hic-haec-hoc" => [
-		"name" => "Hic, Haec, Hoc",
-		"lang" => "la",
-		"n_questions" => "auto",
-		"category" => "Charts",
-		"options" => [[
-			"help" => "Fill in the chart for this irregular pronoun.",
-			"selections" => [
-			],
-			"sentence" => [
-				HTML("<table class='jquiz-matching'>"
-				."<tr><th></th><th>Hic (m)</th><th>Haec (f)</th><th>Hoc (n)</th></tr>"),
-				HTML("<tr><th>Nom</th><td>"),
-				$OP_USER_INPUT,
-				HTML("</td><td>"),
-				$OP_USER_INPUT,
-				HTML("</td><td>"),
-				$OP_USER_INPUT,
-				HTML("</td></tr>"),
-				HTML("<tr><th>Acc</th><td>"),
-				$OP_USER_INPUT,
-				HTML("</td><td>"),
-				$OP_USER_INPUT,
-				HTML("</td><td>"),
-				$OP_USER_INPUT,
-				HTML("</td></tr>"),
-			],
-			"answer0" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "masculine",
-						"nominative",
-					]
-				],
-			],
-			"answer1" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "feminine",
-						"nominative",
-					]
-				],
-			],
-			"answer2" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "neuter",
-						"nominative",
-					]
-				],
-			],
-			"answer3" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "masculine",
-						"accusative",
-					]
-				],
-			],
-			"answer4" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "feminine",
-						"accusative",
-					]
-				],
-			],
-			"answer5" => [
-				[
-					"lang" => "la",
-					"speechpart" => "pronoun",
-					"name" => "hic",
-					"path" => [
-						"singular", "neuter",
-						"accusative",
-					]
-				],
-			],
-			"answer0-tooltip"=>"Enter form",
-			"answer1-tooltip"=>"Enter form", 
-			"answer2-tooltip"=>"Enter form", 
-			"answer3-tooltip"=>"Enter form",
-			"answer4-tooltip"=>"Enter form", 
-			"answer5-tooltip"=>"Enter form", 
-			"answer6-tooltip"=>"Enter form",
-			"answer7-tooltip"=>"Enter form", 
-			"answer8-tooltip"=>"Enter form", 
-			"answer9-tooltip"=>"Enter form",
-			"answer10-tooltip"=>"Enter form", 
-			"answer11-tooltip"=>"Enter form", 
-		]]
-	],
 	"hic-haec-hoc2" => [
 		"name" => "Hic, Qui",
 		"category" => "Charts",
@@ -142,10 +35,12 @@ $quiz_types = array_merge($quiz_types,[
 		"name" => "Irregular Verbs",
 		"category" => "Charts",
 		"lang" => "la",
-		"n_questions" => -2,
+		"n_questions" => -4,
 		"options" => [
+			function(){return make_chart(WORD2("la","nolo","verb"),NULL,["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]);},
 			function(){return make_chart(WORD2("la","volo","verb"),NULL,["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]);},
 			function(){return make_chart(WORD2("la","sum","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]);},
+			function(){return make_chart(WORD2("la","possum","verb"),NULL, ["infinitive","participle","subjunctive","imperative","future","pluperfect","future-perfect"]);},
 		]
 	],
 	"irregular-verbs-latinII" => [
@@ -188,29 +83,154 @@ class Synopsis extends QuizType {
 		$this->number = safe_get("selected-number", $selections);
 		if (!$this->person) $this->person = "person-3";
 		if (!$this->number) $this->number = "singular";
+		if ($this->person === "random")
+			$this->person = PICK(["person-1","person-2","person-3"]);
+		if ($this->number === "random")
+			$this->number = PICK(["singular","plural"]);
 	}
 	function get_others() {
 		if ($this->others === NULL) {
+			$p = $this->person;
+			if (ISPICK($p)) $p = $p->rand();
+			$n = $this->number;
+			if (ISPICK($n)) $n = $n->rand();
 			$add = "using only the ";
 			$a = [
 				"person-1" => "1st person",
 				"person-2" => "2nd person",
 				"person-3" => "3rd person",
 			];
-			$add .= $a[$this->person]." ".$this->number;
+			$add .= $a[$p]." ".$n;
 			$this->others = make_chart($this->word, [
 				[FALSE],
-				["indicative///$this->person/$this->number","subjunctive///$this->person/$this->number","infinitive"],
-				["present","imperfect","perfect","pluperfect"],
+				["indicative///$p/$n","subjunctive///$p/$n","infinitive"],
+				["present","imperfect","future","perfect","pluperfect","future-perfect"],
 				["active","passive"],
 				[""]
 			], [
 				//"perfect/passive",
-				"subjunctive/pluperfect/passive",
+				//"subjunctive/pluperfect/passive",
 				"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
 				"infinitive/passive",
 				"subjunctive/present","subjunctive/perfect",
+				"subjunctive/future", "subjunctive/future-perfect",
+				"infinitive/future", "infinitive/future-perfect",
 			], "this synopsis", $add, $this->translation);
+		}
+		return $this->others;
+	}
+	function get_other($k) {return $this->get_others()[$k];}
+	function get_help() {
+		return $this->get_other("help");
+	}
+	function get_sentence() {
+		return $this->get_other("sentence");
+	}
+}
+
+class VerbFormTranslation extends QuizType {
+	public $person;
+	public $number;
+	public $help = "Translate this verb form into English.";
+	function __construct($word, $translation=FALSE) {
+		$this->word = $word;
+		$this->translation = $translation;
+		$this->others = NULL;
+		$this->selections = [
+			"voice" => PICK(["active","passive"]),
+			"mood-tense" => PICK([
+				"indicative/present",
+				"indicative/imperfect",
+				"indicative/future",
+				"indicative/perfect",
+				"indicative/pluperfect",
+				"indicative/future-perfect",
+				"subjunctive/imperfect",
+				"subjunctive/pluperfect"
+			]),
+		];
+	}
+	function merge_selections($selections) {
+		$this->person = safe_get("selected-person", $selections);
+		$this->number = safe_get("selected-number", $selections);
+		if (!$this->person) $this->person = "person-3";
+		if (!$this->number) $this->number = "singular";
+		if ($this->person === "random")
+			$selections["selected-person"] =
+			$this->person = PICK(["person-1","person-2","person-3"]);
+		if ($this->number === "random")
+			$selections["selected-number"] =
+			$this->number = PICK(["singular","plural"]);
+		parent::merge_selections($selections);
+	}
+	function get_sentence() {
+		global $OP_PARAGRAPH;
+		return [
+			[
+				"store_path" => "path",
+				"word" => $this->word,
+				"path" => [
+					get_pick("voice"),
+					get_pick("mood-tense"),
+					get_pick("selected-person"),
+					get_pick("selected-number"),
+				]
+			],
+			$OP_PARAGRAPH,
+			function($pick_db) {
+				$path = $pick_db["path"];
+				$t = la_en($path, true); $T = la_en($path, false);
+				return name_answer_lang_tool("translation", new FreeResponseExpr(
+					$t, $T
+				), "en", "English translation");
+			}
+		];
+	}
+}
+
+class TenseConjugation extends QuizType {
+	public $tense;
+	function __construct($word, $translation=FALSE) {
+		$this->word = $word;
+		$this->translation = $translation;
+		$this->others = NULL;
+	}
+	function merge_selections($selections) {
+		$this->tense = safe_get("selected-mood-tense", $selections);
+		if (!$this->tense) $this->tense = "person-3";
+		if ($this->tense === "random")
+			$this->tense = PICK([
+				"indicative/present",
+				"indicative/imperfect",
+				"indicative/future",
+				"indicative/perfect",
+				"indicative/pluperfect",
+				"indicative/future-perfect",
+				//"subjunctive/present",
+				"subjunctive/imperfect",
+				//"subjunctive/perfect",
+				"subjunctive/pluperfect",
+			]);
+	}
+	function get_others() {
+		if ($this->others === NULL) {
+			$t = $this->tense;
+			if (ISPICK($t)) $t = $t->rand();
+			$this->others = make_chart($this->word, [
+				[$t],
+				["singular","plural"],
+				["person-1","person-2","person-3"],
+				["active","passive"],
+				[FALSE],
+			], [
+				//"perfect/passive",
+				//"subjunctive/pluperfect/passive",
+				"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
+				"infinitive/passive",
+				"subjunctive/present","subjunctive/perfect",
+				"subjunctive/future", "subjunctive/future-perfect",
+				"infinitive/future", "infinitive/future-perfect",
+			], "the ".format_path($t), NULL, $this->translation);
 		}
 		return $this->others;
 	}
@@ -225,34 +245,15 @@ class Synopsis extends QuizType {
 
 function make_synopsis($word, $translation=FALSE) {
 	return new Synopsis(WORD2("la",$word,"verb"), $translation);
-	return function()use($word, $translation){
-		$ret = make_chart(WORD2("la",$word,"verb"), [
-			[FALSE],
-			["indicative///person-3/singular","subjunctive///person-3/singular","infinitive"],
-			["present","imperfect","perfect","pluperfect"],
-			["active","passive"],
-			[""]
-		], [
-			//"perfect/passive",
-			"subjunctive/pluperfect/passive",
-			"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-			"infinitive/passive",
-			"subjunctive/present","subjunctive/perfect",
-		], "this synopsis",function($pick_db) {
-			$a = [
-				0 => "3rd person",
-				"" => "3rd person",
-				"person-1" => "1st person",
-				"person-2" => "2nd person",
-				"person-3" => "3rd person",
-			];
-			return "using only the ".$a[safe_get("selected-person",$pick_db)]." ".(safe_get("selected-number",$pick_db)?:"singular");
-		}, $translation);
-		return $ret;
-	};
 }
 function make_synopsisT($word) {
 	return make_synopsis($word, ["subjunctive"]);
+}
+function make_verbform_translation($word) {
+	return new VerbFormTranslation(WORD2("la",$word,"verb"));
+}
+function make_tense_conjugation($word) {
+	return new TenseConjugation(WORD2("la",$word,"verb"));
 }
 
 $synopsis_words = [
@@ -261,7 +262,7 @@ $synopsis_words = [
 	"moneo","augeo",
 	"mitto","conduco",
 	"reficio","accipio",
-	"vincio"
+	"vincio","punio",
 ];
 
 $quiz_types = array_merge($quiz_types,[
@@ -275,6 +276,7 @@ $quiz_types = array_merge($quiz_types,[
 			"person" => [
 				"name" => "Person",
 				"values" => [
+					"random" => "Random",
 					"person-1" => "1st Person",
 					"person-2" => "2nd Person",
 					"person-3" => "3rd Person",
@@ -283,8 +285,34 @@ $quiz_types = array_merge($quiz_types,[
 			"number" => [
 				"name" => "Number",
 				"values" => [
+					"random" => "Random",
 					"singular" => "Singular",
 					"plural" => "Plural",
+				]
+			]
+		],
+	],
+	"conjugate-tense" => [
+		"name" => "Conjugate Verb Tense",
+		"category" => "Charts",
+		"lang" => "la",
+		"n_questions" => -1,
+		"options" => array_map("make_tense_conjugation",  $synopsis_words),
+		"user_selections" => [
+			"mood-tense" => [
+				"name" => "Mood and Tense",
+				"default" => "indicative/future",
+				"values" => [
+					"indicative/present" => "Present Indicative",
+					"indicative/imperfect" => "Imperfect Indicative",
+					"indicative/future" => "Future Indicative",
+					"indicative/perfect" => "Perfect Indicative",
+					"indicative/pluperfect" => "Pluperfect Indicative",
+					"indicative/future-perfect" => "Future-perfect Indicative",
+					//"subjunctive/present" => "Present Subjunctive",
+					"subjunctive/imperfect" => "Imperfect Subjunctive",
+					//"subjunctive/perfect" => "Perfect Subjunctive",
+					"subjunctive/pluperfect" => "Pluperfect Subjunctive"
 				]
 			]
 		],
@@ -299,6 +327,7 @@ $quiz_types = array_merge($quiz_types,[
 			"person" => [
 				"name" => "Person",
 				"values" => [
+					"random" => "Random",
 					"person-1" => "1st Person",
 					"person-2" => "2nd Person",
 					"person-3" => "3rd Person",
@@ -307,6 +336,33 @@ $quiz_types = array_merge($quiz_types,[
 			"number" => [
 				"name" => "Number",
 				"values" => [
+					"random" => "Random",
+					"singular" => "Singular",
+					"plural" => "Plural",
+				]
+			]
+		],
+	],
+	"verb-form-translation" => [
+		"name" => "Verb Form Translation",
+		"category" => "Translation",
+		"lang" => "la",
+		"n_questions" => -5,
+		"options" => array_map("make_verbform_translation", $synopsis_words),
+		"user_selections" => [
+			"person" => [
+				"name" => "Person",
+				"values" => [
+					"random" => "Random",
+					"person-1" => "1st Person",
+					"person-2" => "2nd Person",
+					"person-3" => "3rd Person",
+				]
+			],
+			"number" => [
+				"name" => "Number",
+				"values" => [
+					"random" => "Random",
 					"singular" => "Singular",
 					"plural" => "Plural",
 				]

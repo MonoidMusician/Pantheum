@@ -19,6 +19,7 @@ foreach ($quiz_types as $id=>$quiz_type) {
 	?><ul id="<?= $id ?>-selections"><?php
 	foreach ($options as $optionid => $option) {
 		$name = safe_get("name", $option);
+		$default = safe_get("default", $option);
 		if (!$name) $name = $optionid;
 		echo "<li>".$name.": ";
 		$opts = safe_get("values", $option);
@@ -26,7 +27,8 @@ foreach ($quiz_types as $id=>$quiz_type) {
 			?><select data-selection="<?= $optionid ?>"><?php
 			foreach ($opts as $optid => $opt) {
 				if (is_integer($optid)) $optid = $opt;
-				?><option value="<?= $optid ?>"><?= $opt ?></option><?php
+				$tag = ($optid === $default) ? "selected" : "";
+				?><option value="<?= $optid ?>" <?= $tag ?>><?= $opt ?></option><?php
 			}
 			?></select><?php
 		}
