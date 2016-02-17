@@ -641,6 +641,10 @@ $sql_stmts['quiz_id->results']= "SELECT results FROM quizzes WHERE quiz_id = (?)
 
 $sql_stmts['quiz_id->results=']= "UPDATE quizzes SET results = (?) WHERE quiz_id = (?)";
 
+$sql_stmts['quiz_id->hints']= "SELECT hints FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->hints=']= "UPDATE quizzes SET hints = (?) WHERE quiz_id = (?)";
+
 $sql_stmts['quiz_id->mode=']= "UPDATE quizzes SET mode = (?) WHERE quiz_id = (?)";
 
 $sql_stmts['quiz_id->options_n']= "SELECT options_n FROM quizzes WHERE quiz_id = (?)";
@@ -650,6 +654,10 @@ $sql_stmts['quiz_id->options_n=']= "UPDATE quizzes SET options_n = (?) WHERE qui
 $sql_stmts['quiz_id->answers']= "SELECT answers FROM quizzes WHERE quiz_id = (?)";
 
 $sql_stmts['quiz_id->answers=']= "UPDATE quizzes SET answers = (?) WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->selections']= "SELECT selections FROM quizzes WHERE quiz_id = (?)";
+
+$sql_stmts['quiz_id->selections=']= "UPDATE quizzes SET selections = (?) WHERE quiz_id = (?)";
 
 $sql_stmts['user_id,last->new in quizzes']= "INSERT INTO quizzes (user_id,last) VALUES (?, ?)";
 $sql_stmts['last,user_id->new in quizzes']= "INSERT INTO quizzes (last,user_id) VALUES (?, ?)";
@@ -685,6 +693,127 @@ $sql_stmts['type,mode,last,user_id->new in quizzes']= "INSERT INTO quizzes (type
 $sql_stmts['mode,type,last,user_id->new in quizzes']= "INSERT INTO quizzes (mode,type,last,user_id) VALUES (?, ?, ?, ?)";
 $sql_stmts['last,mode,type,user_id->new in quizzes']= "INSERT INTO quizzes (last,mode,type,user_id) VALUES (?, ?, ?, ?)";
 $sql_stmts['mode,last,type,user_id->new in quizzes']= "INSERT INTO quizzes (mode,last,type,user_id) VALUES (?, ?, ?, ?)";
+
+$sql_stmts['user_id,type,last,mode,selections->new in quizzes']= "INSERT INTO quizzes (user_id,type,last,mode,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,user_id,last,mode,selections->new in quizzes']= "INSERT INTO quizzes (type,user_id,last,mode,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,last,type,mode,selections->new in quizzes']= "INSERT INTO quizzes (user_id,last,type,mode,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,user_id,type,mode,selections->new in quizzes']= "INSERT INTO quizzes (last,user_id,type,mode,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,last,user_id,mode,selections->new in quizzes']= "INSERT INTO quizzes (type,last,user_id,mode,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,type,user_id,mode,selections->new in quizzes']= "INSERT INTO quizzes (last,type,user_id,mode,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,type,mode,last,selections->new in quizzes']= "INSERT INTO quizzes (user_id,type,mode,last,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,user_id,mode,last,selections->new in quizzes']= "INSERT INTO quizzes (type,user_id,mode,last,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,mode,type,last,selections->new in quizzes']= "INSERT INTO quizzes (user_id,mode,type,last,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,user_id,type,last,selections->new in quizzes']= "INSERT INTO quizzes (mode,user_id,type,last,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,mode,user_id,last,selections->new in quizzes']= "INSERT INTO quizzes (type,mode,user_id,last,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,type,user_id,last,selections->new in quizzes']= "INSERT INTO quizzes (mode,type,user_id,last,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,last,mode,type,selections->new in quizzes']= "INSERT INTO quizzes (user_id,last,mode,type,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,user_id,mode,type,selections->new in quizzes']= "INSERT INTO quizzes (last,user_id,mode,type,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,mode,last,type,selections->new in quizzes']= "INSERT INTO quizzes (user_id,mode,last,type,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,user_id,last,type,selections->new in quizzes']= "INSERT INTO quizzes (mode,user_id,last,type,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,mode,user_id,type,selections->new in quizzes']= "INSERT INTO quizzes (last,mode,user_id,type,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,last,user_id,type,selections->new in quizzes']= "INSERT INTO quizzes (mode,last,user_id,type,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,last,mode,user_id,selections->new in quizzes']= "INSERT INTO quizzes (type,last,mode,user_id,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,type,mode,user_id,selections->new in quizzes']= "INSERT INTO quizzes (last,type,mode,user_id,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,mode,last,user_id,selections->new in quizzes']= "INSERT INTO quizzes (type,mode,last,user_id,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,type,last,user_id,selections->new in quizzes']= "INSERT INTO quizzes (mode,type,last,user_id,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,mode,type,user_id,selections->new in quizzes']= "INSERT INTO quizzes (last,mode,type,user_id,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,last,type,user_id,selections->new in quizzes']= "INSERT INTO quizzes (mode,last,type,user_id,selections) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,type,last,selections,mode->new in quizzes']= "INSERT INTO quizzes (user_id,type,last,selections,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,user_id,last,selections,mode->new in quizzes']= "INSERT INTO quizzes (type,user_id,last,selections,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,last,type,selections,mode->new in quizzes']= "INSERT INTO quizzes (user_id,last,type,selections,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,user_id,type,selections,mode->new in quizzes']= "INSERT INTO quizzes (last,user_id,type,selections,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,last,user_id,selections,mode->new in quizzes']= "INSERT INTO quizzes (type,last,user_id,selections,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,type,user_id,selections,mode->new in quizzes']= "INSERT INTO quizzes (last,type,user_id,selections,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,type,selections,last,mode->new in quizzes']= "INSERT INTO quizzes (user_id,type,selections,last,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,user_id,selections,last,mode->new in quizzes']= "INSERT INTO quizzes (type,user_id,selections,last,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,selections,type,last,mode->new in quizzes']= "INSERT INTO quizzes (user_id,selections,type,last,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,user_id,type,last,mode->new in quizzes']= "INSERT INTO quizzes (selections,user_id,type,last,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,selections,user_id,last,mode->new in quizzes']= "INSERT INTO quizzes (type,selections,user_id,last,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,type,user_id,last,mode->new in quizzes']= "INSERT INTO quizzes (selections,type,user_id,last,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,last,selections,type,mode->new in quizzes']= "INSERT INTO quizzes (user_id,last,selections,type,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,user_id,selections,type,mode->new in quizzes']= "INSERT INTO quizzes (last,user_id,selections,type,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,selections,last,type,mode->new in quizzes']= "INSERT INTO quizzes (user_id,selections,last,type,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,user_id,last,type,mode->new in quizzes']= "INSERT INTO quizzes (selections,user_id,last,type,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,selections,user_id,type,mode->new in quizzes']= "INSERT INTO quizzes (last,selections,user_id,type,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,last,user_id,type,mode->new in quizzes']= "INSERT INTO quizzes (selections,last,user_id,type,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,last,selections,user_id,mode->new in quizzes']= "INSERT INTO quizzes (type,last,selections,user_id,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,type,selections,user_id,mode->new in quizzes']= "INSERT INTO quizzes (last,type,selections,user_id,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,selections,last,user_id,mode->new in quizzes']= "INSERT INTO quizzes (type,selections,last,user_id,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,type,last,user_id,mode->new in quizzes']= "INSERT INTO quizzes (selections,type,last,user_id,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,selections,type,user_id,mode->new in quizzes']= "INSERT INTO quizzes (last,selections,type,user_id,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,last,type,user_id,mode->new in quizzes']= "INSERT INTO quizzes (selections,last,type,user_id,mode) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,type,mode,selections,last->new in quizzes']= "INSERT INTO quizzes (user_id,type,mode,selections,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,user_id,mode,selections,last->new in quizzes']= "INSERT INTO quizzes (type,user_id,mode,selections,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,mode,type,selections,last->new in quizzes']= "INSERT INTO quizzes (user_id,mode,type,selections,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,user_id,type,selections,last->new in quizzes']= "INSERT INTO quizzes (mode,user_id,type,selections,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,mode,user_id,selections,last->new in quizzes']= "INSERT INTO quizzes (type,mode,user_id,selections,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,type,user_id,selections,last->new in quizzes']= "INSERT INTO quizzes (mode,type,user_id,selections,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,type,selections,mode,last->new in quizzes']= "INSERT INTO quizzes (user_id,type,selections,mode,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,user_id,selections,mode,last->new in quizzes']= "INSERT INTO quizzes (type,user_id,selections,mode,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,selections,type,mode,last->new in quizzes']= "INSERT INTO quizzes (user_id,selections,type,mode,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,user_id,type,mode,last->new in quizzes']= "INSERT INTO quizzes (selections,user_id,type,mode,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,selections,user_id,mode,last->new in quizzes']= "INSERT INTO quizzes (type,selections,user_id,mode,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,type,user_id,mode,last->new in quizzes']= "INSERT INTO quizzes (selections,type,user_id,mode,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,mode,selections,type,last->new in quizzes']= "INSERT INTO quizzes (user_id,mode,selections,type,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,user_id,selections,type,last->new in quizzes']= "INSERT INTO quizzes (mode,user_id,selections,type,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,selections,mode,type,last->new in quizzes']= "INSERT INTO quizzes (user_id,selections,mode,type,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,user_id,mode,type,last->new in quizzes']= "INSERT INTO quizzes (selections,user_id,mode,type,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,selections,user_id,type,last->new in quizzes']= "INSERT INTO quizzes (mode,selections,user_id,type,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,mode,user_id,type,last->new in quizzes']= "INSERT INTO quizzes (selections,mode,user_id,type,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,mode,selections,user_id,last->new in quizzes']= "INSERT INTO quizzes (type,mode,selections,user_id,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,type,selections,user_id,last->new in quizzes']= "INSERT INTO quizzes (mode,type,selections,user_id,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,selections,mode,user_id,last->new in quizzes']= "INSERT INTO quizzes (type,selections,mode,user_id,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,type,mode,user_id,last->new in quizzes']= "INSERT INTO quizzes (selections,type,mode,user_id,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,selections,type,user_id,last->new in quizzes']= "INSERT INTO quizzes (mode,selections,type,user_id,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,mode,type,user_id,last->new in quizzes']= "INSERT INTO quizzes (selections,mode,type,user_id,last) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,last,mode,selections,type->new in quizzes']= "INSERT INTO quizzes (user_id,last,mode,selections,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,user_id,mode,selections,type->new in quizzes']= "INSERT INTO quizzes (last,user_id,mode,selections,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,mode,last,selections,type->new in quizzes']= "INSERT INTO quizzes (user_id,mode,last,selections,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,user_id,last,selections,type->new in quizzes']= "INSERT INTO quizzes (mode,user_id,last,selections,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,mode,user_id,selections,type->new in quizzes']= "INSERT INTO quizzes (last,mode,user_id,selections,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,last,user_id,selections,type->new in quizzes']= "INSERT INTO quizzes (mode,last,user_id,selections,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,last,selections,mode,type->new in quizzes']= "INSERT INTO quizzes (user_id,last,selections,mode,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,user_id,selections,mode,type->new in quizzes']= "INSERT INTO quizzes (last,user_id,selections,mode,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,selections,last,mode,type->new in quizzes']= "INSERT INTO quizzes (user_id,selections,last,mode,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,user_id,last,mode,type->new in quizzes']= "INSERT INTO quizzes (selections,user_id,last,mode,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,selections,user_id,mode,type->new in quizzes']= "INSERT INTO quizzes (last,selections,user_id,mode,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,last,user_id,mode,type->new in quizzes']= "INSERT INTO quizzes (selections,last,user_id,mode,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,mode,selections,last,type->new in quizzes']= "INSERT INTO quizzes (user_id,mode,selections,last,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,user_id,selections,last,type->new in quizzes']= "INSERT INTO quizzes (mode,user_id,selections,last,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['user_id,selections,mode,last,type->new in quizzes']= "INSERT INTO quizzes (user_id,selections,mode,last,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,user_id,mode,last,type->new in quizzes']= "INSERT INTO quizzes (selections,user_id,mode,last,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,selections,user_id,last,type->new in quizzes']= "INSERT INTO quizzes (mode,selections,user_id,last,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,mode,user_id,last,type->new in quizzes']= "INSERT INTO quizzes (selections,mode,user_id,last,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,mode,selections,user_id,type->new in quizzes']= "INSERT INTO quizzes (last,mode,selections,user_id,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,last,selections,user_id,type->new in quizzes']= "INSERT INTO quizzes (mode,last,selections,user_id,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,selections,mode,user_id,type->new in quizzes']= "INSERT INTO quizzes (last,selections,mode,user_id,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,last,mode,user_id,type->new in quizzes']= "INSERT INTO quizzes (selections,last,mode,user_id,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,selections,last,user_id,type->new in quizzes']= "INSERT INTO quizzes (mode,selections,last,user_id,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,mode,last,user_id,type->new in quizzes']= "INSERT INTO quizzes (selections,mode,last,user_id,type) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,last,mode,selections,user_id->new in quizzes']= "INSERT INTO quizzes (type,last,mode,selections,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,type,mode,selections,user_id->new in quizzes']= "INSERT INTO quizzes (last,type,mode,selections,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,mode,last,selections,user_id->new in quizzes']= "INSERT INTO quizzes (type,mode,last,selections,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,type,last,selections,user_id->new in quizzes']= "INSERT INTO quizzes (mode,type,last,selections,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,mode,type,selections,user_id->new in quizzes']= "INSERT INTO quizzes (last,mode,type,selections,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,last,type,selections,user_id->new in quizzes']= "INSERT INTO quizzes (mode,last,type,selections,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,last,selections,mode,user_id->new in quizzes']= "INSERT INTO quizzes (type,last,selections,mode,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,type,selections,mode,user_id->new in quizzes']= "INSERT INTO quizzes (last,type,selections,mode,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,selections,last,mode,user_id->new in quizzes']= "INSERT INTO quizzes (type,selections,last,mode,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,type,last,mode,user_id->new in quizzes']= "INSERT INTO quizzes (selections,type,last,mode,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,selections,type,mode,user_id->new in quizzes']= "INSERT INTO quizzes (last,selections,type,mode,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,last,type,mode,user_id->new in quizzes']= "INSERT INTO quizzes (selections,last,type,mode,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,mode,selections,last,user_id->new in quizzes']= "INSERT INTO quizzes (type,mode,selections,last,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,type,selections,last,user_id->new in quizzes']= "INSERT INTO quizzes (mode,type,selections,last,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['type,selections,mode,last,user_id->new in quizzes']= "INSERT INTO quizzes (type,selections,mode,last,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,type,mode,last,user_id->new in quizzes']= "INSERT INTO quizzes (selections,type,mode,last,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,selections,type,last,user_id->new in quizzes']= "INSERT INTO quizzes (mode,selections,type,last,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,mode,type,last,user_id->new in quizzes']= "INSERT INTO quizzes (selections,mode,type,last,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,mode,selections,type,user_id->new in quizzes']= "INSERT INTO quizzes (last,mode,selections,type,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,last,selections,type,user_id->new in quizzes']= "INSERT INTO quizzes (mode,last,selections,type,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['last,selections,mode,type,user_id->new in quizzes']= "INSERT INTO quizzes (last,selections,mode,type,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,last,mode,type,user_id->new in quizzes']= "INSERT INTO quizzes (selections,last,mode,type,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['mode,selections,last,type,user_id->new in quizzes']= "INSERT INTO quizzes (mode,selections,last,type,user_id) VALUES (?, ?, ?, ?, ?)";
+$sql_stmts['selections,mode,last,type,user_id->new in quizzes']= "INSERT INTO quizzes (selections,mode,last,type,user_id) VALUES (?, ?, ?, ?, ?)";
 
 $sql_stmts['user_id->last quiz_id']= "SELECT quiz_id FROM quizzes WHERE user_id = (?)
     ORDER BY quiz_id DESC LIMIT 1";
