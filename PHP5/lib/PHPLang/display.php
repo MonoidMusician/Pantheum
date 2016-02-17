@@ -414,10 +414,11 @@ function display_word_info($w, $can_edit=FALSE) {
 	display_lang($w);
 	?><span class="word-name" id="word<?= $w->id() ?>_name"><?= display_word_name($w,$common) ?></span>
 	<?php
-	if ($common) echo "c. ";
+	if ($common) echo format_abbr("c.","Common Gender")." ";
 	elseif ($lang === "la" and $spart === "noun" and ($genders = $w->path()->iterate("gender"))) {
-		$genders = array_map(function($a){return $a[0];}, $genders);
-		echo implode(".", $genders).". ";
+		foreach ($genders as $g)
+			echo format_abbr($g[0].".",capitalize($g));
+		echo " ";
 	}
 
 	$infos = [];

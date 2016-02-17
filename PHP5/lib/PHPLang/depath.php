@@ -51,7 +51,7 @@ class _DEPATH
 		$this->aliases = $aliases;
 		#echo "\$init:\n";
 		#var_dump($init);
-			if ($init !== NULL)
+		if ($init !== NULL)
 		foreach ($init as $k => $v) {
 			if (!is_array($v)) _die("bad type, not array");
 			if (is_vec($v)) {
