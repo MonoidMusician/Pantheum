@@ -10,12 +10,13 @@
 	$result = [];
 	$subscore = 0;
 	$out_of = 0;
-	if (!is_array(quiz_getvalue("current_answer"))) exit("session timed out");
-	if (quiz_getvalue("mode") != "question") exit("Checking answers is not allowed for this quiz (mode: ".quiz_getvalue("mode").")");
+	$cquiz = CURRENTQUIZ();
+	if (!$cquiz) exit("session timed out");
+	if ($cquiz->mode() != "question") exit("Checking answers is not allowed for this quiz (mode: ".$cquiz->mode().")");
 	$flags = ["unescaped"=>TRUE,"matchall"=>TRUE];
 	$name = safe_get("name", $_POST);
 	if (!$name) exit("no key name supplied");
-	$values = quiz_getvalue("current_answer")[$name];
+	$values = $cquiz->answers()[$name];
 	$answer = safe_get("answer", $_POST);
 	if (!$answer) exit("no answer supplied");
 

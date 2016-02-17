@@ -9,9 +9,9 @@ sro('/PHP5/lib/PHPLang/display.php');
 include_once('quiz_types.php');
 global $quiz_types;
 
-$type = array_key_exists("type",$_GET) ? $_GET["type"] : NULL;
-$last = array_key_exists("last",$_GET) ? $_GET["last"] : NULL;
-$mode = array_key_exists("mode",$_GET) ? $_GET["mode"] : 'page';
+$type = array_key_exists("type",$_POST) ? $_POST["type"] : NULL;
+$last = array_key_exists("last",$_POST) ? $_POST["last"] : NULL;
+$mode = array_key_exists("mode",$_POST) ? $_POST["mode"] : 'page';
 if ($type !== NULL and $last and
     array_key_exists($type, $quiz_types) and
     is_array($quiz_types[$type]) and
@@ -21,22 +21,17 @@ if ($type !== NULL and $last and
 	if (safe_get("modes", $quiz) and !in_array($mode, $quiz["modes"])) {
 		exit("Please select a mode valid for the quiz");
 	}
-	quiz_setvalue("type",$type);
-	quiz_setvalue("last",$last);
-	quiz_setvalue("mode",$mode);
-	quiz_setvalue("score",0);
-	quiz_setvalue("out_of",0);
-	quiz_setvalue("options_n", TRUE);
-	$options = [];
+	$selections = [];
 	if (safe_get("user_selections", $quiz))
 		foreach ($quiz["user_selections"] as $k=>$desc) {
-			$v = safe_get("selected-$k", $_GET);
+			$v = safe_get("selected-$k", $_POST);
 			// TODO: validate
-			$options["selected-$k"] = $v;
+			$selections["selected-$k"] = $v;
 		}
-	quiz_setvalue("selections", $options);
-	if (NEWQUIZ($type,$last) !== NULL) {
-		exit("success");
+	$q = NEWQUIZ($type,$last,$mode,$selections);
+	if ($q !== NULL) {
+		if ($q->id()) exit("".$q->id());
+		else exit("success");
 	} else exit("no-credit");
 } else if ($last) {
 	var_dump(array_keys($quiz_types));

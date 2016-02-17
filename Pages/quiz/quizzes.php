@@ -77,7 +77,7 @@
         }
     });
     var quiz = new jQuiz();
-    quiz.init('quiz', '/PHP5/quiz/nextQuestion.php', '/PHP5/quiz/submitQuestion.php', '/PHP5/quiz/endQuiz.php');
+    quiz.init('quiz', '/PHP5/quiz/nextQuestion.php', '/PHP5/quiz/submitQuestion.php', '/PHP5/quiz/endQuiz.php', '/PHP5/quiz/checkQuestion.php');
     var quizzes_data = <?= json_encode($quizzes_data) ?>;
     $('input[name=quizzes]').on('change', function() {
         var $this=$(this), val=$this.val();

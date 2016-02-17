@@ -71,3 +71,18 @@ function escapeHtml(string) {
 		return entityMap[s];
 	});
 }
+
+// From http://jsperf.com/popcount
+function popcount(bits) {
+	var SK5  = 0x55555555,
+	    SK3  = 0x33333333,
+	    SKF0 = 0x0f0f0f0f,
+	    SKFF = 0xff00ff;
+
+	bits -= (bits >> 1) & SK5;
+	bits  = (bits & SK3) + ((bits >> 2) & SK3);
+	bits  = (bits & SKF0) + ((bits >> 4) & SKF0);
+	bits += bits >> 8;
+
+	return (bits + (bits >> 15)) & 63;
+}

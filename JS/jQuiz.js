@@ -4,21 +4,7 @@ function jQuiz_escapeHTML(s) {
 	return $('<div/>').text(s).html().split('"').join('&quot;');
 }
 
-function jQuiz_checkanswer(name) {
-	return function(answer, callback) {
-		$.post('/PHP5/quiz/checkQuestion.php', {
-			name: name, answer: answer
-		}).done(function(truth) {
-			if (truth == 'true') truth = true;
-			else if (truth == 'false') truth = false;
-			else truth = 0;
-			callback(truth);
-		});
-	}
-}
-
 dynamicAnswer = (function() {
-	
 	function dynamicAnswer_scale(s) {
 		return s.replace(/\d+(\.\d+)?/g, function(n) {
 			return (+n)*rel;
@@ -124,7 +110,6 @@ dynamicAnswer = (function() {
 		this.hidden = function() {
 			this.state = 0;
 			this.div.css('visibility', 'hidden');
-			console.log(this.div);
 		};
 		this.shown = function() {
 			this.div.css('visibility', '');
@@ -165,17 +150,32 @@ function jQuiz() {
 	this.current = 0;
 	this.last = 1;
 	this.qelement = 'quiz';
-	this.gurl = '';
-	this.surl = '';
-	this.eurl = '';
+	this.gurl = ''; // e.g. /PHP5/quiz/nextQuestion.php
+	this.surl = ''; // e.g. /PHP5/quiz/submitQuestion.php
+	this.eurl = ''; // e.g. /PHP5/quiz/endQuiz.php
+	this.curl = ''; // e.g. /PHP5/quiz/checkQuestion.php
 	this.loading = false;
 
-	this.init = function(qelement, gurl, surl, eurl) {
+	this.init = function(qelement, gurl, surl, eurl, curl) {
 		this.qelement = qelement;
 		this.loading_elements = '#' + qelement + '-next, #' + qelement + '-submit';
 		this.gurl = gurl;
 		this.surl = surl;
 		this.eurl = eurl;
+		this.curl = curl;
+		this.id = {quiz_id:null};
+	};
+
+	this.getNextQuestion = function() {
+		$.post(this.gurl, this.id, $.proxy(this, 'handleQuestion'));
+	};
+
+	this.submitQuestion = function() {
+		$.post(this.surl, $.extend({}, this.id, this.answers), $.proxy(this, 'handleResponse'));
+	};
+
+	this.endQuiz = function() {
+		$.post(this.eurl, this.id, $.proxy(this, 'handleEnd'));
 	};
 
 	this.refocus = function($html) {
@@ -198,14 +198,20 @@ function jQuiz() {
 		var a = $html.find(':focus').blur();
 		var b = $html.find('[tabindex=1]:first').focus();
 		this.nextable = false;
-	}
-
-	this.getNextQuestion = function() {
-		$.get(this.gurl, $.proxy(this.handleQuestion, this));
 	};
 
-	this.submitQuestion = function() {
-		$.post(this.surl, this.answers, $.proxy(this.handleResponse, this));
+	this.checkanswer = function(name, answer, callback) {
+		$.post(this.curl, $.extend({
+			name: name, answer: answer
+		},this.id)).done(function(truth) {
+			if (truth == 'true') truth = true;
+			else if (truth == 'false') truth = false;
+			else truth = 0;
+			callback(truth);
+		});
+	};
+	this.answerchecker = function(name) {
+		return this.checkanswer.bind(this, name);
 	};
 
 	this.handleQuestion = function(data) {
@@ -229,6 +235,14 @@ function jQuiz() {
 		this.out_of += 0-(-result["out_of"]);
 		this.showQuestion();
 	};
+
+	this.handleEnd = function(data) {
+		if (data == 'success') {
+			this.log('end');
+			this.active = false;
+			this.showScore();
+		} else alert("Error: "+data);
+	}
 
 	this.buildHeader = function() {
 		var header = '<section id="' + this.qelement + '-top">';
@@ -446,23 +460,19 @@ function jQuiz() {
 		$('#' + this.qelement).html($html);
 		pantheum.update($html);
 		$html.find('input.autosizeable').autosizeInput();
-		var q = this.qelement+'-';
+		var q = this.qelement+'-', that = this;
 		if (this.mode === 'question')
 			$html.find('input.dynamic').each(function() {
 				var a = $(this).attr('id');
 				if (!a.startsWith(q)) return;
 				a = a.slice(q.length);
-				new dynamicAnswer(this, jQuiz_checkanswer(a)).init();
+				new dynamicAnswer(this, that.answerchecker(a)).init();
 			});
 		this.refocus($html);
 	};
 
-	this.showQuestion = function() {
-		this.show(0);
-	}
-	this.showScore = function() {
-		this.show(1);
-	};
+	this.showQuestion = this.show.bind(this, 0);
+	this.showScore = this.show.bind(this, 1);
 
 	this.handleSubmit = function(data) {
 		if (this.loading) return;
@@ -496,12 +506,12 @@ function jQuiz() {
 		if (this.current == this.last - 1) {
 			// Results button
 			if (!this.scored)
-				if (this.active) $.get(this.eurl, $.proxy(this.handleEnd, this));
+				if (this.active) this.endQuiz();
 				else this.showScore();
 			// Finish/Return button
-			else this.endQuiz();
+			else this.exitQuiz();
 		// Next button (generate new result)
-		} else if (this.questions[this.current+1] === undefined) {
+		} else if (this.active && this.questions[this.current+1] === undefined) {
 			this.loading = true;
 			$('#' + this.qelement + '-next').attr('disabled', true);
 			this.getNextQuestion();
@@ -512,12 +522,14 @@ function jQuiz() {
 		}
 	};
 
+	this.exitQuiz = function() {
+		window.location.reload();
+	};
+
 	this.handleBack = function(data) {
 		if (this.loading) return; // maybe not necessary, but safer
-		if (this.current == 0) {
-		} else {
+		if (this.current > 0)
 			this.current -= 1;
-		}
 
 		this.showQuestion();
 	};
@@ -538,11 +550,11 @@ function jQuiz() {
 	this.bindEvents = function() {
 		this.unbindEvents();
 
-		$(document).on('click',  '#' + this.qelement + '-back',   $.proxy(this.handleBack, this));
-		$(document).on('click',  '#' + this.qelement + '-submit', $.proxy(this.handleSubmit, this));
-		$(document).on('click',  '#' + this.qelement + '-next',   $.proxy(this.handleNext, this));
-		$(document).on('change', '#' + this.qelement + '-page',   $.proxy(this.handlePage, this));
-		$(document).on('keyup',  '#' + this.qelement + '-content input:text', $.proxy(this.handleNextField, this));
+		$(document).on('click',  '#' + this.qelement + '-back',   $.proxy(this, 'handleBack'));
+		$(document).on('click',  '#' + this.qelement + '-submit', $.proxy(this, 'handleSubmit'));
+		$(document).on('click',  '#' + this.qelement + '-next',   $.proxy(this, 'handleNext'));
+		$(document).on('change', '#' + this.qelement + '-page',   $.proxy(this, 'handlePage'));
+		$(document).on('keyup',  '#' + this.qelement + '-content input:text', $.proxy(this, 'handleNextField'));
 	};
 
 	this.unbindEvents = function() {
@@ -555,13 +567,15 @@ function jQuiz() {
 		$(document).off('keyup',  '#' + this.qelement + '-content input:text');
 	};
 
-	this.start = function(last, type, mode) {
+	this.start = function(last, type, mode, id) {
 		this.last = last;
 		this.mode = mode;
 		this.current = -1;
 		this.getNextQuestion();
 		this.bindEvents();
-		this.log('start', type, last);
+		if (id !== undefined)
+			this.id.quiz_id = id;
+		this.log('start', (id?'#'+id+': ':'')+type, last);
 	};
 
 	this.review = function(data) {
@@ -572,6 +586,7 @@ function jQuiz() {
 		this.score = data['score'];
 		this.out_of = data['out_of'];
 		this.active = !data['completed'];
+		this.id.quiz_id = data['id'];
 		this.showQuestion();
 		this.bindEvents();
 	};
@@ -580,18 +595,6 @@ function jQuiz() {
 		this.current = index;
 		this.showQuestion();
 	};
-
-	this.endQuiz = function() {
-		window.location.reload();
-	};
-
-	this.handleEnd = function(data) {
-		if (data == 'success') {
-			this.active = false;
-			this.showScore();
-			this.log('end');
-		} else alert("Error: "+data);
-	}
 
 	this.log = function(action, label, value) {
 		if (window.ga)

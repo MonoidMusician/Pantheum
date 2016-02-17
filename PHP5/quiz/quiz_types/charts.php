@@ -155,6 +155,10 @@ class VerbFormTranslation extends QuizType {
 		$this->word = $word;
 		$this->translation = $translation;
 		$this->others = NULL;
+		$this->hints = [
+			"Principal Parts" => display_word_name($word),
+			"Definition" => implode(", ", explode("\n", $word->definitions()[0]->value()))
+		];
 		$this->selections = [
 			"voice" => PICK(["active","passive"]),
 			"mood-tense" => PICK([

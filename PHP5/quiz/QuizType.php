@@ -19,6 +19,7 @@ class QuizType {
 	public $answers    = [];
 	public $wrap       = [];
 	public $others     = [];
+	public $hints      = [];
 	function get_options_n() {return [0];}
 	function get_option($n) {return $this;}
 	function merge_selections($vec) {
@@ -33,6 +34,7 @@ class QuizType {
 	function pop_answer() {return array_pop($this->answers);}
 	function get_others() {return $this->others;}
 	function get_other($k) {return $this->others[$k];}
+	function get_hints() {return $this->hints;}
 }
 
 class MultiQuizType extends QuizType {

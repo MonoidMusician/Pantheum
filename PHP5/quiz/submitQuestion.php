@@ -10,9 +10,10 @@
 	$result = [];
 	$subscore = 0;
 	$out_of = 0;
-	if (!is_array(quiz_getvalue("current_answer"))) exit("session timed out");
+	$cquiz = CURRENTQUIZ();
+	if (!$cquiz) exit("session timed out");
 	$flags = ["unescaped"=>TRUE,"matchall"=>TRUE];
-	foreach (quiz_getvalue("current_answer") as $name=>$values) {
+	foreach ($cquiz->answers() as $name=>$values) {
 		$answer = $_POST[$name];
 
 		if (array_key_exists("correct", $values)
@@ -60,31 +61,9 @@
 	}
 	$result["subscore"] = $subscore;
 	$result["out_of"] = $out_of;
-	
-	quiz_setvalue("current_answer", NULL);
-	quiz_setvalue("score",$subscore+quiz_getvalue("score"));
-	quiz_setvalue("out_of",$out_of+quiz_getvalue("out_of"));
-	if (CURRENTQUIZ() !== NULL) {
-		CURRENTQUIZ()->set_answers(NULL);
-		CURRENTQUIZ()->add_score($subscore,$out_of);
-		CURRENTQUIZ()->add_result($result);
-	}
-	print json_encode($result);
 
-/*
-	$answer = $_POST;
-	$correct = array_key_exists("current_answer", $_SESSION) ? $_SESSION["current_answer"] : NULL;
-	if ($correct) {
-		if (count($correct) == 1) {
-			$answer = $answer[array_keys($correct)[0]];
-			$correct = $correct[array_keys($correct)[0]];
-			if ($answer == $correct) {
-				echo "Correctum est $answer! Bene";
-			} else {
-				echo "Minime, non est $answer, esset $correct.";
-			}
-		}
-		unset($_SESSION["current_answer"]);
-	}
-*/
+	$cquiz->set_answers(NULL);
+	$cquiz->add_score($subscore,$out_of);
+	$cquiz->add_result($result);
+	print json_encode($result);
 ?>

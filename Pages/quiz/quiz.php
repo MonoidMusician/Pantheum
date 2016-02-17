@@ -49,28 +49,35 @@
 		if (event.which == 13) startQuiz();
 	});
 	var quiz = new jQuiz();
-	quiz.init('quiz', '/PHP5/quiz/nextQuestion.php', '/PHP5/quiz/submitQuestion.php', '/PHP5/quiz/endQuiz.php');
+	quiz.init('quiz', '/PHP5/quiz/nextQuestion.php', '/PHP5/quiz/submitQuestion.php', '/PHP5/quiz/endQuiz.php', '/PHP5/quiz/checkQuestion.php');
 	var quiz_lock = false;
 	function startQuiz() {
 		if (quiz_lock) return; else quiz_lock = true;
 		var type = $('input[name=quiz-types]:checked').val();
 		var last = $('#quiz-number').val();
 		var mode = $('#quiz-mode').val();
-		var options = '';
+		var post = {
+			type: type, mode: mode, last: last
+		};
 		$('#selections').find('select, input').filter(':visible').each(function() {
 			var $this = $(this), id = $this.attr('data-selection'), value = $this.val();
 			if (!id.startsWith('selected-')) id = 'selected-' + id;
-			options += '&'+id+'='+value;
+			post[id] = value;
 		});
-		$.get('/PHP5/quiz/startQuiz.php?type=' + encodeURIComponent(type) + '&mode=' + encodeURIComponent(mode) + '&last=' + last + options, function(data) {
+		$.post('/PHP5/quiz/startQuiz.php', post, function(data) {
 			quiz_lock = false;
+			var id, i;
 			if (data == 'no-credit') {
 				if (confirm('Warning: your results will not be saved because you are not logged in. Do you want to continue?'))
 					data = 'success';
 				else return;
 			}
+			if (!isNaN(i = parseInt(data))) {
+				id = i; data = 'success';
+			}
+			console.log(id);
 			if (data == 'success') {
-				quiz.start(last, type, mode);
+				quiz.start(last, type, mode, id);
 			} else {
 				alert("Error: "+data);
 			}
