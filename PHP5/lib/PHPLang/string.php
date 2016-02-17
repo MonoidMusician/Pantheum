@@ -158,12 +158,6 @@ function sanitize2($s) {
 		return array_map("sanitize2", $s);
 	else return $s;
 }
-function _strtoupper($matches) {
-	return mb_strtoupper($matches[0]);
-}
-function capitalize($str) {
-	return preg_replace_callback('/\w/',"_strtoupper",$str,1);
-}
 function compare_strings($l,$r,$flags) {
 	return $l === $r or sanitize($l,$flags) === sanitize($r,$flags);
 }

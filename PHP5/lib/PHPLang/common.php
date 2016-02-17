@@ -53,6 +53,12 @@ function endswith($haystack, $needle) {
 	return !$needle or substr_compare($haystack, $needle, -strlen($needle)) === 0;
 }
 
+function _strtoupper($matches) {
+	return mb_strtoupper($matches[0]);
+}
+function capitalize($str) {
+	return preg_replace_callback('/\w/',"_strtoupper",$str,1);
+}
 
 // From http://stackoverflow.com/a/11872928
 /**
