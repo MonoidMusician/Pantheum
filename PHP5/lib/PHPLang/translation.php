@@ -35,6 +35,9 @@ function cull_definitions($defs) {
 		return !(string)$d->path();
 	}));
 }
+function get_definitions($path) {
+	return split_definitions(cull_definitions($path->word()->definitions(),$path));
+}
 
 function la_en($path, $only_one=false) {
 	global $OP_APOS;
@@ -44,12 +47,12 @@ function la_en($path, $only_one=false) {
 	$o = $only_one;
 	$decide = function($archaic,$modern,$extra=NULL) use($o,$arch) {
 		if ($o) return $arch?$archaic:$modern;
-		return "($archaic|$modern|$extra)";
+		return $extra?"($archaic|$modern|$extra)":"($archaic|$modern)";
 	};
 
 	$word = $path->word();
 	$spart = $word->speechpart();
-	$definitions = $word->definitions();
+	$definitions = get_definitions($path);
 
 	$verb = ($spart === "verb");
 	$noun = ($spart === "noun");
@@ -76,7 +79,7 @@ function la_en($path, $only_one=false) {
 	$d5 = []; // 2s perfect (archaic)
 	$be = [];
 
-	foreach (split_definitions(cull_definitions($definitions,$path)) as $def) {
+	foreach ($definitions as $def) {
 		if ($o and $d0) break;
 		$matches = [];
 		if (preg_match("/^be(?:\s+|$)/", $def)) {
