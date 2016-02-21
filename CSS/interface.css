@@ -181,3 +181,12 @@ input[name=quiz-category]:checked + label {
     font-weight:bold;
     text-decoration:none;
 }
+
+.actionable {
+    color: #CC3333;
+    cursor: pointer;
+}
+
+.oi.inline {
+    vertical-align: sub;
+}

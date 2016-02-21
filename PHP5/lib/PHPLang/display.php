@@ -21,6 +21,25 @@ function _get_first_last($arr, &$first, &$last) {
 function format_abbr($abbr, $desc) {
 	return "<abbr title='$desc'>$abbr</abbr>";
 }
+function display_icon($type, $desc, $id=NULL, $link=NULL) {
+	if (!$link) $link = "javascript:void(0)";
+	if ($id) $id = ' id="'.$id.'"';
+	if (0) {
+		?>[<a href="<?= $link ?>" <?= $id ?>><?= $type ?></a>]<?php
+	} else {
+		$glyph = [
+			"edit" => "pencil",
+			"refresh" => "reload",
+			"hardlink" => "link-intact",
+			"del" => "trash",
+			"tools" => "wrench",
+			"rename" => "text",
+			"change POS" => "compass", // FIXME
+		];
+		$glyph = $glyph[$type];
+		?><a href="<?= $link ?>" class="oi inline" title="<?= $desc ?>" data-glyph="<?= $glyph ?>" <?= $id ?>></a><?php
+	}
+}
 
 function display_word_entries($list) {
 	foreach ($list as $w) {
@@ -164,11 +183,11 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "person-2") return "2nd person";
 		elseif ($value === "person-3") return "3rd person";
 	if ($tag === "case")
-		if ($value === "ablative") return "+ABL";
-		elseif ($value === "accusative") return "+ACC";
-		elseif ($value === "dative") return "+DAT";
-		elseif ($value === "dative-personal") return "+DAT (of persons)";
-		elseif ($value === "genitive") return "+GEN";
+		if ($value === "ablative") return format_abbr("+ABL", "Uses the $value");
+		elseif ($value === "accusative") return format_abbr("+ACC", "Uses the $value");
+		elseif ($value === "dative") return format_abbr("+DAT", "Uses the $value");
+		elseif ($value === "dative-personal") return format_abbr("+DAT (of persons)", "Uses the dative for people");
+		elseif ($value === "genitive") return format_abbr("+GEN", "Uses the $value");
 	if ($tag === "declension")
 		if ($value === "decl-1") return "1st Declension";
 		elseif ($value === "decl-2") return "2nd Declension";
@@ -195,18 +214,19 @@ function format_attr($tag,$value=NULL) {
 		elseif ($value === "conj-3-io-deponent") return "3rd Conjugation Deponent i-stem";
 		elseif ($value === "conj-4-deponent") return "4th Conjugation Deponent";
 	if ($tag === "clc-stage") {
-		$sp = explode("-", $value);
+		$sp = explode("+", $value);
+		$CLC = format_abbr("CLC", "Cambridge Latin Course");
 		if (count($sp) === 1)
-			return "Stage $value (CLC)";
+			return "Stage $value ($CLC)";
 		elseif (count($sp) === 2)
-			return "Stages ".$sp[0]." and ".$sp[1]." (CLC)";
+			return "Stages ".$sp[0]." and ".$sp[1]." ($CLC)";
 		$value = "";
 		for ($i=0;$i<count($sp)-1;$i++) {
 			if ($value) $value .= ", ";
 			$value .= $sp[$i];
 		}
 		$value .= ", and ".$sp[$i];
-		return "Stages $value (CLC)";
+		return "Stages $value ($CLC)";
 	}
 	$abbrs = [
 		"copulative"=>"COP",
@@ -436,7 +456,7 @@ function display_word_info($w, $can_edit=FALSE) {
 		$slug = slugify($w);
 		$class = "word${id}_toolbox";
 ?>
-		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_tools">tools</a>]
+		<?php display_icon("tools", "Tools", "word${id}_tools"); ?>
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
@@ -446,8 +466,8 @@ function display_word_info($w, $can_edit=FALSE) {
 			});
 		</script>
 		<span class="<?= $class ?>" style="display: none;">
-		[<a href="dictionary.php?id=<?= $id ?>">hardlink</a>]
-		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_delete">del</a>]
+		<?php display_icon("hardlink", "Link by ID", NULL, "dictionary.php?id=$id"); ?>
+		<?php display_icon("del", "Delete", "word${id}_delete"); ?>
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
@@ -456,7 +476,7 @@ function display_word_info($w, $can_edit=FALSE) {
 				});
 			});
 		</script>
-		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_rename">rename</a>]
+		<?php display_icon("rename", "Rename", "word${id}_rename"); ?>
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
@@ -465,7 +485,7 @@ function display_word_info($w, $can_edit=FALSE) {
 				});
 			});
 		</script>
-		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_refresh">refresh</a>]
+		<?php display_icon("refresh", "Refresh", "word${id}_refresh"); ?>
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
@@ -474,7 +494,7 @@ function display_word_info($w, $can_edit=FALSE) {
 				});
 			});
 		</script>
-		[<a href="javascript:void(0)" id="word<?= $w->id() ?>_change_POS">change POS</a>]
+		<?php display_icon("change POS", "Change Part of Speech", "word${id}_change_POS"); ?>
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
@@ -490,7 +510,7 @@ function display_word_info($w, $can_edit=FALSE) {
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<a href="http://en.wiktionary.org/wiki/<?= $slug ?>#<?= format_lang($w) ?>" target="_blank">Wiktionary</a>
 			<?php if ($w->lang() === "la") { ?>
-				, <a href="http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry=<?= $slug ?>" target="_blank">Lewis & Short</a>
+				– <a href="http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry=<?= $slug ?>" target="_blank">Lewis & Short</a>
 			<?php } ?>
 			<br>&nbsp;&nbsp;&nbsp;&nbsp;
 			Pronunciation: <input id="word<?= $id ?>_pronunciation_tool"> <span></span>
@@ -625,7 +645,7 @@ function display_definitions($w, $can_edit=FALSE) {
 		/**/
 		if ($can_edit) {
 ?>
-			[<a href="javascript:void(0)" id="definition<?= $d->id() ?>_delete">del</a>]
+			<?php display_icon("del", "Delete", "definition".$d->id()."_delete"); ?>
 			<script type="text/javascript">
 				$(function() {
 					var w_id = <?= $w->id() ?>;

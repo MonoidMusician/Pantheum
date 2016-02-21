@@ -131,10 +131,6 @@ section#content a {
     color: #DA7B00;
     text-decoration: none;
 }
-.actionable {
-    color: #CC3333;
-    cursor: pointer;
-}
 
 article:not(.secondary) {
     float: left;

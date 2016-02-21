@@ -32,7 +32,9 @@
 			if ($inflection) display_inflection($w);
 
 			if ($editor) {
-				?><div id="word<?= $id ?>_edit_button"><br>[<a href="javascript:void(0)">edit</a>]</div>
+				?><div id="word<?= $id ?>_edit_button"><br>
+				<?php display_icon("edit", "Edit"); ?>
+				</div>
 				<div id="word<?= $id ?>_edit"><?php
 				$_level = array_merge($w->mgr()->simple_keys, $w->mgr()->recursive_keys);
 				foreach ($w->mgr()->all_sub_keys as $k) {
