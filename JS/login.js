@@ -79,7 +79,6 @@ function loginSubmit(username, password, error) {
 }
 
 function changePassword(username, old, new1, new2, error) {
-    console.log(username, old, new1, new2, error);
     if ((username != '') && (old != '') && (new1 != '') && (new1 === new2)) {
         old = loginHash(username, old);
         new1 = loginHash(username, new1);
