@@ -249,11 +249,12 @@ class Quiz
 	}
 }
 class SessionQuiz {
-	static function init($type, $last, $mode=NULL) {
+	static function init($type, $last, $mode=NULL, $selections=NULL) {
 		if ($mode === NULL) $mode = "question";
 		self::set_mode($mode);
 		self::set_type($type);
 		self::set_last($last);
+		self::set_selections($selections);
 		quiz_setvalue("questions", []);
 		quiz_setvalue("results", []);
 		quiz_setvalue("hints", []);
