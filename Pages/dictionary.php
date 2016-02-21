@@ -102,11 +102,11 @@
 			}
 		?>
 		</select> <span data-i18n="dictionary.results_from">results from</span>
-			<span class="actionable" id="goto-first" title="First">&lt;&lt;</span>
-			<span class="actionable" id="goto-prev"  title="Previous">&lt;</span>
+			<?php display_icon("&lt;&lt;", "First", "goto-first"); ?>
+			<?php display_icon("&lt;", "Previous", "goto-prev"); ?>
 			<input placeholder="<?= $start; ?>" type="number" value="<?= $start; ?>" min="0" id="start-at" style="width: 80px;">
-			<span class="actionable" id="goto-next"  title="Next">&gt;</span>
-			<span class="actionable" id="goto-last"  title="Last">&gt;&gt;</span>
+			<?php display_icon("&gt;", "Next", "goto-next"); ?>
+			<?php display_icon("&gt;&gt;", "Last", "goto-last"); ?>
 		<script>
 			$('#start-at').on("keypress", function(event) {
 				if (event.which == 13) {

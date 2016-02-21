@@ -35,6 +35,11 @@ function display_icon($type, $desc, $id=NULL, $link=NULL) {
 			"tools" => "wrench",
 			"rename" => "text",
 			"change POS" => "compass", // FIXME
+			"&lt;&lt;" => "media-skip-backward",
+			"&lt;" => "media-step-backward",
+			"&gt;" => "media-step-forward",
+			"&gt;&gt;" => "media-skip-forward",
+			"visibility" => "eye",
 		];
 		$glyph = $glyph[$type];
 		?><a href="<?= $link ?>" class="oi inline" title="<?= $desc ?>" data-glyph="<?= $glyph ?>" <?= $id ?>></a><?php
@@ -449,7 +454,8 @@ function display_word_info($w, $can_edit=FALSE) {
 	*/
 	$infos[] = $spart;
 	foreach ($w->read_attrs() as $attr) {
-		$infos[] = format_attr($attr->tag(), $attr->value());
+		if ($attr->tag()[0] != "-")
+			$infos[] = format_attr($attr->tag(), $attr->value());
 	}
 	?>(<?php echo implode("; ", $infos); ?>)<?php
 	if ($can_edit !== NULL and ($can_edit)) {
@@ -674,8 +680,9 @@ function display_connections($w, $can_edit) {
 			?><li>
 			<?= format_path($c->type()) ?>: <?php word_link($c->to(),$c->to()->lang() === $w->lang());
 			if ($can_edit) {
+				echo " ";
+				display_icon("del", "Delete", "connection${id}_${c_id}_delete");
 				?>
-				[<a href="javascript:void(0)" id="connection<?= $id.'_'.$c_id ?>_delete">del</a>]
 				<script type="text/javascript">
 					$(function() {
 						var w_id = <?= $w->id() ?>;
@@ -750,9 +757,9 @@ function display_inflection($w, $hidden=TRUE) {
 		return;
 	}
 	?>
-	Inflection [<a href="javascript:void(0)" id="toggle-forms<?= $w->id() ?>"><?php
-	if ($hidden) echo "show"; else echo "hide";
-	?></a>]<?php
+	Inflection
+	<?php
+	display_icon("visibility", $hidden ? "Show" : "Hide", "toggle-forms".$w->id());
 	if ($pronunciations) {
 		?><span id="toggle-pronunciations<?= $w->id() ?>_outer">
 			[<a href="javascript:void(0)" id="toggle-pronunciations<?= $w->id() ?>">show IPA</a>]<br><br>
@@ -809,7 +816,7 @@ function display_inflection($w, $hidden=TRUE) {
 			$('#toggle-forms'+c).click(function () {
 				selector.toggle();
 				var vis = $('#word'+c+'_forms').is(':visible');
-				$('#toggle-forms'+c).text(vis ? 'hide' : 'show');
+				$('#toggle-forms'+c).attr('title', vis ? 'Hide' : 'Show');
 				if (!vis)
 					$('.word'+c+'_pronunciation').hide();
 			});
@@ -819,7 +826,7 @@ function display_inflection($w, $hidden=TRUE) {
 			$('#toggle-forms'+c).trigger("click");
 			$('#toggle-pronunciations'+c).click(function () {
 				$('.word'+c+'_pronunciation').toggle();
-				$('#toggle-pronunciations'+c).text($('.word'+c+'_pronunciation').is(':visible') ? 'hide IPA' : 'show IPA');
+				$('#toggle-pronunciations'+c).attr('title', $('.word'+c+'_pronunciation').is(':visible') ? 'hide IPA' : 'show IPA');
 			});
 			$('#toggle-quizzing'+c).click(function () {
 				$('#word'+c+' td').addClass('hidden').on('click', function() {$(this).removeClass('hidden').off('click')});
