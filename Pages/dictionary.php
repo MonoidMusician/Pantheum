@@ -59,16 +59,14 @@
 	<h4 data-i18n="dictionary.description">Find words by name, attributes, language, and/or part of speech</h4>
 </header>
 	<div id="search-form">
-	<!--<span class="select">-->
 	<?php $noinfl = (!array_key_exists("no_inflections",$_GET) or $_GET["no_inflections"] !== "true") ? "" : "checked"; ?>
 	<?php $nodefs = (!array_key_exists("no_definitions",$_GET) or $_GET["no_definitions"] !== "true") ? "" : "checked"; ?>
 	<?php $showtmpls = (!array_key_exists("show_templates",$_GET) or $_GET["show_templates"] !== "true") ? "" : "checked"; ?>
-	<!--<div>--><label><input name="no-inflections" type="checkbox" <?= $noinfl ?>><span data-i18n="dictionary.hide_inflection">Hide inflection</span></label><!--</div>-->
-	<!--<div>--><label><input name="show-templates" type="checkbox" <?= $showtmpls ?>><span data-i18n="dictionary.show_decl_conj">Show declensions/conjugations</span></label><!--</div>-->
+	<label><input name="no-inflections" type="checkbox" <?= $noinfl ?>><span data-i18n="dictionary.hide_inflection">Hide inflection</span></label>
+	<label><input name="show-templates" type="checkbox" <?= $showtmpls ?>><span data-i18n="dictionary.show_decl_conj">Show declensions/conjugations</span></label>
 	<?php if (requireRank(3, FALSE)) { ?>
-		<!--<div>--><label><input name="no-definitions" type="checkbox" <?= $nodefs ?>><span data-i18n="dictionary.show_no_defs">Show only words without definitions</span></label><!--</div>-->
+		<label><input name="no-definitions" type="checkbox" <?= $nodefs ?>><span data-i18n="dictionary.show_no_defs">Show only words without definitions</span></label>
 	<?php } ?>
-	<!--</span>-->
 	<br>
 	<br><span data-i18n="dictionary.names">Name(s)</span>:
 	<input id="enter-names" type="text" value="<?= safe_get('name', $_GET) ?>" placeholder="name, ...">
@@ -76,13 +74,13 @@
 	<input id="enter-forms" type="text" value="<?= safe_get('form', $_GET) ?>" placeholder="form, ...">
 	<br><span data-i18n="dictionary.languages">Languages(s)</span>:
 	<select id="enter-langs" style="width: 300px;"></select>
-	<br><span data-i18n="dictionary.attributes">Attribute(s)</span>:
-	<input id="enter-attrs" type="text" value="<?= safe_get('attr', $_GET) ?>" placeholder="[!]attr[=value], ...">
 	<br><span data-i18n="dictionary.parts_of_speech">Part(s) of speech</span>:
 	<select id="enter-sparts" style="width: 300px;"></select>
 	<br><span data-i18n="dictionary.definitions">Definition(s)</span>:
 	<input id="enter-defs" type="text" value="<?= safe_get('def', $_GET) ?>" placeholder="definition_part; definition1, definition2,; ...">
-	
+	<br><span data-i18n="dictionary.attributes">Attribute(s)</span>:
+	<input id="enter-attrs" type="text" value="<?= safe_get('attr', $_GET) ?>" placeholder="[!]attr[=value], ...">
+
 	<br>
 	ID: <input id="enter-ids" style="width: 100px;" type="text" value="<?= safe_get('id', $_GET) ?>" placeholder="id, ...">
 	<button onclick="dict.refreshEntries();" data-i18n="ui.search">Search</button>

@@ -13,6 +13,7 @@
 	global $sli, $suname, $srank;
 	if ((!isset($sli)) || ($sli != true)) {
 ?>
+					<li class="global-nav"><a data-i18n="nav.login" class="global-nav" href="<?php print rgd('/help.php'); ?>">Help</a></li>
 					<li class="global-nav"><a data-i18n="nav.login" class="global-nav" href="<?php print rgd('/login.php'); ?>">Login</a></li>
 <?php
 	} else {

@@ -129,11 +129,11 @@ class Synopsis extends QuizType {
 			], [
 				//"perfect/passive",
 				//"subjunctive/pluperfect/passive",
-				"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-				"infinitive/passive",
+				//"infinitive/passive",
+				"infinitive/future","infinitive/perfect",
 				"subjunctive/present","subjunctive/perfect",
-				"subjunctive/future", "subjunctive/future-perfect",
-				"infinitive/future", "infinitive/future-perfect",
+				"infinitive/imperfect","infinitive/future-perfect","infinitive/pluperfect",
+				"subjunctive/future","subjunctive/future-perfect",
 			], "this synopsis", $add, $this->translation);
 		}
 		return $this->others;

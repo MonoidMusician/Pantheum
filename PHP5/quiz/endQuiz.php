@@ -7,8 +7,8 @@ sro('/PHP5/lib/PHPLang/display.php');
 sro('/PHP5/quiz/common.php');
 
 $c=CURRENTQUIZ();
-if ($suid and !$c) die("Session expired");
-if (!$suid or $c->finish())
+if (!$c) die("Session expired");
+if ($c->finish())
 	print("success");
-
+else print("Could not complete quiz");
 ?>

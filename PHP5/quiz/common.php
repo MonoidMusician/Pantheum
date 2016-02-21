@@ -34,6 +34,18 @@ function quiz_auth() {
 #
 class Quiz
 {
+	static function init($type,$last,$mode=NULL,$selections=NULL) {
+		global $suid;
+		if (!$mode)
+			sql_exec(sql_stmt("user_id,type,last->new in quizzes"), ["isi", $suid, $type, $last]);
+		elseif (!$selections)
+			sql_exec(sql_stmt("user_id,type,last,mode->new in quizzes"), ["isis", $suid, $type, $last, $mode]);
+		else
+			sql_exec(sql_stmt("user_id,type,last,mode,selections->new in quizzes"), ["isiss", $suid, $type, $last, $mode, json_encode($selections)]);
+		$id = NULL;
+		sql_getone(sql_stmt("user_id->last quiz_id"), $id, ["i",$suid]);
+		return $id;
+	}
 	function __construct($id) {
 		$this->_id = $id;
 	}
@@ -237,11 +249,11 @@ class Quiz
 	}
 }
 class SessionQuiz {
-	function init($type, $last, $mode=NULL) {
+	static function init($type, $last, $mode=NULL) {
 		if ($mode === NULL) $mode = "question";
-		$this->set_mode($mode);
-		$this->set_type($type);
-		$this->set_last($last);
+		self::set_mode($mode);
+		self::set_type($type);
+		self::set_last($last);
 		quiz_setvalue("questions", []);
 		quiz_setvalue("results", []);
 		quiz_setvalue("hints", []);
@@ -249,50 +261,50 @@ class SessionQuiz {
 		quiz_setvalue("out_of",0);
 		quiz_setvalue("options_n", TRUE);
 	}
-	function id() {return NULL;}
-	function type() {return quiz_getvalue("type");}
-	function set_type($type) {quiz_setvalue("type",$type);}
-	function last() {return quiz_getvalue("last");}
-	function set_last($last) {quiz_setvalue("last",$last);}
-	function mode() {return quiz_getvalue("mode");}
-	function set_mode($mode) {quiz_setvalue("mode",$mode);}
-	function add_question($question) {
+	static function id() {return TRUE;}
+	static function type() {return quiz_getvalue("type");}
+	static function set_type($type) {quiz_setvalue("type",$type);}
+	static function last() {return quiz_getvalue("last");}
+	static function set_last($last) {quiz_setvalue("last",$last);}
+	static function mode() {return quiz_getvalue("mode");}
+	static function set_mode($mode) {quiz_setvalue("mode",$mode);}
+	static function add_question($question) {
 		quiz_appendlist("questions",$question);
 		return TRUE;
 	}
-	function add_result($result) {
+	static function add_result($result) {
 		quiz_appendlist("results", $result);
 		return TRUE;
 	}
-	function options_n() {return quiz_getvalue("options_n");}
-	function set_options_n($options_n) {quiz_setvalue("options_n", $options_n);}
-	function pop_option() {return quiz_poplist("options_n");}
-	function add_score($right,$total) {
-		$this->set_score($this->score()+$right,$this->out_of()+$total);
+	static function options_n() {return quiz_getvalue("options_n");}
+	static function set_options_n($options_n) {quiz_setvalue("options_n", $options_n);}
+	static function pop_option() {return quiz_poplist("options_n");}
+	static function add_score($right,$total) {
+		self::set_score(self::score()+$right,self::out_of()+$total);
 	}
-	function set_score($right,$total) {
+	static function set_score($right,$total) {
 		quiz_setvalue("score", $right);
 		quiz_setvalue("out_of", $total);
 	}
-	function answers() {
+	static function answers() {
 		return quiz_getvalue("answers");
 	}
-	function set_answers($answers=NULL) {
+	static function set_answers($answers=NULL) {
 		quiz_setvalue("answers", $answers);
 	}
-	function selections() {
+	static function selections() {
 		return quiz_getvalue("selections");
 	}
-	function set_selections($selections=NULL) {
+	static function set_selections($selections=NULL) {
 		quiz_setvalue("selections", $selections);
 	}
-	function score() {return quiz_getvalue("score");}
-	function out_of() {return quiz_getvalue("out_of");}
-	function percentage() {
-		if (!$this->out_of()) return 0;
-		return round($this->score() / $this->out_of() * 100);
+	static function score() {return quiz_getvalue("score");}
+	static function out_of() {return quiz_getvalue("out_of");}
+	static function percentage() {
+		if (!self::out_of()) return 0;
+		return round(self::score() / self::out_of() * 100);
 	}
-	function finish() {
+	static function finish() {
 		quiz_deletekey("mode");
 		quiz_deletekey("type");
 		quiz_deletekey("last");
@@ -302,38 +314,41 @@ class SessionQuiz {
 		quiz_deletekey("score");
 		quiz_deletekey("out_of");
 		quiz_deletekey("options_n");
+		quiz_deletekey("answers");
+		return TRUE;
 	}
-	function all_hints() {
-		return $this->hints;
+	static function all_hints() {
+		return quiz_getvalue("hints");
 	}
-	function set_hints($all_hints) {
-		$this->hints = $all_hints;
+	static function set_hints($all_hints) {
+		quiz_setvalue("hints", $all_hints);
 	}
-	function _current_hints() {
-		return $this->hints[count($this->hints)-1];
+	static function _current_hints() {
+		$hints = self::all_hints();
+		return $hints[count($hints)-1];
 	}
-	function current_hints() {
-		return $this->_current_hints()[0];
+	static function current_hints() {
+		return self::_current_hints()[0];
 	}
-	function use_hint($n) {
-		$all_hints = $this->all_hints();
+	static function use_hint($n) {
+		$all_hints = self::all_hints();
 		$hints = &$all_hints[count($all_hints)-1];
 		if (!safe_get($n, $hints[0])) return; // hint does not exist
 		$hints[1] &= 1 << $n;
 		if (gmp_popcount(gmp_init($hints[1])) > $hints[2]) return; // hint already used
-		$this->set_hints($all_hints);
+		self::set_hints($all_hints);
 		return $hints[0][$n];
 	}
-	function add_hints($hints,$max=NULL) {
+	static function add_hints($hints,$max=NULL) {
 		if ($max === NULL) $max = count($hints);
-		$all_hints = $this->all_hints();
+		$all_hints = self::all_hints();
 		$all_hints[] = [$hints,0,$max];
-		$this->set_hints($all_hints);
+		self::set_hints($all_hints);
 	}
-	function data() {
+	static function data() {
 		$questions = quiz_getvalue("questions");
 		$results = quiz_getvalue("results");
-		return ["questions"=>$questions,"results"=>$results,"last"=>$this->last(),"score"=>$this->score(),"out_of"=>$this->out_of(),"completed"=>FALSE,"mode"=>$this->mode(),"id"=>$this->id()];
+		return ["questions"=>$questions,"results"=>$results,"last"=>self::last(),"score"=>self::score(),"out_of"=>self::out_of(),"completed"=>FALSE,"mode"=>self::mode(),"id"=>self::id()];
 	}
 }
 
@@ -343,28 +358,21 @@ function ISQUIZ($obj) {
 	return $obj instanceof Quiz;
 }
 function QUIZ($id) {
-	if ($id === NULL)
+	if ($id === TRUE)
 			return new SessionQuiz();
 	return new Quiz($id);
 }
 function NEWQUIZ($type,$last,$mode=NULL,$selections=NULL) {
-	global $sql_stmts, $suid;
+	global $suid;
 	if (!$suid) {
-		$quiz = QUIZ(NULL);
-		$quiz->init($type, $last, $mode, $selections);
+		SessionQuiz::init($type, $last, $mode, $selections);
 		return NULL;
-	}
-	if (!$mode)
-		sql_exec(sql_stmt("user_id,type,last->new in quizzes"), ["isi", $suid, $type, $last]);
-	elseif (!$selections)
-		sql_exec(sql_stmt("user_id,type,last,mode->new in quizzes"), ["isis", $suid, $type, $last, $mode]);
-	else
-		sql_exec(sql_stmt("user_id,type,last,mode,selections->new in quizzes"), ["isiss", $suid, $type, $last, $mode, json_encode($selections)]);
-	$id = NULL;
-	sql_getone(sql_stmt("user_id->last quiz_id"), $id, ["i",$suid]);
-	if ($id !== NULL) {
-		quiz_setvalue("current_quiz_id", $id);
-		return QUIZ($id);
+	} else {
+		$id = Quiz::init($type, $last, $mode, $selections);
+		if ($id !== NULL) {
+			quiz_setvalue("current_quiz_id", $id);
+			return QUIZ($id);
+		}
 	}
 }
 function CURRENTQUIZ() {
@@ -384,7 +392,7 @@ function CURRENTQUIZ() {
 		else
 			quiz_delvalue("current_quiz_id");
 	} elseif (quiz_getvalue("type")) {
-		return QUIZ(NULL);
+		return QUIZ(TRUE);
 	}
 }
 ?>
