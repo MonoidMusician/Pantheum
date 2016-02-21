@@ -237,10 +237,11 @@ function permute(s) {
 	return permutate(t);
 }
 
-function match(s, m, d) {
+function match(s, m, d, simplify) {
 	var D = d+1, M = null;
+	if (simplify) m = simplify(m);
 	for (let match of permute(s)) {
-		let distance = damerau_levenshtein(match, m, Infinity).steps;
+		let distance = damerau_levenshtein(simplify?simplify(match):match, m, Infinity).steps;
 		if (distance < D) {
 			M = match;
 			D = distance;

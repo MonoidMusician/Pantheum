@@ -210,12 +210,13 @@ Damerau-Levenshtein error: <input id="dist" style="width:150px" type="number" pl
 $('#debug').on('change', function() {
 	$('#log').css('display', $(this).is(':checked') ? 'block' : 'none');
 }).trigger('change');
-$('input').on('keypress', function(e) {
-	if (e.which !== 13) return;
+$('input').on('change', function(e) {
+	//if (e.which !== 13) return;
 	var syntax = $('#syntax').val(),
 	    dist = $('#dist').val(),
-	    input = $('#input').val();
-	$.get('PHP5/string_api.php',{"syntax":syntax,"dist":dist,"input":input,"debug":"true","matchall":$('#matchall:checked').length})
+	    input = $('#input').val(),
+		debug = $('#debug').is(':checked') ? "true" : "false";
+	$.get('PHP5/string_api.php',{"syntax":syntax,"dist":dist,"input":input,"debug":debug,"matchall":$('#matchall:checked').length})
 	.done(function(data) {
 		data = JSON.parse(data);
 		$('#expression').text(data["expression"]);
@@ -228,13 +229,23 @@ $('input').on('keypress', function(e) {
 	if (permutations.length > 100) $('#permutations').text(permutations.length+' permutations');
 	$('#permutations').html('<ul>');
 	var added = new Set();
+	var simplify = function(s) {
+		s = s.normalize('NFKD').toLowerCase().replace(/[^a-z1-9]/g, '');
+		s = s.split('j').join('i').split('w').join('u').split('v').join('u');
+		s = s.replace('/([a-z])\1/g', '$1');
+		return s;
+	};
  	permutations.forEach(function(p) {
 		var b = normalize_punctuation(p);
 		if (added.has(b)) return;
 		added.add(b);
 		var cls = '';
-		if (match(input, b, dist) !== null) cls = 'match';
+		if (match(input, b, dist, simplify) !== null) cls = 'match';
 		$('#permutations > ul').append('<li class="'+cls+'">'+b);
 	});
+});
+$('#permutations').on('dblclick', 'li', function(e) {
+	$('#input').val($(this).text()).trigger('change');
+	e.preventDefault();
 });
 </script>
