@@ -83,3 +83,10 @@ span.value::before {
     font-size: 30px;
     line-height: 15px;
 }
+
+li.sortable-placeholder::before {
+    content: "= ···";
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 15px;
+}
