@@ -3,7 +3,7 @@
 </header>
 <article>
     <form action="/login.php" method="POST" id="loginform">
-        <input id="username" type="text" placeholder="Username" autocapitalize="off" required><br>
+        <input id="username" type="text" placeholder="Username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required><br>
         <input id="password" type="password" placeholder="Password" required><br>
         <button id="submit">Log In</button><p id="login-error"><br>
     </form>

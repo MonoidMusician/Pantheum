@@ -4,10 +4,10 @@
 <article>
     <div class="signup">
         <div class="input">
-            <input id="signupusername" class="signup" type="text" placeholder="Username"><br>
+            <input id="signupusername" class="signup" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Username"><br>
             <input id="signuppassword" class="signup" type="password" placeholder="Password"><br>
             <input id="signupconfirmpassword" class="signup" type="password" placeholder="Confirm Password"><br>
-            <input id="signupemail" class="signup" type="email" placeholder="Email"><br>
+            <input id="signupemail" class="signup" type="email" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Email"><br>
             <?php sro("/PHP5/user/classes.php") ?><br>
             <button id="signupsubmit">Sign Up</button>
             <div id="signuperror"></div>

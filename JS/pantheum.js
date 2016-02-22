@@ -18,7 +18,7 @@ pantheum.update = function(element) {
 		return (css.match(/(^|\s)format-word-\S+/g) || []).join(' ');
 	}).addClass('format-word-'+lang).attr('data-original-word0', '');
 	la_ipa.format($e);
-	$e.find('[title]:not(abbr):not(.oi):not(.actionable):not(.select2-selection__rendered)').qtip({
+	$e.find('[title]:not(abbr):not(.oi):not(.actionable):not(.select2-selection__choice)').qtip({
 		style:{
 			classes:"qtip-light"
 		},
