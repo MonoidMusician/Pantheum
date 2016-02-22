@@ -40,6 +40,9 @@ pantheum.update = function(element) {
 			my:"bottom center",
 			adjust: {y:5},
 		},
+		show: {
+			delay: 200,
+		},
 		hide: {
 			fixed: true,
 			delay: 100,
@@ -54,6 +57,9 @@ pantheum.update = function(element) {
 			my:"bottom center",
 			adjust: {y:0},
 		},
+		show: {
+			delay: 800,
+		},
 		hide: {
 			fixed: true,
 			delay: 100,
@@ -67,6 +73,9 @@ pantheum.update = function(element) {
 			my:"top center",
 			at:"bottom center",
 			adjust: {y:-5},
+		},
+		show: {
+			delay: 800,
 		},
 		hide: {
 			fixed: true,

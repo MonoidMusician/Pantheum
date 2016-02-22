@@ -16,7 +16,7 @@
 <p>There are many quizzes available, grouped by category. For some, you can select how many pages of questions you want to do.
 For quizzes with simple input boxes, if you select “Score quizzes by <b>question</b>”, next to each input field will be displayed an indicator to check your answer before you click submit. (Scoring answers by page means to hide these indicators.)
 <p>After you click “Start the Quiz” you will be presented with your first page. Input your answers before clicking “Submit” to check them. Your answers will be scored and the results shown to you. Click “Next” to receive the next page, or “Results” to see your results, scored per page, and finish the quiz. Click on a page number to review your answers for that page.
-<p>If you <a href="login.php">log in</a>, the results of your quizzes will be saved so that you can review or resume them later.
+<p>If you <a href="login.php">log in</a>, your quizzes will be saved so that you can review or resume them later.
 You can view your quizzes <a href="quizzes.php">here</a>. Otherwise your results will be lost.
 
 <h3>Latin III</h3>

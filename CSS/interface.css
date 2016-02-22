@@ -6,12 +6,17 @@ input.small {
     text-align: center;
 }
 
+input:hover:not(.select2-search__field),
+button:hover:not(.disabled),
+.select2-container--default:hover .select2-selection--multiple {
+    border: 1px solid #DC9C49 !important;
+}
 input:focus:not(.select2-search__field),
 input:active:not(.select2-search__field),
 button:focus:not(.disabled),
 button:active:not(.disabled),
 .select2-container--default.select2-container--focus .select2-selection--multiple {
-    border: 1px solid #DA7B00 !important;
+    border: 1px solid #CC3333 !important;
 }
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
     background-color: #EAB75E !important;
@@ -19,8 +24,14 @@ button:active:not(.disabled),
 select {
     border: 1px solid #aaaaaa;
 }
+select:hover {
+    border-color: #EAB75E;
+}
 select:focus {
-    border-color: #DA7B00;
+    border-color: #CC3333;
+}
+section#content a:hover {
+    color: #DA9031;
 }
 section#content a:focus {
     color: #CC3333;
