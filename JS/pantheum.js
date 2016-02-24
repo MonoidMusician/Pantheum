@@ -1,9 +1,10 @@
-if (!pantheum) panthem = {_private:{}};
+// Ensure pantheum exists...
+if (!pantheum) window.pantheum = {_private:{}};
+// ... and pantheum.udata
+if (!pantheum.udata) pantheum.udata = {};
 
 pantheum.lang = function() {
-	return pantheum.udata && pantheum.udata["language"]
-		? pantheum.udata["language"]
-		: 'en';
+	return pantheum.udata["language"] || 'en';
 };
 pantheum._private.i18nload = function(err, t) {
 	if (err) console.log(err);
@@ -18,7 +19,7 @@ pantheum.update = function(element) {
 		return (css.match(/(^|\s)format-word-\S+/g) || []).join(' ');
 	}).addClass('format-word-'+lang).attr('data-original-word0', '');
 	la_ipa.format($e);
-	$e.find('[title]:not(abbr):not(.oi):not(.actionable):not(.select2-selection__choice)').qtip({
+	$e.find('[title]:not(abbr):not(.oi):not(.actionable):not(.select2 *)').qtip({
 		style:{
 			classes:"qtip-light"
 		},
@@ -88,7 +89,7 @@ pantheum.update = function(element) {
 	return $e;
 };
 pantheum.sortword = function($word) {
-	var cases = pantheum.udata && pantheum.udata["cases"];
+	var cases = pantheum.udata["cases"];
 	if (!cases) return;
 	cases = cases.split(",");
 	var case_index = {};
