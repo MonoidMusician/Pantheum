@@ -13,6 +13,21 @@ function loginHash(username, password) {
         )
     );
 }
+function loginHash2(username, password) {
+    return hex_md5(
+        loginHasher(
+            loginHasher(
+                password
+            )
+        )
+        +
+        loginHasher(
+            loginHasher2(
+                username
+            )
+        )
+    );
+}
 
 function loginHasher(text) {
     return CryptoJS.SHA512(
@@ -37,19 +52,20 @@ function loginHasher2(text) {
                 hex_md5(
                     Whirlpool(
                         CryptoJS.SHA512(
-                            text
-                        )
+                            text.toLowerCase()
+                        ).toString()
                     ).toLowerCase()
                 )
             )
         ).toLowerCase()
-    );
+    ).toString();
 }
 
 function loginSubmit(username, password, error) {
     if ((username != '') && (password != '')) {
         password = loginHash(username, password);
-        $.post("/PHP5/login.php", { u: username, p: password }, function(data) {
+        var password2 = loginHash2(username, password);
+        $.post("/PHP5/login.php", { u: username, p: password, p2: password2 }, function(data) {
             if (data == 'success') {
                 window.location.href = '/index.php';
                 if (window.ga)

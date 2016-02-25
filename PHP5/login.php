@@ -12,6 +12,7 @@
 	} else {
 		$username = cleanInput('/[^a-zA-Z0-9]/', $_POST['u']);
 		$password = cleanInput('/[^a-zA-Z0-9]/', $_POST['p']);
+		$password2 = cleanInput('/[^a-zA-Z0-9]/', $_POST['p2']);
 		if (($username != $_POST['u']) || ($username == '') || ($password == '')) {
 			logEvent('login', 'blank-input', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
 			die('4');
@@ -42,7 +43,7 @@
 			$current[] = $ip;
 			$current = json_encode($current);
 
-			if ($M_row['password'] == $password) {
+			if ($M_row['old_password'] == $password || ($password2 != '' && $M_row['password'] == $password2)) {
 				$_SESSION['li'] = 'true';
 				$_SESSION['username'] = $username;
 				$_SESSION['uid'] = $M_row['id'];
