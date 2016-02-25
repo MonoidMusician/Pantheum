@@ -62,9 +62,9 @@ function loginHasher2(text) {
 }
 
 function loginSubmit(username, password, error) {
+    var password2 = loginHash2(username, password);
     if ((username != '') && (password != '')) {
         password = loginHash(username, password);
-        var password2 = loginHash2(username, password);
         $.post("/PHP5/login.php", { u: username, p: password, p2: password2 }, function(data) {
             if (data == 'success') {
                 window.location.href = '/index.php';
@@ -96,9 +96,9 @@ function loginSubmit(username, password, error) {
 
 function changePassword(username, old, new1, new2, error) {
     if ((username != '') && (old != '') && (new1 != '') && (new1 === new2)) {
-        old = loginHash(username, old);
-        new1 = loginHash(username, new1);
-        new2 = loginHash(username, new2);
+        old = loginHash2(username, old);
+        new1 = loginHash2(username, new1);
+        new2 = loginHash2(username, new2);
         $.post("/PHP5/user/change-password.php", { u: username, p: old, n1: new1, n2: new2 }, function(data) {
             if (data == 'success') {
                 window.location.href = '/index.php';

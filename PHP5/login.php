@@ -26,9 +26,16 @@
 			$M_row = $M_result->fetch_assoc();
 
 			if (strlen($password) != strlen(hash('md5', 'pi'))) {
-				$password = strtolower(hash('md5', hasher(hasher($_POST['p'])) . hasher(hasher($username))));
+				$password = strtolower(hash('md5', hasher(hasher($password)) . hasher(hasher($username))));
 			}
 			$password = strtolower(hash('md5', hasher(hasher($M_row['createip'] . $password . $M_row['id']))));
+
+			if ($password2) {
+				if (strlen($password2) != strlen(hash('md5', 'pi'))) {
+					$password2 = strtolower(hash('md5', hasher(hasher($password2)) . hasher(hasher($username))));
+				}
+				$password2 = strtolower(hash('md5', hasher(hasher($M_row['createip'] . $password2 . $M_row['id']))));
+			}
 
 			if ($M_row['rank'] == 'b') {
 				logEvent('login', 'banned-user', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}"));
@@ -50,7 +57,10 @@
 				$_SESSION['rank'] = $M_row['rank'];
 				$_SESSION['udata'] = $M_row['udata'];
 
-				$M_query6 = "UPDATE users SET currentip='$current' WHERE id='" . $M_row['id'] . "';";
+				if ($M_row['password'] == '')
+					$M_query6 = "UPDATE users SET currentip='$current', password='$password2' WHERE id='" . $M_row['id'] . "';";
+				else
+					$M_query6 = "UPDATE users SET currentip='$current' WHERE id='" . $M_row['id'] . "';";
 				$M_result6 = $mysqli->query($M_query6);
 
 				if ($M_result6) {
