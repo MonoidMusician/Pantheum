@@ -9,10 +9,11 @@
 	sro('/PHP5/lib/PHPLang/display.php');
 ?>
 <header>
-	<h1>Help</h1>
+	<h1 data-i18n>Help</h1>
 </header>
 <article>
-<a href="quiz.php"><h2 id="quizzes">Quizzes</h2></a>
+<a href="quiz.php">
+<h2 id="quizzes">Quizzes</h2></a>
 <p>There are many quizzes available, grouped by category. For some, you can select how many pages of questions you want to do.
 For quizzes with simple input boxes, if you select “Score quizzes by <b>question</b>”, next to each input field will be displayed an indicator to check your answer before you click submit. (Scoring answers by page means to hide these indicators.)
 <p>After you click “Start the Quiz” you will be presented with your first page. Input your answers before clicking “Submit” to check them. Your answers will be scored and the results shown to you. Click “Next” to receive the next page, or “Results” to see your results, scored per page, and finish the quiz. Click on a page number to review your answers for that page.
@@ -56,3 +57,4 @@ For the verb tense conjugation, choose what mood and tense to test (e.g. Future 
 
 <a href="user.php"><h2 id="account">User Accounts</h2></a>
 <p>In your <a href="user.php">User Control Panel</a>, under <a href="user.php#preferences">Preferences</a>, you may select the order you want your cases to be displayed in. Drag and drop to reorder them. The default order is voc., nom., acc., abl., dat., gen., loc., but another common way is nom., gen., dat., acc., abl., voc., loc.
+</article>

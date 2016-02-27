@@ -54,7 +54,6 @@ nav.global-nav {
     margin: 0;
 
     width: 100%;
-    height: 2em;
 
     background-color: #cc3333;
 
@@ -71,10 +70,6 @@ nav.global-nav ul {
     width: 100%;
 
     list-style: none;
-
-    position: absolute;
-
-    bottom: 0px;
 }
 
 nav.global-nav a {
