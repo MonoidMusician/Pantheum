@@ -231,6 +231,14 @@ var la_ipa = (function () {
 			nasalize: "\uE050",
 			geminate: "\uE051",
 			andaith: "\u0301", // XXX: \u0301 ?
+			",": " \u2E31",
+			".": " :",
+			":": " \u205D",
+			"!": " \uE065",
+			"?": " \uE066",
+			"\u2023": "\uE068",
+			"(": "\uE067",
+			")": "\uE067",
 		};
 	})();
 	my.tengwar = function(r) {
@@ -270,10 +278,11 @@ var la_ipa = (function () {
 				return t[b];
 			})
 			.replace(/[mn]([pbtdckg])/g, "$1"+t.nasalize)
-			.split("q"+t.u+t.__).join(t.quesse)
-			.split("g"+t.u+t.__).join(t.ungwe)
-			.split("q"+t.nasalize+t.u+t.__).join(t.quesse+t.nasalize)
-			.split("g"+t.nasalize+t.u+t.__).join(t.ungwe+t.nasalize)
+			.split(t.j+t._).join(t.j)
+			.split("q"+t.u+t.__).join(t.quesse+t.__)
+			.split("g"+t.u+t.__).join(t.ungwe+t.__)
+			.split("q"+t.nasalize+t.u+t.__).join(t.quesse+t.nasalize+t.__)
+			.split("g"+t.nasalize+t.u+t.__).join(t.ungwe+t.nasalize+t.__)
 			.split("q"+t.u+t._).join(t.quesse)
 			.split("g"+t.u+t._).join(t.ungwe)
 			.split("q"+t.nasalize+t.u+t._).join(t.quesse+t.nasalize)
@@ -309,6 +318,14 @@ var la_ipa = (function () {
 			.replace(new RegExp(t.silme+"(?="+[t.a,t.A,t.e,t.E,t.i,t.I,t.o,t.O,t.u,t.U].join("|")+")","g"), t.Silme)
 
 			.split("\u0308").join("")
+			.split("\u2023").join(t["\u2023"])
+			.split(":").join(t[":"])
+			.split(",").join(t[","])
+			.split(".").join(t["."])
+			.split("!").join(t["!"])
+			.split("?").join(t["?"])
+			.split("(").join(t["("])
+			.split(")").join(t[")"])
 		);
 	};
 	my.tengwar_carriers = function(r) {
@@ -528,6 +545,7 @@ var la_ipa = (function () {
 		"Greek": my.Greek,
 		"Ļaþ": my.Llath,
 		"Tengwar": my.mix(my.sonusmedius, my.ae_oe, my.orthography_j, my.tengwar, my.tengwar_carriers),
+		"Tengwar (Alt.)": my.mix(my.sonusmedius, my.ae_oe, my.orthography_j, my.tengwar),
 		"Tengwar Beleriand": my.mix(my.sonusmedius, my.ae_oe, my.orthography_j, my.tengwar, my.tengwar_beleriand),
 		"Finnish": my.mix(
 			my.double_vowels,

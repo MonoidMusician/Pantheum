@@ -42,7 +42,7 @@
 </div>
 
 <span id="word-format-ex" class="format-word-la">
-Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugnātus‣, et hoc īnflexum: aestⱶmāvissem. Jussa!
+Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugnātus‣, et hoc īnflexum: aestⱶmāvissem. Jussa! Euge!
 </span>
 
 <button id="save" data-i18n="ui.save">Save</button>
