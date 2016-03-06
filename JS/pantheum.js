@@ -86,6 +86,9 @@ pantheum.update = function(element) {
 	$e.find('.inflection').each(function() {
 		pantheum.sortword(this);
 	});
+	$e.find('select').select2({
+		minimumResultsForSearch: -1,
+	})
 	return $e;
 };
 pantheum.sortword = function($word) {
@@ -119,4 +122,8 @@ pantheum.init = function() {
 		if (!s2) s2 = s;
 		return '<span data-i18n="'+s+'">'+s2+'</span>';
 	};
+	// Action buttons shall not stay focused after clicking
+	$(document).on('click', 'a[href="javascript:void(0)"]', function() {
+		$(this).blur();
+	});
 }

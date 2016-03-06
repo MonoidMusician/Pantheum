@@ -21,7 +21,7 @@ function _get_first_last($arr, &$first, &$last) {
 function format_abbr($abbr, $desc) {
 	return "<abbr title='$desc'>$abbr</abbr>";
 }
-function display_icon($type, $desc, $id=NULL, $link=NULL) {
+function display_icon($type, $desc, $id=NULL, $link=NULL, $class=NULL) {
 	if (!$link) $link = "javascript:void(0)";
 	if ($id) $id = ' id="'.$id.'"';
 	if (0) {
@@ -42,7 +42,7 @@ function display_icon($type, $desc, $id=NULL, $link=NULL) {
 			"visibility" => "eye",
 		];
 		$glyph = $glyph[$type];
-		?><a href="<?= $link ?>" class="oi inline" title="<?= $desc ?>" data-glyph="<?= $glyph ?>" <?= $id ?>></a><?php
+		?><a href="<?= $link ?>" class="oi inline <?= $class ?>" title="<?= $desc ?>" data-glyph="<?= $glyph ?>" <?= $id ?>></a><?php
 	}
 }
 
@@ -105,7 +105,7 @@ function no_specials($w,$extras="1-9/; ,\\n") {
 	$w = preg_replace("#[^A-Za-z$extras]#","", $w);
 	return $w;
 }
-function fewer_specials($w,$strip="\u0304") {
+function fewer_specials($w,$strip="̄") {
 	$w = normalizer_normalize($w, Normalizer::FORM_D);
 	$w = str_replace("æ", "ae", $w);
 	$w = str_replace("œ", "oe", $w);
@@ -459,19 +459,33 @@ function display_word_info($w, $can_edit=FALSE) {
 	}
 	?>(<?php echo implode("; ", $infos); ?>)<?php
 	if ($can_edit !== NULL and ($can_edit)) {
-		$slug = slugify($w);
+		$slug = slugify($w, $lang);
 		$class = "word${id}_toolbox";
 ?>
-		<?php display_icon("tools", "Tools", "word${id}_tools"); ?>
+		<?php display_icon("tools", "Tools", "word${id}_tools", NULL, "hider hiding2"); ?>
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
-				$('#word'+id+'_tools').on("mousedown", function() {
-					$('.<?= $class ?>').toggle();
-				});
+				var state = -1;
+				$('#word'+id+'_tools').on('mousedown', function(e) {
+					if (state === -1) {
+						$(this).removeClass('hiding2');
+						state = 0;
+					}
+					e.preventDefault();
+					return false;
+				}).on('mouseup', function(e) {
+					if (state === 0) state = 1;
+					else if (state === 1) {
+						$(this).addClass('hiding2');
+						state = -1;
+					}
+					e.preventDefault();
+					return false;
+				}).on('click', function(e){e.preventDefault();return false;});
 			});
 		</script>
-		<span class="<?= $class ?>" style="display: none;">
+		<span class="<?= $class ?>">
 		<?php display_icon("hardlink", "Link by ID", NULL, "dictionary.php?id=$id"); ?>
 		<?php display_icon("del", "Delete", "word${id}_delete"); ?>
 		<script type="text/javascript">
@@ -486,7 +500,7 @@ function display_word_info($w, $can_edit=FALSE) {
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
-				$('#word'+id+'_rename').on("click.rename", function() {
+				$('#word'+id+'_rename').on("mouseup.rename", function() {
 					dict.word_rename(id, "<?= $w->name() ?>");
 				});
 			});
@@ -495,7 +509,7 @@ function display_word_info($w, $can_edit=FALSE) {
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
-				$('#word'+id+'_refresh').on("click.refresh", function() {
+				$('#word'+id+'_refresh').on("mouseup.refresh", function() {
 					dict.word_refresh(id);
 				});
 			});
@@ -504,7 +518,7 @@ function display_word_info($w, $can_edit=FALSE) {
 		<script type="text/javascript">
 			$(function() {
 				var id = <?= $id ?>;
-				$('#word'+id+'_change_POS').on("click.change_POS", function() {
+				$('#word'+id+'_change_POS').on('mouseup', function() {
 					var pos = prompt('What part of speech?', '<?= $spart ?>');
 					if (pos) dict.word_change_POS(id, pos);
 				});
@@ -512,7 +526,7 @@ function display_word_info($w, $can_edit=FALSE) {
 		</script>
 		</span>
 		(size: <?= count($w->paths()) ?>)
-		<div style="display: none;" class="<?= $class ?>">
+		<div class="<?= $class ?>">
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<a href="http://en.wiktionary.org/wiki/<?= $slug ?>#<?= format_lang($w) ?>" target="_blank">Wiktionary</a>
 			<?php if ($w->lang() === "la") { ?>

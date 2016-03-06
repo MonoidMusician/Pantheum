@@ -152,7 +152,7 @@ $('#roman-number') .on('keyup', change[1]).on('keydown', change[1]);
 
 
 
-$('select').select2({minimumResultsForSearch: Infinity});
+$('select').select2({minimumResultsForSearch: -1});
 var adj12 = function(b) {
 	return {
 		'singular': {

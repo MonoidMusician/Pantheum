@@ -342,7 +342,7 @@ function jWord() {
 				'<span class="word-name" id="word'+id+'_name">'+new_name+'</span>'
 			);
 			return my.refreshEntry(id);
-			$('#word'+id+'_rename').on("click.rename", function() {
+			$('#word'+id+'_rename').off('click.rename').on('mouseup.rename', function() {
 				dict.word_rename(id);
 			});
 		}
@@ -358,7 +358,7 @@ function jWord() {
 				errorTip("Could not rename word: "+data);
 			});
 		};
-		$('#word'+id+'_rename').off("click.rename");
+		$('#word'+id+'_rename').off("mouseup.rename");
 		$('#word'+id+'_rename').on("click.rename", function() {
 			rename($('#word'+id+'_name').val());
 		});

@@ -41,7 +41,7 @@ code {
 </article>
 <script>
 $('#lang').select2({
-	minimumResultsForSearch: Infinity,
+	minimumResultsForSearch: -1,
 	placeholder: "Type",
 	data: <?= json_encode($langs) ?>
 }).val('la').change();
@@ -167,7 +167,7 @@ var types = {
 $('#add').on('click', function() {
 	$('hr:first, .option').last().after('<div class="option"><button type="button" class="del">&#x2212;</button><input class="autosizeable help" placeholder="Help text"><div><select class="type" style="width: 230px"></select><button type="button" class="add">Add element</button></div><hr></div>');
 	$('.type:last').select2({
-		minimumResultsForSearch: Infinity,
+		minimumResultsForSearch: -1,
 		placeholder: "Type",
 		data: Object.keys(types)
 	});
@@ -181,7 +181,7 @@ $('#quiz').on('click', '.add', function() {
 	var $div = $('div[data-type]:last');
 	$div.find('input.autosizeable').autosizeInput();
 	$div.find('select.lang').html($('#lang').html());
-	$div.find('select').select2({minimumResultsForSearch: Infinity});
+	$div.find('select').select2({minimumResultsForSearch: -1});
 	if (types[type]["js"]) types[type].js.apply($div[0]);
 });
 // Add answer

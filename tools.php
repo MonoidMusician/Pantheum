@@ -19,8 +19,6 @@
 		<script type="text/javascript" src="/JS/lib/d3.compose-all.js"></script>
 		<script type="text/javascript" src="/JS/lib/suncalc.js"></script>
 		<script type="text/javascript" src="/JS/lib/calendar.js"></script>
-		<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
-		<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 	</head>
 	<body>
 		<?php sro('/Includes/header.php'); ?>

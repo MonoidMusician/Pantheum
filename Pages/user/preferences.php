@@ -49,13 +49,13 @@ Exemplum verbōrum: Salvē! Quid agis? Hoc verbum habet multās fōrmās: oppugn
 
 <script>
 $('#lang').select2({
-    minimumResultsForSearch: Infinity
+    minimumResultsForSearch: -1
 }).val(pantheum.lang()).change().on('change', function() {
     pantheum.udata["language"] = $(this).val();
     i18n.setLng(pantheum.udata["language"], pantheum._private.i18nload);
 });
 $('#la_ipa').select2({
-    minimumResultsForSearch: Infinity,
+    minimumResultsForSearch: -1,
     data: Object.keys(la_ipa.transforms)
 }).val(la_ipa.transform_key).on('change', function() {
     la_ipa.select_transformer($(this).val()).format();

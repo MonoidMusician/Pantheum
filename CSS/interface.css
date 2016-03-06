@@ -6,47 +6,6 @@ input.small {
     text-align: center;
 }
 
-input:hover:not(.select2-search__field),
-button:hover:not(.disabled),
-.select2-container--default:hover .select2-selection--multiple {
-    border: 1px solid #DC9C49 !important;
-}
-input:focus:not(.select2-search__field),
-input:active:not(.select2-search__field),
-button:focus:not(.disabled),
-button:active:not(.disabled),
-.select2-container--default.select2-container--focus .select2-selection--multiple {
-    border: 1px solid #CC3333 !important;
-}
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: #EAB75E !important;
-}
-select {
-    border: 1px solid #aaaaaa;
-}
-select:hover {
-    border-color: #EAB75E;
-}
-select:focus {
-    border-color: #CC3333;
-}
-section#content a:hover {
-    color: #DA9031;
-}
-section#content a:focus {
-    color: #CC3333;
-    text-decoration: underline;
-}
-nav.global-nav a:focus
-{
-    background-color: #BB2222;
-    text-decoration: underline;
-}
-nav.global-nav a:hover
-{
-    background-color: #BB2222;
-}
-
 
 button::-moz-focus-inner,
 input:not([type=radio]):not([type=checkbox])::-moz-focus-inner,
@@ -66,9 +25,57 @@ select::-moz-focus-inner
 {
     outline: 0;
 }
-select:focus
+.select2:focus, .select2 *:focus
 {
     outline: 0;
+}
+
+
+input:hover:not(.select2-search__field),
+button:hover:not(.disabled),
+.select2-container--default:hover .select2-selection--multiple {
+    border: 1px solid #DC9C49;
+}
+.select2:hover .select2-selection {
+    border-color: #EAB75E;
+}
+
+input:not([type=radio]):not([type=checkbox]):focus:not(.select2-search__field),
+input:not([type=radio]):not([type=checkbox]):active:not(.select2-search__field),
+button:focus:not(.disabled),
+button:active:not(.disabled),
+.select2.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: 1px solid #CC3333;
+}
+.select2.select2-container--focus .select2-selection,
+.select2.select2-container--open .select2-selection {
+    border-color: #CC3333;
+}
+.select2.select2-container--above.select2-container--open .select2-selection {
+    border-top-color: #aaa; /* select2 default color */
+}
+.select2.select2-container--below.select2-container--open .select2-selection {
+    border-bottom-color: #aaa; /* select2 default color */
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #EAB75E;
+}
+
+section#content a:hover {
+    color: #DA9031;
+}
+section#content a:focus {
+    color: #CC3333;
+    text-decoration: underline;
+}
+nav.global-nav a:focus
+{
+    background-color: #BB2222;
+    text-decoration: underline;
+}
+nav.global-nav a:hover
+{
+    background-color: #BB2222;
 }
 
 button.disabled {
@@ -213,10 +220,31 @@ input[name=quiz-category]:checked + label {
     color: #CC3333;
     cursor: pointer;
 }
-
 .oi.inline {
     vertical-align: sub;
 }
 section#content a.oi:focus {
-    color: #CC3333;
+/*    color: #CC3333;*/
+}
+
+.hider:not(.hiding):not(.hiding2) {
+    color: #CC3333 !important;
+}
+.hider.hiding + *,
+.hider.hiding + script + * {
+    display: none;
+}
+.hider.hiding2 + *,
+.hider.hiding2 + * + *,
+.hider.hiding2 + script + * + *,
+.hider.hiding2 + script + * + script+ * {
+    display: none;
+}
+
+.unselectable {
+    user-select: none;
+    -o-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
 }

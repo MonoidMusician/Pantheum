@@ -88,6 +88,17 @@ function update_tabs() {
 };
 update_tabs();
 $(function(){
+	var $categories = $('input[name=quiz-category] + label');
+	$(document).on('mousedown', function() {
+		$categories.bind('mouseover',function() {
+			$(this).trigger('mousedown');
+		});
+	}).on('mouseup', function() {
+		$categories.unbind('mouseover');
+	});
+	$categories.addClass('unselectable').on('mousedown', function() {
+		$(this).trigger('click');
+	});
 	$('input[name=quiz-types]:checked').click();
 	var max_height = 0, max_width = 0, min_height = Infinity;
 	var popstate = false;
