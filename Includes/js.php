@@ -43,5 +43,5 @@
 		<script type="text/javascript" src="/JS/lib/select2.min.js"></script>
 		<script type="text/javascript" src="/JS/lib/html.sortable.min.js"></script>
 		<script type="text/javascript" src="/JS/view.js"></script>
-		<script>pantheum.init()</script>
+		<script>$(pantheum.init)</script>
 
