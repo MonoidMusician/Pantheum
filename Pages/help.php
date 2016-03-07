@@ -21,7 +21,7 @@ For quizzes with simple input boxes, if you select “Score quizzes by <b>questi
 You can view your quizzes <a href="quizzes.php">here</a>. Otherwise your results will be lost.
 
 <h3>Latin III</h3>
-<p>For verb practice, try Latin III Synopsis, Synopsis + Translations, or Conjugate Verb Tense quizzes to test your knowledge of verb charts!
+<p>For verb practice, try <a href="quiz.php?id=synopsis-latinIII">Latin III Synopsis</a>, <a href="quiz.php?id=synopsis-latinIII-translations">Synopsis + Translations</a>, or <a href="quiz.php?id=conjugate-tense">Conjugate Verb Tense</a> quizzes to test your knowledge of verb charts!
 For synopses, you may choose what person and number to test – 1s, 2s, 3s, 1p, 2p, 3p, or random. This will cover all the moods, tenses, and voices we know!
 For the verb tense conjugation, choose what mood and tense to test (e.g. Future Indicative, Imperfect Subjunctive). This will cover active and passive moods for all persons, singular and plural.
 
@@ -34,7 +34,7 @@ For the verb tense conjugation, choose what mood and tense to test (e.g. Future 
 	<dt>Form</dt>
 	<dd>Search for a form in a word’s inflection. For example, searching for the form <a href="dictionary.php?form=amātī&lang=la">amātī</a> will display <a href="dictionary.php?name=amō&lang=la">amō</a>.</dd>
 	<dt>Language</dt>
-	<dd>Show words from the selected language(s).</dd>
+	<dd>Show words from the selected language(s). (Default: <sup>[la]</sup>Latin.)</dd>
 	<dt>Part of Speech</dt>
 	<dd>Limit words to certain part(s) of speech.</dd>
 	<dt>Definition</dt>
@@ -48,9 +48,9 @@ For the verb tense conjugation, choose what mood and tense to test (e.g. Future 
 <dl>
 	<dt>clc-stage=</dt>
 	<dd>What stage of the Cambridge Latin Course features the word in its vocabulary list.</dd>
-	<dd>Acceptable values: any number 0–48.</dd>
+	<dd>Acceptable values: any number <a href="dictionary.php?attr=clc-stage%3D1&lang=la">1</a>–<a href="dictionary.php?attr=clc-stage%3D48&lang=la">48</a>.</dd>
 	<dt>transitive=</dt>
-	<dd>Whether the verb is transitive (accepts a direct object) or not. N.B. Verbs listed as +DAT are (almost always) not transitive, especially if they are not inflected in the passive; deponent verbs, however, may still be transitive, although they lack a passive voice.</dd>
+	<dd>Whether the verb is <a href="dictionary.php?attr=transitive%3Dtrue&lang=la&spart=verb">transitive</a> (accepts a direct object) or <a href="dictionary.php?attr=transitive%false&lang=la&spart=verb">not</a>. N.B. Verbs listed as <a href="dictionary.php?attr=case%3Ddative&lang=la&spart=verb">+DAT</a> are (almost always) not transitive, especially if they are not inflected in the passive; deponent verbs, however, may still be transitive, although they lack a passive voice.</dd>
 	<dd>Acceptable values: true, false.</dd>
 </dl>
 
