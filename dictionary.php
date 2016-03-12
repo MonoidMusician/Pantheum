@@ -11,6 +11,7 @@
         <title>Dictionary | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
+        <?php sro('/Includes/jsx.php'); ?>
         <script type="text/javascript" src="/JS/lib/jquery.autocomplete.js"></script>
         <script type="text/javascript" src="/JS/jWord.js"></script>
         <script type="text/javascript" src="/JS/autocompletions.js"></script>
