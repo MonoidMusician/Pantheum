@@ -15,11 +15,11 @@ if (!pantheum.view) pantheum.view = {};
 	};
 	view.Attribute = React.createClass({
 		_render: function() {
-			var $tag = this.props.tag, $value = this.props.value;
+			var tag = this.props.tag, value = this.props.value;
 			var result;
-			switch ($tag) {
+			switch (tag) {
 				case "transitive":
-					switch ($value) {
+					switch (value) {
 						case "true":  return format_abbr( "TR","Transitive");
 						case "false": return format_abbr("NTR","Intransitive");
 					}; break;
@@ -28,12 +28,12 @@ if (!pantheum.view) pantheum.view = {};
 				case "person":
 					result = {"person-1":"1st person","person-2":"2nd person","person-3":"3rd person"}; break;
 				case "case":
-					switch ($value) {
-						case "ablative":        return format_abbr("+ABL", "Uses the "+$value);
-						case "accusative":      return format_abbr("+ACC", "Uses the "+$value);
-						case "dative":          return format_abbr("+DAT", "Uses the "+$value);
+					switch (value) {
+						case "ablative":        return format_abbr("+ABL", "Uses the "+value);
+						case "accusative":      return format_abbr("+ACC", "Uses the "+value);
+						case "dative":          return format_abbr("+DAT", "Uses the "+value);
 						case "dative-personal": return format_abbr("+DAT (of persons)", "Uses the dative for people");
-						case "genitive":        return format_abbr("+GEN", "Uses the "+$value);
+						case "genitive":        return format_abbr("+GEN", "Uses the "+value);
 					}; break;
 				case "declension":
 					result = {
@@ -65,7 +65,7 @@ if (!pantheum.view) pantheum.view = {};
 						"conj-4-deponent":"4th Conjugation Deponent",
 					}; break;
 				case "clc-stage":
-					var sp = $value.split("+");
+					var sp = value.split("+");
 					var CLC = format_abbr("CLC", "Cambridge Latin Course");
 					if (sp.length === 1)
 						return <span>Stage {value} ({CLC})</span>;
@@ -77,13 +77,13 @@ if (!pantheum.view) pantheum.view = {};
 			if (Array.isArray(result) && result.length == 2)
 				result = {"true":result[0],"false":result[1]};
 			if (typeof result === "object")
-				result = result[$value];
+				result = result[value];
 			if (result) return result;
-			var $abbrs = {
+			var abbrs = {
 				"copulative": "COP",
 			};
-			if ($value === "true" && $abbrs[$tag]) return format_abbr($abbrs[$tag], $tag);
-			return ($value !== null && $value !== "true") ? $tag+"="+$value : $tag;
+			if (value === "true" && abbrs[tag]) return format_abbr(abbrs[tag], tag);
+			return (value !== null && value !== "true") ? tag+"="+value : tag;
 		},
 		render: function() {
 			var r = this._render();

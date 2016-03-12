@@ -20,12 +20,12 @@ if (!pantheum.view) pantheum.view = {};
 					classes: "qtip-light qtip-abbr"
 				},
 				position: {
-					at: "top center",
-					my: "bottom center",
+					at: "center left",
+					my: "center right",
 					adjust: {y:5},
 				},
 				show: {
-					delay: 200,
+					delay: 1000,
 				},
 				hide: {
 					fixed: true,
@@ -106,11 +106,9 @@ if (!pantheum.view) pantheum.view = {};
 			var edit;
 			if (administrator)
 				edit = <view.Icon type="del"/>;
-			console.log(this.props);
 			var definitions = this.props.definitions.map(function(def, i) {
 				return <li key={i}><view.Language lang="en"/>{def}{" "}{edit}</li>
 			});
-			console.log(definitions);
 			return <ol>{definitions}</ol>
 		}
 	});
