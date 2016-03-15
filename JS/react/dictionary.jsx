@@ -1,14 +1,15 @@
 // Ensure pantheum exists...
 if (!pantheum) window.pantheum = {_private:{}};
 if (!pantheum.view) pantheum.view = {};
-(function() {
+Plugins.AutosizeInput.getDefaultOptions().space = 30;
+
+(function(view) {
 	"use strict";
-	var view = pantheum.view;
-	var administrator = true;
 	var languages = {
 		"la": "Latin",
 		"en": "English",
 	};
+
 	view.Language = React.createClass({
 		render: function() {
 			var title = this.props.name || languages[this.props.lang];
@@ -35,30 +36,14 @@ if (!pantheum.view) pantheum.view = {};
 		}
 	});
 	view.WordName = React.createClass({
-		getInitialState: function() {
-			return {editing: false, name: this.props.name};
-		},
-		handleClick: function(event) {
-			this.setState({editing: !this.state.editing});
-		},
-		handleChange: function(event) {
-			this.setState({name: event.target.value});
-		},
-		handleKeyUp: function(event) {
-			var key = event.which;
-			if (key === 13) this.handleBlur();
-		},
-		handleBlur: function(event) {
-			this.setState({editing: false});
-			var props = Object.assign({}, this.props, {name:this.state.name});
+		handleNewValue: function(name) {
+			console.log(name);
 		},
 		render: function() {
 			var classes = ["word-name"];
 			if (this.props.lang)
 				classes.push("format-word-"+this.props.lang);
-			if (!this.state.editing)
-				return <span className={classes.join(" ")} onClick={this.handleClick}>{this.state.name}</span>
-			return <input value={this.state.name} onBlur={this.handleBlur} onKeyUp={this.handleKeyUp} onChange={this.handleChange}/>
+			return <view.EditableText disabled={!pantheum.user.administrator} spanClassName={classes.join(" ")} onNewValue={this.handleNewValue} value={this.props.name} display={this.props.entry}/>
 		}
 	});
 	view.Icon = React.createClass({
@@ -76,10 +61,14 @@ if (!pantheum.view) pantheum.view = {};
 				"&gt;": "media-step-forward",
 				"&gt;&gt;": "media-skip-forward",
 				"visibility": "eye",
+				"add": "plus",
 			};
 			glyph = glyph[this.props.type];
-			var classes = ["oi", "inline"];
-			return <a href={this.props.link||"javascript:void(0)"} className={classes.join(" ")} title={this.props.desc} data-glyph={glyph} id={this.props.id}></a>
+			var classes = this.props.className || [];
+			if (typeof classes === 'string') classes = classes.split(" ");
+			classes.push('oi', 'inline', 'spaced');
+			if (this.props.small) classes.push('small');
+			return <a href={this.props.link||"javascript:void(0)"} onClick={this.props.action} className={classes.join(" ")} title={this.props.desc} data-glyph={glyph} id={this.props.id}></a>
 		},
 		componentDidMount: function() {
 			$(ReactDOM.findDOMNode(this)).qtip({
@@ -104,10 +93,10 @@ if (!pantheum.view) pantheum.view = {};
 	view.Definitions = React.createClass({
 		render: function() {
 			var edit;
-			if (administrator)
+			if (pantheum.user.administrator)
 				edit = <view.Icon type="del"/>;
 			var definitions = this.props.definitions.map(function(def, i) {
-				return <li key={i}><view.Language lang="en"/>{def}{" "}{edit}</li>
+				return <li key={i}><view.Language lang="en"/>{def}{edit}</li>
 			});
 			return <ol>{definitions}</ol>
 		}
@@ -120,21 +109,93 @@ if (!pantheum.view) pantheum.view = {};
 			</span>;
 		}
 	});
-	view.Entry = React.createClass({
+	view.Wiktionary = React.createClass({
 		render: function() {
+			// TODO: slugify (transform æ, œ, macrons....)
+			return <a href={"http://en.wiktionary.org/wiki/"+this.props.name+"#"+languages[this.props.lang]} target="_blank">{this.props.text||"Wiktionary"}</a>;
+		}
+	});
+	view.LewisShort = React.createClass({
+		render: function() {
+			if (this.props.lang != 'la') return <span/>;
+			// TODO: slugify (transform æ, œ, macrons....)
+			return <span> – <a href={"http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry="+this.props.name} target="_blank">{this.props.text||"Lewis & Short"}</a></span>;
+		}
+	});
+	view.PronunciationTool = React.createClass({
+		transform: la_ipa.transforms["IPA transcription"],
+		getInitialState: function() {
+			return {value: ""};
+		},
+		handleChange: function(event) {
+			this.setState({value: event.target.value});
+		},
+		render: function() {
+			return <span>
+				<input onChange={this.handleChange}/>
+				<span>{this.transform(this.state.value)}</span>
+			</span>
+		}
+	});
+	view.Entry = React.createClass({
+		getInitialState: function() {
+			return {toolsOpen: false};
+		},
+		toggleTools: function() {
+			this.setState({toolsOpen: !this.state.toolsOpen});
+		},
+		render: function() {
+			var tools;
+			if (!this.state.toolsOpen) {
+				tools = <view.Icon action={this.toggleTools} type="tools"/>
+			} else {
+				var k = 0;
+				tools = [
+					<view.Icon key={k++} action={this.toggleTools} className="hider" type="tools"/>,
+					<view.Icon key={k++} type="hardlink" link={"dictionary.php?id="+this.props.id}/>,
+					<view.Icon key={k++} type="refresh"/>,
+					<view.Icon key={k++} type="del"/>,
+					<div key={k++} style={{"paddingLeft":"2em"}}>
+						<view.Wiktionary {...this.props}/>
+						<view.LewisShort {...this.props}/>
+						<br/>
+						Pronunciation: <view.PronunciationTool/>
+					</div>
+				];
+			}
 			return <section id={this.id}>
 				<hr/>
 				<view.EntryName {...this.props}/>
 				{" "}
 				<view.Attributes {...this.props}/>
+				{tools}
 				<view.Definitions definitions={this.props.definitions}/>
 			</section>;
 		}
 	});
+	var word = {
+		id: 10176,
+		lang: "la",
+		name: "sum",
+		entry: "sum, esse, fui", // TODO: should be calculated from spart and forms (and attrs)
+		spart: "verb",
+		attrs: {
+			common:true,
+			copulative:true,
+			irregular:true,
+			transitive:false
+		},
+		definitions: ["be, exist"],
+		forms: {},
+	};
+	word.onAttrDelete = function(tag, value) {
+		delete word.attrs[tag];
+		view.render();
+	};
 	view.render = function() {
 		ReactDOM.render(
-			<view.Entry id="10176" lang="la" name="sum, esse, fui" spart="verb" attrs={["common=true","copulative=true","irregular=true","transitive=false"]} definitions={["be, exist"]}/>,
+			<view.Entry {...word}/>,
 			document.getElementById('dictionary')
 		);
 	};
-})();
+})(pantheum.view);

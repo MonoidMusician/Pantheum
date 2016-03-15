@@ -1,39 +1,84 @@
-// Ensure pantheum exists...
-if (!pantheum) window.pantheum = {_private:{}};
-if (!pantheum.view) pantheum.view = {};
-(function() {
+(function(view) {
 	"use strict";
-	var view = pantheum.view;
 
 	view.Abbreviation = React.createClass({
 		render: function() {
-			return <abbr title={this.props.title}>{this.props.text}</abbr>
+			return <abbr title={this.props.title}>{this.props.children}</abbr>
+		},
+		componentDidMount: function() {
+			$(ReactDOM.findDOMNode(this)).qtip({
+				style: {
+					classes: "qtip-light qtip-abbr"
+				},
+				position: {
+					at: "top center",
+					my: "bottom center",
+					adjust: {y:5},
+				},
+				show: {
+					delay: 200,
+				},
+				hide: {
+					fixed: true,
+					delay: 100,
+				}
+			});
+		},
+		componentDidUpdate: function() {
+			// Hint qtip to update
+			$(ReactDOM.findDOMNode(this)).attr('title', this.props.title);
 		}
 	});
-	var format_abbr = view.format_abbr = function(abbr, desc) {
-		return <view.Abbreviation title={desc} text={abbr}/>
+	var format_abbr = view.format_abbr = function(desc, ...children) {
+		return <view.Abbreviation title={desc}>{children}</view.Abbreviation>
+	};
+	var format_abbr_del = view.format_abbr_del = function(abbr, desc, action) {
+		return view.format_abbr(desc, abbr, view.del({action:action, key:1}));
+	};
+	view.del = function(props) {
+		if (pantheum.user.administrator)
+			return <view.Icon {...props} small type="del"/>
 	};
 	view.Attribute = React.createClass({
+		delete_API: function() {
+			var {tag, value, id, onDelete} = this.props;
+			$.get(pantheum.api_path+'add-attributes.php',
+				  'attr=!'+tag+'&id='+id)
+			.done(function(data){
+				if (data == "success") {
+					successTip("Successfully deleted "+tag+" attribute");
+					if (onDelete) onDelete(tag, value);
+				} else errorTip("Could not delete "+tag+" attribute: "+data,6900);
+			});
+		},
 		_render: function() {
 			var tag = this.props.tag, value = this.props.value;
 			var result;
 			switch (tag) {
 				case "transitive":
 					switch (value) {
-						case "true":  return format_abbr( "TR","Transitive");
-						case "false": return format_abbr("NTR","Intransitive");
+						case "true":  return format_abbr_del( "TR","Transitive",   this.delete_API);
+						case "false": return format_abbr_del("NTR","Intransitive", this.delete_API);
 					}; break;
 				case "irregular":
-					result = ["irregular", "regular"]; break;
+					switch (value) {
+						case "true":  return format_abbr_del( "REG","Regular",   this.delete_API);
+						case "false": return format_abbr_del("NREG","Irregular", this.delete_API);
+					}; break;
+				case "common":
+					switch (value) {
+						case "true":  return format_abbr_del( "COM","Common",  this.delete_API);
+						case "false": return format_abbr_del("NCOM","Uncommon", this.delete_API);
+					}; break;
 				case "person":
 					result = {"person-1":"1st person","person-2":"2nd person","person-3":"3rd person"}; break;
 				case "case":
 					switch (value) {
-						case "ablative":        return format_abbr("+ABL", "Uses the "+value);
-						case "accusative":      return format_abbr("+ACC", "Uses the "+value);
-						case "dative":          return format_abbr("+DAT", "Uses the "+value);
-						case "dative-personal": return format_abbr("+DAT (of persons)", "Uses the dative for people");
-						case "genitive":        return format_abbr("+GEN", "Uses the "+value);
+						case "ablative":        return format_abbr_del("+ABL", "Uses the "+value, this.delete_API);
+						case "accusative":      return format_abbr_del("+ACC", "Uses the "+value, this.delete_API);
+						case "genitive":        return format_abbr_del("+GEN", "Uses the "+value, this.delete_API);
+						case "dative":          return format_abbr_del("+DAT", "Uses the "+value, this.delete_API);
+						case "dative-personal": return format_abbr_del("+DAT (of persons)", "Uses the dative for people", this.delete_API);
 					}; break;
 				case "declension":
 					result = {
@@ -82,39 +127,22 @@ if (!pantheum.view) pantheum.view = {};
 			var abbrs = {
 				"copulative": "COP",
 			};
-			if (value === "true" && abbrs[tag]) return format_abbr(abbrs[tag], tag);
+			var Tag = tag.charAt(0).toUpperCase() + tag.substr(1);
+			if (value === "true" && abbrs[tag]) return format_abbr_del(abbrs[tag], Tag, this.delete_API);
 			return (value !== null && value !== "true") ? tag+"="+value : tag;
 		},
 		render: function() {
 			var r = this._render();
-			if (typeof r === 'string') return <span>{r}</span>;
+			if (typeof r === 'string') return <span>{r}{view.del(this.delete_API)}</span>;
 			return r;
-		},
-		componentDidMount: function() {
-			$(ReactDOM.findDOMNode(this)).qtip({
-				style: {
-					classes: "qtip-light qtip-abbr"
-				},
-				position: {
-					at: "top center",
-					my: "bottom center",
-					adjust: {y:5},
-				},
-				show: {
-					delay: 200,
-				},
-				hide: {
-					fixed: true,
-					delay: 100,
-				}
-			});
 		}
 	});
-	view.create_attribute = function(a,i) {
+	view.create_attribute = function(props) {return function(a,i) {
+		if (React.isValidElement(a)) return a;
 		var [k, v] = a.split("=");
 		if (!v) return a;
-		return <view.Attribute key={i} tag={k} value={v}/>;
-	};
+		return <view.Attribute {...props} key={i} tag={k} value={v}/>;
+	}};
 
 	function intersperse(arr, sep) {
 		if (arr.length === 0) {
@@ -127,10 +155,25 @@ if (!pantheum.view) pantheum.view = {};
 	}
 
 	view.Attributes = React.createClass({
+		handleNewValue: function(value) {
+			console.log(value);
+		},
 		render: function() {
-			var attrs = [this.props.spart].concat(this.props.attrs).map(view.create_attribute);
+			var props = {
+				id: this.props.id,
+				onDelete: this.props.onAttrDelete,
+			};
+			var spart = <view.EditableText key="0" disabled={!pantheum.user.administrator} value={this.props.spart} onNewValue={this.handleNewValue}/>;
+			var attrs = [spart];
+			if (!Array.isArray(this.props.attrs)) {
+				$.each(this.props.attrs, function(key, value) {
+					attrs.push(key+'='+value);
+				})
+			} else attrs.push(...this.props.attrs);
+			if (pantheum.user.administrator) attrs.push(<view.Icon key={attrs.length} type="add"/>);
+			attrs = attrs.map(view.create_attribute(props));
 			return <span>({intersperse(attrs, '; ')})</span>;
 		}
 	});
 
-})();
+})(pantheum.view);

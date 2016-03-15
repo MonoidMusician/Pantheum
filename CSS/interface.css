@@ -223,6 +223,16 @@ input[name=quiz-category]:checked + label {
 .oi.inline {
     vertical-align: sub;
 }
+.oi.small {
+    vertical-align: inherit;
+    font-size: 60%;
+}
+.oi.spaced {
+    padding-left: 0.3em;
+}
+.oi.small.spaced {
+    padding-left: 0.5em;
+}
 section#content a.oi:focus {
 /*    color: #CC3333;*/
 }

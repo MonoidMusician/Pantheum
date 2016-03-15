@@ -3,7 +3,12 @@
 	sro('/Includes/session.php');
 	global $sudata;
 ?>
-		<script>var pantheum = {udata:<?= $sudata ? $sudata : 'null' ?>,_private:{}};</script>
+		<script>var pantheum = {
+			_private:{},
+			user:{administrator:true},
+			api_path: '/PHP5/dictionary/',
+			udata:<?= $sudata ? $sudata : 'null' ?>,
+		};</script>
 		<script type="text/javascript" src="/JS/pantheum.js"></script>
 <?php
 	if (!array_key_exists("devel",$_GET) or $_GET["devel"] != "false") {
