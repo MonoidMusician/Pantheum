@@ -1,0 +1,56 @@
+<textarea style="width: 100%; height: 50%;" id="code"></textarea>
+<br>
+<button id="conv" onClick="document.getElementById('result').textContent = convert(this.previousSibling.previousSibling.previousSibling.previousSibling.value)">Convert</button>
+<pre style="font-family: Inconsolata-DZ" id="result"></pre>
+<script>
+	// turns messages into functions
+	var _ = new Proxy({}, {
+		get: function(target, name) {
+			return function() {
+				var args = Array.prototype.slice.call(arguments);
+				var f = function(rcvr) {
+					return rcvr[name].apply(rcvr, args);
+				};
+				f.selector = name;
+				f.args = args;
+				return f;
+			}
+		}
+	});
+
+	function convert(t) {
+		console.log(t.split(/("(?:[^\\]|\\.)*?"|'(?:[^\\]|\\.)*?')/g));
+		return t.split(/("(?:[^\\]|\\.)*?"|'(?:[^\\]|\\.)*?')/g).map(function(d, i) {
+			return !(i % 2) ? convert2(d) : d;
+		}).join('');
+	}
+	function convert2(t) {
+		/*
+		t = t.split('&').join('').split('#').join('//').split('.').join('+').split('->').join('.').split('=>').join(':');
+		t = t.replace(/\b(?:null|true|false)\b/gi, _.toLowerCase());
+		t = t.replace(/\band\b/gi, '&&');
+		t = t.replace(/\bor\b/gi, '||');
+		t = t.replace(/\belseif\b/g, 'else if');
+		t = t.replace(/\berror_log\b/g, 'console.log');
+		t = t.replace(/(?<!function[^\n]*)\$([_a-zA-Z]+\s*)=(?!=)/g, 'var $1=');
+		t = t.split('$').join('');
+		t = t.replace(/\s*use\s*\([^\)]*?\)/g, '');
+		t = t.replace(/\bforeach\s*\(((?:[^()]|\([^\(\)]*\))+) as ([_a-zA-Z]+)\)/g, 'for (var $2 of $1)');
+		t = t.replace(/\bfunc_get_args\(\)/gi, '[].slice.call(arguments)');
+		t = t.replace(/\btrim\(((?:[^()]|\([^\(\)]*\))+)\)/g, '$1.trim()');
+		t = t.replace(/\bcount\(((?:[^()]|\([^\(\)]*\))+)\)/g, '$1.length');
+		t = t.replace(/\bunset\(((?:[^()]|\([^\(\)]*\))+)\)/g, 'delete $1');
+		t = t.replace(/\blist\(((?:[^()]|\([^\(\)]*\))+)\)/g, '[$1]');
+		t = t.replace(/\bis_callable\(((?:[^()]|\([^\(\)]*\))+)\)/g, 'typeof $1 === \'function\'');
+		t = t.replace(/\bis_string\(((?:[^()]|\([^\(\)]*\))+)\)/g, 'typeof $1 === \'string\'');
+		t = t.replace(/\bis_array\(((?:[^()]|\([^\(\)]*\))+)\)/g, 'Array.isArray($1)');
+		/**/
+		t = t.replace(/\bexplode\(((?:[^()]|\([^\(\)]*\))+),\s*((?:[^()]|\([^\(\)]*\))+)\)/g, '$2.split($1)');
+		t = t.replace(/\bimplode\(((?:[^()]|\([^\(\)]*\))+),\s*((?:[^()]|\([^\(\)]*\))+)\)/g, '$2.join($1)');
+		t = t.replace(/\barray_key_exists\(((?:[^()]|\([^\(\)]*\))+),\s*((?:[^()]|\([^\(\)]*\))+)\)/g, '$1 in $2');
+		t = t.replace(/\bsafe_get\(((?:[^()]|\([^\(\)]*\))+),\s*((?:[^()]|\([^\(\)]*\))+)\)/g, '$2[$1]');
+		t = t.replace(/\(string\)([_a-zA-Z]+)/g, '$1.toString()');
+		t = t.replace(/\barray_keys\b/, 'Object.keys');
+		return t;
+	}
+</script>
