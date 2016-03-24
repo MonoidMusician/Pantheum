@@ -50,7 +50,8 @@
 		t = t.replace(/\barray_key_exists\(((?:[^()]|\([^\(\)]*\))+),\s*((?:[^()]|\([^\(\)]*\))+)\)/g, '$1 in $2');
 		t = t.replace(/\bsafe_get\(((?:[^()]|\([^\(\)]*\))+),\s*((?:[^()]|\([^\(\)]*\))+)\)/g, '$2[$1]');
 		t = t.replace(/\(string\)([_a-zA-Z]+)/g, '$1.toString()');
-		t = t.replace(/\barray_keys\b/, 'Object.keys');
+		t = t.replace(/\barray_keys\b/g, 'Object.keys');
+		t = t.replace(/\b([_a-zA-Z]+[^][]*)\[\]\s*=\s*([^;]+);/g, '$1.push($2);');
 		return t;
 	}
 </script>
