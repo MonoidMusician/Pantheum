@@ -1,6 +1,18 @@
 (function(view) {
 	"use strict";
-	view.Input = React.createClass({
+	var createClass = function(c) {
+		var r = React.createClass(c);
+		r.h = h.bind(undefined, r);
+		return r;
+	};
+	var propsdata = function(props, data) {
+		for (let p in data) {
+			props["data-"+p] = data[p];
+		}
+		return props;
+	};
+
+	view.Input = createClass({
 		componentDidMount: function() {
 			var input = ReactDOM.findDOMNode(this);
 			if (this.props.autoSize)
@@ -11,10 +23,10 @@
 				input.select();
 		},
 		render: function() {
-			return <input {...this.props}/>
+			return h('input', this.props);
 		}
 	});
-	view.EditableText = React.createClass({
+	view.EditableText = createClass({
 		getInitialState: function() {
 			return {editing: false, value: this.props.value, initial: this.props.value};
 		},
@@ -42,20 +54,29 @@
 			if (this.props.disabled) {
 				var props = Object.assign({}, this.props);
 				if (props.spanClassName) props.className = props.spanClassName;
-				return <span {...props}>{text}</span>
+				delete props.spanClassName;
+				return h('span', props, text);
 			}
 			if (!this.state.editing) {
 				var props = Object.assign({}, this.props);
 				if (props.spanClassName) props.className = props.spanClassName;
-				return <span {...props} onClick={this.handleClick}>{text}<view.Icon small type="edit"/></span>
+				delete props.spanClassName;
+				props.onClick = this.handleClick;
+				return h('span', props, [text, view.Icon.h.small({type:"edit"})]);
 			} else {
 				var props = Object.assign({}, this.props);
 				if (props.inputClassName) props.className = props.inputClassName;
-				return <view.Input {...props} autoFocus autoSelect autoSize value={this.state.value} onBlur={this.cancel} onKeyUp={this.handleKeyUp} onChange={this.handleChange}/>
+				delete props.inputClassName;
+				props.autoFocus = props.autoSelect = props.autoSize = true;
+				props.value = this.state.value;
+				props.onBlur = this.cancel;
+				props.onKeyUp = this.handleKeyUp;
+				props.onChange = this.handleChange;
+				return h(view.Input, props);
 			}
 		}
 	});
-	view.Icon = React.createClass({
+	view.Icon = createClass({
 		render: function() {
 			var glyph = {
 				"edit": "pencil",
@@ -77,7 +98,13 @@
 			if (typeof classes === 'string') classes = classes.split(" ");
 			classes.push('oi', 'inline', 'spaced');
 			if (this.props.small) classes.push('small');
-			return <a href={this.props.link||"javascript:void(0)"} onClick={this.props.action||this.props.onClick} className={classes.join(" ")} title={this.props.desc} data-glyph={glyph} id={this.props.id}></a>
+			return h('a', propsdata({
+				href: this.props.link||"javascript:void(0)",
+				onClick: this.props.action||this.props.onClick,
+				className: classes.join(" "),
+				title: this.props.desc,
+				id: this.props.id,
+			}, {glyph}));
 		},
 		componentDidMount: function() {
 			$(ReactDOM.findDOMNode(this)).qtip({
@@ -99,4 +126,19 @@
 			});
 		}
 	});
+	var iconproxy = {
+		get: function(target, name) {
+			if (name in target) return target[name];
+			return function(props, children) {
+				props.type = name;
+				return target(props, children);
+			}
+		}
+	};
+	view.Icon.h.small = function(props, children) {
+		props.small = true;
+		return view.Icon.h(props, children);
+	};
+	view.Icon.h.small = new Proxy(view.Icon.h.small, iconproxy);
+	view.Icon.h = new Proxy(view.Icon.h, iconproxy);
 })(pantheum.view);

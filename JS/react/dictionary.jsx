@@ -6,11 +6,16 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		"la": "Latin",
 		"en": "English",
 	};
+	var createClass = function(c) {
+		var r = React.createClass(c);
+		r.h = h.bind(undefined, r);
+		return r;
+	};
 
-	view.Language = React.createClass({
+	view.Language = createClass({
 		render: function() {
-			var title = this.props.name || languages[this.props.lang];
-			return (<sup title={title}>[{this.props.lang}]</sup>);
+			var title = this.props.name || languages[this.props.children];
+			return h('sup', {title}, ["[",this.props.children,"]"]);
 		},
 		componentDidMount: function() {
 			$(ReactDOM.findDOMNode(this)).qtip({
@@ -32,7 +37,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			});
 		}
 	});
-	view.WordName = React.createClass({
+	view.WordName = createClass({
 		handleNewValue: function(name) {
 			console.log(name);
 		},
@@ -40,42 +45,61 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			var classes = ["word-name"];
 			if (this.props.lang)
 				classes.push("format-word-"+this.props.lang);
-			return <view.EditableText disabled={!pantheum.user.administrator} spanClassName={classes.join(" ")} onNewValue={this.handleNewValue} value={this.props.name} display={this.props.entry}/>
+			return h(view.EditableText, {
+				disabled: !pantheum.user.administrator,
+				spanClassName: classes.join(" "),
+				onNewValue: this.handleNewValue,
+				value: this.props.name,
+				display: this.props.entry,
+			});
 		}
 	});
-	view.Definitions = React.createClass({
+	view.Definitions = createClass({
+		handleNewValue: function(name) {
+			console.log(name);
+		},
 		render: function() {
 			var edit;
 			if (pantheum.user.administrator)
-				edit = <view.Icon type="del"/>;
-			var definitions = this.props.definitions.map(function(def, i) {
-				return <li key={i}><view.Language lang="en"/>{def}{edit}</li>
-			});
-			return <ol>{definitions}</ol>
+				edit = view.Icon.h({type:"del"});
+			return h('ol', this.props.definitions.map(function(def, key) {
+				return h('li', {key}, [
+					view.Language.h("en"),
+					view.EditableText.h({
+						disabled: !pantheum.user.administrator,
+						onNewValue: this.handleNewValue,
+						value: def,
+					}),
+					edit
+				]);
+			}, this));
 		}
 	});
-	view.EntryName = React.createClass({
+	view.EntryName = createClass({
 		render: function() {
-			return <span>
-				<view.Language lang={this.props.lang}/>
-				<view.WordName {...this.props}/>
-			</span>;
+			return h('span', [view.Language.h(this.props.lang), view.WordName.h(this.props)]);
 		}
 	});
-	view.Wiktionary = React.createClass({
+	view.Wiktionary = createClass({
 		render: function() {
 			// TODO: slugify (transform æ, œ, macrons....)
-			return <a href={"http://en.wiktionary.org/wiki/"+this.props.name+"#"+languages[this.props.lang]} target="_blank">{this.props.text||"Wiktionary"}</a>;
+			return h('a', {
+				href: "http://en.wiktionary.org/wiki/"+this.props.name+"#"+languages[this.props.lang],
+				target: "_blank"
+			}, this.props.text||"Wiktionary");
 		}
 	});
-	view.LewisShort = React.createClass({
+	view.LewisShort = createClass({
 		render: function() {
-			if (this.props.lang != 'la') return <span/>;
+			if (this.props.lang != 'la') return h('span');
 			// TODO: slugify (transform æ, œ, macrons....)
-			return <span> – <a href={"http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry="+this.props.name} target="_blank">{this.props.text||"Lewis & Short"}</a></span>;
+			return h('span', [' – ', h('a', {
+				href: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry="+this.props.name,
+				target: "_blank"
+			}, this.props.text||"Lewis & Short")]);
 		}
 	});
-	view.PronunciationTool = React.createClass({
+	view.PronunciationTool = createClass({
 		transform: la_ipa.transforms["IPA transcription"],
 		getInitialState: function() {
 			return {value: ""};
@@ -84,13 +108,13 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			this.setState({value: event.target.value});
 		},
 		render: function() {
-			return <span>
-				<input onChange={this.handleChange}/>
-				<span>{this.transform(this.state.value)}</span>
-			</span>
+			return h('span', [
+				h('input',{onChange:this.handleChange}),
+				h('span', this.transform(this.state.value))
+			]);
 		}
 	});
-	view.Entry = React.createClass({
+	view.Entry = createClass({
 		getInitialState: function() {
 			return {toolsOpen: false};
 		},
@@ -98,32 +122,33 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			this.setState({toolsOpen: !this.state.toolsOpen});
 		},
 		render: function() {
-			var tools;
+			var tools, action = this.toggleTools;
 			if (!this.state.toolsOpen) {
-				tools = <view.Icon action={this.toggleTools} type="tools"/>
+				tools = [view.Icon.h.tools({action})];
 			} else {
 				var k = 0;
 				tools = [
-					<view.Icon key={k++} action={this.toggleTools} className="hider" type="tools"/>,
-					<view.Icon key={k++} type="hardlink" link={"dictionary.php?id="+this.props.id}/>,
-					<view.Icon key={k++} type="refresh"/>,
-					<view.Icon key={k++} type="del"/>,
-					<div key={k++} style={{"paddingLeft":"2em"}}>
-						<view.Wiktionary {...this.props}/>
-						<view.LewisShort {...this.props}/>
-						<br/>
-						Pronunciation: <view.PronunciationTool/>
-					</div>
+					view.Icon.h.tools(   { key:k++, className: "hider", action }),
+					view.Icon.h.hardlink({ key:k++, link: "dictionary.php?id="+this.props.id }),
+					view.Icon.h.refresh( { key:k++ }),
+					view.Icon.h.del(     { key:k++ }),
+					h('div', {key:k++,style:{"paddingLeft":"2em"}}, [
+						view.Wiktionary.h({...this.props,key:0}),
+						view.LewisShort.h({...this.props,key:1}),
+						h('br', {key:2}),
+						'Pronunciation: ',
+						view.PronunciationTool.h({key:4})
+					])
 				];
 			}
-			return <section id={this.id}>
-				<hr/>
-				<view.EntryName {...this.props}/>
-				{" "}
-				<view.Attributes {...this.props}/>
-				{tools}
-				<view.Definitions definitions={this.props.definitions}/>
-			</section>;
+			return h('section', {id:this.id}, [
+				h('hr'),
+				view.EntryName.h(this.props),
+				" ",
+				view.Attributes.h(this.props),
+				...tools,
+				view.Definitions.h({definitions:this.props.definitions})
+			]);
 		}
 	});
 	var word = {
@@ -147,7 +172,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	};
 	view.render = function() {
 		ReactDOM.render(
-			<view.Entry {...word}/>,
+			view.Entry.h(word),
 			document.getElementById('dictionary')
 		);
 	};

@@ -1,9 +1,14 @@
 (function(view) {
 	"use strict";
+	var createClass = function(c) {
+		var r = React.createClass(c);
+		r.h = h.bind(undefined, r);
+		return r;
+	};
 
-	view.Abbreviation = React.createClass({
+	view.Abbreviation = createClass({
 		render: function() {
-			return <abbr title={this.props.title}>{this.props.children}</abbr>
+			return h('abbr', {title:this.props.title}, this.props.children);
 		},
 		componentDidMount: function() {
 			$(ReactDOM.findDOMNode(this)).qtip({
@@ -30,16 +35,16 @@
 		}
 	});
 	var format_abbr = view.format_abbr = function(desc, ...children) {
-		return <view.Abbreviation title={desc}>{children}</view.Abbreviation>
+		return view.Abbreviation.h({title:desc}, children);
 	};
 	var format_abbr_del = view.format_abbr_del = function(abbr, desc, action) {
 		return view.format_abbr(desc, abbr, view.del({action:action, key:1}));
 	};
 	view.del = function(props) {
 		if (pantheum.user.administrator)
-			return <view.Icon {...props} small type="del"/>
+			return view.Icon.h.small.del(props);
 	};
-	view.Attribute = React.createClass({
+	view.Attribute = createClass({
 		delete_API: function() {
 			var {tag, value, id, onDelete} = this.props;
 			$.get(pantheum.api_path+'add-attributes.php',
@@ -52,7 +57,7 @@
 			});
 		},
 		_render: function() {
-			var tag = this.props.tag, value = this.props.value;
+			var {tag, value} = this.props;
 			var result;
 			switch (tag) {
 				case "transitive":
@@ -113,11 +118,11 @@
 					var sp = value.split("+");
 					var CLC = format_abbr("CLC", "Cambridge Latin Course");
 					if (sp.length === 1)
-						return <span>Stage {value} ({CLC})</span>;
+						return h('span', ['Stage ',value,' (',CLC,')']);
 					else if (sp.length === 2)
-						return <span>Stages {sp[0]} and {sp[1]} ({CLC})</span>;
+						return h('span', ['Stages ',sp[0],' and ',sp[1],' (',CLC,')']);
 					var value = sp.slice(0,sp.length-1).join(", ") + ", and" + sp[sp.length-1];
-					return <span>Stages {value} ({CLC})</span>;
+					return h('span', ['Stage ',value,' (',CLC,')']);
 			}
 			if (Array.isArray(result) && result.length == 2)
 				result = {"true":result[0],"false":result[1]};
@@ -133,15 +138,16 @@
 		},
 		render: function() {
 			var r = this._render();
-			if (typeof r === 'string') return <span>{r}{view.del(this.delete_API)}</span>;
+			if (typeof r === 'string')
+				return h('span', [r, view.del(this.delete_API)]);
 			return r;
 		}
 	});
-	view.create_attribute = function(props) {return function(a,i) {
+	view.create_attribute = function(props) {return function(a, key) {
 		if (React.isValidElement(a)) return a;
-		var [k, v] = a.split("=");
-		if (!v) return a;
-		return <view.Attribute {...props} key={i} tag={k} value={v}/>;
+		var [tag, value] = a.split("=");
+		if (!value) return a;
+		return view.Attribute.h({...props, key, tag, value});
 	}};
 
 	function intersperse(arr, sep) {
@@ -154,7 +160,7 @@
 		}, [arr[0]]);
 	}
 
-	view.Attributes = React.createClass({
+	view.Attributes = createClass({
 		handleNewValue: function(value) {
 			console.log(value);
 		},
@@ -163,16 +169,20 @@
 				id: this.props.id,
 				onDelete: this.props.onAttrDelete,
 			};
-			var spart = <view.EditableText key="0" disabled={!pantheum.user.administrator} value={this.props.spart} onNewValue={this.handleNewValue}/>;
+			var spart = view.EditableText.h({
+				key:0, disabled: !pantheum.user.administrator,
+				value: this.props.spart,
+				onNewValue: this.handleNewValue,
+			});
 			var attrs = [spart];
 			if (!Array.isArray(this.props.attrs)) {
 				$.each(this.props.attrs, function(key, value) {
 					attrs.push(key+'='+value);
 				})
 			} else attrs.push(...this.props.attrs);
-			if (pantheum.user.administrator) attrs.push(<view.Icon key={attrs.length} type="add"/>);
+			if (pantheum.user.administrator) attrs.push(view.Icon.h.add({key:attrs.length}));
 			attrs = attrs.map(view.create_attribute(props));
-			return <span>({intersperse(attrs, '; ')})</span>;
+			return h('span', ['(', ...intersperse(attrs, '; '), ')']);
 		}
 	});
 

@@ -15,9 +15,7 @@
         <script type="text/javascript" src="/JS/lib/jquery.autocomplete.js"></script>
         <script type="text/javascript" src="/JS/jWord.js"></script>
         <script type="text/javascript" src="/JS/autocompletions.js"></script>
-        <script type="text/javascript" src="/JS/model/path.js"></script>
-        <script type="text/javascript" src="/JS/model/depath.js"></script>
-        <script type="text/javascript" src="/JS/model/word.js"></script>
+        <?php sro('/Includes/jsmodel.php'); ?>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
