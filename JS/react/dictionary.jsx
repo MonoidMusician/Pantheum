@@ -1,6 +1,3 @@
-// Ensure pantheum exists...
-if (!pantheum) window.pantheum = {_private:{}};
-if (!pantheum.view) pantheum.view = {};
 Plugins.AutosizeInput.getDefaultOptions().space = 30;
 
 (function(view) {
@@ -44,50 +41,6 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			if (this.props.lang)
 				classes.push("format-word-"+this.props.lang);
 			return <view.EditableText disabled={!pantheum.user.administrator} spanClassName={classes.join(" ")} onNewValue={this.handleNewValue} value={this.props.name} display={this.props.entry}/>
-		}
-	});
-	view.Icon = React.createClass({
-		render: function() {
-			var glyph = {
-				"edit": "pencil",
-				"refresh": "reload",
-				"hardlink": "link-intact",
-				"del": "trash",
-				"tools": "wrench",
-				"rename": "text",
-				"change POS": "compass", // FIXME
-				"&lt;&lt;": "media-skip-backward",
-				"&lt;": "media-step-backward",
-				"&gt;": "media-step-forward",
-				"&gt;&gt;": "media-skip-forward",
-				"visibility": "eye",
-				"add": "plus",
-			};
-			glyph = glyph[this.props.type];
-			var classes = this.props.className || [];
-			if (typeof classes === 'string') classes = classes.split(" ");
-			classes.push('oi', 'inline', 'spaced');
-			if (this.props.small) classes.push('small');
-			return <a href={this.props.link||"javascript:void(0)"} onClick={this.props.action} className={classes.join(" ")} title={this.props.desc} data-glyph={glyph} id={this.props.id}></a>
-		},
-		componentDidMount: function() {
-			$(ReactDOM.findDOMNode(this)).qtip({
-				style: {
-					classes: "qtip-light qtip-abbr"
-				},
-				position: {
-					at: "top center",
-					my: "bottom center",
-					adjust: {y:0},
-				},
-				show: {
-					delay: 800,
-				},
-				hide: {
-					fixed: true,
-					delay: 100,
-				}
-			});
 		}
 	});
 	view.Definitions = React.createClass({

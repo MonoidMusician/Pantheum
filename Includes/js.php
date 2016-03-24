@@ -7,6 +7,8 @@
 			_private:{},
 			user:{administrator:true},
 			api_path: '/PHP5/dictionary/',
+			view: {},
+			model: {},
 			udata:<?= $sudata ? $sudata : 'null' ?>,
 		};</script>
 		<script type="text/javascript" src="/JS/pantheum.js"></script>
