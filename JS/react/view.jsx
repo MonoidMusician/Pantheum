@@ -11,21 +11,25 @@
 		}
 		return props;
 	};
+	var $dom = function(component) {
+		return $(ReactDOM.findDOMNode(component));
+	};
 
 	view.Input = createClass({
 		componentDidMount: function() {
-			var input = ReactDOM.findDOMNode(this);
+			var input = $dom(this);
 			if (this.props.autoSize)
-				$(input).autosizeInput();
+				input.autosizeInput();
 			if (this.props.autoFocus)
-				input.focus(); // actually redundant...
+				input[0].focus(); // actually redundant...
 			if (this.props.autoSelect)
-				input.select();
+				input[0].select();
 		},
 		render: function() {
 			return h('input', this.props);
 		}
 	});
+
 	view.EditableText = createClass({
 		getInitialState: function() {
 			return {editing: false, value: this.props.value, initial: this.props.value};
@@ -72,10 +76,46 @@
 				props.onBlur = this.cancel;
 				props.onKeyUp = this.handleKeyUp;
 				props.onChange = this.handleChange;
-				return h(view.Input, props);
+				return view.Input.h(props);
 			}
 		}
 	});
+
+	view.Abbreviation = createClass({
+		render: function() {
+			return h('abbr', {title:this.props.title}, this.props.children);
+		},
+		componentDidMount: function() {
+			$dom(this).qtip({
+				style: {
+					classes: "qtip-light qtip-abbr"
+				},
+				position: {
+					at: "top center",
+					my: "bottom center",
+					adjust: {y:5},
+				},
+				show: {
+					delay: 200,
+				},
+				hide: {
+					fixed: true,
+					delay: 100,
+				}
+			});
+		},
+		componentDidUpdate: function() {
+			// Hint qtip to update
+			$dom(this).attr('title', this.props.title);
+		},
+		componentWillUnmount: function() {
+			$dom(this).qtip('destroy', true);
+		}
+	});
+	view.format_abbr = function(desc, ...children) {
+		return view.Abbreviation.h({title:desc}, children);
+	};
+
 	view.Icon = createClass({
 		render: function() {
 			var glyph = {

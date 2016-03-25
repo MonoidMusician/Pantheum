@@ -1,4 +1,5 @@
 (function(model) {
+	"use strict";
 	class PATH {
 		constructor(init, ...path) {
 			this.issql = false;

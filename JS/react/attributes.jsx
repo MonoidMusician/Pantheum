@@ -6,38 +6,7 @@
 		return r;
 	};
 
-	view.Abbreviation = createClass({
-		render: function() {
-			return h('abbr', {title:this.props.title}, this.props.children);
-		},
-		componentDidMount: function() {
-			$(ReactDOM.findDOMNode(this)).qtip({
-				style: {
-					classes: "qtip-light qtip-abbr"
-				},
-				position: {
-					at: "top center",
-					my: "bottom center",
-					adjust: {y:5},
-				},
-				show: {
-					delay: 200,
-				},
-				hide: {
-					fixed: true,
-					delay: 100,
-				}
-			});
-		},
-		componentDidUpdate: function() {
-			// Hint qtip to update
-			$(ReactDOM.findDOMNode(this)).attr('title', this.props.title);
-		}
-	});
-	var format_abbr = view.format_abbr = function(desc, ...children) {
-		return view.Abbreviation.h({title:desc}, children);
-	};
-	var format_abbr_del = view.format_abbr_del = function(abbr, desc, action) {
+	var format_abbr_del = function(abbr, desc, action) {
 		return view.format_abbr(desc, abbr, view.del({action:action, key:1}));
 	};
 	view.del = function(props) {
@@ -50,7 +19,7 @@
 			$.get(pantheum.api_path+'add-attributes.php',
 				  'attr=!'+tag+'&id='+id)
 			.done(function(data){
-				if (data == "success") {
+				if (true||data == "success") {
 					successTip("Successfully deleted "+tag+" attribute");
 					if (onDelete) onDelete(tag, value);
 				} else errorTip("Could not delete "+tag+" attribute: "+data,6900);
@@ -116,7 +85,7 @@
 					}; break;
 				case "clc-stage":
 					var sp = value.split("+");
-					var CLC = format_abbr("CLC", "Cambridge Latin Course");
+					var CLC = format_abbr_del("CLC", "Cambridge Latin Course", this.delete_API);
 					if (sp.length === 1)
 						return h('span', ['Stage ',value,' (',CLC,')']);
 					else if (sp.length === 2)
@@ -147,7 +116,7 @@
 		if (React.isValidElement(a)) return a;
 		var [tag, value] = a.split("=");
 		if (!value) return a;
-		return view.Attribute.h({...props, key, tag, value});
+		return view.Attribute.h({...props, key: tag, tag, value});
 	}};
 
 	function intersperse(arr, sep) {

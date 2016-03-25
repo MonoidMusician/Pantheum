@@ -1,4 +1,5 @@
 (function(model) {
+	"use strict";
 	class WORD {
 		construct(db, id, mgr, lang) {
 			this.path_storage = {};

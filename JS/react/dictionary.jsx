@@ -45,7 +45,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			var classes = ["word-name"];
 			if (this.props.lang)
 				classes.push("format-word-"+this.props.lang);
-			return h(view.EditableText, {
+			return view.EditableText.h({
 				disabled: !pantheum.user.administrator,
 				spanClassName: classes.join(" "),
 				onNewValue: this.handleNewValue,

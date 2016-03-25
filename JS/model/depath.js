@@ -1,4 +1,5 @@
 (function(model) {
+	"use strict";
 	var _unique = (val,idx,self) => self.indexOf(val) === idx;
 	function _subscript(obj, k) {
 		if (Array.isArray(obj)) return obj[k];
