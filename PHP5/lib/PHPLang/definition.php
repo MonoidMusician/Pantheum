@@ -15,7 +15,8 @@ class _DEFINITION
 		$this->issql = ISSQLDB($db);
 		if ($word === NULL) {
 			$_wid = $this->_getword();
-			$word = WORD($db, $_wid);
+			if ($_wid !== NULL)
+				$word = WORD($db, $_wid);
 		}
 		$this->_word = $word;
 		if ($_fid = $this->_getpath())
