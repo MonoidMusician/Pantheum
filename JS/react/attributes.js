@@ -19,7 +19,7 @@
 			$.get(pantheum.api_path+'add-attributes.php',
 				  'attr=!'+tag+'&id='+id)
 			.done(function(data){
-				if (true||data == "success") {
+				if (data == "success") {
 					successTip("Successfully deleted "+tag+" attribute");
 					if (onDelete) onDelete(tag, value);
 				} else errorTip("Could not delete "+tag+" attribute: "+data,6900);
