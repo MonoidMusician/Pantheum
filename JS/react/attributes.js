@@ -7,7 +7,7 @@
 	};
 
 	var format_abbr_del = function(abbr, desc, action) {
-		return view.format_abbr(desc, abbr, view.del({action:action, key:1}));
+		return h('span', [view.format_abbr(desc, abbr), view.del({action:action, key:1})]);
 	};
 	view.del = function(props) {
 		if (pantheum.user.administrator)
