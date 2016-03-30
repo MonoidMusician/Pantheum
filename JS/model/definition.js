@@ -1,20 +1,19 @@
-var connection = require('./mysql');
-var Promise = require('promise');
+var common = require('./common');
 
 (function(model) {
 	"use strict";
 	var prefix = "def_";
 	var columns = ["value","type","sense","lang"];
-	var table = "definitions";
 	var cache = {};
-	class Definition {
+	class Definition extends common {
 		constructor(data, cached) {
+			super();
 			if (data instanceof Definition) return data;
 			if (typeof data === 'number') {
 				if (cached && cache[data] instanceof Definition)
 					return cache[data];
 				this._id = data;
-			} else this.update(data, true);
+			} else this.fromData(data, true);
 			if (cached && this._id != null)
 				this.cache();
 		}
@@ -24,7 +23,20 @@ var Promise = require('promise');
 		uncache() {
 			delete cache[this._id];
 		}
-		update(data, overwrite) {
+		toData() {
+			var data = {};
+			for (let d of columns)
+				if (this["_"+d] != null)
+					data[d] = this["_"+d];
+			if (this.id != null)
+				data.id = this.id;
+			if (this.word != null)
+				data.word = this.word;
+			if (this.tag != null)
+				data.tag = this.tag;
+			return data;
+		}
+		fromData(data, overwrite) {
 			for (let d of columns)
 				if (overwrite || data[d] != null)
 					this["_"+d] = data[d];
@@ -34,45 +46,19 @@ var Promise = require('promise');
 				this.word = data.word;
 			if (overwrite || data.tag != null)
 				this.tag = data.tag;
+			return this;
 		}
-		insert() {
-			var row = {};
-			if (this._word) row.word_id = this._word.id;
-			if (this._tag) row.form_tag = this._tag.toString();
+		fromSQL(row) {
 			for (let d of columns)
-				// Leave out null/undefined values
-				if (this["_"+d] != null)
-					row[prefix+d] = this["_"+d];
-			if (!Object.keys(row).length) return Promise.reject(new Error("No fields to insert"));
-			if (this._id) row.def_id = this._id;
-			return new Promise((resolve, reject) => {
-				connection.query("INSERT INTO definitions SET ?", row, (err, result) => {
-					if (err) return reject(err);
-					if (!this._id) this._id = result.insertId;
-					resolve(this);
-				});
-			});
+				if (row[prefix+d] !== undefined)
+					this["_"+d] = row[prefix+d];
+			if (row.word_id)
+				this.word_id = row.word_id;
+			if (row.form_tag)
+				this.form_tag = row.form_tag;
+			return this;
 		}
-		pull() {
-			var row = {};
-			if (this._id == null) return Promise.reject(new Error("No definition id"));
-			return new Promise((resolve, reject) => {
-				connection.query("SELECT * FROM definitions WHERE def_id = ?", this._id, (err, rows, fields) => {
-					if (err) return reject(err);
-					if (rows.length !== 1) return reject(new Error("Definition not found"));
-					var row = rows[0];
-					for (let d of columns)
-						if (row[prefix+d] !== undefined)
-							this["_"+d] = row[prefix+d];
-					if (row.word_id)
-						this.word_id = row.word_id;
-					if (row.form_tag)
-						this.form_tag = row.form_tag;
-					resolve(this);
-				});
-			});
-		}
-		push(...fields) {
+		toSQL(...fields) {
 			var cols = new Set(["word","tag", ...columns]);
 			if (fields.length === 1 && (Array.isArray(fields[0]) || fields[0] instanceof Set))
 				fields = fields[0];
@@ -83,41 +69,17 @@ var Promise = require('promise');
 			if (fields.delete("word") && this.word_id  !== undefined) row.word_id  = this.word_id;
 			if (fields.delete("tag")  && this.form_tag !== undefined) row.form_tag = this.form_tag;
 			for (let d of fields)
-				// Include if null (we could be resetting a field)
 				if (this["_"+d] !== undefined)
 					row[prefix+d] = this["_"+d];
-			if (!Object.keys(row).length)
-				return  Promise.resolve(this);
-			return new Promise((resolve, reject) => {
-				connection.query("UPDATE definitions SET ? WHERE def_id = ?", [row, this._id], (err, result) => {
-					if (err) return reject(err);
-					return resolve(this);
-				});
-			});
+			return row;
 		}
 		get id() {
 			return this._id;
 		}
 		set id(id) {
-			if (typeof id !== 'number')
-				throw new Error("Definition id must be integer");
+			if (id != null && typeof id !== 'number')
+				throw new TypeError("Definition id must be integer or null/undefined");
 			this._id = id;
-		}
-		push_id(newid) {
-			if (typeof newid !== 'number')
-				return Promise.reject(new Error("Definition id must be integer"));
-			this.uncache();
-			return new Promise((resolve, reject) => {
-				connection.query("UPDATE definitions SET def_id = ? WHERE def_id = ?", [newid, this._id], (err, result) => {
-					if (err) {
-						this.cache();
-						return reject(err);
-					}
-					this.id = newid;
-					this.cache();
-					resolve(this);
-				});
-			});
 		}
 		get value() {
 			return this._value;
@@ -168,6 +130,8 @@ var Promise = require('promise');
 			this._tag = model.Path ? new model.Path(this._word, form_tag) : form_tag;
 		}
 	}
+	Definition.table = "definitions";
+	Definition.key = prefix+"id";
 
 	model.Definition = Definition;
 })(!exports?pantheum.model:this);
