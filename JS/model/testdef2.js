@@ -1,5 +1,5 @@
 var connection = require('./mysql');
-var Definition = require('./definition');
+var Definition = require('./model').Definition;
 
 connection.connect();
 
