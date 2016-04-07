@@ -1,5 +1,5 @@
 var connection = require('./mysql');
-var model = require('./definition');
+var Definition = require('./definition');
 
 connection.connect();
 
@@ -24,9 +24,8 @@ var d = {
 	id: 15902,
 	value: "am",
 };
-var D = model.Definition(d);
-console.log(D, D.prototype);
-throw "exit";
+var D = Definition(d);
+console.log(D);
 var promise = promiseUntil(D, pybind(D.exists), function(a) {
 	a.id += 1;
 	return Promise.resolve(a);

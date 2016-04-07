@@ -1,31 +1,10 @@
 var stampit = require('stampit');
-var server = require('./server');
-var cached = require('./cached');
+var common = require('./common');
 
 (function(model) {
 	"use strict";
 	var prefix = "def_";
 	var columns = ["value","type","sense","lang"];
-	var global_enumerable = false;
-	function defprop(obj, name, src) {
-		var _name = "_"+name;
-		function get() {return this[_name];}
-		function set(v) {this[_name] = v;}
-		var props = Object.getOwnPropertyDescriptor(src||obj, name);
-		if (src === obj && props && "get" in props && "set" in props) return;
-		var config = {
-			get: get, set: set,
-			configurable: true,
-		};
-		if (props && !props.set) delete props.set;
-		if (props && !props.get) delete props.get;
-		Object.assign(config, props);
-		config.enumerable = global_enumerable;
-		Object.defineProperty(obj, name, config);
-	}
-	function defprops(obj, names, src) {
-		for (let n of names) defprop(obj, n, src);
-	}
 	var methods = {
 		// Required API
 		toData() {
@@ -88,17 +67,14 @@ var cached = require('./cached');
 			return this._tag && this._tag.toString();
 		},
 	};
-	var config = {enumerable: true};
-	Object.defineProperties(methods, {
-		toData: config, fromData: config,
-		toSQL: config, fromSQL: config,
-	});
+	var statics = {
+		table: "definitions",
+		key: prefix+"id",
+	};
 	var Definition = stampit({
-		methods,
-		refs: {
-			table: "definitions",
-			key: prefix+"id",
-		},
+		methods: common.methods(methods),
+		refs: statics,
+		static: statics,
 		init: function initDefinition({instance, args: [data, cacheable], stamp}) {
 			// Data argument disappeared, holds value of cacheable
 			if (data === true || data === false) {
@@ -114,7 +90,7 @@ var cached = require('./cached');
 			instance.cacheable = cacheable;
 
 			// Copy accessors to the instance, create missing accessors
-			defprops(instance, [...columns, "id", "word", "tag", "word_id", "form_tag"], methods);
+			common.defprops(instance, [...columns, "id", "word", "tag", "word_id", "form_tag"], methods);
 
 			// Initialize using accessors
 			if (typeof data === 'number') {
@@ -124,5 +100,6 @@ var cached = require('./cached');
 			}
 		}
 	});
-	model.Definition = stampit.compose(server, Definition, cached);
+	model.Definition = common.stamp(Definition);
 })(!exports?pantheum.model:this);
+if (exports) module.exports = this.Definition;

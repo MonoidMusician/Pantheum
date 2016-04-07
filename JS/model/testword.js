@@ -1,12 +1,13 @@
 var connection = require('./mysql');
-var model = Object.assign({}, require('./definition'), require('./word'));
+var model = {Definition:require('./definition'), Word:require('./word')};
 
 connection.connect();
 
 var w = {
 	id: 10176,
 };
-var W = new model.Word(w);
+var W = model.Word(w);
+console.log(W);
 var promise = W.pull().then(function(a) {
 	console.log("then");
 	console.log(a);
@@ -21,12 +22,12 @@ var promise = W.pull().then(function(a) {
 	}));
 	return W.update();
 }).then(function(a) {
-	console.log("then2");
+	console.log("then3");
 	console.log(a.definitions);
 	W.definitions.length = 2;
 	return W.update();
 }).then(function(a) {
-	console.log("then3");
+	console.log("then4");
 	console.log(a);
 	connection.end();
 }).catch(function(a) {
