@@ -92,7 +92,7 @@ var model = {};
 		}
 	});
 	model.Definition = common.stamp(Definition);
-})(model);
+}(model));
 
 (function(model) {
 	"use strict";
@@ -186,6 +186,6 @@ var model = {};
 	});
 
 	model.Word = common.stamp(Word);
-})(model);
+}(model));
 module.exports = model;
 
