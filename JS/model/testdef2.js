@@ -24,7 +24,9 @@ var d = {
 	id: 15902,
 	value: "am",
 };
-var D = new model.Definition(d);
+var D = model.Definition(d);
+console.log(D, D.prototype);
+throw "exit";
 var promise = promiseUntil(D, pybind(D.exists), function(a) {
 	a.id += 1;
 	return Promise.resolve(a);
