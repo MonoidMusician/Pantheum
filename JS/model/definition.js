@@ -4,10 +4,8 @@ var common = require('./common');
 	"use strict";
 	var prefix = "def_";
 	var columns = ["value","type","sense","lang"];
-	var cache = {};
-	class Definition extends common {
+	class Definition {
 		constructor(data, cached) {
-			super();
 			if (data instanceof Definition) return data;
 			if (typeof data === 'number') {
 				if (cached && cache[data] instanceof Definition)
@@ -17,60 +15,38 @@ var common = require('./common');
 			if (cached && this._id != null)
 				this.cache();
 		}
-		cache() {
-			cache[this._id] = this;
-		}
-		uncache() {
-			delete cache[this._id];
-		}
 		toData() {
 			var data = {};
-			for (let d of columns)
-				if (this["_"+d] != null)
-					data[d] = this["_"+d];
-			if (this.id != null)
-				data.id = this.id;
-			if (this.word != null)
-				data.word = this.word;
-			if (this.tag != null)
-				data.tag = this.tag;
+			for (let d of [...columns, "id","word","tag"])
+				if (this[d] != null)
+					data[d] = this[d];
 			return data;
 		}
 		fromData(data, overwrite) {
-			for (let d of columns)
+			for (let d of [...columns, "id","word","tag"])
 				if (overwrite || data[d] != null)
-					this["_"+d] = data[d];
-			if (overwrite || data.id != null)
-				this.id = data.id;
-			if (overwrite || data.word != null)
-				this.word = data.word;
-			if (overwrite || data.tag != null)
-				this.tag = data.tag;
+					this[d] = data[d];
 			return this;
 		}
 		fromSQL(row) {
 			for (let d of columns)
 				if (row[prefix+d] !== undefined)
-					this["_"+d] = row[prefix+d];
+					this[d] = row[prefix+d];
 			if (row.word_id)
 				this.word_id = row.word_id;
 			if (row.form_tag)
 				this.form_tag = row.form_tag;
 			return this;
 		}
-		toSQL(...fields) {
-			var cols = new Set(["word","tag", ...columns]);
-			if (fields.length === 1 && (Array.isArray(fields[0]) || fields[0] instanceof Set))
-				fields = fields[0];
-			fields = [...fields].filter(cols.has.bind(cols));
-			if (!fields.length) fields = cols;
-			else fields = new Set(fields);
+		toSQL() {
 			var row = {};
-			if (fields.delete("word") && this.word_id  !== undefined) row.word_id  = this.word_id;
-			if (fields.delete("tag")  && this.form_tag !== undefined) row.form_tag = this.form_tag;
-			for (let d of fields)
-				if (this["_"+d] !== undefined)
-					row[prefix+d] = this["_"+d];
+			for (let d of columns)
+				if (this[d] !== undefined)
+					row[prefix+d] = this[d];
+			if (this.word_id !== undefined)
+				row.word_id = this.word_id;
+			if (this.form_tag !== undefined)
+				row.form_tag = this.form_tag;
 			return row;
 		}
 		get id() {
@@ -132,6 +108,9 @@ var common = require('./common');
 	}
 	Definition.table = "definitions";
 	Definition.key = prefix+"id";
+	Definition = stampit.compose(common, cached, {
+		methods: Definition.prototype
+	});
 
 	model.Definition = Definition;
 })(!exports?pantheum.model:this);

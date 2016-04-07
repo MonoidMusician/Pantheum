@@ -1,10 +1,11 @@
+var stampit = require('stampit');
 var queryP = require('./mysqlpromise');
 
 // Each derive class must have
 //  - table Table name in database
 //  - key   Column name for id in database
 //  - id    ID value for instance
-//  - referenced
+//  - references
 class common {
 	exists() {
 		if (this.id == null)
@@ -22,21 +23,21 @@ class common {
 		});
 	}
 	pullchildren() {
-		var classes = this.constructor.referenced || [];
+		var classes = this.constructor.references || [];
 		if (!classes.length) return Promise.resolve(this);
 		var pulls = [];
 		for (let cls of classes) {
-			let table = cls.table;
+			let {table, key} = cls;
 			pulls.push(queryP("SELECT * FROM ?? WHERE ?? = ?", [table, this.constructor.key, this.id]).then(rows => {
 				return {[table]:rows.map(row => {
-					return new cls(row[cls.key]).fromSQL(row);
+					return new cls(row[key]).fromSQL(row);
 				})};
 			}));
 		}
 		return Promise.all(pulls).then(results => {
-			var referenced = {};
-			Object.assign(referenced, ...results);
-			this.referenced = referenced;
+			var children = {};
+			Object.assign(children, ...results);
+			this.children = children;
 			return this;
 		});
 	}
@@ -48,12 +49,12 @@ class common {
 		if (!Object.keys(row).length)
 			return Promise.reject(new Error("No model fields to insert"));
 		if (this.id != null) row[this.constructor.key] = this.id;
-		var refs = this.referenced;
+		var children = this.children;
 		return queryP("INSERT INTO ?? SET ?", [this.constructor.table, row]).then(result => {
 			if (this.id == null) this.id = result.insertId;
 			var inserts = [];
-			for (let r in refs) {
-				inserts.push(...refs[r].map(a=>a.insert()));
+			for (let r in children) {
+				inserts.push(...children[r].map(a=>a.insert()));
 			}
 			if (inserts.length)
 				return Promise.all(inserts).then(results=>this);
@@ -61,27 +62,28 @@ class common {
 		});
 	}
 	push() {
+		var references = this.constructor.references || [];
 		var row = this.toSQL();
 		if (!Object.keys(row).length)
-			return  Promise.resolve(this);
-		var referenced = this.constructor.referenced || [];
-		var update = queryP("UPDATE ?? SET ? WHERE ?? = ?", [this.constructor.table, row, this.constructor.key, this.id]);
+			var update = Promise.resolve(this);
+		else
+			var update = queryP("UPDATE ?? SET ? WHERE ?? = ?", [this.constructor.table, row, this.constructor.key, this.id]);
 		var cull = []; var update2 = [];
-		for (let cls of referenced) {
-			let {table, key} = cls;
-			let refs = this[table];
-			if (!refs || !refs.length) {
+		for (let {table,key} of references) {
+			let children = this[table];
+			if (!children || !children.length) {
 				cull.push(queryP("DELETE FROM ?? WHERE ?? = ?", [table, this.constructor.key, this.id]));
 				continue;
 			}
-			cull.push(queryP("DELETE FROM ?? WHERE ?? = ? AND ?? NOT IN (?)", [table, this.constructor.key, this.id, key, refs.map(a=>a.id).filter(a=>a!=null)]));
-			update2.push(...refs.map(a=>a.update()));
+			let existing_ids = children.map(a=>a.id).filter(a=>a!=null);
+			cull.push(queryP("DELETE FROM ?? WHERE ?? = ? AND ?? NOT IN (?)", [table, this.constructor.key, this.id, key, existing_ids]));
+			update2.push(...children.map(a=>a.update()));
 		};
 		return Promise.all([update, ...cull, ...update2]).then(results=>this);
 	}
 	update() {
-		var referenced = this.constructor.referenced;
-		if (referenced && referenced.length)
+		var references = this.constructor.references;
+		if (references && references.length)
 			return this.exists().then(c => c ? this.push() : this.insert());
 		var row = this.toSQL();
 		row[this.constructor.key] = this.id;
@@ -90,29 +92,29 @@ class common {
 	push_id(newid) {
 		if (typeof newid !== 'number')
 			return Promise.reject(new Error("Model id must be integer"));
-		this.uncache();
 		return queryP("UPDATE ?? SET ?? = ? WHERE ?? = ?", [this.constructor.table, this.constructor.key, newid, this.constructor.key, this.id]).then(result => {
+			this.uncache();
 			this.id = newid;
 			this.cache();
 			return this;
-		}, err => {
-			this.cache();
-			throw err;
 		});
 	}
-	get referenced() {
-		if (this.constructor.referenced == null) return;
-		var referenced = {};
-		for (let c of this.constructor.referenced)
-			referenced[c.table] = this[c.table];
-		return referenced;
+	get children() {
+		if (this.constructor.references == null) return;
+		var children = {};
+		for (let c of this.constructor.references)
+			children[c.table] = this[c.table];
+		return children;
 	}
-	set referenced(referenced) {
-		if (this.constructor.referenced == null) return;
-		for (let c of this.constructor.referenced)
-			if (referenced[c.table])
-				this[c.table] = referenced[c.table];
+	set children(children) {
+		if (this.constructor.references == null) return;
+		for (let c of this.constructor.references)
+			if (children[c.table])
+				this[c.table] = children[c.table];
 	}
 }
+common = stampit({
+	methods: common.prototype,
+});
 
 module.exports = common;
