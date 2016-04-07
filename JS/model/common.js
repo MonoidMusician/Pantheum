@@ -14,15 +14,14 @@ function defprop(obj, name, src) {
 		get: get, set: set,
 		configurable: true,
 	};
-	if (props) {
-		delete props.value;
-		delete props.writable;
-	}
+	var value = obj[name];
 	if (props && !props.set) delete props.set;
 	if (props && !props.get) delete props.get;
 	Object.assign(config, props);
 	config.enumerable = global_enumerable;
 	Object.defineProperty(obj, name, config);
+	if (value !== undefined)
+		obj[name] = value;
 }
 function defprops(obj, names, src) {
 	"use strict";
@@ -43,4 +42,12 @@ function methods(methods) {
 function stamp(stamp) {
 	return stampit.compose(server, stamp, cached);
 }
-module.exports = {defprops, methods, stamp};
+// Visit
+function visit(visited, obj, fn) {
+	"use strict";
+	for (let [o,d] of visited) {
+		if (o === obj) return d;
+	}
+	return fn.call(obj, visited);
+}
+module.exports = {defprops, methods, stamp, visit};

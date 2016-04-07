@@ -34,12 +34,11 @@ var methods = {
 			let {table, key} = cls;
 			pulls.push(queryP("SELECT * FROM ?? WHERE ?? = ?", [table, this.key, this.id]).then(rows => {
 				return {[table]:rows.map(row => {
-					return cls({id:row[key]}).fromSQL(row);
+					return cls({id:row[key]}, !!this.cacheable).fromSQL(row);
 				})};
 			}));
 		}
 		return Promise.all(pulls).then(results => {
-			console.log(results);
 			var children = {};
 			Object.assign(children, ...results);
 			this.children = children;

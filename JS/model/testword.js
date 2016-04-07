@@ -1,12 +1,9 @@
 var connection = require('./mysql');
-var model = {Definition:require('./definition'), Word:require('./word')};
+var model = require('./model');
 
 connection.connect();
 
-var w = {
-	id: 10176,
-};
-var W = model.Word(w);
+var W = model.Word({id: 10176}, true);
 console.log(W);
 var promise = W.pull().then(function(a) {
 	console.log("then");
@@ -14,12 +11,12 @@ var promise = W.pull().then(function(a) {
 	return W.pullchildren();
 }).then(function(a) {
 	console.log("then2");
-	console.log(a.definitions);
-	W.definitions.push(new model.Definition({
+	W.definitions.push(model.Definition({
 		value: "ser, estar",
 		lang: "es",
 		word: W,
-	}));
+	}, true));
+	console.log(a.definitions);
 	return W.update();
 }).then(function(a) {
 	console.log("then3");
@@ -28,7 +25,8 @@ var promise = W.pull().then(function(a) {
 	return W.update();
 }).then(function(a) {
 	console.log("then4");
-	console.log(a);
+	console.log(a.toData());
+	console.log(a.toData().definitions);
 	connection.end();
 }).catch(function(a) {
 	console.log("catch");
