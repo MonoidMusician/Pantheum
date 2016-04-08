@@ -1,6 +1,7 @@
 var stampit = require('stampit');
 var defprops = require('./common').defprops;
 var queryP = require('./mysqlpromise');
+require('../lib/cycle.js');
 
 // Each derive class must have
 //  - table Table name in database
@@ -8,11 +9,23 @@ var queryP = require('./mysqlpromise');
 //  - id    ID value for instance
 //  - references
 var methods = {
+	toJSON() {
+		return JSON.decycle(this.toData());
+	},
+	fromJSON(data) {
+		return this.fromData(JSON.retrocycle(data));
+	},
 	exists() {
 		"use strict";
 		if (this.id == null)
 			return Promise.resolve(false);
 		return queryP("SELECT 1 FROM ?? WHERE ?? = ?", [this.table, this.key, this.id]).then(rows=>rows.length===1);
+	},
+	delete() {
+		"use strict";
+		if (this.id == null)
+			return Promise.resolve(null);
+		return queryP("DELETE FROM ?? WHERE ?? = ?", [this.table, this.key, this.id]).then(({affectedRows:r})=>r?this:null);
 	},
 	pull() {
 		"use strict";
@@ -25,9 +38,10 @@ var methods = {
 			return this;
 		});
 	},
-	pullchildren() {
+	pullchildren(classes) {
 		"use strict";
-		var classes = this.references || [];
+		if (!classes)
+			classes = this.references || [];
 		if (!classes.length) return Promise.resolve(this);
 		var pulls = [];
 		for (let cls of classes) {
@@ -35,6 +49,27 @@ var methods = {
 			pulls.push(queryP("SELECT * FROM ?? WHERE ?? = ?", [table, this.key, this.id]).then(rows => {
 				return {[table]:rows.map(row => {
 					return cls({id:row[key]}, !!this.cacheable).fromSQL(row);
+				})};
+			}));
+		}
+		return Promise.all(pulls).then(results => {
+			var children = {};
+			Object.assign(children, ...results);
+			this.children = children;
+			return this;
+		});
+	},
+	pullchildrenscarce(classes) {
+		"use strict";
+		if (!classes)
+			classes = this.references || [];
+		if (!classes.length) return Promise.resolve(this);
+		var pulls = [];
+		for (let cls of classes) {
+			let {table, key} = cls;
+			pulls.push(queryP("SELECT ?? FROM ?? WHERE ?? = ?", [key, table, this.key, this.id]).then(rows => {
+				return {[table]:rows.map(row => {
+					return cls({id:row[key]}, !!this.cacheable);
 				})};
 			}));
 		}

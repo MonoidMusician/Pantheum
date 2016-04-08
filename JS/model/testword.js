@@ -25,8 +25,9 @@ var promise = W.pull().then(function(a) {
 	return W.update();
 }).then(function(a) {
 	console.log("then4");
-	console.log(a.toData());
-	console.log(a.toData().definitions);
+	console.log(a.toJSON());
+	console.log(a.toJSON().definitions);
+	console.log(JSON.decycle(a.toData().definitions));
 	connection.end();
 }).catch(function(a) {
 	console.log("catch");

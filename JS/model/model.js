@@ -77,6 +77,8 @@ var model = {};
 	var statics = {
 		table: "definitions",
 		key: prefix+"id",
+		reference: "word",
+		columns
 	};
 	var Definition = stampit({
 		methods: common.methods(methods),
@@ -170,6 +172,7 @@ var model = {};
 		table: "words",
 		key: "word_id",
 		references: [model.Definition],
+		columns
 	};
 	var Word = stampit({
 		methods: common.methods(methods),

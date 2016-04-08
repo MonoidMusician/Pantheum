@@ -49,19 +49,13 @@
 		get word() { return this._word; }
 		set word(w) { return this._word = w; }
 		get tag() {
-			if (this.issql && this._id !== null)
-				sql_getone(sql_stmt("form_id->form_tag"), this._tag, ["i", this._id]); // still null if not found
 			return this._tag;
 		}
 		get value() {
-			if (this.issql && this._id !== null)
-				sql_getone(sql_stmt("form_id->form_value"), this._value, ["i", this._id]); // still null if not found
 			return this._value;
 		}
 		set value(value) {
 			this._value = value;
-			if (this.issql && this._id !== null)
-				sql_set(sql_stmt("form_id->form_value="), this._value, ["i", this._id]);
 		}
 		resolve_key_value(arg) {
 			var key = null; var value = null;
