@@ -131,6 +131,17 @@ var handler = function(gen) {
 // REGISTER OUR ROUTES -------------------------------
 app.use('/api', router);
 
+var proxy = require('express-http-proxy');
+var url = require('url');
+
+// New hostname+path as specified by question:
+var apiProxy = proxy('localhost:8080', {
+	forwardPath: function (req, res) {
+		return url.parse(req.baseUrl).path;
+	}
+});
+app.use('*', apiProxy);
+
 // START THE SERVER
 // =============================================================================
 app.listen(port);
