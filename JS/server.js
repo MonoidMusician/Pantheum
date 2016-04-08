@@ -123,24 +123,10 @@ var handler = function(gen) {
 				res.redirect('/api/'+r.table+'/'+r.id);
 			}));
 		}
+
+		if (M.route) M.route(router);
 	}
 })(model));
-
-router.route('/definitions/:def_id/word')
-.get(ty.async(function*(req, res) {
-	var id = +req.params.def_id;
-	console.log(id);
-	var D = model.Definition({id}, false);
-	try {
-		yield D.pull();
-		var W = D.word;
-	} catch(err) {
-		console.log(err.stack);
-		res.send(err);
-		return;
-	}
-	res.redirect('/api/words/'+W.id);
-}))
 
 // REGISTER OUR ROUTES -------------------------------
 app.use('/api', router);
