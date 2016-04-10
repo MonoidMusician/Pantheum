@@ -28,9 +28,6 @@ var port     = process.env.PORT || 8080; // set our port
 var router = express.Router();
 
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function(req, res) {
-	res.json({ message: 'hooray! welcome to our api!' });
-});
 var handle = function(res, err) {
 	console.log(err.stack);
 	if (err instanceof Error && !Object.keys(err).length)
@@ -46,9 +43,11 @@ var handler = function(gen) {
 		}
 	});
 };
+var li = [];
 ((function(model) {
 	"use strict";
 	for (let M of [model.Definition, model.Word]) {
+		li.push('<li><a href="/api/'+M.table+'">'+M.table);
 		router.route('/'+M.table)
 		.post(handler(function*(req, res) {
 			if (Array.isArray(req.body)) {
@@ -127,6 +126,10 @@ var handler = function(gen) {
 		if (M.route) M.route(router);
 	}
 })(model));
+
+router.get('/', function(req, res) {
+	res.send('<ul>'+li.join('')+'</ul>');
+});
 
 // REGISTER OUR ROUTES -------------------------------
 app.use('/api', router);

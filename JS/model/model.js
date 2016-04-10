@@ -53,18 +53,24 @@ var model = {};
 			if (init != undefined)
 			for (let k in init) {
 				let v = init[k];
+				let copied = false;
 				if (Array.isArray(v)) {
 					this.simple_keys.push(k);
 					register2(this,k,v);
 				} else {
+					// Avoid mutating init object!
+					let os = v;
+					v = {};
 					this.recursive_keys.push(k);
-					for (let _ in v) {
-						let v_ = v[_];
-						register(this,k,_);
-						if (!(v_ instanceof Depath))
-							v[_] = v_ = new Depath(null, v_, aliases);
-						this.all_sub_keys.push(...v_.all_sub_keys);
-						register3(this, v_.key2values);
+					for (let i in os) {
+						let o = os[i];
+						register(this,k,i);
+						if (!(o instanceof Depath)) {
+							o = new Depath(null, o, aliases);
+						}
+						this.all_sub_keys.push(...o.all_sub_keys);
+						register3(this, o.key2values);
+						v[i] = o;
 					}
 				}
 				this.level[k] = v;
@@ -79,8 +85,8 @@ var model = {};
 		}
 		find_key(val) { return this.value2key[val]; }
 		key_index(key) {
-			for (let k in this.all_sub_keys)
-				if (this.all_sub_keys[k] == key) return k;
+			var k = this.all_sub_keys.indexOf(key);
+			if (k !== -1) return k;
 			throw new Error("key '"+key+"' not found");
 		}
 		is_value(value) {
@@ -128,8 +134,18 @@ var model = {};
 
 (function(model) {
 	"use strict";
+	var FLAT_STORAGE = true;
+	var SEP = '/';
 	var methods = {
 		// Accessors
+		set id(id) {
+			if (id != null && typeof id !== 'number')
+				throw new TypeError("Definition id must be integer or null/undefined");
+			this._id = id;
+		},
+		get id() {
+			return this._id;
+		},
 		set mgr(m) {
 			this._mgr = m;
 			this.map.length = m.all_sub_keys.length;
@@ -151,7 +167,7 @@ var model = {};
 		},
 		// API
 		resolve_hash(hash) {
-			if ("path_storage" in hash) return hash.path_storage;
+			if (hash && "path_storage" in hash) return hash.path_storage;
 			if (!hash && this.word) {
 				if (this.word.path_storage)
 					return this.word.path_storage;
@@ -185,9 +201,9 @@ var model = {};
 				if (typeof a === 'function') var a = a();
 				if (a && !Array.isArray(a) && a.toString)
 					a = a.toString();
-				if (!a) {}
-				else if (typeof a === 'string')
-					a.trim().split("/").filter(Boolean).map(b=>this.add(b))
+				if (!a) continue;
+				if (typeof a === 'string')
+					a.trim().split(SEP).filter(Boolean).map(b=>this.add(b));
 				else if (Array.isArray(a))
 					if (a.length === 2 && typeof a[0] === 'string' && this.mgr.is_key(a[0]))
 						this.add(a);
@@ -196,13 +212,37 @@ var model = {};
 			}
 			return this;
 		},
-		addp(basepath) {
+		addp(basepath, overwrite) {
 			for (var k of this.mgr.all_sub_keys) {
-				if (!this.key_exists(k))
+				if (!basepath.key_exists(k)) continue;
+				if (overwrite || !this.key_exists(k)) {
 					this.add(basepath.key_value(k));
+					this._map_dirty = true;
+				}
 			}
-			this._map_dirty = true;
 			return this;
+		},
+		addifvalid(...arg) {
+			if (arg.length === 1 && Array.isArray(arg[0])) arg = arg[0];
+			var [key, value] = this.resolve_key_value(arg);
+			var key_index = this.mgr.key_index(key);
+			var valids = this._calculate_valid_values()[key];
+
+			if (valids && valids.includes(value)) {
+				var prev = this.map[key_index];
+				if (prev == value) return this;
+				this.map[key_index] = value;
+				this._map_dirty = true;
+
+				// Test if change is OK
+				if (key in this.mgr.simple_keys || this.valid())
+					return this;
+
+				// Revert change
+				this._map_dirty = true;
+				this.map[key_index] = prev;
+			}
+			return false;
 		},
 		take(key) {
 			this._map_dirty = true;
@@ -210,25 +250,24 @@ var model = {};
 			return this;
 		},
 		take2(...arg) {
-			for (var a of vec) {
-				if (!a) {}
-				else if (typeof a === 'string')
+			for (var a of arg) {
+				if (!a) continue;
+				if (typeof a === 'string')
 					this.take(a);
 				else if (Array.isArray(a))
-					if (a.length === 2 && this.mgr.is_key(a[0])
-						&& this.mgr.is_value(a[1]))
+					if (a.length === 2 && this.mgr.is_key(a[0]) && this.mgr.is_value(a[1]))
 						this.take(a);
-					else this.take2(...arg);
+					else this.take2(...a);
 				else throw new TypeError("Path.take2 requires a string or vector");
 			}
 			return this;
 		},
 		toString() {
-			return this.map.filter(Boolean).join("/");
+			return this.map.filter(Boolean).join(SEP);
 		},
 		reset() {
-			for (var i of Object.keys(this.path))
-				this.path[i] = null;
+			for (var i in this.map)
+				this.map[i] = null;
 			return this;
 		},
 		key_exists(key) {
@@ -264,8 +303,8 @@ var model = {};
 			}
 			return [hash,i,this.map[i]];
 		},
-		_calculate_valid_values() {
-			if (!this._map_dirty) return this._valid_values;
+		_calculate_valid_values(key) {
+			if (!this._map_dirty) return key ? this._valid_values[key] : this._valid_values;
 			var ret = {};
 			var recurse = dp => {
 				if (!dp) return ret;
@@ -291,12 +330,13 @@ var model = {};
 		valid(msg) {
 			var dp = this.mgr;
 			var vals = this._calculate_valid_values();
-			for (let k of Object.keys(vals)) {
+			for (let k of this.mgr.all_sub_keys) {
 				var i = dp.key_index(k);
 				var vs = vals[k];
 				var v = this.map[i];
 				if (v == null) continue;
-				if (!vs.includes(v)) return msg ? "value '"+v+"' of key '"+k+"' was not in set "+vs : false;
+				if (!vs || !vs.includes(v))
+					return msg ? "value '"+v+"' of key '"+k+"' was not in set "+vs : false;
 			}
 			return msg ? null : true;
 		},
@@ -306,15 +346,27 @@ var model = {};
 		},
 		set(val, hash) {
 			this._map_dirty = true;
+			if(FLAT_STORAGE) {
+				var h = this.resolve_hash(hash);
+				return h[this.toString()] = val;
+			}
 			var h = this.walk(hash,1);
 			return h[""] = val;
 		},
 		get(hash) {
+			if(FLAT_STORAGE) {
+				var h = this.resolve_hash(hash);
+				return h[this.toString()];
+			}
 			var h = this.walk(hash,0);
-			if (h == null || !("" in h)) return null;
+			if (h == null || !("" in h)) return;
 			return h[""];
 		},
 		exists(hash) {
+			if(FLAT_STORAGE) {
+				var h = this.resolve_hash(hash);
+				return h && this.toString() in h;
+			}
 			var h = this.walk(hash,0);
 			return h != null;
 		},
@@ -322,35 +374,46 @@ var model = {};
 			var h = this.resolve_hash(hash);
 			var vals = this._calculate_valid_values();
 			if (h != null)
-				return vals[k].filter(function(i) {
-					return array_key_exists_r(i, h);
-				});
+				if(FLAT_STORAGE)
+					return vals[k].filter(function(i) {
+						return Object.keys(h).some(function(j) {
+							if (!new PATH(this._mgr, j).issub(this)) return false;
+							return j.split(SEP).includes(i);
+						});
+					});
+				else
+					return vals[k].filter(function(i) {
+						return array_key_exists_r(i, h);
+					});
 			return vals[k];
 		},
 		issub(other,ret) {
 			for (var k of this.mgr.all_sub_keys) {
-				if (other.key_value(k) && this.key_value(k) != other.key_value(k)) {
+				if (other.key_value(k) && this.key_value(k) != other.key_value(k))
 					return false;
-				} else if (this.key_value(k) && !other.key_value(k)) {
+				if (this.key_value(k) && !other.key_value(k))
 					ret = true;
-				}
 			}
 			return !!ret;
 		},
 		hasvalue(hash) { return this.get(hash) != null; },
 		remove(hash) {
-			if (this.issql && this._id != null)
-				sql_exec(sql_stmt("form_id->delete from forms"), ["i", this._id]);
 			var hash = this.resolve_hash(hash);
+			if(FLAT_STORAGE) {
+				this._map_dirty = true;
+				var ret = hash[this.toString()];
+				delete hash[this.toString()];
+				return ret;
+			}
 			var h = this.walk(hash,0);
 			if (h == null) return h;
 			this._map_dirty = true;
 			var ret = h[""];
 			delete h[""];
 			// Clean up dead branches if we have killed them:
-			while (!h.length && this.keylength) {
-				var max = this.keylength-1;
-				var [h2,i,k] = this.walk_part(hash, max);
+			while (!Object.keys(h).length && this.keylength) {
+				let max = this.keylength-1;
+				let [h2,i,k] = this.walk_part(hash, max);
 				delete h2[k];
 				h = h2;
 			}
@@ -358,7 +421,7 @@ var model = {};
 		},
 		remove_all(hash) {
 			var hash = this.resolve_hash(hash);
-			for (var k of Object.keys(hash))
+			for (var k in hash)
 				delete hash[k];
 			return this;
 		},
@@ -380,9 +443,24 @@ var model = {};
 				Object.defineProperty(instance, n, Object.getOwnPropertyDescriptor(methods, n));
 				if (v) instance[n] = v;
 			}
+
+			// Special method: add.ifvalid
+			instance.add = function() {
+				return methods.add.apply(this, arguments);
+			};
+			instance.add.ifvalid = instance.addifvalid.bind(instance);
+
+			// Initialization argument: this.tag, then arguments
+			if (instance.tag) {
+				instance.add2(instance.tag);
+				delete instance.tag;
+			}
 			instance.add2(args);
 		}
 	});
+	Path.normalize = function normalize(mgr, tag) {
+		return Path({mgr,tag}).toString();
+	};
 	model.Path = Path;
 }(model));
 
@@ -559,6 +637,9 @@ var model = {};
 		methods: common.methods(methods),
 		refs: statics,
 		static: statics,
+		props: {
+			path_storage: {}
+		},
 		init: function initWord({instance, args: [cacheable], stamp}) {
 			// Tell cacheable stamp to cache this or not
 			if (cacheable !== undefined)

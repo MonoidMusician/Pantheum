@@ -80,5 +80,5 @@ ty.spawn(function*() {
 		console.log(e.stack);
 	}
 	connection.end();
-	if (e) throw e;
+	if (err) throw err;
 });
