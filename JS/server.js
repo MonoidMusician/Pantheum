@@ -46,6 +46,11 @@ var handler = function(gen) {
 var li = [];
 ((function(model) {
 	"use strict";
+	function hasflag(req, flag) {
+		if (!(flag in req.query)) return false;
+		var v = req.query[flag];
+		return (v || v === '');
+	}
 	for (let M of [model.Definition, model.Word]) {
 		li.push('<li><a href="/api/'+M.table+'">'+M.table);
 		router.route('/'+M.table)
@@ -61,15 +66,38 @@ var li = [];
 		}))
 		.get(handler(function*(req, res) {
 			var results = yield queryP('SELECT ?? AS id FROM ??', [M.key, M.table]);
-			res.json(results);
+			if (hasflag(req, 'html')) {
+				var query = url.parse(req.url).query;
+				res.send(results.map(r=>'<a href="/api/'+M.table+'/'+r.id+'?'+query+'">'+r.id+'</a>').join(', '));
+			} else res.json(results);
 		}));
 
 		router.route('/'+M.table+'/:id')
 		.get(handler(function*(req, res) {
 			var id = +req.params.id;
 			var m = M({id}, false);
-			yield m.pull();
-			res.json(m.toJSON());
+			var json;
+			if (hasflag(req, 'full')) {
+				yield m.pullall();
+				if (M.reference) yield m[M.reference].pull();
+				json = Object.assign(m.toJSON(), m.children);
+			} else {
+				yield m.pull();
+				json = m.toJSON();
+			}
+			if (hasflag(req, 'html')) {
+				var query = url.parse(req.url).query;
+				var html = '<dl><dt>id</dt><dd>'+id+'</dd>';
+				for (let k in json) {
+					if (k === 'id') continue;
+					html += '<dt><a href="/api/'+M.table+'/'+id+'/'+k+'?'+query+'">'+k+'</a></dt>';
+					html += '<dd>'+JSON.stringify(json[k])+'</dd>';
+				}
+				html += '</dl>';
+				if (M.references)
+					html += M.references.map(({table:r}) => '<a href="/api/'+M.table+'/'+id+'/'+r+'?'+query+'">'+r+'</a>').join(', ');
+				res.send(html);
+			} else res.json(json);
 		}))
 		.delete(handler(function*(req, res) {
 			var id = +req.params.id;
@@ -95,9 +123,15 @@ var li = [];
 			.get(handler(function*(req, res) {
 				var id = +req.params.id;
 				var m = M({id}, false);
-				yield m.pullchildrenscarce([R]);
-				var rs = m[R.table];
-				res.json(rs.map(r=>r.toJSON()));
+				if (hasflag(req, 'full'))
+					yield m.pullchildren([R]);
+				else
+					yield m.pullchildrenscarce([R]);
+				var results = m[R.table].map(r=>r.toJSON());
+				if (hasflag(req, 'html')) {
+					var query = url.parse(req.url).query;
+					res.send(results.map(r=>'<a href="/api/'+R.table+'/'+r.id+'?'+query+'">'+r.id+'</a>').join(', '));
+				} else res.json(results);
 			}));
 			router.route('/'+M.table+'/:id/'+R.table+'/:n')
 			.get(handler(function*(req, res) {
@@ -108,7 +142,8 @@ var li = [];
 				var rs = m[R.table];
 				if (!(n in rs))
 					throw new Error('Index n='+n+' into the '+R.table+' of word '+M.table+'/'+id+' out of bounds (length: '+rs.length+')');
-				res.redirect('/api/'+R.table+'/'+rs[n].id);
+				var query = url.parse(req.url).query; if(query) query = '?'+query;
+				res.redirect('/api/'+R.table+'/'+rs[n].id+query);
 			}));
 		}
 
@@ -119,7 +154,8 @@ var li = [];
 				var m = M({id}, false);
 				yield m.pull();
 				var r = m[M.reference];
-				res.redirect('/api/'+r.table+'/'+r.id);
+				var query = url.parse(req.url).query; if(query) query = '?'+query;
+				res.redirect('/api/'+r.table+'/'+r.id+query);
 			}));
 		}
 
