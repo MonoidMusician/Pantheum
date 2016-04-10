@@ -13,7 +13,7 @@ var model      = require('./model/model.js');
 connection.connect();
 
 // configure app
-app.use(morgan('dev')); // log requests to the console
+//app.use(morgan('dev')); // log requests to the console
 
 // configure body parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -136,11 +136,12 @@ app.use('/api', router);
 
 var proxy = require('express-http-proxy');
 var url = require('url');
+var qs = require('qs');
 
 // New hostname+path as specified by question:
 var apiProxy = proxy('localhost:8080', {
 	forwardPath: function (req, res) {
-		return url.parse(req.baseUrl).path;
+		return url.parse(req.baseUrl).path+'?'+url.parse(req.url).query;
 	}
 });
 app.use('*', apiProxy);

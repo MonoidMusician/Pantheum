@@ -80,7 +80,7 @@ class _SQLDB implements _DB
 		if (!count($stmt)) _die("bad arguments: need one non-NULL");
 		$stmt = $sql_stmts["word_id<-" . implode(",", $stmt)];
 		$res = NULL;
-		sql_getmany($stmt, $res, $params);
+		sql_getmany(sql_prepare($stmt), $res, $params);
 		foreach ($res as &$r) {
 			$r = WORD($this, $r);
 		}

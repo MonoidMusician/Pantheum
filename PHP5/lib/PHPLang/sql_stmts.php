@@ -350,16 +350,20 @@ file_put_contents("$dir/stmts.csv", implode("\n", $list));
 // PHP Statement Helpers
 
 function sql_stmt($name) {
-	global $sql_stmts, $mysqli;
-	if (is_string($sql_stmts[$name])) {
-		$value = $sql_stmts[$name];
-		if (!($sql_stmts[$name] = $mysqli->prepare($value))) {
-			echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
-			echo "\nStatement was: " . var_export($value, 1);
-			return NULL;
-		}
-	}
+	global $sql_stmts;
+	if (is_string($sql_stmts[$name]))
+		$sql_stmts[$name] = sql_prepare($sql_stmts[$name]);
 	return $sql_stmts[$name];
+}
+function sql_prepare($stmt) {
+	global $mysqli;
+	$value = $stmt;
+	if (!($stmt = $mysqli->prepare($value))) {
+		echo "Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error;
+		echo "\nStatement was: " . var_export($value, 1);
+		return NULL;
+	}
+	return $stmt;
 }
 // Execute a prepared (and handle it)
 function &sql_getN($stmt, &$result, $params, $n) {

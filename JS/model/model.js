@@ -226,7 +226,7 @@ var model = {};
 			if (arg.length === 1 && Array.isArray(arg[0])) arg = arg[0];
 			var [key, value] = this.resolve_key_value(arg);
 			var key_index = this.mgr.key_index(key);
-			var valids = this._calculate_valid_values()[key];
+			var valids = this.values(key);
 
 			if (valids && valids.includes(value)) {
 				var prev = this.map[key_index];
@@ -279,7 +279,7 @@ var model = {};
 		walk(hash, create) {
 			this.validate();
 			var hash = this.resolve_hash(hash);
-			for (var p of this.map) {
+			for (let p of this.map) {
 				if (!hash) break;
 				if (!p) continue;
 				if (create && !hash[p]) hash[p] = {};
@@ -292,7 +292,7 @@ var model = {};
 			this.validate();
 			var hash = this.resolve_hash(hash);
 			var i = 0;
-			for (var p of this.map) {
+			for (let p of this.map) {
 				if (min) {min -= 1;continue;}
 				if (!hash) return hash;
 				i += 1;
@@ -303,29 +303,54 @@ var model = {};
 			}
 			return [hash,i,this.map[i]];
 		},
+		walk_all(hash) {
+			this.validate();
+			var hash = this.resolve_hash(hash);
+			var res = [hash];
+			var found = {};
+			for (let i in this.map) {
+				let p = this.map[i];
+				if (!res.length) break;
+				found[p] = true;
+				if (p) res = res.map(h => h[p]).filter(Boolean);
+				else {
+					let wen = [];
+					let k = this.mgr.all_sub_keys[i];
+					let vals = ["", ...this.values(k)];
+					for (let h of res) {
+						wen.push(...vals.map(v => h[v])).filter(Boolean);
+					}
+					res = wen;
+				}
+			}
+			res.push(found);
+			return res;
+		},
 		_calculate_valid_values(key) {
 			if (!this._map_dirty) return key ? this._valid_values[key] : this._valid_values;
 			var ret = {};
 			var recurse = dp => {
-				if (!dp) return ret;
+				if (!dp) return false;
 				for (var k of dp.simple_keys) {
 					if (ret[k]) throw new Error("duplicate key");
 					ret[k] = dp.level[k];
+					if (k === key) return true;
 				}
 				for (var k of dp.recursive_keys) {
 					if (ret[k]) throw new Error("duplicate key");
 					ret[k] = Object.keys(dp.level[k]);
 					var i = dp.key_index(k);
 					var v = this.map[i];
-					if (v)
-						recurse(dp.level[k][v]);
+					if (v && recurse(dp.level[k][v])) return true;
 				}
-				return ret;
+				return false;
 			};
 			recurse(this.mgr);
-			this._valid_values = ret;
-			this._map_dirty = false;
-			return ret;
+			if (!key) {
+				this._valid_values = ret;
+				this._map_dirty = false;
+			}
+			return key ? ret[key] : ret;
 		},
 		valid(msg) {
 			var dp = this.mgr;
@@ -343,6 +368,7 @@ var model = {};
 		validate() {
 			var msg = this.valid(true);
 			if (msg) throw new Error("invalid path: "+msg);
+			return this;
 		},
 		set(val, hash) {
 			this._map_dirty = true;
@@ -368,24 +394,30 @@ var model = {};
 				return h && this.toString() in h;
 			}
 			var h = this.walk(hash,0);
-			return h != null;
+			return h != null && "" in h;
 		},
 		iterate(k, hash) {
 			var h = this.resolve_hash(hash);
-			var vals = this._calculate_valid_values();
-			if (h != null)
-				if(FLAT_STORAGE)
-					return vals[k].filter(function(i) {
-						return Object.keys(h).some(function(j) {
-							if (!new PATH(this._mgr, j).issub(this)) return false;
-							return j.split(SEP).includes(i);
-						});
-					});
-				else
-					return vals[k].filter(function(i) {
-						return array_key_exists_r(i, h);
-					});
-			return vals[k];
+			var valids = this.key_exists(k) ? [this.key_value(k)] : this.values(k);
+			if (h == null || !valids || (this.exists(h) && this.key_exists(k))) return valids;
+			if(FLAT_STORAGE) {
+				// Cache a path object to use while comparing
+				var p = Path({mgr:this.mgr});
+				return valids.filter(
+					i => Object.keys(h).some(
+						j => p.reset().add2(j).map.includes(i) && p.issub(this)
+					)
+				);
+			}
+			function array_key_exists_r(key, obj) {
+				if (typeof obj !== 'object') return false;
+				if (key in obj) return true;
+				for (let k in obj)
+					if (array_key_exists_r(key, obj[k])) return true;
+				return false;
+			}
+			var all = this.walk_all(h);
+			return valids.filter(i => all.some(array_key_exists_r.bind(null, i)));
 		},
 		issub(other,ret) {
 			for (var k of this.mgr.all_sub_keys) {
@@ -427,7 +459,7 @@ var model = {};
 		},
 		move(wen, hash) {return wen.set(this.remove(hash), hash);},
 		values(key) {
-			return this._calculate_valid_values()[key];
+			return this._calculate_valid_values(key);
 		},
 	};
 	var Path = stampit({
@@ -461,6 +493,10 @@ var model = {};
 	Path.normalize = function normalize(mgr, tag) {
 		return Path({mgr,tag}).toString();
 	};
+	Object.defineProperty(Path, 'FLAT_STORAGE', {
+		get: function() {return FLAT_STORAGE},
+		set: function(v) {FLAT_STORAGE = v},
+	});
 	model.Path = Path;
 }(model));
 
