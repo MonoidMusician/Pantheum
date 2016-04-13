@@ -136,6 +136,8 @@ var model = {};
 	"use strict";
 	var FLAT_STORAGE = true;
 	var SEP = '/';
+	var prefix = "form_";
+	var columns = ["tag", "value", "usage"];
 	var methods = {
 		// Accessors
 		set id(id) {
@@ -146,20 +148,78 @@ var model = {};
 		get id() {
 			return this._id;
 		},
-		set mgr(m) {
-			this._mgr = m;
-			this.map.length = m.all_sub_keys.length;
+		set mgr(mgr) {
+			this._mgr = mgr;
+			if (this._mgr)
+				this.map.length = mgr.all_sub_keys.length;
 		},
 		get mgr() {
 			return this._mgr;
 		},
-		set word(w) {
-			this._word = w;
-			this.mgr = w.mgr;
-			this.add2(w.df_path_values);
+		set word(word) {
+			this._word = common.construct(model.Word, word, !!this.cacheable);
+			this.mgr = this.word.mgr;
+			this.add2(this.word.df_path_values);
 		},
 		get word() {
 			return this._word;
+		},
+		// Special SQL pseudo-member access
+		get value() {
+			if (!this.map) return;
+			return this.validate().get();
+		},
+		set value(value) {
+			this.validate().set(value);
+		},
+		get tag() {
+			if (!this.map) return;
+			return this.toString();
+		},
+		set tag(tag) {
+			this.reset().add2(tag);
+		},
+		set word_id(word_id) {
+			this.word = {id:word_id}; // fall through to word setter
+		},
+		get word_id() {
+			return this.word && this.word.id;
+		},
+		// Required API
+		fromData(data, overwrite) {
+			for (let d of [...columns, "id"])
+				if (overwrite || data[d] != null)
+					this[d] = data[d];
+			return this;
+		},
+		toData(visited) {
+			var data = {};
+			for (let d of [...columns, "id"])
+				if (this[d] != null)
+					data[d] = this[d];
+
+			// Serialize recursive structures
+			if (!visited) visited = [];
+			visited.push([this, data]);
+			data.word = this.word && (this.word.toData ? common.visit(visited, this.word, this.word.toData) : this.word);
+			return data;
+		},
+		fromSQL(row) {
+			if (row.word_id != null)
+				this.word_id = row.word_id;
+			for (let d of columns)
+				if (row[prefix+d] !== undefined)
+					this[d] = row[prefix+d];
+			return this;
+		},
+		toSQL() {
+			var row = {};
+			if (this.word_id !== undefined)
+				row.word_id = this.word_id;
+			for (let d of columns)
+				if (this[d] !== undefined)
+					row[prefix+d] = this[d];
+			return row;
 		},
 		// Count how many keys are used with values
 		get keylength() {
@@ -326,7 +386,7 @@ var model = {};
 			res.push(found);
 			return res;
 		},
-		_calculate_valid_values(key) {
+		values(key) {
 			if (!this._map_dirty) return key ? this._valid_values[key] : this._valid_values;
 			var ret = {};
 			var recurse = dp => {
@@ -353,8 +413,9 @@ var model = {};
 			return key ? ret[key] : ret;
 		},
 		valid(msg) {
+			if (!this.mgr || !this.map) return msg ? "missing field(s)" : false;
 			var dp = this.mgr;
-			var vals = this._calculate_valid_values();
+			var vals = this.values();
 			for (let k of this.mgr.all_sub_keys) {
 				var i = dp.key_index(k);
 				var vs = vals[k];
@@ -458,36 +519,41 @@ var model = {};
 			return this;
 		},
 		move(wen, hash) {return wen.set(this.remove(hash), hash);},
-		values(key) {
-			return this._calculate_valid_values(key);
-		},
+	};
+	var statics = {
+		table: "forms",
+		key: prefix+"id",
+		reference: "word",
+		columns
 	};
 	var Path = stampit({
-		methods: methods,
+		methods: common.methods(methods),
+		refs: statics,
+		static: statics,
 		props: {
 			_map_dirty: true,
 			map: []
 		},
 		init: function initPath({instance, args, stamp}) {
+			if (args.length && args[0] === true) {
+				instance.cacheable = true;
+				args = args.slice(1);
+			}
+
 			// Copy accessors to the instance
-			for (let n of ["word","mgr","keylength"]) {
-				let v = instance[n];
+			common.defprops(instance, ["id", "mgr", "word", ...columns], methods);
+			// Avoid default setter on this one
+			for (let n of ["keylength"]) {
 				Object.defineProperty(instance, n, Object.getOwnPropertyDescriptor(methods, n));
-				if (v) instance[n] = v;
 			}
 
 			// Special method: add.ifvalid
-			instance.add = function() {
+			instance.add = function add() {
 				return methods.add.apply(this, arguments);
 			};
 			instance.add.ifvalid = instance.addifvalid.bind(instance);
 
-			// Initialization argument: this.tag, then arguments
-			if (instance.tag) {
-				instance.add2(instance.tag);
-				delete instance.tag;
-			}
-			instance.add2(args);
+			instance.add2(...args);
 		}
 	});
 	Path.normalize = function normalize(mgr, tag) {
@@ -498,6 +564,7 @@ var model = {};
 		set: function(v) {FLAT_STORAGE = v},
 	});
 	model.Path = Path;
+	model.Form = Path;
 }(model));
 
 (function(model) {
@@ -505,7 +572,39 @@ var model = {};
 	var prefix = "def_";
 	var columns = ["value","type","sense","lang"];
 	var methods = {
+		// Member access
+		set id(id) {
+			if (id != null && typeof id !== 'number')
+				throw new TypeError("Definition id must be integer or null/undefined");
+			this._id = id;
+		},
+		set word(word) {
+			this._word = common.construct(model.Word, word, !!this.cacheable);
+		},
+		set tag(tag) {
+			this._tag = common.construct(model.Path, tag);
+			this._tag.word = this.word;
+		},
+		// Special SQL pseudo-member access
+		set word_id(word_id) {
+			this.word = {id:word_id};
+		},
+		get word_id() {
+			return this.word && this.word.id;
+		},
+		set form_tag(form_tag) {
+			this._tag = model.Path ? model.Path({word:this.word}, form_tag) : form_tag;
+		},
+		get form_tag() {
+			return this.tag && this.tag.toString();
+		},
 		// Required API
+		fromData(data, overwrite) {
+			for (let d of [...columns, "id", "word", "tag"])
+				if (overwrite || data[d] != null)
+					this[d] = data[d];
+			return this;
+		},
 		toData(visited) {
 			var data = {};
 			for (let d of [...columns, "id", "form_tag"])
@@ -517,12 +616,6 @@ var model = {};
 			visited.push([this, data]);
 			data.word = this.word && (this.word.toData ? common.visit(visited, this.word, this.word.toData) : this.word);
 			return data;
-		},
-		fromData(data, overwrite) {
-			for (let d of [...columns, "id", "word", "tag"])
-				if (overwrite || data[d] != null)
-					this[d] = data[d];
-			return this;
 		},
 		fromSQL(row) {
 			for (let d of columns)
@@ -544,31 +637,6 @@ var model = {};
 			if (this.form_tag !== undefined)
 				row.form_tag = this.form_tag;
 			return row;
-		},
-		// Member access
-		set id(id) {
-			if (id != null && typeof id !== 'number')
-				throw new TypeError("Definition id must be integer or null/undefined");
-			this._id = id;
-		},
-		set word(word) {
-			this._word = word && (model.Word ? model.Word(word, !!this.cacheable) : word);
-		},
-		set tag(tag) {
-			this._tag = tag && (model.Path ? model.Path(Object.assign({word:this.word}, tag)) : tag);
-		},
-		// Special SQL pseudo-member access
-		set word_id(word_id) {
-			this.word = {id:word_id};
-		},
-		get word_id() {
-			return this.word && this.word.id;
-		},
-		set form_tag(form_tag) {
-			this._tag = model.Path ? model.Path({word:this.word}, form_tag) : form_tag;
-		},
-		get form_tag() {
-			return this.tag && this.tag.toString();
 		},
 	};
 	var statics = {
@@ -598,7 +666,32 @@ var model = {};
 	var prefix = "word_";
 	var columns = ["spart","name","lang","last_changed"];
 	var methods = {
+		// Member access
+		set id(id) {
+			if (id != null && typeof id !== 'number')
+				throw new TypeError("Word id must be integer or null/undefined");
+			this._id = id;
+		},
+		get path() {
+			if (this._path == null)
+				this._path = model.Path({word:this});
+			return this._path;
+		},
+		get mgr() {
+			if (this._mgr == null && model.Depath)
+				this._mgr = model.Depath.of(this);
+			return this._mgr;
+		},
 		// Required API
+		fromData(data, overwrite) {
+			for (let d of [...columns, "id"])
+				if (overwrite || data[d] != null)
+					this[d] = data[d];
+			for (let cls of this.references)
+				if (data[cls.table])
+					this[cls.table] = data[cls.table].map(d => cls(d, !!this.cacheable));
+			return this;
+		},
 		toData(visited) {
 			var data = {};
 			for (let d of [...columns, "id"])
@@ -613,15 +706,6 @@ var model = {};
 				if (children[c])
 					data[c] = children[c].map(d => common.visit(visited, d, d.toData));
 			return data;
-		},
-		fromData(data, overwrite) {
-			for (let d of [...columns, "id"])
-				if (overwrite || data[d] != null)
-					this[d] = data[d];
-			for (let cls of this.references)
-				if (data[cls.table])
-					this[cls.table] = data[cls.table].map(d => cls(d, !!this.cacheable));
-			return this;
 		},
 		fromSQL(row) {
 			for (let d of columns)
@@ -639,22 +723,6 @@ var model = {};
 		// Display
 		toString() {
 			return this.id+this.name;
-		},
-		// Member access
-		set id(id) {
-			if (id != null && typeof id !== 'number')
-				throw new TypeError("Word id must be integer or null/undefined");
-			this._id = id;
-		},
-		get path() {
-			if (this._path == null)
-				this._path = model.Path({word:this});
-			return this._path;
-		},
-		get mgr() {
-			if (this._mgr == null && model.Depath)
-				this._mgr = model.Depath.of(this);
-			return this._mgr;
 		},
 		// Extra methods
 		has_attr(attr) {

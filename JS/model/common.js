@@ -38,9 +38,14 @@ function enumerable(obj, names) {
 function methods(methods) {
 	return enumerable(methods, ['toData','fromData','toSQL','fromSQL']);
 }
+var SelfAware = stampit.init(({ instance, stamp }) => {
+	if (!stamp.fixed.methods.getStamp) { // Avoid adding the same method to the prototype twice.
+		stamp.fixed.methods.getStamp = () => stamp;
+	}
+});
 // Compose a full model stamp
 function stamp(stamp) {
-	return stampit.compose(server, stamp, cached);
+	return stampit.compose(SelfAware, server, stamp, cached);
 }
 // Visit
 function visit(visited, obj, fn) {
@@ -50,4 +55,8 @@ function visit(visited, obj, fn) {
 	}
 	return fn.call(obj, visited);
 }
-module.exports = {defprops, methods, stamp, visit};
+function construct(stamp, instance, ...arg) {
+	if (!stamp || instance.getStamp() === stamp) return instance;
+	return stamp(instance, ...arg);
+}
+module.exports = {defprops, methods, stamp, visit, construct};

@@ -112,7 +112,7 @@ for (let flat of [true,false]) {
 		var mgr = verb;
 		var word = model.Word({spart:'verb', lang:'la'});
 		// no tag
-		var p0 = model.Path({mgr,word});
+		var p0 = model.Path({mgr, word});
 		// tag as argument
 		var p1 = model.Path({mgr}, '//infinitive///');
 		var gat = 'present/person-1/singular/subjunctive/active';
@@ -179,7 +179,7 @@ for (let flat of [true,false]) {
 				word.path_storage.should.be.empty;
 			});
 			it('should have valid moods (only)', function() {
-				p._calculate_valid_values().should.deepEqual({mood:Object.keys(mood)});
+				p.values().should.deepEqual({mood:Object.keys(mood)});
 			});
 		});
 		describe('p1 = infinitive/', function() {
@@ -194,7 +194,7 @@ for (let flat of [true,false]) {
 				p.should.have.property('keylength', 1);
 			});
 			it('should say certain values are valid', function() {
-				p._calculate_valid_values().should.deepEqual(Object.assign({
+				p.values().should.deepEqual(Object.assign({
 					mood: Object.keys(mood),
 				}, mood[p.toString()]));
 			});
@@ -209,9 +209,6 @@ for (let flat of [true,false]) {
 			});
 			it('should have length 5', function() {
 				p.should.have.property('keylength', 5);
-			});
-			it('should not have property .tag', function() {
-				p.should.not.have.property('tag');
 			});
 			it('should have map in correct order', function() {
 				var map = tag.split('/');
@@ -232,7 +229,7 @@ for (let flat of [true,false]) {
 				});
 			});
 			it('should say certain values are valid', function() {
-				p._calculate_valid_values().should.deepEqual(Object.assign({
+				p.values().should.deepEqual(Object.assign({
 					mood: Object.keys(mood),
 				}, mood['subjunctive']));
 			});
@@ -384,7 +381,7 @@ for (let flat of [true,false]) {
 			paths['infinitive/active/'] = paths['infinitive/'];
 			for (let tag in paths) {
 				it('should iterate correctly under '+tag, function() {
-					var p = new model.Path({mgr}, tag);
+					var p = model.Path({mgr}, tag);
 					var res = {};
 					for (let k of mgr.all_sub_keys) {
 						res[k] = p.iterate(k, hash);

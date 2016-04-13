@@ -48,7 +48,7 @@ var methods = {
 			let {table, key} = cls;
 			pulls.push(queryP("SELECT * FROM ?? WHERE ?? = ?", [table, this.key, this.id]).then(rows => {
 				return {[table]:rows.map(row => {
-					return cls({id:row[key]}, !!this.cacheable).fromSQL(row);
+					return cls({id:row[key], cacheable:this.cacheable}).fromSQL(row);
 				})};
 			}));
 		}
@@ -69,7 +69,7 @@ var methods = {
 			let {table, key} = cls;
 			pulls.push(queryP("SELECT ?? FROM ?? WHERE ?? = ?", [key, table, this.key, this.id]).then(rows => {
 				return {[table]:rows.map(row => {
-					return cls({id:row[key]}, !!this.cacheable);
+					return cls({id:row[key], cacheable:this.cacheable});
 				})};
 			}));
 		}
