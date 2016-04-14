@@ -5,7 +5,7 @@ var ty = require('then-yield');
 
 var parts = {
 	"number": ["singular","plural"],
-	"case":["nominative","accusative","ablative","dative","genitive"],
+	"case":["vocative","nominative","accusative","ablative","dative","genitive","locative"],
 	"gender":["feminine","masculine","neuter"],
 	"person":["person-1","person-2","person-3"],
 	"voice":["active","passive"],
@@ -26,6 +26,16 @@ model.Depath.add("la", "verb", new model.Depath("verb", {"mood":{
 			"imperfect",
 			"perfect",
 			"pluperfect"
+		],
+		"number": parts["number"],
+		"person": parts["person"],
+		"gender": parts["gender"]
+	},
+	"imperative":{
+		"voice": parts["voice"],
+		"tense":[
+			"present",
+			"future"
 		],
 		"number": parts["number"],
 		"person": parts["person"],
@@ -56,6 +66,14 @@ model.Depath.add("la", "verb", new model.Depath("verb", {"mood":{
 			"accusative"
 		]
 	},
+	"gerund":{
+		"case":[
+			"accusative",
+			"ablative",
+			"dative",
+			"genitive"
+		]
+	},
 	"supine":{
 		"case":[
 			"accusative",
@@ -73,8 +91,11 @@ ty.spawn(function*() {
 		yield W.pull();
 		console.log(W.toJSON());
 		yield W.pullchildren();
-		console.log(W.definitions.map(_=>_.toData()));
-		console.log(W.definitions[1].tag, ''+W.definitions[1].tag);
+		var tag = W.definitions[1].tag;
+		var data = tag.toData();
+		delete data.word;
+		console.log(''+tag, data);
+		console.log(W.path('future/active/participle'));
 	} catch(e) {
 		err = e;
 		console.log(e.stack);

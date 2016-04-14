@@ -47,6 +47,9 @@ var methods = {
 		for (let cls of classes) {
 			let {table, key} = cls;
 			pulls.push(queryP("SELECT * FROM ?? WHERE ?? = ?", [table, this.key, this.id]).then(rows => {
+				return Promise.all(rows.map(
+					row => cls({id:row[key], cacheacle:this.cacheable}).fromSQL(row)
+				)).then(a => ({[table]:a}));
 				return {[table]:rows.map(row => {
 					return cls({id:row[key], cacheable:this.cacheable}).fromSQL(row);
 				})};

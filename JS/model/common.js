@@ -18,6 +18,17 @@ function defprop(obj, name, src) {
 	if (props && !props.set) delete props.set;
 	if (props && !props.get) delete props.get;
 	Object.assign(config, props);
+	if (false) {
+		var get = config.get; var set = config.set;
+		config.get = function() {
+			console.log('trace get '+this.table+'.'+name);
+			return get.call(this);
+		};
+		config.set = function(v) {
+			console.log('trace set '+this.table+'.'+name, v);
+			return set.call(this, v);
+		};
+	}
 	config.enumerable = global_enumerable;
 	Object.defineProperty(obj, name, config);
 	if (value !== undefined)
@@ -56,7 +67,7 @@ function visit(visited, obj, fn) {
 	return fn.call(obj, visited);
 }
 function construct(stamp, instance, ...arg) {
-	if (!stamp || instance.getStamp() === stamp) return instance;
+	if (!stamp || (instance.getStamp && instance.getStamp() === stamp)) return instance;
 	return stamp(instance, ...arg);
 }
 module.exports = {defprops, methods, stamp, visit, construct};

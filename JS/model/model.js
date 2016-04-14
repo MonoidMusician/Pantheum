@@ -154,6 +154,8 @@ var model = {};
 				this.map.length = mgr.all_sub_keys.length;
 		},
 		get mgr() {
+			if (!this._mgr && this.word)
+				this.mgr = this.word.mgr;
 			return this._mgr;
 		},
 		set word(word) {
@@ -166,8 +168,7 @@ var model = {};
 		},
 		// Special SQL pseudo-member access
 		get value() {
-			if (!this.map) return;
-			return this.validate().get();
+			return this.valid() ? this.get() : undefined;
 		},
 		set value(value) {
 			this.validate().set(value);
@@ -205,8 +206,15 @@ var model = {};
 			return data;
 		},
 		fromSQL(row) {
-			if (row.word_id != null)
+			if (row.word_id != null) {
 				this.word_id = row.word_id;
+				if (!this.mgr) {
+					var row2 = Object.assign({}, row, {word_id:undefined});
+					return this.word.pull().then(word=> {
+						return this.fromSQL(row2);
+					});
+				}
+			}
 			for (let d of columns)
 				if (row[prefix+d] !== undefined)
 					this[d] = row[prefix+d];
@@ -541,7 +549,7 @@ var model = {};
 			}
 
 			// Copy accessors to the instance
-			common.defprops(instance, ["id", "mgr", "word", ...columns], methods);
+			common.defprops(instance, ["id", "mgr", "word_id", "word", ...columns], methods);
 			// Avoid default setter on this one
 			for (let n of ["keylength"]) {
 				Object.defineProperty(instance, n, Object.getOwnPropertyDescriptor(methods, n));
@@ -556,6 +564,7 @@ var model = {};
 			instance.add2(...args);
 		}
 	});
+	Path = common.stamp(Path);
 	Path.normalize = function normalize(mgr, tag) {
 		return Path({mgr,tag}).toString();
 	};
@@ -582,8 +591,7 @@ var model = {};
 			this._word = common.construct(model.Word, word, !!this.cacheable);
 		},
 		set tag(tag) {
-			this._tag = common.construct(model.Path, tag);
-			this._tag.word = this.word;
+			this._tag = common.construct(model.Path, Object.assign({word:this.word}, tag));
 		},
 		// Special SQL pseudo-member access
 		set word_id(word_id) {
@@ -623,8 +631,17 @@ var model = {};
 					this[d] = row[prefix+d];
 			if (row.word_id != null)
 				this.word_id = row.word_id;
-			if (row.form_tag != null)
+			if (row.form_tag != null) {
+				if (!this.word.mgr) {
+					return this.word.pull().then(
+						w => {
+							this.form_tag = row.form_tag;
+							return this;
+						}
+					);
+				}
 				this.form_tag = row.form_tag;
+			}
 			return this;
 		},
 		toSQL() {
@@ -656,6 +673,11 @@ var model = {};
 
 			// Copy accessors to the instance, create missing accessors
 			common.defprops(instance, [...columns, "id", "word", "tag", "word_id", "form_tag"], methods);
+
+			var pullall = instance.pullall;
+			instance.pullall = function(...arg) {
+				return pullall.call(this, ...arg).then(a=>a.word.pull()).then(a=>this);
+			};
 		}
 	});
 	model.Definition = common.stamp(Definition);
@@ -672,14 +694,10 @@ var model = {};
 				throw new TypeError("Word id must be integer or null/undefined");
 			this._id = id;
 		},
-		get path() {
-			if (this._path == null)
-				this._path = model.Path({word:this});
-			return this._path;
-		},
 		get mgr() {
-			if (this._mgr == null && model.Depath)
+			if (!this._mgr && model.Depath) {
 				this._mgr = model.Depath.of(this);
+			}
 			return this._mgr;
 		},
 		// Required API
@@ -725,16 +743,22 @@ var model = {};
 			return this.id+this.name;
 		},
 		// Extra methods
+		path(tag, value) {
+			if (typeof tag === 'string') tag = {tag};
+			tag = model.Path(Object.assign({}, tag, {word:this}));
+			if (value) tag.value = value;
+			return tag.value;
+		},
 		has_attr(attr) {
 			if (attr.value() == null)
 				return !!attr.get(this);
 			else return attr.get(this) == attr.value();
-		}
+		},
 	};
 	var statics = {
 		table: "words",
 		key: "word_id",
-		references: [model.Definition],
+		references: [model.Definition, model.Form],
 		columns
 	};
 	var Word = stampit({
@@ -750,7 +774,7 @@ var model = {};
 				instance.cacheable = cacheable;
 
 			// Copy accessors to the instance, create missing accessors
-			common.defprops(instance, [...columns, "id", "path", "mgr"], methods);
+			common.defprops(instance, [...columns, "id", "mgr"], methods);
 		}
 	});
 
