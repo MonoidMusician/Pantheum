@@ -673,11 +673,6 @@ var model = {};
 
 			// Copy accessors to the instance, create missing accessors
 			common.defprops(instance, [...columns, "id", "word", "tag", "word_id", "form_tag"], methods);
-
-			var pullall = instance.pullall;
-			instance.pullall = function(...arg) {
-				return pullall.call(this, ...arg).then(a=>a.word.pull()).then(a=>this);
-			};
 		}
 	});
 	model.Definition = common.stamp(Definition);

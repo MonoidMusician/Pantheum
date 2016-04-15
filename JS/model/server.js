@@ -9,8 +9,8 @@ require('../lib/cycle.js');
 //  - id    ID value for instance
 //  - references
 var methods = {
-	toJSON() {
-		return JSON.decycle(this.toData());
+	toJSON(...arg) {
+		return JSON.decycle(this.toData(...arg));
 	},
 	fromJSON(data) {
 		return this.fromData(JSON.retrocycle(data));
@@ -85,7 +85,10 @@ var methods = {
 	},
 	pullall() {
 		"use strict";
-		return Promise.all([this.pull(),this.pullchildren()]).then(results=>this);
+		var prom = Promise.all([this.pull(),this.pullchildren()]).then(results=>this);
+		if (this.reference)
+			prom.then(r=>this[this.reference].pull());
+		return prom.then(r=>this);
 	},
 	insert() {
 		"use strict";
