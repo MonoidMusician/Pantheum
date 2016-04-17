@@ -17,15 +17,35 @@ var handle = function(res, err) {
 		err = err.message;
 	res.send(err);
 };
+
 var handler = function(gen) {
-	return ty.async(function*(req, res) {
+	return ty.async(function*(req, res, next) {
 		try {
-			return yield* gen(req, res);
+			return yield* gen(req, res, next);
 		} catch(err) {
 			return handle(res, err);
 		}
 	});
 };
+
+model.Word.route = (tablerouter, modelrouter) => modelrouter.route('/path/*').get(handler(function*(req, res, next) {
+	"use strict";
+	var word = req.model, tag = req.params[0];
+	yield word.pullall();
+	var p = model.Path({word,tag});
+	if (!p.hasvalue()) {
+		var r = {};
+		var i = word.forms.filter(f=>f.issub(p)).map(f=>r[f.tag]=f.value);
+		if (i && i.length)
+			return res.json(r);
+	}
+	return res.send(p.value);
+}));
+model.Definition.route = (tablerouter, modelrouter) => modelrouter.route('/form_tag').get(handler(function*(req, res, next) {
+	yield req.model.pullall();
+	res.send(req.model.form_tag);
+}));
+
 var li = [];
 ((function(model) {
 	"use strict";
@@ -71,7 +91,7 @@ var li = [];
 			function(req, res, next) {
 				var id = +req.params.id;
 				if (Number.isNaN(id)) throw new Error('invalid id '+req.params.id);
-				req.model = M({id}, false);
+				req.model = M({id}, true);
 				req.modelUrl = M.table+'/'+id;
 				next();
 			},
@@ -152,7 +172,7 @@ var li = [];
 			}));
 		}
 
-		if (M.route) M.route(tablerouter);
+		if (M.route) M.route(tablerouter, modelrouter);
 	}
 })(model));
 
