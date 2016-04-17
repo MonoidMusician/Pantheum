@@ -41,6 +41,7 @@ var model = {};
 	 */
 	class Depath {
 		constructor(name, init, aliases) {
+			this.length = 1;
 			this.level = {};
 			this.key2values = {};
 			this.value2key = {};
@@ -54,9 +55,11 @@ var model = {};
 			for (let k in init) {
 				let v = init[k];
 				let copied = false;
+				let len = 0;
 				if (Array.isArray(v)) {
 					this.simple_keys.push(k);
 					register2(this,k,v);
+					len = v.length;
 				} else {
 					// Avoid mutating init object!
 					let os = v;
@@ -66,14 +69,17 @@ var model = {};
 						let o = os[i];
 						register(this,k,i);
 						if (!(o instanceof Depath)) {
-							o = new Depath(null, o, aliases);
+							o = new Depath(name+'/'+k, o, aliases);
 						}
 						this.all_sub_keys.push(...o.all_sub_keys);
 						register3(this, o.key2values);
+						Object.assign(this.level, o.level);
 						v[i] = o;
+						len += o.length;
 					}
 				}
 				this.level[k] = v;
+				this.length *= len+1;
 			}
 			// Sort && remove duplicates
 			this.all_sub_keys = this.all_sub_keys.filter(_unique);
@@ -159,7 +165,8 @@ var model = {};
 			return this._mgr;
 		},
 		set word(word) {
-			this._word = common.construct(model.Word, word, !!this.cacheable);
+			// This REALLY needs to be cacheable!
+			this._word = common.construct(model.Word, word, true);
 			this.mgr = this.word.mgr;
 			this.add2(this.word.df_path_values);
 		},
@@ -210,9 +217,7 @@ var model = {};
 				this.word_id = row.word_id;
 				if (!this.mgr) {
 					var row2 = Object.assign({}, row, {word_id:undefined});
-					return this.word.pull().then(word=> {
-						return this.fromSQL(row2);
-					});
+					return this.word.pull().then(word => this.fromSQL(row2));
 				}
 			}
 			for (let d of columns)
@@ -356,20 +361,23 @@ var model = {};
 			return hash;
 		},
 		walk_part(hash, max, min, create) {
-			if (!max) max=0; if (!min) min=0;
+			if (!min) min = 0;
+			if (max===undefined) max = -1;
+			else if (max < 0) return;
 			this.validate();
 			var hash = this.resolve_hash(hash);
 			var i = 0;
+			if (max)
 			for (let p of this.map) {
-				if (min) {min -= 1;continue;}
+				if (min>0) {min -= 1;continue;}
 				if (!hash) return hash;
-				i += 1;
-				if (!p) continue;
-				if (create && !hash[p]) hash[p] = {};
-				hash = hash[p];
-				if (!(max -= 1)) break;
+				if (p) {
+					if (create && !hash[p]) hash[p] = {};
+					hash = hash[p];
+				}
+				if (++i === max) break;
 			}
-			return [hash,i,this.map[i]];
+			return [hash,this.map[i],i];
 		},
 		walk_all(hash) {
 			this.validate();
@@ -397,7 +405,7 @@ var model = {};
 		values(key) {
 			if (!this._map_dirty) return key ? this._valid_values[key] : this._valid_values;
 			var ret = {};
-			var recurse = dp => {
+			var recurse = dp => /*return early*/{
 				if (!dp) return false;
 				for (var k of dp.simple_keys) {
 					if (ret[k]) throw new Error("duplicate key");
@@ -407,8 +415,7 @@ var model = {};
 				for (var k of dp.recursive_keys) {
 					if (ret[k]) throw new Error("duplicate key");
 					ret[k] = Object.keys(dp.level[k]);
-					var i = dp.key_index(k);
-					var v = this.map[i];
+					var v = this.key_value(k);
 					if (v && recurse(dp.level[k][v])) return true;
 				}
 				return false;
@@ -472,8 +479,9 @@ var model = {};
 			if(FLAT_STORAGE) {
 				// Cache a path object to use while comparing
 				var p = Path({mgr:this.mgr});
+				var keys = Object.keys(h);
 				return valids.filter(
-					i => Object.keys(h).some(
+					i => keys.some(
 						j => p.reset().add2(j).map.includes(i) && p.issub(this)
 					)
 				);
@@ -487,6 +495,59 @@ var model = {};
 			}
 			var all = this.walk_all(h);
 			return valids.filter(i => all.some(array_key_exists_r.bind(null, i)));
+		},
+		ord(I, d) {
+			if (!I) I = 0;
+			var dp = this.mgr;
+			var idx = 0, len = 1;
+			var k = dp.all_sub_keys[I];
+			var simple = Array.isArray(dp.level[k]);
+			if (k && k in this.values()) {
+				var v = this.map[I];
+				var vs = this.values(k);
+				var [i, l] = this.ord(I+1, true);
+				idx = vs.indexOf(v)+1; // 0 if not found, 1 for first ...
+				if (!simple) {
+					let P = model.Path({mgr:this.mgr}).add2(this.map.slice(0, I));
+					let klen = w => w===v ? l : P.add(k,w).ordlen(I+1, false);
+					let adding = !!v;
+					// add the length of all branches before this one to i
+					// add the length of _all_ branches to len
+					for (let w of vs) {
+						let j = klen(w);
+						len += j;
+						if (adding = (adding && w !== v)) {
+							i += j;
+						} else if (d == null) break;
+					}
+					if (v) idx = i+1;
+				} else {
+					len = (vs.length+1)*l;
+					idx = idx*l + i;
+				}
+			} else if (I+1<dp.all_sub_keys.length) return this.ord(I+1, d);
+			return d==null?idx:(d?[idx, len]:len);
+		},
+		ordlen(i) {
+			if (!i) i=0;
+			var dp = this.mgr;
+			var len = 1;
+			var k = dp.all_sub_keys[i];
+			var simple = Array.isArray(dp.level[k]);
+			if (k && k in this.values()) {
+				var v = this.map[i];
+				var vs = this.values(k);
+				var l = this.ordlen(i+1, true);
+				if (!simple) {
+					let P = model.Path({mgr:this.mgr}).add2(this.map.slice(0, i));
+					let klen = w => w===v ? l : P.add(k,w).ordlen(i+1);
+					for (let w of vs) {
+						let j = klen(w);
+						len += j;
+					}
+				} else len = (vs.length+1)*l;
+			} else if (i+1<dp.all_sub_keys.length) return this.ordlen(i+1);
+			return len;
 		},
 		issub(other,ret) {
 			for (var k of this.mgr.all_sub_keys) {
@@ -511,11 +572,13 @@ var model = {};
 			this._map_dirty = true;
 			var ret = h[""];
 			delete h[""];
+			var w;
+			var max = this.keylength-1;
 			// Clean up dead branches if we have killed them:
-			while (!Object.keys(h).length && this.keylength) {
-				let max = this.keylength-1;
-				let [h2,i,k] = this.walk_part(hash, max);
+			while (!Object.keys(h).length && (w=this.walk_part(hash, max))) {
+				let [h2,k] = w;
 				delete h2[k];
+				max -= 1;
 				h = h2;
 			}
 			return ret;
@@ -543,8 +606,8 @@ var model = {};
 			map: []
 		},
 		init: function initPath({instance, args, stamp}) {
-			if (args.length && args[0] === true) {
-				instance.cacheable = true;
+			if (args.length && typeof args[0] === 'boolean') {
+				instance.cacheable = args[0];
 				args = args.slice(1);
 			}
 

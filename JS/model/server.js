@@ -34,8 +34,7 @@ var methods = {
 		return queryP("SELECT * FROM ?? WHERE ?? = ?", [this.table, this.key, this.id]).then(rows => {
 			if (rows.length !== 1)
 				return Promise.reject(new Error("Model not found"));
-			this.fromSQL(rows[0]);
-			return this;
+			return this.fromSQL(rows[0]);
 		});
 	},
 	pullchildren(classes) {
@@ -50,9 +49,6 @@ var methods = {
 				return Promise.all(rows.map(
 					row => cls({id:row[key], cacheacle:this.cacheable}).fromSQL(row)
 				)).then(a => ({[table]:a}));
-				return {[table]:rows.map(row => {
-					return cls({id:row[key], cacheable:this.cacheable}).fromSQL(row);
-				})};
 			}));
 		}
 		return Promise.all(pulls).then(results => {
