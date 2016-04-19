@@ -1,5 +1,4 @@
 var stampit = require('stampit');
-var defprops = require('./common').defprops;
 var queryP = require('./mysqlpromise');
 require('../lib/cycle.js');
 
