@@ -82,7 +82,10 @@ var model = {};
 				this.length *= len+1;
 			}
 			// Sort && remove duplicates
-			this.all_sub_keys = this.all_sub_keys.filter(_unique);
+			this.own_keys = this.recursive_keys.concat(this.simple_keys).filter(_unique);
+			var simple = this.all_sub_keys.filter(k=>Array.isArray(this.level[k]));
+			var recursive = this.all_sub_keys.filter(k=>!Array.isArray(this.level[k]));
+			this.all_sub_keys = recursive.concat(simple).filter(_unique);
 			for (var k of Object.keys(this.key2values))
 				this.key2values[k] = this.key2values[k].filter(_unique);
 		}

@@ -425,7 +425,6 @@ describe('Path', function() {
 					p.set(data[tag], hash);
 				}
 				for (let p of Paths) Ordered[p.ord()] = p.tag;
-				//console.log(Ordered.join(', '));
 				if (flat) it('hash should equal data', function() {
 					hash.should.deepEqual(data);
 				});
@@ -497,6 +496,44 @@ describe('Path', function() {
 			var p = model.Path({mgr});
 			for (let i in paths) {
 				p.reset().add2(paths[i]).ord().should.equal(+i);
+			}
+		});
+	});
+	describe('deal with changing order', function() {
+		var mgr = new model.Depath('test', {
+			type: {
+				numeral: {
+					value:['0','1'],
+				},
+				literal: {
+					case: {
+						upper: {value:['A','B']},
+						lower: {value:['a','b']},
+					}
+				},
+			}
+		});
+		var paths = [
+			'',
+			'numeral',
+				'numeral/0',
+				'numeral/1',
+			'literal',
+				'literal/upper',
+					'literal/upper/A',
+					'literal/upper/B',
+				'literal/lower',
+					'literal/lower/a',
+					'literal/lower/b',
+		];
+		it('should have '+paths.length+' possibilities', function() {
+			mgr.length.should.equal(paths.length);
+		});
+		it('should have corresponding ordinalities in order', function() {
+			var p = model.Path({mgr});
+			for (let i in paths) {
+				var ord = p.reset().add2(paths[i]).ord();
+				ord.should.equal(+i);
 			}
 		});
 	});
