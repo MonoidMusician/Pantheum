@@ -534,23 +534,19 @@ var model = {};
 		ordlen(i) {
 			if (!i) i=0;
 			var dp = this.mgr;
-			var len = 1;
 			var k = dp.all_sub_keys[i];
 			var simple = Array.isArray(dp.level[k]);
 			if (k && k in this.values()) {
-				var v = this.map[i];
 				var vs = this.values(k);
-				var l = this.ordlen(i+1, true);
 				if (!simple) {
 					let P = model.Path({mgr:this.mgr}).add2(this.map.slice(0, i));
-					let klen = w => w===v ? l : P.add(k,w).ordlen(i+1);
-					for (let w of vs) {
-						let j = klen(w);
-						len += j;
-					}
-				} else len = (vs.length+1)*l;
-			} else if (i+1<dp.all_sub_keys.length) return this.ordlen(i+1);
-			return len;
+					let klen = w => P.add(k,w).ordlen(i+1);
+					return vs.reduce((u,w) => u+klen(w), 1);
+				} else return (vs.length+1)*this.ordlen(i+1);
+			} else if (i+1<dp.all_sub_keys.length) {
+				return this.ordlen(i+1);
+			}
+			return 1;
 		},
 		issub(other,ret) {
 			for (var k of this.mgr.all_sub_keys) {
