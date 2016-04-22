@@ -1,5 +1,5 @@
 var stampit = require('stampit');
-var server = require('./server.js');
+var base = require('./server.js') /*/ require('./client.js')/**/;
 var cached = require('./cached.js');
 
 var global_enumerable = false;
@@ -56,7 +56,7 @@ var SelfAware = stampit.init(({ instance, stamp }) => {
 });
 // Compose a full model stamp
 function stamp(stamp) {
-	return stampit.compose(SelfAware, server, stamp, cached);
+	return stampit.compose(SelfAware, base, stamp, cached);
 }
 // Visit
 function visit(visited, obj, fn) {

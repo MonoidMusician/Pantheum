@@ -1,0 +1,1 @@
+pantheum.model = require('./model');

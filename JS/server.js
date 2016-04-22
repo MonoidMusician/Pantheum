@@ -25,7 +25,9 @@ var qs = require('qs');
 // New hostname+path as specified by question:
 var apiProxy = proxy('localhost:8080', {
 	forwardPath: function (req, res) {
-		return url.parse(req.baseUrl).path+'?'+url.parse(req.url).query;
+		var path = (url.parse(req.baseUrl).path||'')+'?'+(url.parse(req.url).query||'');
+		//console.log(path, req.baseUrl, req.url);
+		return path;
 	}
 });
 app.use('*', apiProxy);

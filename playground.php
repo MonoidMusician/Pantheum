@@ -11,6 +11,7 @@
 		<title>Playground | Latin</title>
 		<?php sro('/Includes/css.php'); ?>
 		<?php sro('/Includes/js.php'); ?>
+		<?php sro('/Includes/jsx.php'); ?>
 	</head>
 	<body>
 		<?php sro('/Includes/header.php'); ?>

@@ -5,3 +5,4 @@
 		<script type="text/babel" src="/JS/react/view.js"></script>
 		<script type="text/babel" src="/JS/react/attributes.js"></script>
 		<script type="text/babel" src="/JS/react/dictionary.js"></script>
+		<script type="text/javascript" src="/JS/build/model.js"></script>

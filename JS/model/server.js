@@ -2,7 +2,7 @@
 var stampit = require('stampit');
 var Promise = require('bluebird');
 var queryP = require('./mysqlpromise');
-require('../lib/cycle.js');
+var cycle = require('cycle');
 
 // Each derive class must have
 //  - table Table name in database
@@ -11,10 +11,10 @@ require('../lib/cycle.js');
 //  - references
 var methods = {
 	toJSON(...arg) {
-		return JSON.decycle(this.toData(...arg));
+		return cycle.decycle(this.toData(...arg));
 	},
 	fromJSON(data) {
-		return this.fromData(JSON.retrocycle(data));
+		return this.fromData(cycle.retrocycle(data));
 	},
 	exists() {
 		if (this.id == null)
