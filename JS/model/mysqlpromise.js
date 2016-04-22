@@ -1,7 +1,7 @@
 var connection = require("./mysql");
-var Promise = require('promise');
+var Promise = require('bluebird');
 
-function promiseQuery(...arg) {
+module.exports = function promiseQuery(...arg) {
 	return new Promise((resolve, reject) => {
 		try {
 			connection.query(...arg, (err, results) => {
@@ -15,5 +15,3 @@ function promiseQuery(...arg) {
 		}
 	});
 }
-
-module.exports = promiseQuery;

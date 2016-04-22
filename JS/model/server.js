@@ -1,4 +1,6 @@
+"use strict";
 var stampit = require('stampit');
+var Promise = require('bluebird');
 var queryP = require('./mysqlpromise');
 require('../lib/cycle.js');
 
@@ -15,19 +17,16 @@ var methods = {
 		return this.fromData(JSON.retrocycle(data));
 	},
 	exists() {
-		"use strict";
 		if (this.id == null)
 			return Promise.resolve(false);
 		return queryP("SELECT 1 FROM ?? WHERE ?? = ?", [this.table, this.key, this.id]).then(rows=>rows.length===1);
 	},
 	delete() {
-		"use strict";
 		if (this.id == null)
 			return Promise.resolve(null);
 		return queryP("DELETE FROM ?? WHERE ?? = ?", [this.table, this.key, this.id]).then(({affectedRows:r})=>r?this:null);
 	},
 	pull() {
-		"use strict";
 		if (this.id == null)
 			return Promise.reject(new Error("No model id"));
 		return queryP("SELECT * FROM ?? WHERE ?? = ?", [this.table, this.key, this.id]).then(rows => {
@@ -37,7 +36,6 @@ var methods = {
 		});
 	},
 	pullchildren(classes) {
-		"use strict";
 		if (!classes)
 			classes = this.references || [];
 		if (!classes.length) return Promise.resolve(this);
@@ -58,7 +56,6 @@ var methods = {
 		});
 	},
 	pullchildrenscarce(classes) {
-		"use strict";
 		if (!classes)
 			classes = this.references || [];
 		if (!classes.length) return Promise.resolve(this);
@@ -79,14 +76,12 @@ var methods = {
 		});
 	},
 	pullall() {
-		"use strict";
 		var prom = Promise.all([this.pull(),this.pullchildren()]).then(results=>this);
 		if (this.reference)
 			prom.then(r=>this[this.reference].pull());
 		return prom.then(r=>this);
 	},
 	insert() {
-		"use strict";
 		var row = this.toSQL();
 		if (!Object.keys(row).length)
 			return Promise.reject(new Error("No model fields to insert"));
@@ -104,7 +99,6 @@ var methods = {
 		});
 	},
 	push() {
-		"use strict";
 		var references = this.references || [];
 		var row = this.toSQL();
 		if (!Object.keys(row).length)
@@ -125,7 +119,6 @@ var methods = {
 		return Promise.all([update, ...cull, ...update2]).then(results=>this);
 	},
 	update() {
-		"use strict";
 		var references = this.references;
 		if (references && references.length)
 			return this.exists().then(c => c ? this.push() : this.insert());
@@ -134,7 +127,6 @@ var methods = {
 		return queryP("INSERT INTO ?? SET ? ON DUPLICATE KEY UPDATE ?", [this.table, row, row]).then(result=>this);
 	},
 	push_id(newid) {
-		"use strict";
 		if (typeof newid !== 'number')
 			return Promise.reject(new Error("Model id must be integer"));
 		return queryP("UPDATE ?? SET ?? = ? WHERE ?? = ?", [this.table, this.key, newid, this.key, this.id]).then(result => {
@@ -146,7 +138,6 @@ var methods = {
 	},
 };
 function getchildren() {
-	"use strict";
 	if (!this.references) return;
 	var children = {};
 	for (let c of this.references)
@@ -154,7 +145,6 @@ function getchildren() {
 	return children;
 }
 function setchildren(children) {
-	"use strict";
 	if (!this.references) return;
 	for (let c of this.references) {
 		if (children[c.table])
@@ -167,5 +157,6 @@ var common = stampit({methods, init: function({instance}) {
 		get: getchildren, set: setchildren,
 	});
 }});
+common.mode = 'server';
 
 module.exports = common;

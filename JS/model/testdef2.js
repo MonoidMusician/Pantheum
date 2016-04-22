@@ -1,4 +1,5 @@
 var connection = require('./mysql');
+var Promise = require('bluebird');
 var Definition = require('./model').Definition;
 
 connection.connect();

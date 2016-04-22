@@ -1,6 +1,6 @@
 var connection = require('./mysql');
+var Promise = require('bluebird');
 var model = require('./model');
-var ty = require('then-yield');
 
 
 var parts = {
@@ -83,7 +83,7 @@ model.Depath.add("la", "verb", new model.Depath("verb", {"mood":{
 }}));
 
 connection.connect();
-ty.spawn(function*() {
+Promise.coroutine(function*() {
 	var err;
 	try {
 		var W = model.Word({id: 10176}, true);
@@ -102,4 +102,4 @@ ty.spawn(function*() {
 	}
 	connection.end();
 	if (err) throw err;
-});
+})();

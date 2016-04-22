@@ -1,8 +1,6 @@
 "use strict";
 var should = require('should');
-var connection = require('./mysql');
 var model = require('./model');
-var ty = require('then-yield');
 
 
 var parts = {

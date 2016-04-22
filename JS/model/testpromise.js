@@ -1,5 +1,5 @@
 var connection = require('./mysql');
-var Promise = require('promise');
+var Promise = require('bluebird');
 
 connection.connect();
 var promise = new Promise(function(resolve, reject) {

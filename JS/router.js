@@ -1,6 +1,6 @@
 var express    = require('express');
 var url        = require('url');
-var ty         = require('then-yield');
+var Promise    = require('bluebird');
 var connection = require('./model/mysql');
 var queryP     = require('./model/mysqlpromise');
 var model      = require('./model/model');
@@ -19,7 +19,7 @@ var handle = function(res, err) {
 };
 
 var handler = function(gen) {
-	return ty.async(function*(req, res, next) {
+	return Promise.coroutine(function*(req, res, next) {
 		try {
 			return yield* gen(req, res, next);
 		} catch(err) {
@@ -82,6 +82,16 @@ var li = [];
 				var query = req.queryUrl;
 				res.send(results.map(r=>'<a href="/api/'+M.table+'/'+r.id+'?'+query+'">'+r.id+'</a>').join(', '));
 			} else res.json(results);
+		}));
+
+		tablerouter.route('/_do/:operation')
+		.post(handler(function*(req, res) {
+			var op = req.params.operation;
+			var data = req.body.data;
+			console.log(op, data);
+			var arg = req.body.arg || [];
+			var obj = M().fromData(data);
+			res.json(yield obj[op](...arg));
 		}));
 
 		// Create subrouter for an instance of this model
