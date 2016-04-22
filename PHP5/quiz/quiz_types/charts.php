@@ -130,9 +130,9 @@ class Synopsis extends QuizType {
 				//"perfect/passive",
 				//"subjunctive/pluperfect/passive",
 				//"infinitive/passive",
-				"infinitive/future","infinitive/perfect",
-				"subjunctive/present","subjunctive/perfect",
-				"infinitive/imperfect","infinitive/future-perfect","infinitive/pluperfect",
+				//"infinitive/future","infinitive/perfect",
+				//"subjunctive/present","subjunctive/perfect",
+				"infinitive/imperfect","infinitive/future-perfect","infinitive/pluperfect","infinitive/future/passive",
 				"subjunctive/future","subjunctive/future-perfect",
 			], "this synopsis", $add, $this->translation);
 		}
@@ -220,9 +220,9 @@ class TenseConjugation extends QuizType {
 		"indicative/perfect",
 		"indicative/pluperfect",
 		"indicative/future-perfect",
-		//"subjunctive/present",
+		"subjunctive/present",
 		"subjunctive/imperfect",
-		//"subjunctive/perfect",
+		"subjunctive/perfect",
 		"subjunctive/pluperfect",
 	];
 	public static $tense_names;
@@ -250,11 +250,12 @@ class TenseConjugation extends QuizType {
 			], [
 				//"perfect/passive",
 				//"subjunctive/pluperfect/passive",
-				"infinitive/imperfect","infinitive/perfect","infinitive/pluperfect",
-				"infinitive/passive",
-				"subjunctive/present","subjunctive/perfect",
+				"infinitive/imperfect","infinitive/future-perfect","infinitive/pluperfect",
+				//"infinitive/passive",
+				//"subjunctive/present","subjunctive/perfect",
 				"subjunctive/future", "subjunctive/future-perfect",
-				"infinitive/future", "infinitive/future-perfect",
+				"infinitive/future/passive",
+				//"infinitive/perfect",
 			], "the ".format_path($t), NULL, $this->translation);
 		}
 		return $this->others;
