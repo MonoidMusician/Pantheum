@@ -1,5 +1,3 @@
-var webpack = require('webpack');
-
 module.exports = function(grunt) {
 
 	// Project configuration.
@@ -16,26 +14,6 @@ module.exports = function(grunt) {
 				dest: 'build/model',
 				expand: true,
 			},
-		},
-		webpack: {
-			build: {
-				progress: true,
-				entry: './build/model/pantheum.js',
-				output: {path:'build/',filename:'bundle.js'},
-				module: {
-					loaders: [
-						{ test: /\.json$/, loader: 'json-loader' },
-					],
-				},
-				plugins: [
-					new webpack.IgnorePlugin(/^(cls-bluebird)$/),
-				],
-				externals: {
-					fs: '{}',
-					tls: '{}',
-					net: '{}',
-				},
-			}
 		},
 		browserify: {
 			options: {
@@ -58,7 +36,6 @@ module.exports = function(grunt) {
 		},
 	});
 
-	grunt.loadNpmTasks('grunt-webpack-without-server');
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-babel');
 	grunt.loadNpmTasks('grunt-contrib-uglify');

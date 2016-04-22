@@ -5,7 +5,6 @@
   "license": "GPL-3.0",
   "main": "server.js",
   "dependencies": {
-    "axios": "^0.10.0",
     "body-parser": "^1.15.0",
     "cycle": "^1.0.3",
     "express": "^4.13.4",
@@ -24,6 +23,7 @@
     "should": "^8.3.1"
   },
   "browser": {
+    "./build/model/server.js": "./build/model/client.js",
     "./model/server.js": "./model/client.js"
   }
 }
