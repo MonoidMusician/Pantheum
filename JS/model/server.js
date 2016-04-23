@@ -44,7 +44,7 @@ var methods = {
 			let {table, key} = cls;
 			pulls.push(queryP("SELECT * FROM ?? WHERE ?? = ?", [table, this.key, this.id]).then(rows => {
 				return Promise.all(rows.map(
-					row => cls({id:row[key], cacheacle:this.cacheable}).fromSQL(row)
+					row => cls({id:row[key], cacheable:this.cacheable}).fromSQL(row)
 				)).then(a => ({[table]:a}));
 			}));
 		}

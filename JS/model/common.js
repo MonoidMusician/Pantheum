@@ -1,5 +1,6 @@
+"use strict";
 var stampit = require('stampit');
-var base = require('./server.js') /*/ require('./client.js')/**/;
+var base = require('./server.js'); // require('./client.js') for the client; see package.json
 var cached = require('./cached.js');
 
 var global_enumerable = false;
@@ -35,12 +36,10 @@ function defprop(obj, name, src) {
 		obj[name] = value;
 }
 function defprops(obj, names, src) {
-	"use strict";
 	for (let n of names) defprop(obj, n, src);
 }
 // Set members as enumerable
 function enumerable(obj, names) {
-	"use strict";
 	for (let n of names)
 		Object.defineProperty(obj, n, {enumerable:true});
 	return obj;
@@ -56,14 +55,35 @@ var SelfAware = stampit.init(({ instance, stamp }) => {
 });
 // Compose a full model stamp
 function stamp(stamp) {
-	return stampit.compose(SelfAware, base, stamp, cached);
+	var cls = stampit.compose(SelfAware, base, stamp, cached);
+	cls.fromData = function(...arg) {
+		if (this === cls) return cls().fromData(...arg);
+		return cls().fromData(this, ...arg);
+	};
+	cls.fromData.cacheable = function(cacheable) {
+		if (!cacheable) return cls.fromData;
+		return function(...arg) {
+			if (!this || this === cls) return cls({id:arg[0].id}, true).fromData(...arg);
+			return cls({id:this.id}, cacheable).fromData(this, ...arg);
+		}
+	};
+	cls.fromJSON = function(...arg) {
+		if (this === cls) return cls().fromJSON(...arg);
+		return cls().fromJSON(this, ...arg);
+	};
+	cls.fromJSON.cacheable = function(cacheable) {
+		if (!cacheable) return cls.fromData;
+		return function(...arg) {
+			if (!this || this === cls) return cls({id:arg[0].id}, true).fromJSON(...arg);
+			return cls({id:this.id}, cacheable).fromJSON(this, ...arg);
+		}
+	};
+	return cls;
 }
 // Visit
 function visit(visited, obj, fn) {
-	"use strict";
-	for (let [o,d] of visited) {
+	for (let [o,d] of visited)
 		if (o === obj) return d;
-	}
 	return fn.call(obj, visited);
 }
 function construct(stamp, instance, ...arg) {

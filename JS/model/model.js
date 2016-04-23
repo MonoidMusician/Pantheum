@@ -197,10 +197,16 @@ var model = {};
 			return this.word && this.word.id;
 		},
 		// Required API
-		fromData(data, overwrite) {
+		fromData(data, visited) {
 			for (let d of [...columns, "id"])
-				if (overwrite || data[d] != null)
+				if (data[d] != null)
 					this[d] = data[d];
+
+			// Reconstruct recursive structures
+			if (!visited) visited = [];
+			visited.push([data, this]);
+			this.word = data.word && common.visit(visited, data.word, model.Word.fromData.cacheable(this.cacheable));
+
 			return this;
 		},
 		toData(visited) {
@@ -213,6 +219,7 @@ var model = {};
 			if (!visited) visited = [];
 			visited.push([this, data]);
 			data.word = this.word && (this.word.toData ? common.visit(visited, this.word, this.word.toData) : this.word);
+
 			return data;
 		},
 		fromSQL(row) {
@@ -669,10 +676,16 @@ var model = {};
 			return this.tag && this.tag.toString();
 		},
 		// Required API
-		fromData(data, overwrite) {
+		fromData(data, visited) {
 			for (let d of [...columns, "id", "word", "tag"])
-				if (overwrite || data[d] != null)
+				if (data[d] != null)
 					this[d] = data[d];
+
+			// Reconstruct recursive structures
+			if (!visited) visited = [];
+			visited.push([data, this]);
+			this.word = data.word && common.visit(visited, data.word, model.Word.fromData.cacheable(this.cacheable));
+
 			return this;
 		},
 		toData(visited) {
@@ -685,6 +698,7 @@ var model = {};
 			if (!visited) visited = [];
 			visited.push([this, data]);
 			data.word = this.word && (this.word.toData ? common.visit(visited, this.word, this.word.toData) : this.word);
+
 			return data;
 		},
 		fromSQL(row) {
@@ -758,13 +772,21 @@ var model = {};
 			return this._mgr;
 		},
 		// Required API
-		fromData(data, overwrite) {
+		fromData(data, visited) {
 			for (let d of [...columns, "id"])
-				if (overwrite || data[d] != null)
+				if (data[d] != null)
 					this[d] = data[d];
-			for (let cls of this.references)
-				if (data[cls.table])
-					this[cls.table] = data[cls.table].map(d => cls(d, !!this.cacheable));
+
+			// Reconstruct recursive structures
+			if (!visited) visited = [];
+			visited.push([data, this]);
+			for (let cls of this.references) {
+				if (!data[cls.table]) continue;
+				this[cls.table] = data[cls.table].map(
+					d => common.visit(visited, d, cls.fromData.cacheable(this.cacheable))
+				);
+			}
+
 			return this;
 		},
 		toData(visited) {
@@ -780,6 +802,7 @@ var model = {};
 			for (let c in children)
 				if (children[c])
 					data[c] = children[c].map(d => common.visit(visited, d, d.toData));
+
 			return data;
 		},
 		fromSQL(row) {
@@ -834,7 +857,6 @@ var model = {};
 			common.defprops(instance, [...columns, "id", "mgr"], methods);
 		}
 	});
-
 	model.Word = common.stamp(Word);
 }(model));
 

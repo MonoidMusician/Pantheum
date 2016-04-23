@@ -30,6 +30,9 @@ var cached = stampit({
 				incache() {
 					return this.id in cache;
 				},
+				iscached() {
+					return this.incache() && this.fromcache() === this;
+				},
 				getcache() {
 					return cache;
 				},

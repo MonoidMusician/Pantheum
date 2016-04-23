@@ -68,10 +68,10 @@ var li = [];
 		tablerouter.route('/')
 		.post(handler(function*(req, res) {
 			if (Array.isArray(req.body)) {
-				var inserted = yield Promise.all(req.body.map(d => M().fromData(d).insert()));
+				var inserted = yield Promise.all(req.body.map(d => M.fromJSON.cacheable(true)(d).insert()));
 				res.json(inserted.map(m => m.id));
 			} else {
-				var m = M().fromData(req.body);
+				var m = M.fromJSON.cacheable(true)(req.body);
 				yield m.insert();
 				res.json(m.id);
 			}
@@ -90,8 +90,8 @@ var li = [];
 			var data = req.body.data;
 			console.log(op, data);
 			var arg = req.body.arg || [];
-			var obj = M().fromData(data);
-			res.json(yield obj[op](...arg));
+			var m = M.fromJSON.cacheable(true)(data);
+			res.json(yield m[op](...arg));
 		}));
 
 		// Create subrouter for an instance of this model

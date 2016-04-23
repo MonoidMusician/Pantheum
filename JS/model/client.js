@@ -21,7 +21,7 @@ var methods = {
 	_query_merge(...arg) {
 		return this._query(...arg).then(result =>
 			typeof result === 'object'
-				? Object.assign(this, result)
+				? this.fromJSON(result)
 				: result
 		);
 	},
