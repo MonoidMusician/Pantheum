@@ -91,7 +91,7 @@ var base = stampit({
 
 // Compose a full model stamp
 function stamp(stamp) {
-	var cls = stampit.compose(SelfAware, base, stamp, cached);
+	var cls = stampit.compose(SelfAware, base, implementation, stamp, cached);
 	cls.fromData = function(...arg) {
 		if (this === cls) return cls().fromData(...arg);
 		return cls().fromData(this, ...arg);

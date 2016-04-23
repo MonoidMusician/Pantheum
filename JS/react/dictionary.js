@@ -13,6 +13,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	};
 
 	view.Language = createClass({
+		displayName: 'view.Language',
 		render: function() {
 			var title = this.props.name || languages[this.props.children];
 			return h('sup', {title}, ["[",this.props.children,"]"]);
@@ -38,23 +39,25 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		}
 	});
 	view.WordName = createClass({
+		displayName: 'view.WordName',
 		handleNewValue: function(name) {
 			console.log(name);
 		},
 		render: function() {
 			var classes = ["word-name"];
-			if (this.props.lang)
-				classes.push("format-word-"+this.props.lang);
+			if (this.props.word.lang)
+				classes.push("format-word-"+this.props.word.lang);
 			return view.EditableText.h({
 				disabled: !pantheum.user.administrator,
 				spanClassName: classes.join(" "),
 				onNewValue: this.handleNewValue,
-				value: this.props.name,
-				display: this.props.entry,
+				value: this.props.word.name,
+				display: this.props.word.entry,
 			});
 		}
 	});
 	view.Definitions = createClass({
+		displayName: 'view.Definitions',
 		handleNewValue: function(name) {
 			console.log(name);
 		},
@@ -64,11 +67,11 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 				edit = view.Icon.h({type:"del"});
 			return h('ol', this.props.definitions.map(function(def, key) {
 				return h('li', {key}, [
-					view.Language.h("en"),
+					view.Language.h(def.lang),
 					view.EditableText.h({
 						disabled: !pantheum.user.administrator,
 						onNewValue: this.handleNewValue,
-						value: def,
+						value: def.value && def.value.split('\n').join(', '),
 					}),
 					edit
 				]);
@@ -76,30 +79,34 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		}
 	});
 	view.EntryName = createClass({
+		displayName: 'view.EntryName',
 		render: function() {
-			return h('span', [view.Language.h(this.props.lang), view.WordName.h(this.props)]);
+			return h('span', [view.Language.h(this.props.word.lang), view.WordName.h(this.props)]);
 		}
 	});
 	view.Wiktionary = createClass({
+		displayName: 'view.Wiktionary',
 		render: function() {
 			// TODO: slugify (transform æ, œ, macrons....)
 			return h('a', {
-				href: "http://en.wiktionary.org/wiki/"+this.props.name+"#"+languages[this.props.lang],
+				href: "http://en.wiktionary.org/wiki/"+this.props.word.name+"#"+languages[this.props.word.lang],
 				target: "_blank"
 			}, this.props.text||"Wiktionary");
 		}
 	});
 	view.LewisShort = createClass({
+		displayName: 'view.LewisShort',
 		render: function() {
-			if (this.props.lang != 'la') return h('span');
+			if (this.props.word.lang != 'la') return h('span');
 			// TODO: slugify (transform æ, œ, macrons....)
 			return h('span', [' – ', h('a', {
-				href: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry="+this.props.name,
+				href: "http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry="+this.props.word.name,
 				target: "_blank"
-			}, this.props.text||"Lewis & Short")]);
+			}, this.props.word.text||"Lewis & Short")]);
 		}
 	});
 	view.PronunciationTool = createClass({
+		displayName: 'view.PronunciationTool',
 		transform: la_ipa.transforms["IPA transcription"],
 		getInitialState: function() {
 			return {value: ""};
@@ -115,6 +122,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		}
 	});
 	view.Entry = createClass({
+		displayName: 'view.Entry',
 		getInitialState: function() {
 			return {toolsOpen: false};
 		},
@@ -147,33 +155,30 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 				" ",
 				view.Attributes.h(this.props),
 				...tools,
-				view.Definitions.h({definitions:this.props.definitions})
+				view.Definitions.h({definitions:this.props.word.definitions})
 			]);
 		}
 	});
 	var word = {
 		id: 10176,
-		lang: "la",
-		name: "sum",
 		entry: "sum, esse, fui", // TODO: should be calculated from spart and forms (and attrs)
-		spart: "verb",
 		attrs: {
 			common:true,
 			copulative:true,
 			irregular:true,
 			transitive:false
 		},
-		definitions: ["be, exist"],
-		forms: {},
 	};
+	view.word = word = pantheum.model.Word(word, true);
+	console.log(word.mgr);
 	word.onAttrDelete = function(tag, value) {
 		delete word.attrs[tag];
 		view.render();
 	};
 	view.render = function() {
-		ReactDOM.render(
-			view.Entry.h(word),
+		word.pullall().then(w=>ReactDOM.render(
+			view.Entry.h({word}),
 			document.getElementById('dictionary')
-		);
+		));
 	};
 })(pantheum.view);

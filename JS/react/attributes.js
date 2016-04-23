@@ -14,6 +14,7 @@
 			return view.Icon.h.small.del(props);
 	};
 	view.Attribute = createClass({
+		displayName: 'view.Attribute',
 		delete_API: function() {
 			var {tag, value, id, onDelete} = this.props;
 			$.get(pantheum.api_path+'add-attributes.php',
@@ -130,25 +131,27 @@
 	}
 
 	view.Attributes = createClass({
+		displayName: 'view.Attributes',
 		handleNewValue: function(value) {
 			console.log(value);
 		},
 		render: function() {
 			var props = {
-				id: this.props.id,
+				word: this.props.word,
+				id: this.props.word.id,
 				onDelete: this.props.onAttrDelete,
 			};
 			var spart = view.EditableText.h({
 				key:0, disabled: !pantheum.user.administrator,
-				value: this.props.spart,
+				value: this.props.word.spart,
 				onNewValue: this.handleNewValue,
 			});
 			var attrs = [spart];
-			if (!Array.isArray(this.props.attrs)) {
-				$.each(this.props.attrs, function(key, value) {
+			if (!Array.isArray(this.props.word.attrs)) {
+				$.each(this.props.word.attrs, function(key, value) {
 					attrs.push(key+'='+value);
 				})
-			} else attrs.push(...this.props.attrs);
+			} else attrs.push(...this.props.word.attrs);
 			if (pantheum.user.administrator) attrs.push(view.Icon.h.add({key:attrs.length}));
 			attrs = attrs.map(view.create_attribute(props));
 			return h('span', ['(', ...intersperse(attrs, '; '), ')']);

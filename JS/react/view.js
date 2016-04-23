@@ -16,6 +16,7 @@
 	};
 
 	view.Input = createClass({
+		displayName: 'view.Input',
 		componentDidMount: function() {
 			var input = $dom(this);
 			if (this.props.autoSize)
@@ -31,6 +32,7 @@
 	});
 
 	view.EditableText = createClass({
+		displayName: 'view.EditableText',
 		getInitialState: function() {
 			return {editing: false, value: this.props.value, initial: this.props.value};
 		},
@@ -82,6 +84,7 @@
 	});
 
 	view.Abbreviation = createClass({
+		displayName: 'view.Abbreviation',
 		render: function() {
 			return h('abbr', {title:this.props.title}, this.props.children);
 		},
@@ -117,6 +120,7 @@
 	};
 
 	view.Icon = createClass({
+		displayName: 'view.Icon',
 		render: function() {
 			var glyph = {
 				"edit": "pencil",

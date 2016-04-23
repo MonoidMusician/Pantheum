@@ -198,14 +198,14 @@ var model = {};
 		},
 		// Required API
 		fromData(data, visited) {
-			for (let d of [...columns, "id"])
-				if (data[d] != null)
-					this[d] = data[d];
-
 			// Reconstruct recursive structures
 			if (!visited) visited = [];
 			visited.push([data, this]);
 			this.word = data.word && common.visit(visited, data.word, model.Word.fromData.cacheable(this.cacheable));
+
+			for (let d of [...columns, "id"])
+				if (data[d] != null)
+					this[d] = data[d];
 
 			return this;
 		},
@@ -677,14 +677,14 @@ var model = {};
 		},
 		// Required API
 		fromData(data, visited) {
-			for (let d of [...columns, "id", "word", "tag"])
-				if (data[d] != null)
-					this[d] = data[d];
-
 			// Reconstruct recursive structures
 			if (!visited) visited = [];
 			visited.push([data, this]);
 			this.word = data.word && common.visit(visited, data.word, model.Word.fromData.cacheable(this.cacheable));
+
+			for (let d of [...columns, "id", "word", "tag"])
+				if (data[d] != null)
+					this[d] = data[d];
 
 			return this;
 		},
