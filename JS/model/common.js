@@ -1,7 +1,8 @@
 "use strict";
 var stampit = require('stampit');
-var base = require('./server.js'); // require('./client.js') for the client; see package.json
+var implementation = require('./server.js'); // require('./client.js') for the client; see package.json
 var cached = require('./cached.js');
+var cycle = require('cycle');
 
 var global_enumerable = false;
 // Define default setters/getters for [name] using this['_'+name]
@@ -48,11 +49,46 @@ function enumerable(obj, names) {
 function methods(methods) {
 	return enumerable(methods, ['toData','fromData','toSQL','fromSQL']);
 }
+
 var SelfAware = stampit.init(({ instance, stamp }) => {
 	if (!stamp.fixed.methods.getStamp) { // Avoid adding the same method to the prototype twice.
 		stamp.fixed.methods.getStamp = () => stamp;
 	}
 });
+
+function getchildren() {
+	"use strict";
+	if (!this.references) return;
+	var children = {};
+	for (let c of this.references)
+		children[c.table] = this[c.table];
+	return children;
+}
+function setchildren(children) {
+	"use strict";
+	if (!this.references) return;
+	for (let c of this.references) {
+		if (children[c.table])
+			this[c.table] = children[c.table];
+	}
+}
+var base = stampit({
+	methods: {
+		toJSON(...arg) {
+			return cycle.decycle(this.toData(...arg));
+		},
+		fromJSON(data) {
+			return this.fromData(cycle.retrocycle(data));
+		},
+	},
+	init: ({instance}) => {
+		Object.defineProperty(instance, 'children', {
+			enumerable: true, configurable: true,
+			get: getchildren, set: setchildren,
+		});
+	}
+});
+
 // Compose a full model stamp
 function stamp(stamp) {
 	var cls = stampit.compose(SelfAware, base, stamp, cached);

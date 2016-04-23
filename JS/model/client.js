@@ -1,7 +1,6 @@
 "use strict";
 var stampit = require('stampit');
 var queryAPI = require('./queryAPI.js');
-var cycle = require('cycle');
 
 // Each derive class must have
 //  - table Table name in database
@@ -9,12 +8,6 @@ var cycle = require('cycle');
 //  - id    ID value for instance
 //  - references
 var methods = {
-	toJSON(...arg) {
-		return cycle.decycle(this.toData(...arg));
-	},
-	fromJSON(data) {
-		return this.fromData(cycle.retrocycle(data));
-	},
 	_query(method, ...arg) {
 		return queryAPI({data:this.toJSON(), arg}, this.table, '_do', method);
 	},
@@ -75,28 +68,6 @@ var methods = {
 		});
 	},*/
 };
-function getchildren() {
-	"use strict";
-	if (!this.references) return;
-	var children = {};
-	for (let c of this.references)
-		children[c.table] = this[c.table];
-	return children;
-}
-function setchildren(children) {
-	"use strict";
-	if (!this.references) return;
-	for (let c of this.references) {
-		if (children[c.table])
-			this[c.table] = children[c.table];
-	}
-}
-var common = stampit({methods, init: function({instance}) {
-	Object.defineProperty(instance, 'children', {
-		enumerable: true, configurable: true,
-		get: getchildren, set: setchildren,
-	});
-}});
-common.mode = 'client';
+var common = stampit({methods});
 
 module.exports = common;
