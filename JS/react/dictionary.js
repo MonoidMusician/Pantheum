@@ -85,18 +85,21 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			}));
 		}
 	});
-	view.create_table = function(data, noheader, props) {
+
+	var autokey = (el, i) => typeof el === 'undefined' ? i : el.key || el;
+	view.create_table = function(data, {noheader}, props) {
 		var rows = data.map(
-			(row, key) => React.isValidElement(row) ? row :
-				h('tr', {key}, row.map(
+			(row, i) => React.isValidElement(row) ? row :
+				h('tr', {key:i}, row.map(
 					(el, k) => React.isValidElement(el) && (['td','th'].includes(el.type)) ? el :
-						el !== undefined ? h(key || noheader ? 'td' : 'th', {k}, el) : el
+						el !== undefined ? h(i || noheader ? 'td' : 'th', {key:autokey(el, k)}, el) : el
 				))
 		);
 		return h('table', props||{}, [h('tbody', rows)]);
 	};
-	view.create_table.merge_vertical = function(data, noheader, ...arg) {
-		var rest, [header, ...rest] = data;
+	view.create_table.merge_vertical = function(data, options, ...arg) {
+		var {noheader} = options;
+		var header = data.slice(0, +!noheader), rest = data.slice(+!noheader);
 		var nrows = (i,start,v) => {
 			if (!start) start = 0;
 			if (!v) var v = rest[start][i];
@@ -110,22 +113,31 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 				if (rest[start-1][i] != rest[start][i]) return true;
 			return false;
 		};
-		console.log(header, rest, nrows(0), nrows(1), nrows(2), nrows(3), nrows(3, nrows(3)));
-		data = [header, ...rest.map(
+		data = header.concat(rest.map(
 			(row, j) =>
-				row.map((el, i) => keep(i, j) ? h('td', {key:i, rowSpan: nrows(i, j, el)}, el) : undefined)
-		)];
-		console.log(data);
-		return view.create_table(data, noheader, ...arg);
+				row.map((el, i) => {
+					if (!keep(i, j)) return;
+					return h('td', {key:autokey(el, i), rowSpan: nrows(i, j, el)}, el)
+				})
+		));
+		return view.create_table(data, options, ...arg);
 	};
 	view.Inflection = createClass({
 		displayName: 'view.Inflection',
+		getInitialState: function() {
+			return {onlyleaves:false};
+		},
+		handleCheckbox: function({target: {checked: onlyleaves}}) {
+			this.setState({onlyleaves});
+		},
 		render: function() {
 			var edit;
 			if (pantheum.user.administrator)
 				edit = view.Icon.h({type:"del"});
+			var {onlyleaves} = this.state;
 			var mgr = this.props.mgr;
 			var sorted = model.Path.sort(this.props.forms);
+			if (onlyleaves) sorted = sorted.filter((form, i) => i===sorted.length-1 || !sorted[i+1].issub(form));
 			var rows = [
 				mgr.all_sub_keys.concat(['value']),
 				...sorted.map(
@@ -134,11 +146,18 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 							disabled: !pantheum.user.administrator,
 							onNewValue: this.handleNewValue,
 							value: form.value && form.value.split('\n').join(', '),
+							key: form.value,
 						})
 					])
 				)
 			];
-			return view.create_table.merge_vertical(rows, false, {className:'inflection'});
+			return h('div', [
+				view.Checkbox.h({
+					checked: this.state.onlyleaves,
+					onChange: this.handleCheckbox,
+				}, 'Show only leaf nodes'),
+				view.create_table.merge_vertical(rows, {}, {className:'inflection'}),
+			]);
 		}
 	});
 	view.EntryName = createClass({
@@ -213,13 +232,13 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 				];
 			}
 			return h('section', {id:this.id}, [
-				h('hr'),
 				view.EntryName.h(this.props),
 				" ",
 				view.Attributes.h(this.props),
 				...tools,
 				view.Definitions.h({definitions:this.props.word.definitions}),
-				view.Inflection.h({forms:this.props.word.forms, mgr:this.props.word.mgr})
+				view.Inflection.h({forms:this.props.word.forms, mgr:this.props.word.mgr}),
+				h('hr'),
 			]);
 		}
 	});

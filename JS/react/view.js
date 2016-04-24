@@ -31,6 +31,22 @@
 		}
 	});
 
+	view.Checkbox = createClass({
+		displayName: 'view.Checkbox',
+		getInitialState: function() {
+			var id = this.props.id || view.Checkbox.newid();
+			return {id};
+		},
+		render: function() {
+			var id = this.state.id;
+			return h('span', [h('input', {...this.props, id, type:'checkbox'}), h('label', {htmlFor:id}, this.props.children)]);
+		},
+	});
+	view.Checkbox.newid = function() {
+		if (!this.id) this.id = 0;
+		return 'checkbox-'+this.id++;
+	};
+
 	view.EditableText = createClass({
 		displayName: 'view.EditableText',
 		getInitialState: function() {
