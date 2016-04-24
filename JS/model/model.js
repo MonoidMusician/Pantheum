@@ -637,6 +637,14 @@ var model = {};
 	Path.normalize = function normalize(mgr, tag) {
 		return Path({mgr,tag}).toString();
 	};
+	Path.sort = function(list) {
+		if (!list||!list.length) return list;
+		var sorted = [];
+		sorted.length = list[0].mgr.length;
+		for (let f of list)
+			sorted[f.ord()] = f;
+		return sorted.filter(Boolean);
+	};
 	Object.defineProperty(Path, 'FLAT_STORAGE', {
 		get: function() {return FLAT_STORAGE},
 		set: function(v) {FLAT_STORAGE = v},

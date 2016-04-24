@@ -1,6 +1,6 @@
 Plugins.AutosizeInput.getDefaultOptions().space = 30;
 
-(function(view) {
+(function({view, model}) {
 	"use strict";
 	var languages = {
 		"la": "Latin",
@@ -58,24 +58,87 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	});
 	view.Definitions = createClass({
 		displayName: 'view.Definitions',
-		handleNewValue: function(name) {
-			console.log(name);
+		handleNewValue: function(id) {
+			return (name) => {
+				console.log(name);
+			};
 		},
 		render: function() {
 			var edit;
 			if (pantheum.user.administrator)
 				edit = view.Icon.h({type:"del"});
-			return h('ol', this.props.definitions.map(function(def, key) {
+			return h('ol', this.props.definitions.map((def, key) => {
+				var tag = def.form_tag;
 				return h('li', {key}, [
 					view.Language.h(def.lang),
+					tag && '(',
+					tag && tag,
+					tag && def.tag.value && ' “'+def.tag.value+'”',
+					tag && ') ',
 					view.EditableText.h({
 						disabled: !pantheum.user.administrator,
-						onNewValue: this.handleNewValue,
-						value: def.value && def.value.split('\n').join(', '),
+						onNewValue: this.handleNewValue(def.id),
+						value: def.value.split('\n').join(', '),
 					}),
 					edit
 				]);
-			}, this));
+			}));
+		}
+	});
+	view.create_table = function(data, noheader, props) {
+		var rows = data.map(
+			(row, key) => React.isValidElement(row) ? row :
+				h('tr', {key}, row.map(
+					(el, k) => React.isValidElement(el) && (['td','th'].includes(el.type)) ? el :
+						el !== undefined ? h(key || noheader ? 'td' : 'th', {k}, el) : el
+				))
+		);
+		return h('table', props||{}, [h('tbody', rows)]);
+	};
+	view.create_table.merge_vertical = function(data, noheader, ...arg) {
+		var rest, [header, ...rest] = data;
+		var nrows = (i,start,v) => {
+			if (!start) start = 0;
+			if (!v) var v = rest[start][i];
+			for (var j=start; j<rest.length; j++)
+				if (rest[j][i] != v) break;
+			return i ? Math.min(j-start, nrows(i-1,start)) : j-start;
+		};
+		var keep = (i,start) => {
+			if (!start) return true;
+			for (i; i>=0; i--)
+				if (rest[start-1][i] != rest[start][i]) return true;
+			return false;
+		};
+		console.log(header, rest, nrows(0), nrows(1), nrows(2), nrows(3), nrows(3, nrows(3)));
+		data = [header, ...rest.map(
+			(row, j) =>
+				row.map((el, i) => keep(i, j) ? h('td', {key:i, rowSpan: nrows(i, j, el)}, el) : undefined)
+		)];
+		console.log(data);
+		return view.create_table(data, noheader, ...arg);
+	};
+	view.Inflection = createClass({
+		displayName: 'view.Inflection',
+		render: function() {
+			var edit;
+			if (pantheum.user.administrator)
+				edit = view.Icon.h({type:"del"});
+			var mgr = this.props.mgr;
+			var sorted = model.Path.sort(this.props.forms);
+			var rows = [
+				mgr.all_sub_keys.concat(['value']),
+				...sorted.map(
+					(form, key) => mgr.all_sub_keys.map(k=>form.key_value(k)).concat([
+						view.EditableText.h({
+							disabled: !pantheum.user.administrator,
+							onNewValue: this.handleNewValue,
+							value: form.value && form.value.split('\n').join(', '),
+						})
+					])
+				)
+			];
+			return view.create_table.merge_vertical(rows, false, {className:'inflection'});
 		}
 	});
 	view.EntryName = createClass({
@@ -155,7 +218,8 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 				" ",
 				view.Attributes.h(this.props),
 				...tools,
-				view.Definitions.h({definitions:this.props.word.definitions})
+				view.Definitions.h({definitions:this.props.word.definitions}),
+				view.Inflection.h({forms:this.props.word.forms, mgr:this.props.word.mgr})
 			]);
 		}
 	});
@@ -170,7 +234,6 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		},
 	};
 	view.word = word = pantheum.model.Word(word, true);
-	console.log(word.mgr);
 	word.onAttrDelete = function(tag, value) {
 		delete word.attrs[tag];
 		view.render();
@@ -181,4 +244,4 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			document.getElementById('dictionary')
 		));
 	};
-})(pantheum.view);
+})(pantheum);
