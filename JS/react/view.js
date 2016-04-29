@@ -31,20 +31,140 @@
 		}
 	});
 
+	/*
+	.squaredFour {
+		width: 20px;
+		margin: 20px auto;
+		position: relative;
+	}
+
+	.squaredFour label {
+		cursor: pointer;
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		top: 0;
+		border-radius: 4px;
+
+		-webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+		-moz-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+		box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+		background: #fcfff4;
+
+		background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+		background: -moz-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+		background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+		background: -ms-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+		background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#b3bead',GradientType=0 );
+	}
+
+	.squaredFour label:after {
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+		filter: alpha(opacity=0);
+		opacity: 0;
+		content: '';
+		position: absolute;
+		width: 9px;
+		height: 5px;
+		background: transparent;
+		top: 4px;
+		left: 4px;
+		border: 3px solid #333;
+		border-top: none;
+		border-right: none;
+
+		-webkit-transform: rotate(-45deg);
+		-moz-transform: rotate(-45deg);
+		-o-transform: rotate(-45deg);
+		-ms-transform: rotate(-45deg);
+		transform: rotate(-45deg);
+	}
+
+	.squaredFour label:hover::after {
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+		filter: alpha(opacity=30);
+		opacity: 0.5;
+	}
+
+	.squaredFour input[type=checkbox]:checked + label:after {
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+		filter: alpha(opacity=100);
+		opacity: 1;
+	}
+	*/
 	view.Checkbox = createClass({
 		displayName: 'view.Checkbox',
 		getInitialState: function() {
 			var id = this.props.id || view.Checkbox.newid();
-			return {id};
+			return {id, hover:false, focus:false};
+		},
+		handleMouseEnter: function() {
+			this.setState({hover:true});
+		},
+		handleMouseLeave: function() {
+			this.setState({hover:false});
+		},
+		handleFocus: function() {
+			this.setState({focus:true});
+		},
+		handleBlur: function() {
+			this.setState({focus:false});
 		},
 		render: function() {
 			var id = this.state.id;
-			return h('span', [h('input', {...this.props, id, type:'checkbox'}), h('label', {htmlFor:id}, this.props.children)]);
+			var divstyle = {
+				width: 20,
+				position: 'relative',
+				outline: 0,
+			};
+			var inputstyle = {
+				visibility: 'hidden',
+			};
+			var labelstyle = {
+				cursor: 'pointer',
+				position: 'absolute',
+				top: 0,
+				left: 0,
+				width: 20,
+				height: 20,
+				borderRadius: 4,
+				outline: 0,
+				boxShadow: 'inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5)',
+				background: 'linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%)',
+			};
+			var border = '3px solid '+(this.state.focus ? '#C33' : '#333');
+			var afterstyle = {
+				cursor: 'pointer',
+				opacity: this.props.checked ? 1 : (this.state.hover || this.state.focus ? 0.5 : 0),
+				position: 'absolute',
+				width: 9,
+				height: 5,
+				background: 'transparent',
+				top: 4,
+				left: 4,
+				borderLeft: border,
+				borderBottom: border,
+				transform: 'rotate(-45deg)',
+			};
+			return h('label', {
+				style: divstyle,
+				onMouseEnter: this.handleMouseEnter,
+				onMouseLeave: this.handleMouseLeave,
+				onFocus: this.handleFocus,
+				onBlur: this.handleBlur,
+				tabIndex: 0,
+			}, [
+				h('input', {...this.props, id, type:'checkbox', style:inputstyle}),
+				h('span', {style:labelstyle}),
+				h('a', {style:afterstyle}),
+				h('span', this.props.children)
+			]);
 		},
 	});
 	view.Checkbox.newid = function() {
 		if (!this.id) this.id = 0;
-		return 'checkbox-'+this.id++;
+		return 'react-checkbox-'+this.id++;
 	};
 
 	view.EditableText = createClass({
@@ -138,22 +258,7 @@
 	view.Icon = createClass({
 		displayName: 'view.Icon',
 		render: function() {
-			var glyph = {
-				"edit": "pencil",
-				"refresh": "reload",
-				"hardlink": "link-intact",
-				"del": "trash",
-				"tools": "wrench",
-				"rename": "text",
-				"change POS": "compass", // FIXME
-				"&lt;&lt;": "media-skip-backward",
-				"&lt;": "media-step-backward",
-				"&gt;": "media-step-forward",
-				"&gt;&gt;": "media-skip-forward",
-				"visibility": "eye",
-				"add": "plus",
-			};
-			glyph = glyph[this.props.type];
+			var glyph = view.Icon.glyphs[this.props.type];
 			var classes = this.props.className || [];
 			if (typeof classes === 'string') classes = classes.split(" ");
 			classes.push('oi', 'inline', 'spaced');
@@ -186,19 +291,32 @@
 			});
 		}
 	});
-	var iconproxy = {
-		get: function(target, name) {
-			if (name in target) return target[name];
-			return function(props, children) {
-				props.type = name;
-				return target(props, children);
-			}
-		}
+	view.Icon.glyphs = {
+		"edit": "pencil",
+		"refresh": "reload",
+		"hardlink": "link-intact",
+		"del": "trash",
+		"tools": "wrench",
+		"rename": "text",
+		"change POS": "compass", // FIXME
+		"&lt;&lt;": "media-skip-backward",
+		"&lt;": "media-step-backward",
+		"&gt;": "media-step-forward",
+		"&gt;&gt;": "media-skip-forward",
+		"visibility": "eye",
+		"add": "plus",
 	};
 	view.Icon.h.small = function(props, children) {
 		props.small = true;
 		return view.Icon.h(props, children);
 	};
-	view.Icon.h.small = new Proxy(view.Icon.h.small, iconproxy);
-	view.Icon.h = new Proxy(view.Icon.h, iconproxy);
+	for (let fn of [view.Icon.h.small, view.Icon.h]) {
+		for (let type in view.Icon.glyphs) {
+			if (!/^[$_a-zA-Z][$_a-zA-Z0-9]*$/.test(type)) continue;
+			fn[type] = function(props, children) {
+				props = {...props, type: type};
+				return fn(props, children);
+			};
+		}
+	}
 })(pantheum.view);
