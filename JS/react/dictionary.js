@@ -127,7 +127,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		getInitialState: function() {
 			return {onlyleaves:false};
 		},
-		handleCheckbox: function({target: {checked: onlyleaves}}) {
+		handleCheckbox: function(onlyleaves) {
 			this.setState({onlyleaves});
 		},
 		render: function() {

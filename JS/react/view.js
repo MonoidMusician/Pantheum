@@ -111,6 +111,17 @@
 		handleBlur: function() {
 			this.setState({focus:false});
 		},
+		handleKeyPress: function(event) {
+			var key = event.which;
+			if (key === 13 || key === 32) {
+				if (this.props.onChange)
+					this.props.onChange(!this.props.checked);
+				return event.preventDefault();
+			}
+		},
+		handleChange: function({target: {checked}}) {
+			this.props.onChange(checked);
+		},
 		render: function() {
 			var id = this.state.id;
 			var divstyle = {
@@ -153,9 +164,11 @@
 				onMouseLeave: this.handleMouseLeave,
 				onFocus: this.handleFocus,
 				onBlur: this.handleBlur,
+				onMouseUp: this.handleBlur,
+				onKeyPress: this.handleKeyPress,
 				tabIndex: 0,
 			}, [
-				h('input', {...this.props, id, type:'checkbox', style:inputstyle}),
+				h('input', {...this.props, onChange: this.handleChange, id, type:'checkbox', style:inputstyle}),
 				h('span', {style:labelstyle}),
 				h('a', {style:afterstyle}),
 				h('span', this.props.children)
