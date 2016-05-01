@@ -1,0 +1,24 @@
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_R.woff);
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RB.woff);
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RI.woff);
+    font-style: italic;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RBI.woff);
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: "Tengwar";
+    src: url(/Fonts/tengtelc.ttf);
+}

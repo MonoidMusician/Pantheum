@@ -7,17 +7,20 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<?php sro('/Includes/head.php'); ?>
 		<title>Playground | Latin</title>
-		<?php sro('/Includes/css.php'); ?>
+		<link rel="stylesheet" type="text/css" href="/CSS/react.css">
+		<link rel="stylesheet" type="text/css" href="/Images/open-iconic/font/css/open-iconic.css">
 		<?php sro('/Includes/js.php'); ?>
-		<?php sro('/Includes/jsx.php'); ?>
+		<script type="text/javascript" src="/JS/build/model.js"></script>
+		<script type="text/javascript" src="/JS/build/react.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+		<script type="text/babel" src="/JS/react/view.js"></script>
+		<script type="text/babel" src="/JS/react/attributes.js"></script>
+		<script type="text/babel" src="/JS/react/dictionary.js"></script>
 	</head>
 	<body>
-		<?php sro('/Includes/header.php'); ?>
 		<section id="content">
 			<?php sro('/Pages/playground.php'); ?>
 		</section>
-		<?php sro('/Includes/footer.php'); ?>
 	</body>
 </html>

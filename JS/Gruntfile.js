@@ -21,8 +21,10 @@ module.exports = function(grunt) {
 				ignore: ['cls-bluebird'],
 			},
 			build: {
-				src: 'build/model/pantheum.js',
-				dest: 'build/model.js',
+				files: {
+					'build/model.js': 'build/model/pantheum.js',
+					'build/react.js': 'react/pantheum.js',
+				}
 			},
 		},
 		uglify: {
@@ -32,6 +34,7 @@ module.exports = function(grunt) {
 			build: {
 				files: {
 					'build/model.min.js': 'build/model.js',
+					'build/react.min.js': 'build/react.js',
 				},
 			},
 		},

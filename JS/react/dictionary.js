@@ -11,6 +11,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		r.h = h.bind(undefined, r);
 		return r;
 	};
+	var createClassR = c => Radium(createClass(c));
 
 	view.Language = createClass({
 		displayName: 'view.Language',
@@ -154,7 +155,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			return h('div', [
 				view.Checkbox.h({
 					checked: this.state.onlyleaves,
-					onChange: this.handleCheckbox,
+					onNewValue: this.handleCheckbox,
 				}, 'Show only leaf nodes'),
 				view.create_table.merge_vertical(rows, {}, {className:'inflection'}),
 			]);
@@ -193,8 +194,8 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		getInitialState: function() {
 			return {value: ""};
 		},
-		handleChange: function(event) {
-			this.setState({value: event.target.value});
+		handleChange: function({target: {value}}) {
+			this.setState({value});
 		},
 		render: function() {
 			return h('span', [

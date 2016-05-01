@@ -9,6 +9,8 @@
     "cycle": "^1.0.3",
     "express": "^4.13.4",
     "mysql": "^2.10.2",
+    "react": "^15.0.2",
+    "react-dom": "^15.0.2",
     "request-promise": "^3.0.0",
     "stampit": "^2.1.1",
     "url": "^0.11.0"

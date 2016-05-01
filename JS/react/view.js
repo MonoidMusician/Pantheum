@@ -5,6 +5,7 @@
 		r.h = h.bind(undefined, r);
 		return r;
 	};
+	var createClassR = c => Radium(createClass(c));
 	var propsdata = function(props, data) {
 		for (let p in data) {
 			props["data-"+p] = data[p];
@@ -26,8 +27,15 @@
 			if (this.props.autoSelect)
 				input[0].select();
 		},
+		handleChange: function(event) {
+			if (this.props.onChange)
+				this.props.onChange(event);
+			var {target: {value}} = event;
+			if (this.props.onNewValue)
+				this.props.onNewValue(value);
+		},
 		render: function() {
-			return h('input', this.props);
+			return h('input', {...this.props, onChange: this.handleChange});
 		}
 	});
 
@@ -96,34 +104,36 @@
 	view.Checkbox = createClass({
 		displayName: 'view.Checkbox',
 		getInitialState: function() {
-			var id = this.props.id || view.Checkbox.newid();
-			return {id, hover:false, focus:false};
+			return {hover:false, focus:false};
 		},
-		handleMouseEnter: function() {
+		enter: function() {
 			this.setState({hover:true});
 		},
-		handleMouseLeave: function() {
+		leave: function() {
 			this.setState({hover:false});
 		},
-		handleFocus: function() {
+		focus: function() {
 			this.setState({focus:true});
 		},
-		handleBlur: function() {
+		blur: function() {
 			this.setState({focus:false});
 		},
 		handleKeyPress: function(event) {
-			var key = event.which;
+			var {which:key} = event;
 			if (key === 13 || key === 32) {
-				if (this.props.onChange)
-					this.props.onChange(!this.props.checked);
+				if (this.props.onNewValue)
+					this.props.onNewValue(!this.props.checked);
 				return event.preventDefault();
 			}
 		},
-		handleChange: function({target: {checked}}) {
-			this.props.onChange(checked);
+		handleChange: function(event) {
+			if (this.props.onChange)
+				this.props.onChange(event);
+			var {target: {checked}} = event;
+			if (this.props.onNewValue)
+				this.props.onNewValue(checked);
 		},
 		render: function() {
-			var id = this.state.id;
 			var divstyle = {
 				width: 20,
 				position: 'relative',
@@ -131,6 +141,7 @@
 			};
 			var inputstyle = {
 				visibility: 'hidden',
+				marginLeft: '10px',
 			};
 			var labelstyle = {
 				cursor: 'pointer',
@@ -160,52 +171,68 @@
 			};
 			return h('label', {
 				style: divstyle,
-				onMouseEnter: this.handleMouseEnter,
-				onMouseLeave: this.handleMouseLeave,
-				onFocus: this.handleFocus,
-				onBlur: this.handleBlur,
-				onMouseUp: this.handleBlur,
+				onMouseEnter: this.enter,
+				onMouseLeave: this.leave,
+				onFocus: this.focus,
+				onBlur: this.blur,
+				onMouseUp: this.blur,
 				onKeyPress: this.handleKeyPress,
 				tabIndex: 0,
 			}, [
-				h('input', {...this.props, onChange: this.handleChange, id, type:'checkbox', style:inputstyle}),
+				h('input', {...this.props, onChange: this.handleChange, type:'checkbox', style:inputstyle}),
 				h('span', {style:labelstyle}),
 				h('a', {style:afterstyle}),
 				h('span', this.props.children)
 			]);
 		},
 	});
-	view.Checkbox.newid = function() {
-		if (!this.id) this.id = 0;
-		return 'react-checkbox-'+this.id++;
-	};
 
 	view.EditableText = createClass({
 		displayName: 'view.EditableText',
 		getInitialState: function() {
-			return {editing: false, value: this.props.value, initial: this.props.value};
+			return {
+				initial: this.props.value,
+				value: this.props.value,
+				editing: false,
+				focused: false,
+				wasfocused: false,
+			};
 		},
-		handleClick: function(event) {
+		toggle: function() {
 			this.setState({editing: !this.state.editing});
 		},
-		handleChange: function(event) {
-			this.setState({value: event.target.value});
+		edit: function() {
+			this.setState({editing: true, wasfocused: this.state.focused||true});
 		},
-		handleKeyUp: function(event) {
-			var key = event.which;
-			if (key === 13) this.done();
-			else if (key === 27) this.cancel();
+		set: function(value) {
+			this.setState({value});
 		},
-		done: function(event) {
+		done: function() {
 			if (!this.state.value) return;
 			this.setState({editing: false, initial: this.state.value});
 			this.props.onNewValue(this.state.value);
 		},
-		cancel: function(event) {
+		cancel: function() {
 			this.setState({editing: false, value: this.state.initial});
+		},
+		focus: function() {
+			this.setState({focused: true});
+		},
+		blur: function() {
+			this.setState({focused: false});
+		},
+		handleKeyUp: function({which: key}) {
+			if (key === 13 || key === 32) this.done();
+			else if (key === 27) this.cancel();
+		},
+		componentDidUpdate: function(){
+			//console.log('wasfocused:', this.state.wasfocused, this._edit && ReactDOM.findDOMNode(this._edit));
+			if (this.wasfocused && this._edit)
+				ReactDOM.findDOMNode(this._edit).focus();
 		},
 		render: function() {
 			var text = this.props.display || this.state.value;
+			this._edit = null;
 			if (this.props.disabled) {
 				var props = Object.assign({}, this.props);
 				if (props.spanClassName) props.className = props.spanClassName;
@@ -216,8 +243,13 @@
 				var props = Object.assign({}, this.props);
 				if (props.spanClassName) props.className = props.spanClassName;
 				delete props.spanClassName;
-				props.onClick = this.handleClick;
-				return h('span', props, [text, view.Icon.h.small({type:"edit"})]);
+				props.onClick = this.edit;
+				return h('span', props, [
+					text,
+					view.Icon.h.small.edit({
+						ref: r => this._edit = r,
+					})
+				]);
 			} else {
 				var props = Object.assign({}, this.props);
 				if (props.inputClassName) props.className = props.inputClassName;
@@ -225,8 +257,8 @@
 				props.autoFocus = props.autoSelect = props.autoSize = true;
 				props.value = this.state.value;
 				props.onBlur = this.cancel;
+				props.onNewValue = this.set;
 				props.onKeyUp = this.handleKeyUp;
-				props.onChange = this.handleChange;
 				return view.Input.h(props);
 			}
 		}
@@ -268,8 +300,14 @@
 		return view.Abbreviation.h({title:desc}, children);
 	};
 
-	view.Icon = createClass({
+	view.Icon = createClassR({
 		displayName: 'view.Icon',
+		handleKeyUp: function(event) {
+			event.preventDefault();
+		},
+		handleKeyDown: function(event) {
+			event.preventDefault();
+		},
 		render: function() {
 			var glyph = view.Icon.glyphs[this.props.type];
 			var classes = this.props.className || [];
@@ -279,13 +317,14 @@
 			return h('a', propsdata({
 				href: this.props.link||"javascript:void(0)",
 				onClick: this.props.action||this.props.onClick,
+				onKeyUp: this.handleKeyUp,
 				className: classes.join(" "),
 				title: this.props.desc,
 				id: this.props.id,
 			}, {glyph}));
 		},
 		componentDidMount: function() {
-			$(ReactDOM.findDOMNode(this)).qtip({
+			$dom(this).qtip({
 				style: {
 					classes: "qtip-light qtip-abbr"
 				},
