@@ -5,7 +5,11 @@
 		r.h = h.bind(undefined, r);
 		return r;
 	};
-	var createClassR = c => Radium(createClass(c));
+	var createClassR = function(c) {
+		var r = Radium(React.createClass(c));
+		r.h = h.bind(undefined, r);
+		return r;
+	};
 	var propsdata = function(props, data) {
 		for (let p in data) {
 			props["data-"+p] = data[p];
@@ -134,43 +138,9 @@
 				this.props.onNewValue(checked);
 		},
 		render: function() {
-			var divstyle = {
-				width: 20,
-				position: 'relative',
-				outline: 0,
-			};
-			var inputstyle = {
-				visibility: 'hidden',
-				marginLeft: '10px',
-			};
-			var labelstyle = {
-				cursor: 'pointer',
-				position: 'absolute',
-				top: 0,
-				left: 0,
-				width: 20,
-				height: 20,
-				borderRadius: 4,
-				outline: 0,
-				boxShadow: 'inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5)',
-				background: 'linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%)',
-			};
-			var border = '3px solid '+(this.state.focus ? '#C33' : '#333');
-			var afterstyle = {
-				cursor: 'pointer',
-				opacity: this.props.checked ? 1 : (this.state.hover || this.state.focus ? 0.5 : 0),
-				position: 'absolute',
-				width: 9,
-				height: 5,
-				background: 'transparent',
-				top: 4,
-				left: 4,
-				borderLeft: border,
-				borderBottom: border,
-				transform: 'rotate(-45deg)',
-			};
+			var style = k => view.expand.style.make.call(this, view.Checkbox.style[k]);
 			return h('label', {
-				style: divstyle,
+				style: style('label'),
 				onMouseEnter: this.enter,
 				onMouseLeave: this.leave,
 				onFocus: this.focus,
@@ -179,13 +149,54 @@
 				onKeyPress: this.handleKeyPress,
 				tabIndex: 0,
 			}, [
-				h('input', {...this.props, onChange: this.handleChange, type:'checkbox', style:inputstyle}),
-				h('span', {style:labelstyle}),
-				h('a', {style:afterstyle}),
+				h('input', {...this.props, onChange: this.handleChange, type:'checkbox', style: style('input')}),
+				h('span', {style: style('box')}),
+				h('span', {style: style('check')}),
 				h('span', this.props.children)
 			]);
 		},
 	});
+	view.Checkbox.style = {
+		label: {
+			width: 20,
+			position: 'relative',
+			outline: 0,
+		},
+		input: {
+			visibility: 'hidden',
+			marginLeft: '10px',
+		},
+		box: {
+			cursor: 'pointer',
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			width: 20,
+			height: 20,
+			borderRadius: 4,
+			outline: 0,
+			boxShadow: 'inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5)',
+			background: 'linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%)',
+		},
+		check: {
+			opacity: function() {
+				return (this.props.checked ? 1 : (this.state.hover || this.state.focus ? 0.4 : 0));
+			},
+			border: function() {
+				return '3px solid '+(this.state.focus ? '#C33' : '#333');
+			},
+			borderTop: 'none',
+			borderRight: 'none',
+			cursor: 'pointer',
+			position: 'absolute',
+			width: 9,
+			height: 5,
+			background: 'transparent',
+			top: 4,
+			left: 4,
+			transform: 'rotate(-45deg)',
+		}
+	}
 
 	view.EditableText = createClass({
 		displayName: 'view.EditableText',
@@ -313,7 +324,9 @@
 			var classes = this.props.className || [];
 			if (typeof classes === 'string') classes = classes.split(" ");
 			classes.push('oi', 'inline', 'spaced');
-			if (this.props.small) classes.push('small');
+			var styles = [view.Icon.style.base];
+			if (this.props.small) styles.push(view.Icon.style.small);
+			if (this.props.nospace) styles.push({paddingLeft:null});
 			return h('a', propsdata({
 				href: this.props.link||"javascript:void(0)",
 				onClick: this.props.action||this.props.onClick,
@@ -321,6 +334,7 @@
 				className: classes.join(" "),
 				title: this.props.desc,
 				id: this.props.id,
+				style: styles,
 			}, {glyph}));
 		},
 		componentDidMount: function() {
@@ -343,6 +357,30 @@
 			});
 		}
 	});
+	view.Icon.style = {
+		base: {
+			verticalAlign: 'sub',
+			paddingLeft: '0.3em',
+			color: '#DA7B00',
+			textDecoration: 'none',
+			outline: 'none',
+			border: 'none',
+			':hover': {
+				color: '#DA9031'
+			},
+			':focus': {
+				color: '#CC333'
+			},
+			':active': {
+				color:'red'
+			},
+		},
+		small: {
+			verticalAlign: 'inherit',
+			fontSize: '60%',
+			paddingLeft: '0.5em',
+		},
+	};
 	view.Icon.glyphs = {
 		"edit": "pencil",
 		"refresh": "reload",
@@ -359,14 +397,14 @@
 		"add": "plus",
 	};
 	view.Icon.h.small = function(props, children) {
-		props.small = true;
+		props = Object.assign({}, props||{}, {small:true});
 		return view.Icon.h(props, children);
 	};
 	for (let fn of [view.Icon.h.small, view.Icon.h]) {
 		for (let type in view.Icon.glyphs) {
 			if (!/^[$_a-zA-Z][$_a-zA-Z0-9]*$/.test(type)) continue;
 			fn[type] = function(props, children) {
-				props = {...props, type: type};
+				props = Object.assign({}, props||{}, {type});
 				return fn(props, children);
 			};
 		}

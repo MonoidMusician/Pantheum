@@ -8,8 +8,6 @@ var stampit = require('stampit');
  */
 var cached = stampit({
 	init: function initcached({args, instance, stamp}) {
-		"use strict";
-
 		// Extend the prototype to provide a static cache
 		// (As per https://github.com/stampit-org/stampit/blob/master/docs/advanced_examples.md#attach-function-to-prototype-memory-efficient-1)
 		if (!stamp.fixed.methods.cache) {
