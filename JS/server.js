@@ -18,19 +18,23 @@ var port = process.env.PORT || 8080; // set our port
 
 app.use('/api', require('./router'));
 
-var proxy = require('express-http-proxy');
-var url = require('url');
-var qs = require('qs');
+try {
+	var proxy = require('express-http-proxy');
+	var url = require('url');
+	var qs = require('qs');
 
-// New hostname+path as specified by question:
-var apiProxy = proxy('localhost:8080', {
-	forwardPath: function (req, res) {
-		var path = (url.parse(req.baseUrl).path||'')+'?'+(url.parse(req.url).query||'');
-		//console.log(path, req.baseUrl, req.url);
-		return path;
-	}
-});
-app.use('*', apiProxy);
+	// New hostname+path as specified by question:
+	var apacheproxy = proxy('localhost:8080', {
+		forwardPath: function (req, res) {
+			var path = (url.parse(req.baseUrl).path||'')+'?'+(url.parse(req.url).query||'');
+			//console.log(path, req.baseUrl, req.url);
+			return path;
+		}
+	});
+	app.use('*', apacheproxy);
+} catch(e) {
+	console.log('Continuing without proxy');
+}
 
 // START THE SERVER
 // =============================================================================
