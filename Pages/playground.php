@@ -1,2 +1,2 @@
 <div id="dictionary"></div>
-<script>setTimeout(function() {pantheum.view.render()}, 1000)</script>
+<script type="text/babel">pantheum.view.render()</script>
