@@ -31,6 +31,15 @@ describe('basic functionality', function() {
 					if (live) c = expand.live;
 					else c = expand;
 				}
+				it('should process objects', function() {
+					var style = c({style:{
+						margin: {bottomright:'none',topleft:'2'},
+					}}).style;
+					style.marginBottom.should.equal('none');
+					style.marginRight.should.equal('none');
+					style.marginTop.should.equal('2');
+					style.marginLeft.should.equal('2');
+				});
 				it('should process arrays', function() {
 					c({style:{
 						marginLeft: ['4', '2'],
@@ -38,7 +47,10 @@ describe('basic functionality', function() {
 				});
 				it('should keep this context', function() {
 					c.call(testthis, {style:{
-						marginLeft: function() {return this.tru ? '2' : '4'},
+						marginLeft: function() {
+							this.should.be.exactly(testthis);
+							return this.tru ? '2' : '4';
+						},
 					}}).style.marginLeft.should.equal('2');
 				});
 				it('should '+(make==='.make'?'not ':'')+'return the first argument', function() {
@@ -119,6 +131,22 @@ describe('data manipulation', function() {
 				style.margin.should.equal(margin);
 				property.should.equal('margin');
 				return margin/2;
+			}
+		}}).style.margin.toString().should.equal('2');
+	});
+	it('should process generator functions', function() {
+		expand.live({style:{
+			margin: '4',
+		}}, {style:{
+			margin: function*(margin, style, property) {
+				margin.should.equal('4');
+				style.margin.should.equal(margin);
+				property.should.equal('margin');
+				var m1 = yield '5';
+				var m2 = yield 'unset';
+				m1.should.equal('5');
+				m2.should.equal('0');
+				return '2';
 			}
 		}}).style.margin.toString().should.equal('2');
 	});

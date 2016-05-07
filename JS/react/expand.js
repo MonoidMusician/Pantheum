@@ -1,6 +1,6 @@
 "use strict";
 
-var us = [
+var ls = [
 	...['px','mm','cm','in','pt','pc'],
 	...['em','ex','ch'],
 	...['vh','vw','vmin','vmax'],
@@ -8,11 +8,27 @@ var us = [
 	regex:(new RegExp('^(\\d+)'+c+'$')),
 	type:c
 }));
-function units(s) {
+function length(s) {
 	if (typeof s === 'string')
 		s = s.trim();
 	if (!isNaN(s)) return +s;
-	for (let u of us) {
+	for (let u of ls) {
+		var match = s.match(u.regex);
+		if (match)
+			return Object.assign(Object.create(u), {value:match[1]});
+	}
+	return s;
+};
+
+var ts = ['s','ms'].map(c => ({
+	regex:(new RegExp('^(\\d+)'+c+'$')),
+	type:c
+}));
+function time(s) {
+	if (typeof s === 'string')
+		s = s.trim();
+	if (!isNaN(s)) return +s;
+	for (let u of ts) {
 		var match = s.match(u.regex);
 		if (match)
 			return Object.assign(Object.create(u), {value:match[1]});
@@ -37,16 +53,18 @@ function nospread(v) {
 	return v;
 }
 function type(v) {
+	var typ = typeof v;
+	if (typ === 'string') return typ;
 	try {
 		if (Array.isArray(v) && (c=>c||c===undefined)(v[Symbol.isConcatSpreadable]))
 			return 'array';
-		if (Symbol.iterator in v)
-			return v[Symbol.iterator] === v ? 'iterator' : 'iterable';
-		if (isobj(v))
+		else if (Symbol.iterator in v)
+			return v[Symbol.iterator]() === v ? 'iterator' : 'iterable';
+		else if (isobj(v))
 			return 'object';
-		return typeof v;
+		return typ;
 	} catch(e) {
-		return typeof v;
+		return typ;
 	}
 };
 
@@ -71,9 +89,11 @@ function* collect(r, k, v) {
 		case 'iterator':
 		case 'iterable':
 		case 'array':
-			for (let i of v) {
-				yield* collect.call(this, r, k, i);
+			var iter = v[Symbol.iterator]();
+			for (var n = iter.next(); !n.done; n = iter.next(r[k])) {
+				yield* collect.call(this, r, k, n.value);
 			}
+			yield* collect.call(this, r, k, n.value);
 			return;
 		case 'function':
 			yield* collect.call(this, r, k, v.call(this, r[k], r, k));
@@ -83,7 +103,7 @@ function* collect(r, k, v) {
 }
 
 var edges = ['top','right','bottom','left'];
-var edge_regex = e => new RegExp(e, 'i');
+var edge_regex = e => e in edge_regex ? edge_regex[e] : edge_regex[e] = new RegExp(e, 'i');
 function split_edges(n, nosplit) {
 	var proto = {
 		toString() {
@@ -119,9 +139,9 @@ function split_edges(n, nosplit) {
 				for (let e of edges)
 					this[c(n, e)] = r;
 				// Pick out specific keys for specific children
-				for (let k of r)
+				for (let k in r)
 					for (let e of edges)
-						if (edge_regex(e).match(k))
+						if (edge_regex(e).test(k))
 							this[c(n, e)] = r[k];
 			} else {
 				var _4 = nosplit ? [r,r,r,r] : _4some(r);
@@ -216,7 +236,7 @@ for (let k of [
 	'min-height', 'min-width', 'orphans', 'outline',
 	'padding-bottom', 'padding-left', 'padding-right', 'padding-top',
 	'text-indent', 'widows',
-].map(a => c(...a.split('-')))) defaults[k] = units(0);
+].map(a => c(...a.split('-')))) defaults[k] = '0';
 for (let k of [
 	'bottom', 'clip', 'columns', 'column-count', 'column-width',
 	'cursor', 'height', 'left', 'page-break-after',
@@ -230,6 +250,7 @@ for (let k of [
 ].map(a => c(...a.split('-')))) defaults[k] = 'normal';
 
 for (let k in defaults) {
+	if (style.has(k)) continue;
 	let K = '_'+k;
 	style.set(k, {get: function() {
 		var v = this[K];
