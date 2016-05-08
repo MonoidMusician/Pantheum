@@ -74,11 +74,13 @@ function _filter_ignore($values, $ignore, $p, $empty=TRUE, $prev=NULL) {
 	return [FALSE];
 }
 function _filter_ignore2(&$values, $ignore, $p, $parallel, $prev=NULL) {
+	if ($values)
 	foreach ($values as $key=>&$valuesz)
 		$valuesz = _filter_ignore($valuesz, $ignore, PATH($p,$p,$key), TRUE, $prev?[$prev[$key]]:NULL);
 }
 function _fill($values, $parallel) {
 	$ret = [];
+	if (!$parallel) $parallel = [false];
 	foreach ($parallel as $k) {
 		$ret[$k] = $values;
 	}
@@ -100,8 +102,8 @@ function word_table_values($w,$ignore=NULL) {
 	$values4 =
 	$values3 =
 	$values2 =
-	$values1 =
-	$values0 = NULL;
+	$values1 = NULL;
+	$values0 = false;
 	// values0 : table name
 	// values1 : major vertical
 	// values2 : minor vertical
@@ -196,6 +198,7 @@ function word_table_values($w,$ignore=NULL) {
 				$values4[$_0] = $vals4;
 			}
 		} elseif ($spart === "adverb") {
+			$values0 = [];
 			$values1 = $w->path()->iterate("degree");
 		}
 
@@ -379,7 +382,7 @@ function word_table_values($w,$ignore=NULL) {
 	// #2       may depend on #1
 	// #4       may depend on #3
 	$values0 = _do_ignore($values0,$ignore);
-	if (!$values0) $values0 = [false];
+	if ($values0 === false) $values0 = [false];
 	if (is_vec($values1)) $values1 = _fill($values1, $values0);
 	if (is_vec($values2)) $values2 = _fill($values2, $values0);
 	if (is_vec($values3)) $values3 = _fill($values3, $values0);
@@ -404,7 +407,7 @@ function do_table($w,$values0,$values1,$values2,$values3,$values4,$ignore,$forma
        !$values4 and
        !$values0) {
 		?><table class="text-center inflection inflection-small" id="word<?= $w->id() ?>_forms"><?php
-		foreach ($values1 as $_1) {
+		foreach ($values1[false] as $_1) {
 			?><tr><th><?php
 			echo format_value($_1);
 			?></th></tr><tr><td><?php
