@@ -124,7 +124,6 @@ function word_table_values($w,$ignore=NULL) {
 			$values2 = $w->path()->iterate("case");
 			$values3 = $w->path()->iterate("number");
 			$values4 = $w->path()->iterate("gender");
-			$values0 = [];
 		} elseif ($spart === "verb") {
 			$values0 = $moods = $w->path()->iterate("mood");
 			$values1 = [];
@@ -217,7 +216,6 @@ function word_table_values($w,$ignore=NULL) {
 			else $values1 = [];
 			$values3 = $w->path()->iterate("number");
 			$values4 = $w->path()->iterate("gender");
-			$values0 = [];
 		} elseif ($spart === "verb") {
 			$values0 = $moods = $w->path()->iterate("mood");
 			$values1 = [];
@@ -273,7 +271,6 @@ function word_table_values($w,$ignore=NULL) {
 			else $values1 = [];
 			$values3 = $w->path()->iterate("number");
 			$values4 = $w->path()->iterate("gender");
-			$values0 = [];
 		} elseif ($spart === "verb") {
 			$moods = $w->path()->iterate("mood");
 			$values0 = [];
@@ -314,7 +311,6 @@ function word_table_values($w,$ignore=NULL) {
 		if (($spart === "noun") or
 			($spart === "adjective") or
 			($spart === "pronoun")) {
-			$values0 = [];
 			$values1 = [];
 			$values2 = $w->path()->iterate("case");
 			$values3 = $w->path()->iterate("number");
