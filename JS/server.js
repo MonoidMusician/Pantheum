@@ -6,9 +6,10 @@ var express    = require('express');
 var bodyParser = require('body-parser');
 var app        = express();
 var morgan     = require('morgan');
+var serveStatic = require('serve-static');
 
 // configure app
-//app.use(morgan('dev')); // log requests to the console
+app.use(morgan('dev')); // log requests to the console
 
 // configure body parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,7 +20,7 @@ var port = process.env.PORT || 8080; // set our port
 app.use('/api', require('./router'));
 
 try {
-	var proxy = require('express-http-proxy');
+//	var proxy = require('express-http-proxy');
 	var url = require('url');
 	var qs = require('qs');
 
@@ -36,6 +37,8 @@ try {
 } catch(e) {
 	console.log('Continuing without proxy');
 }
+
+app.use(serveStatic('../'));
 
 // START THE SERVER
 // =============================================================================
