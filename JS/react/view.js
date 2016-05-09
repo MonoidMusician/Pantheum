@@ -5,11 +5,6 @@
 		r.h = h.bind(undefined, r);
 		return r;
 	};
-	var createClassR = function(c) {
-		var r = Radium(React.createClass(c));
-		r.h = h.bind(undefined, r);
-		return r;
-	};
 	var propsdata = function(props, data) {
 		for (let p in data) {
 			props["data-"+p] = data[p];
@@ -311,13 +306,34 @@
 		return view.Abbreviation.h({title:desc}, children);
 	};
 
-	view.Icon = createClassR({
+	view.Icon = createClass({
 		displayName: 'view.Icon',
+		getInitialState: function() {
+			return {hover:false, focus:false, active:false};
+		},
 		handleKeyUp: function(event) {
 			event.preventDefault();
 		},
 		handleKeyDown: function(event) {
 			event.preventDefault();
+		},
+		handleMouseOver: function() {
+			this.setState({hover:true});
+		},
+		handleMouseOut: function() {
+			this.setState({hover:false});
+		},
+		handleMouseDown: function() {
+			this.setState({active:'viamouse'});
+		},
+		handleMouseUp: function() {
+			this.setState({active:false});
+		},
+		handleFocus: function() {
+			this.setState({focus:true});
+		},
+		handleBlur: function() {
+			this.setState({focus:false});
 		},
 		render: function() {
 			var glyph = view.Icon.glyphs[this.props.type];
@@ -327,14 +343,25 @@
 			var styles = [view.Icon.style.base];
 			if (this.props.small) styles.push(view.Icon.style.small);
 			if (this.props.nospace) styles.push({paddingLeft:null});
+			var style = view.expand.make(...styles);
+			if (this.state.active) style.color = 'red';
+			else if (this.state.focus) style.color = '#CC3333';
+			else if (this.state.hover) style.color = '#DA9031';
+			else style.color = '#DA7B00';
 			return h('a', propsdata({
 				href: this.props.link||"javascript:void(0)",
 				onClick: this.props.action||this.props.onClick,
 				onKeyUp: this.handleKeyUp,
+				onMouseOver: this.handleMouseOver,
+				onMouseOut: this.handleMouseOut,
+				onMouseDown: this.handleMouseDown,
+				onMouseUp: this.handleMouseUp,
+				onFocus: handleFocus,
+				onBlur: handleBlur,
 				className: classes.join(" "),
 				title: this.props.desc,
 				id: this.props.id,
-				style: styles,
+				style: style,
 			}, {glyph}));
 		},
 		componentDidMount: function() {

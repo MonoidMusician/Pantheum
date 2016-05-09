@@ -96,7 +96,7 @@ var li = [];
 
 		// Create subrouter for an instance of this model
 		let modelrouter = express.Router();
-		tablerouter.use('/:id', [
+		tablerouter.use('/:id(\\d+)', [
 			// Create model object M({id})
 			function(req, res, next) {
 				var id = +req.params.id;

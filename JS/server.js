@@ -24,7 +24,8 @@ try {
 	var qs = require('qs');
 
 	// New hostname+path as specified by question:
-	var apacheproxy = proxy('localhost:8080', {
+	var otherport = port == 8080 ? 80 : 8080;
+	var apacheproxy = proxy('localhost:' + otherport, {
 		forwardPath: function (req, res) {
 			var path = (url.parse(req.baseUrl).path||'')+'?'+(url.parse(req.url).query||'');
 			//console.log(path, req.baseUrl, req.url);
