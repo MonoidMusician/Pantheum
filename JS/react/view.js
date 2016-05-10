@@ -356,12 +356,13 @@
 				onMouseOut: this.handleMouseOut,
 				onMouseDown: this.handleMouseDown,
 				onMouseUp: this.handleMouseUp,
-				onFocus: handleFocus,
-				onBlur: handleBlur,
+				onFocus: this.handleFocus,
+				onBlur: this.handleBlur,
 				className: classes.join(" "),
 				title: this.props.desc,
 				id: this.props.id,
 				style: style,
+				tabIndex: 0,
 			}, {glyph}));
 		},
 		componentDidMount: function() {
