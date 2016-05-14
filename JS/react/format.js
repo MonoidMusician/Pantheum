@@ -11,7 +11,7 @@
 	};
 	view.FormattedValue = createClass({
 		displayName: 'view.FormattedValue',
-		render: function() {
+		render: function renderFormattedValue() {
 			var {value:v} = this.props;
 			v = v.split('///')[0];
 			var o = {
@@ -29,11 +29,12 @@
 	};
 	view.FormattedWord = createClass({
 		displayName: 'view.FormattedWord',
-		render: function() {
+		render: function renderFormattedWord() {
 			var {value:v} = this.props;
 			//console.log('before:',v);
 			if (typeof v === 'object' && 'value' in v) v = v.value;
 			if (v) v = la_ipa.transform(v);
+			else v = '\u2014';
 			//console.log('after:',v);
 			return h('span', v);
 		},

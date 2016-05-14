@@ -382,7 +382,7 @@ function word_table_values(w,ignore=null) {
 
 	view.Scrollable = createClass({
 		displayName: 'view.Scrollable',
-		render: function() {
+		render: function renderScrollable() {
 			return h('div', {...this.props, className:'scrollable'}, this.children);
 		},
 	});
@@ -402,18 +402,6 @@ function word_table_values(w,ignore=null) {
 				}
 			},
 		},
-	};
-	if (!view.format_value) view.format_value = function(...arg) {
-		//console.log('value', ...arg);
-		return h('span', arg);
-	};
-	if (!view.format_word) view.format_word = function(...arg) {
-		if (arg.length === 1 && arg[0] && 'value' in arg[0]) {
-			//console.log('word/path', arg[0].tag, arg[0].value);
-			return h('span', arg[0].value);
-		}
-		console.log('word', ...arg);
-		return h('span', arg);
 	};
 	var {th,td,tr} = view.table;
 	var nbsp = '\u00A0';
@@ -457,22 +445,29 @@ function word_table_values(w,ignore=null) {
 			style: {
 				fontWeight: 'bold',
 				textAlign: 'left',
+				fontFamily: 'Linux Biolinum',
+				textTransform: 'uppercase',
 			}
 		};
 		if (this && !this['_notProps'])
 			props = Object.assign(props, this);
 		return th.format_value.call(props, ...arg);
 	};
+
 	td.format_word = function(...arg) {
 		if (this && !this['_notProps'])
 			var props = Object.assign({}, this);
 		return h('td', props, view.format_word(...arg));
 	};
+
+	// Make a row containing one cell:
 	tr.blank = tr._wrap(th.blank);
 	tr.format_value = tr._wrap(th.format_value);
 	tr.format_value.major = tr._wrap(th.format_value.major);
 	tr.format_value.minor = tr._wrap(th.format_value.minor);
 	tr.format_word = tr._wrap(td.format_word);
+
+	// Create horizontal major columns
 	tr.H = function({w, ignore, values}) {
 		return values[3].map(
 			v => th.format_value.major.call({
@@ -480,6 +475,7 @@ function word_table_values(w,ignore=null) {
 			}, v)
 		);
 	};
+	// Create horizontal minor columns
 	tr.h = function({ignore, values}) {
 		return values[3].map(
 			v => (v in values ? values[v] : values)[4].map(
@@ -487,35 +483,45 @@ function word_table_values(w,ignore=null) {
 			)
 		).reduce(reduconcat);
 	};
+
+	// Group values based on optimization flag
 	function getgroups({p:basepath, optimization, ignore, values}) {
 		var getv = (v,j) => v in values ? values[v][j] : values[j];
-		var groups = [], last;
+		var groups = [], last  = NaN, lastp;
 		for (let _3 of values[3]) {
-			for (let _4 of getv(_3,4)) {
+			let _4s = getv(_3,4);
+			for (let _4 of _4s) {
 				let p = model.Path(basepath).add2(_3, _4);
-				let g = {p, _3, _4};
-				if (last && !_in_ignore(p, ignore) && optimization & 2 && p.value === last) {
+				let span = 1;
+				let g = {p, _3, _4, span};
+				if (lastp && p.issub(lastp, true) && lastp.issub(p, true)) {
+					groups[groups.length-1][groups[groups.length-1].length-1].span += span;
+				} else if (last && !_in_ignore(p, ignore) && optimization & 2 && p.value === last) {
 					groups[groups.length-1].push(g);
+					lastp = p;
 				} else {
 					groups.push([g]);
+					lastp = p;
 					last = p.value;
 				}
 			}
 		}
 		return groups;
 	};
+
+	// Inflect a simple table: minor vertical division and horizontal values
 	tr.body = function({p:basepath, optimization, ignore, i, values, gutter, rows=[]}) {
 		let prevv;
 		for (let v of values[2]) {
 			let path = model.Path(basepath).add(v);
 			let row = [];
-			if (gutter > 1) {};row.push(th.space());
+			if (gutter > 1) row.push(th.space());
 			row.push(th.format_value.minor(v));
 			let getv = j => v in values ? values[v][j] : values[j];
 			let groups = getgroups({p:path, optimization, ignore, values:values.slice(0,3).concat([3,4].map(getv))});
 			//console.log(path.toString(), groups, groups.map(g=>g[0].p.map));
 			for (let group of groups) {
-				let ditto, _ = group.length-1, p = group[0].p;
+				let ditto, _ = group.length-1, {p,span} = group[0];
 				let {_3:_30, _4:_40} = group[0];
 				let {_3:_3_, _4:_4_} = group[_];
 				let {_3,_4} = group[0]; if (_) _3 = _4 = undefined;
@@ -529,7 +535,7 @@ function word_table_values(w,ignore=null) {
 				if (link) val = view.make_link(link, val);
 				if (_) val = h('span', [view.arrow.float.left, view.arrow.float.right, val]);
 				else if (ditto && optimization & 1) val = nbsp+'\u2044'+nbsp+'\u2044';
-				row.push(h('td', {key:p.toString()}, val));
+				row.push(h('td', {key:p.toString(), colSpan:span}, val));
 				//if (extras) row.push(...extras(p));
 			}
 			rows.push(row);
@@ -537,6 +543,7 @@ function word_table_values(w,ignore=null) {
 		}
 		return rows;
 	};
+	// Inflect major vertical sections
 	tr.bodysection = function({p:basepath, optimization, ignore, i, values, gutter, rows=[]}) {
 		var p = model.Path(basepath);
 		if (values[1]) {
@@ -553,6 +560,7 @@ function word_table_values(w,ignore=null) {
 		}
 		return tr.body({p, optimization, ignore, values, gutter, rows});
 	};
+	// Inflection major table divisions
 	tr.subtable = function({p, optimization, ignore, i, values, gutter, heading, rows=[]}) {
 		if (!heading)
 			heading = th.blank({colSpan:gutter});
@@ -565,6 +573,7 @@ function word_table_values(w,ignore=null) {
 		return tr.bodysection({p, optimization, ignore, values, gutter, rows});
 	};
 
+	// Compose a full inflection table
 	view.do_table = function(w, values, ignore, optimization=0) {
 		// values.every((v,i)=>(!v||!v.length)!==(i===1));
 		if (values[1] &&
@@ -577,7 +586,6 @@ function word_table_values(w,ignore=null) {
 				tr.format_word(w.path(_1), w.lang, true)
 			]).reduce(reduconcat);
 		}
-		var path = model.Path({word:w});
 		var gutter = 1;
 		if (values[0]) {
 			var getv = (v,j) => v in values ? values[v][j] : values[j];
@@ -586,7 +594,7 @@ function word_table_values(w,ignore=null) {
 				...(i?[tr.blank({key:'blank'+i})]:[]),
 				...tr.subtable({
 					heading: v,
-					p: path.reset().add(v),
+					p: model.Path({word:w}, v),
 					values: [
 						values[0],
 						getv(v,1),
@@ -599,10 +607,55 @@ function word_table_values(w,ignore=null) {
 			]).reduce(reduconcat);
 		}
 		return tr.subtable({
-			p: path, values, gutter,
+			p: model.Path({word:w}), values, gutter,
 			optimization, ignore,
 		});
 	};
+
+	var autokey = (el, i) => el==null ? i : (typeof el === 'number' ? el : el.key || el.toString());
+
+	// Create a React table from a list of rows, converting to appropriate React components
+	view.create_table = function(data, options, props) {
+		var {noheader} = options||{};
+		var rows = data.map(
+			(row, i) => React.isValidElement(row) ? row :
+				h('tr', {key:i}, row.map(
+					(el, k) => React.isValidElement(el) && (['td','th'].includes(el.type)) ? el :
+						el !== undefined ? h(i || noheader ? 'td' : 'th', {key:autokey(el, k)}, el) : el
+				))
+		);
+		console.log(rows);
+		return h('table', props||{}, [h('tbody', rows)]);
+	};
+
+	// Create a React table which merges values hierarchically
+	view.create_table.merge_vertical = function(data, options, ...arg) {
+		var {noheader} = options||{};
+		var header = data.slice(0, +!noheader), rest = data.slice(+!noheader);
+		var nrows = (i,start,v) => {
+			if (!start) start = 0;
+			if (!v) var v = rest[start][i];
+			for (var j=start; j<rest.length; j++)
+				if (rest[j][i] != v) break;
+			return i ? Math.min(j-start, nrows(i-1,start)) : j-start;
+		};
+		var keep = (i,start) => {
+			if (!start) return true;
+			for (i; i>=0; i--)
+				if (rest[start-1][i] != rest[start][i]) return true;
+			return false;
+		};
+		data = header.concat(rest.map(
+			(row, j) =>
+				row.map((el, i) => {
+					if (!keep(i, j)) return;
+					return h('td', {key:autokey(el, i), rowSpan: nrows(i, j, el)}, el)
+				})
+		));
+		return view.create_table(data, options, ...arg);
+	};
+
+
 	view.render = function() {
 		var w = pantheum.view.word;
 		w.pull().then(function() {

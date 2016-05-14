@@ -52,11 +52,14 @@ function nospread(v) {
 	v[Symbol.isConcatSpreadable] = false;
 	return v;
 }
+function isspread(v) {
+	return (Array.isArray(v) && (c=>c||c===undefined)(v[Symbol.isConcatSpreadable]));
+}
 function type(v) {
 	var typ = typeof v;
 	if (typ === 'string') return typ;
 	try {
-		if (Array.isArray(v) && (c=>c||c===undefined)(v[Symbol.isConcatSpreadable]))
+		if (isspread(v))
 			return 'array';
 		else if (Symbol.iterator in v)
 			return v[Symbol.iterator]() === v ? 'iterator' : 'iterable';
@@ -305,6 +308,20 @@ var data = {
 	}
 };
 
+var simplify = {
+	enumerable: false,
+	configurable: true,
+	value: function() {
+		var dfault = {};
+		var r = Object.assign({}, this, {style:{}}), v;
+		for (let [name, prop] of style) {
+			if (prop.get.call(dfault) !== (v=this[name]))
+				r.style[name] = v;
+		}
+		return r;
+	},
+}
+
 function expand(r, ...props) {
 	for (let p of [r, ...props]) {
 		if (r!==p)
@@ -331,47 +348,45 @@ function expand(r, ...props) {
 	delete r.data;
 	return r;
 }
-function make(...props) {
-	return this({}, ...props);
-}
-function flatten(list, depth) {
-	depth = (typeof depth == 'number') ? depth : Infinity;
-
-	if (!depth) {
-		if (Array.isArray(list)) {
-			return list.map(function(i) { return i; });
-		}
-		return list;
-	}
-
-	return _flatten(list, 1);
-
-	function _flatten(list, d) {
-		return list.reduce(function (acc, item) {
-			if (Array.isArray(item) && d < depth) {
-				return acc.concat(_flatten(item, d + 1));
-			}
-			else {
-				return acc.concat(item);
-			}
-		}, []);
-	}
-};
+var flatten = (list) => list.reduce((V, v) => V.concat(isspread(v) ? flatten(v) : v), []);
 function defprop(obj, name, prop, ...vals) {
+	// Keep track of existing value, but allow ...vals to overwrite it
 	if (name in obj)
 		vals.unshift(obj[name]);
+
+	// Create the property definition (getters/setters, enumerability)
 	Object.defineProperty(obj, name, prop);
+
+	// Apply all of the property values, in order
 	for (let v of collect.call(this, obj, name, vals))
 		obj[name] = v;
 }
 function live(r, ...props) {
-	if (!r.style) r.style = {};
-	var rstyle = Object.assign({}, r.style);
+	// Method to make this into a simple object again
+	Object.defineProperty(obj, 'simplify', simplify);
+
+	// Create the data properties
 	defprop.call(this, r, 'data', data);
+
+	// Ensure we have a style
+	if (!r.style) r.style = {};
+
+	// Copy our style values to ensure they are added
+	// (even if a magic method sets it in the object)
+	var rstyle = Object.assign({}, r.style);
+
+	// Initialize the style properties
 	for (let [name, prop] of style)
+		// r.style[name] is included by defprop automatically
 		if (name in rstyle && rstyle[name] !== r.style[name])
 			defprop.call(this, r.style, name, prop, rstyle[name]);
 		else defprop.call(this, r.style, name, prop);
+
+	// Merge properties from the rest of the property objects
+	return merge.apply(this, arguments);
+}
+
+function merge(r, ...props) {
 	for (let p of flatten(props)) {
 		for (let k in p) {
 			let v = p[k];
@@ -406,6 +421,19 @@ expand.style = wrapstyle(expand);
 expand.style.live = wrapstyle(expand.live);
 expand.style.make = wrapstyle(expand.make);
 expand.style.live.make = wrapstyle(expand.live.make);
+
+expand.React = stampit({
+	methods: {
+		make: function make(component, classes, ...props) {
+			var r = Object.create(this.live);
+			props = classes.map(c=>this.classes[c]).concat(props);
+			merge.call(component, r, ...props);
+		},
+	},
+	init: function initExpand({instance, arg}) {
+		instance.live = live(instance.props);
+	},
+});
 
 if (typeof pantheum !== 'undefined' && pantheum.view)
 	pantheum.view.expand = expand;

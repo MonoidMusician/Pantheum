@@ -14,7 +14,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 
 	view.Language = createClass({
 		displayName: 'view.Language',
-		render: function() {
+		render: function renderLanguage() {
 			var title = this.props.name || languages[this.props.children];
 			return h('sup', {title}, ["[",this.props.children,"]"]);
 		},
@@ -40,10 +40,10 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	});
 	view.WordName = createClass({
 		displayName: 'view.WordName',
-		handleNewValue: function(name) {
+		handleNewValue(name) {
 			console.log(name);
 		},
-		render: function() {
+		render: function renderWordName() {
 			var classes = ["word-name"];
 			if (this.props.word.lang)
 				classes.push("format-word-"+this.props.word.lang);
@@ -58,12 +58,12 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	});
 	view.Definitions = createClass({
 		displayName: 'view.Definitions',
-		handleNewValue: function(id) {
+		handleNewValue(id) {
 			return (name) => {
 				console.log(name);
 			};
 		},
-		render: function() {
+		render: function renderDefinitions() {
 			var edit;
 			if (pantheum.user.administrator)
 				edit = view.Icon.h({type:"del"});
@@ -86,53 +86,15 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		}
 	});
 
-	var autokey = (el, i) => el==null ? i : (typeof el === 'number' ? el : el.key || el.toString());
-	view.create_table = function(data, options, props) {
-		var {noheader} = options||{};
-		var rows = data.map(
-			(row, i) => React.isValidElement(row) ? row :
-				h('tr', {key:i}, row.map(
-					(el, k) => React.isValidElement(el) && (['td','th'].includes(el.type)) ? el :
-						el !== undefined ? h(i || noheader ? 'td' : 'th', {key:autokey(el, k)}, el) : el
-				))
-		);
-		console.log(rows);
-		return h('table', props||{}, [h('tbody', rows)]);
-	};
-	view.create_table.merge_vertical = function(data, options, ...arg) {
-		var {noheader} = options||{};
-		var header = data.slice(0, +!noheader), rest = data.slice(+!noheader);
-		var nrows = (i,start,v) => {
-			if (!start) start = 0;
-			if (!v) var v = rest[start][i];
-			for (var j=start; j<rest.length; j++)
-				if (rest[j][i] != v) break;
-			return i ? Math.min(j-start, nrows(i-1,start)) : j-start;
-		};
-		var keep = (i,start) => {
-			if (!start) return true;
-			for (i; i>=0; i--)
-				if (rest[start-1][i] != rest[start][i]) return true;
-			return false;
-		};
-		data = header.concat(rest.map(
-			(row, j) =>
-				row.map((el, i) => {
-					if (!keep(i, j)) return;
-					return h('td', {key:autokey(el, i), rowSpan: nrows(i, j, el)}, el)
-				})
-		));
-		return view.create_table(data, options, ...arg);
-	};
 	view.Inflection = createClass({
 		displayName: 'view.Inflection',
-		getInitialState: function() {
+		getInitialState() {
 			return {onlyleaves:false};
 		},
-		handleCheckbox: function(onlyleaves) {
+		handleCheckbox(onlyleaves) {
 			this.setState({onlyleaves});
 		},
-		render: function() {
+		render: function renderInflection() {
 			var edit;
 			if (pantheum.user.administrator)
 				edit = view.Icon.h({type:"del"});
@@ -164,13 +126,13 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	});
 	view.EntryName = createClass({
 		displayName: 'view.EntryName',
-		render: function() {
+		render: function renderEntryName() {
 			return h('span', [view.Language.h(this.props.word.lang), view.WordName.h(this.props)]);
 		}
 	});
 	view.Wiktionary = createClass({
 		displayName: 'view.Wiktionary',
-		render: function() {
+		render: function renderWiktionary() {
 			// TODO: slugify (transform æ, œ, macrons....)
 			return h('a', {
 				href: "http://en.wiktionary.org/wiki/"+this.props.word.name+"#"+languages[this.props.word.lang],
@@ -180,7 +142,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	});
 	view.LewisShort = createClass({
 		displayName: 'view.LewisShort',
-		render: function() {
+		render: function renderLewisShort() {
 			if (this.props.word.lang != 'la') return h('span');
 			// TODO: slugify (transform æ, œ, macrons....)
 			return h('span', [' – ', h('a', {
@@ -192,13 +154,13 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	view.PronunciationTool = createClass({
 		displayName: 'view.PronunciationTool',
 		transform: la_ipa.transforms["IPA transcription"],
-		getInitialState: function() {
+		getInitialState() {
 			return {value: ""};
 		},
-		handleChange: function({target: {value}}) {
+		handleChange({target: {value}}) {
 			this.setState({value});
 		},
-		render: function() {
+		render: function renderPronunciationTool() {
 			return h('span', [
 				h('input',{onChange:this.handleChange}),
 				h('span', this.transform(this.state.value))
@@ -207,13 +169,13 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 	});
 	view.Entry = createClass({
 		displayName: 'view.Entry',
-		getInitialState: function() {
+		getInitialState() {
 			return {toolsOpen: false};
 		},
-		toggleTools: function() {
+		toggleTools() {
 			this.setState({toolsOpen: !this.state.toolsOpen});
 		},
-		render: function() {
+		render: function renderEntry() {
 			var tools, action = this.toggleTools;
 			if (!this.state.toolsOpen) {
 				tools = [view.Icon.h.tools({action})];

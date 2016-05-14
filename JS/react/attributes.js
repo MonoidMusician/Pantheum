@@ -15,7 +15,7 @@
 	};
 	view.Attribute = createClass({
 		displayName: 'view.Attribute',
-		delete_API: function() {
+		delete_API: function delete_API() {
 			var {tag, value, id, onDelete} = this.props;
 			$.get(pantheum.api_path+'add-attributes.php',
 				  'attr=!'+tag+'&id='+id)
@@ -106,7 +106,7 @@
 			if (value === "true" && abbrs[tag]) return format_abbr_del(abbrs[tag], Tag, this.delete_API);
 			return (value !== null && value !== "true") ? tag+"="+value : tag;
 		},
-		render: function() {
+		render: function renderAttribute() {
 			var r = this._render();
 			if (typeof r === 'string')
 				return h('span', [r, view.del(this.delete_API)]);
@@ -132,10 +132,10 @@
 
 	view.Attributes = createClass({
 		displayName: 'view.Attributes',
-		handleNewValue: function(value) {
+		handleNewValue(value) {
 			console.log(value);
 		},
-		render: function() {
+		render: function renderAttributes() {
 			var props = {
 				word: this.props.word,
 				id: this.props.word.id,
