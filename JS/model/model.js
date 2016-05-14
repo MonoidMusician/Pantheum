@@ -616,6 +616,8 @@ var model = {};
 				instance.cacheable = args[0];
 				args = args.slice(1);
 			}
+			// Duplicate this property to ensure copies do not mutate their original
+			if (instance.map) instance.map = [...instance.map];
 
 			// Copy accessors to the instance
 			common.defprops(instance, ["id", "mgr", "word_id", "word", ...columns], methods);

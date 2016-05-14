@@ -11,7 +11,6 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		r.h = h.bind(undefined, r);
 		return r;
 	};
-	var createClassR = c => Radium(createClass(c));
 
 	view.Language = createClass({
 		displayName: 'view.Language',
@@ -87,8 +86,9 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		}
 	});
 
-	var autokey = (el, i) => typeof el === 'undefined' ? i : el.key || el;
-	view.create_table = function(data, {noheader}, props) {
+	var autokey = (el, i) => el==null ? i : (typeof el === 'number' ? el : el.key || el.toString());
+	view.create_table = function(data, options, props) {
+		var {noheader} = options||{};
 		var rows = data.map(
 			(row, i) => React.isValidElement(row) ? row :
 				h('tr', {key:i}, row.map(
@@ -96,10 +96,11 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 						el !== undefined ? h(i || noheader ? 'td' : 'th', {key:autokey(el, k)}, el) : el
 				))
 		);
+		console.log(rows);
 		return h('table', props||{}, [h('tbody', rows)]);
 	};
 	view.create_table.merge_vertical = function(data, options, ...arg) {
-		var {noheader} = options;
+		var {noheader} = options||{};
 		var header = data.slice(0, +!noheader), rest = data.slice(+!noheader);
 		var nrows = (i,start,v) => {
 			if (!start) start = 0;
