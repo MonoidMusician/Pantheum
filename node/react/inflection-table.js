@@ -375,7 +375,7 @@ module.exports = function(view) {
 	view.Scrollable = view.createClass({
 		displayName: 'view.Scrollable',
 		render: function renderScrollable() {
-			return h('div', Object.assign(this.props, {className:'scrollable'}), this.children);
+			return h('div', Object.assign({}, this.props, {className:'scrollable'}), this.children);
 		},
 	});
 

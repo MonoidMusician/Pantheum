@@ -20,7 +20,7 @@ module.exports = function(view) {
 				this.props.onNewValue(value);
 		},
 		render: function() {
-			return h('input', Object.assign(this.props, {onChange: this.handleChange}));
+			return h('input', Object.assign({}, this.props, {onChange: this.handleChange}));
 		}
 	});
 

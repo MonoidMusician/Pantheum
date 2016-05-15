@@ -36,10 +36,10 @@
 		<script type="text/javascript" src="/JS/lib/jquery.qtip.min.js"></script>
 		<script type="text/javascript" src="/JS/lib/select2.min.js"></script>
 		<script type="text/javascript" src="/JS/lib/html.sortable.min.js"></script>
-		<script>$(pantheum.init)</script>
 
-		<script type="text/javascript" src="/JS/build/model.js"></script>
-		<script type="text/javascript" src="/JS/build/react.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.8.0/polyfill.min.js"></script>
+		<script type="text/javascript" src="/node/build/browser.js"></script>
+		<!--
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
 		<script>babel.pipeline.addFilter(({key}) => key !== 'regenerator');</script>
 		<script type="text/babel" src="/JS/react/view.js"></script>
@@ -48,11 +48,12 @@
 		<script type="text/babel" src="/JS/react/expand.js"></script>
 		<script type="text/babel" src="/JS/react/format.js"></script>
 		<script type="text/babel" src="/JS/react/inflection-table.js"></script>
+		-->
 	</head>
 	<body>
 		<section id="content">
 			<div id="dictionary"></div><div id="inflection2"></div>
-			<script type="text/babel">pantheum.view.render()</script>
+			<script>pantheum.view.render()</script>
 		</section>
 	</body>
 </html>

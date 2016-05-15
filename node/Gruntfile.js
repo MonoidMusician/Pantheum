@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 			},
 			build: {
 				expand: true,
-				src: ['model/*.js', 'react/*.js'],
+				src: 'model react languages user'.split(' ').map(d=>d+'/*.js').concat('pantheum.js'),
 				dest: 'build/',
 			},
 		},
@@ -21,8 +21,7 @@ module.exports = function(grunt) {
 			},
 			build: {
 				files: {
-					'build/model.js': 'build/model/pantheum.js',
-					'build/react.js': 'build/react/pantheum.js',
+					'build/browser.js': 'build/pantheum.js',
 				}
 			},
 		},
@@ -32,8 +31,7 @@ module.exports = function(grunt) {
 			},
 			build: {
 				files: {
-					'build/model.min.js': 'build/model.js',
-					'build/react.min.js': 'build/react.js',
+					'build/bundle.js': 'build/browser.js',
 				},
 			},
 		},

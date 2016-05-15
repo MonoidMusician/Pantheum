@@ -1,10 +1,10 @@
 var express    = require('express');
 var url        = require('url');
 var Promise    = require('bluebird');
-var connection = require('./model/mysql');
-var queryP     = require('./model/mysqlpromise');
-var model      = require('./model/model');
-require('./model/depaths');
+var connection = require('./mysql');
+var queryP     = require('./mysqlpromise');
+var model      = require('./');
+require('../languages/la');
 
 var router = express.Router();
 module.exports = router;

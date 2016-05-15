@@ -7,7 +7,7 @@ var h = require('react-hyperscript');
 var view = {React, ReactDOM, ReactDOMServer, h};
 module.exports = view;
 
-var model = require('../model/model');
+var model = require('../model');
 
 
 view.createClass = function createClass(c) {
@@ -21,12 +21,9 @@ view.$dom = function $dom(component) {
 
 view.expand = require('./expand');
 
-
-[
-	'view',
-	'page',
-	'format',
-	'inflection-table',
-	'attributes',
-	'dictionary',
-].forEach(f => require('./'+f)(view));
+require('./view')(view);
+require('./page')(view);
+require('./format')(view);
+require('./inflection-table')(view);
+require('./attributes')(view);
+require('./dictionary')(view);

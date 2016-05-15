@@ -187,8 +187,8 @@ module.exports = function(view) {
 					view.Icon.h.refresh( { key:k++ }),
 					view.Icon.h.del(     { key:k++ }),
 					h('div', {key:k++,style:{"paddingLeft":"2em"}}, [
-						view.Wiktionary.h(Object.assign(this.props, {key:0})),
-						view.LewisShort.h(Object.assign(this.props, {key:1})),
+						view.Wiktionary.h(Object.assign({}, this.props, {key:0})),
+						view.LewisShort.h(Object.assign({}, this.props, {key:1})),
 						h('br', {key:2}),
 						'Pronunciation: ',
 						view.PronunciationTool.h({key:4})

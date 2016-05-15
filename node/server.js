@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080; // set our port
 
-app.use('/api', require('./router'));
+app.use('/api', require('./model/router'));
 app.use(require('./pages'));
 
 // This is how we leak all the credentials for all the things.

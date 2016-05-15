@@ -2,10 +2,10 @@ var express        = require('express');
 var url            = require('url');
 var Promise        = require('bluebird');
 var ReactDOMServer = require('react-dom/server');
-require('./model/depaths');
+require('./languages/la');
 
 var view = require('./react');
-var model = require('./model/model.js');
+var model = require('./model');
 
 var router = express.Router();
 module.exports = router;

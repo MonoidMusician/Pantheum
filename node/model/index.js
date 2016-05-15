@@ -1,9 +1,7 @@
 var model = {};
 module.exports = model;
 
-[
-	'depath',
-	'form',
-	'definition',
-	'word',
-].forEach(f => require('./'+f)(model));
+require('./depath')(model);
+require('./form')(model);
+require('./definition')(model);
+require('./word')(model);
