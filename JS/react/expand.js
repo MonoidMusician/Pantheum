@@ -59,13 +59,14 @@ function type(v) {
 	var typ = typeof v;
 	if (typ === 'string') return typ;
 	try {
+		if (typ !== 'object') return typ;
+		if (v instanceof String) return 'string';
 		if (isspread(v))
 			return 'array';
 		else if (Symbol.iterator in v)
 			return v[Symbol.iterator]() === v ? 'iterator' : 'iterable';
 		else if (isobj(v))
 			return 'object';
-		return typ;
 	} catch(e) {
 		return typ;
 	}
@@ -156,7 +157,8 @@ function split_edges(n, nosplit) {
 	};
 	style.set(n, v);
 }
-['margin','padding'].map(split_edges);
+split_edges('margin');
+split_edges('padding');
 split_edges('border', true);
 
 // Thanks to https://github.com/peteboere/css-crush/blob/master/misc/initial-values.ini
@@ -313,10 +315,11 @@ var simplify = {
 	configurable: true,
 	value: function() {
 		var dfault = {};
-		var r = Object.assign({}, this, {style:{}}), v;
+		var r = Object.assign({}, this, {style:{}});
 		for (let [name, prop] of style) {
-			if (prop.get.call(dfault) !== (v=this[name]))
-				r.style[name] = v;
+			var df = prop.get.call(dfault);
+			if (df != undefined && df !== this.style[name])
+				r.style[name] = this.style[name].toString();
 		}
 		return r;
 	},
@@ -363,7 +366,7 @@ function defprop(obj, name, prop, ...vals) {
 }
 function live(r, ...props) {
 	// Method to make this into a simple object again
-	Object.defineProperty(obj, 'simplify', simplify);
+	Object.defineProperty(r, 'simplify', simplify);
 
 	// Create the data properties
 	defprop.call(this, r, 'data', data);
@@ -386,25 +389,51 @@ function live(r, ...props) {
 	return merge.apply(this, arguments);
 }
 
+var _proto = live({});
+function proto(r, ...props) {
+	if (!_proto.isPrototypeOf(r)) {
+		props.unshift(r);
+		r = _proto;
+	}
+	r = Object.create(r);
+	r.style = Object.create(r.style);
+	return merge.call(this, r, ...props);
+}
+
 function merge(r, ...props) {
 	for (let p of flatten(props)) {
+		if (!p) continue;
 		for (let k in p) {
 			let v = p[k];
 			if (k === 'style') {
-				for (let s in v) {
-					for (let c of collect.call(this, r.style, s, v[s]))
-						r.style[s] = c;
-				}
+				merge.style.call(this, r.style, v);
 			} else r[k] = v;
 		}
 	}
 	return r;
 }
+merge.style = function mergestyle(style, ...styles) {
+	for (let S of styles) {
+		for (let s in S) {
+			for (let c of collect.call(this, style, s, S[s]))
+				style[s] = c;
+		}
+	}
+	return style;
+}
 
 // Utilities
 expand.nospread = nospread;
+expand.preserve = function(v) {
+	// XXX
+	if (typeof v === 'string')
+		return nospread(new String(v));
+	return v;
+};
 // Function variants
+expand.merge = merge;
 expand.live = live;
+expand.proto = proto;
 expand.make = function(...props) {
 	return expand.call(this, {}, ...props);
 };
@@ -421,22 +450,39 @@ expand.style = wrapstyle(expand);
 expand.style.live = wrapstyle(expand.live);
 expand.style.make = wrapstyle(expand.make);
 expand.style.live.make = wrapstyle(expand.live.make);
+expand.style.merge = expand.merge.style;
 
+expand.style.proto = function(r, ...props) {
+	if (!_proto.style.isPrototypeOf(r)) {
+		props.unshift(r);
+		r = _proto.style;
+	}
+	r = Object.create(r);
+	return merge.style.call(this, r, ...props);
+};
 
-var stampit = require('stampit');
-
-expand.React = stampit({
-	methods: {
-		make: function make(component, classes, ...props) {
-			var r = Object.create(this.live);
-			props = classes.map(c=>this.classes[c]).concat(props);
-			merge.call(component, r, ...props);
-		},
-	},
-	init: function initExpand({instance, arg}) {
-		instance.live = live(instance.props);
-	},
-});
+expand.React = function(props, classes) {
+	function _clsz(classes) {
+		if (typeof classes === 'string')
+			return classes.trim().split(/\s+/g);
+		if (classes.length > 1)
+			return classes.reduce((a,b)=>a.concat(_clsz(b)),[]);
+		else if (classes[0] && isspread(classes[0]))
+			return _clsz(classes[0]);
+		return classes;
+	}
+	function make(cls, ...props) {
+		if (type(cls) === 'object') {
+			props.unshift(cls);
+			cls = [];
+		}
+		props = _clsz(cls).map(c=>classes[c]).concat(props);
+		var r = proto.call(this, make.live, ...props);
+		return r.simplify();
+	};
+	make.live = proto({}, props);
+	return make;
+};
 
 if (typeof pantheum !== 'undefined' && pantheum.view)
 	pantheum.view.expand = expand;

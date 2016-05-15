@@ -342,7 +342,6 @@ function word_table_values(w,ignore=null) {
 		values[3] = path.iterate("formality");
 		values[2] = path.iterate("stem");
 	}
-	console.log(values);
 	// values[0] : table name
 	// values[1] : major vertical
 	// values[2] : minor vertical
@@ -387,7 +386,9 @@ function word_table_values(w,ignore=null) {
 		},
 	});
 
+	view._notProps = true;
 	view.table = {
+		_notProps: true,
 		th: {
 			_notProps: true,
 		},
@@ -404,54 +405,59 @@ function word_table_values(w,ignore=null) {
 		},
 	};
 	var {th,td,tr} = view.table;
-	var nbsp = '\u00A0';
+	var nbsp = '';//'\u00A0';
 	th.blank = function(props={}) {
 		return h('th', props, nbsp);
 	};
 	th.space = function(props={}) {
 		return h('th', props, nbsp+nbsp+nbsp);
 	};
+
+	var format_value_props = view.expand.React({
+		style: {
+			textAlign: 'left',
+		}
+	}, {
+		minor: {
+			style: {
+				fontWeight: view.expand.preserve('normal'),
+				fontFamily: 'Linux Biolinum',
+				fontSize: '95%',
+				paddingRight: '0.4em',
+			},
+		},
+		major: {
+			style: {
+				fontWeight: 'bold',
+				fontFamily: 'Linux Biolinum',
+				paddingRight: '0.4em',
+			},
+		},
+		greatest: {
+			style: {
+				fontWeight: 'bold',
+				//fontStyle: 'italic',
+				fontFamily: 'Linux Biolinum',
+				textTransform: 'uppercase',
+				paddingRight: '1em',
+			},
+		},
+	});
 	th.format_value = function(...arg) {
 		if (this && !this['_notProps']) var props = Object.assign({}, this);
 		return h('th', props, view.format_value(...arg));
 	};
-	th.format_value.minor = function(...arg) {
-		var props = {
-			className:'minor',
-			style: {
-				fontWeight: 'normal',
-				textAlign: 'left',
-			}
-		};
-		if (this && !this['_notProps'])
-			props = Object.assign(props, this);
-		return th.format_value.call(props, ...arg);
+	th.format_value.minor = function() {
+		var props = format_value_props('minor', this && !this['_notProps'] ? this : {});
+		return th.format_value.apply(props, arguments);
 	};
-	th.format_value.major = function(...arg) {
-		var props = {
-			className:'major',
-			style: {
-				fontWeight: 'bold',
-				textAlign: 'left',
-			}
-		};
-		if (this && !this['_notProps'])
-			props = Object.assign(props, this);
-		return th.format_value.call(props, ...arg);
+	th.format_value.major = function() {
+		var props = format_value_props('major', this && !this['_notProps'] ? this : {});
+		return th.format_value.apply(props, arguments);
 	};
 	th.format_value.greatest = function(...arg) {
-		var props = {
-			className:'greatest',
-			style: {
-				fontWeight: 'bold',
-				textAlign: 'left',
-				fontFamily: 'Linux Biolinum',
-				textTransform: 'uppercase',
-			}
-		};
-		if (this && !this['_notProps'])
-			props = Object.assign(props, this);
-		return th.format_value.call(props, ...arg);
+		var props = format_value_props('greatest', this && !this['_notProps'] ? this : {});
+		return th.format_value.apply(props, arguments);
 	};
 
 	td.format_word = function(...arg) {
@@ -509,17 +515,41 @@ function word_table_values(w,ignore=null) {
 		return groups;
 	};
 
+	var cell_props = view.expand.React({
+		style: {
+			border: '1px dashed #AAA',
+			borderLeft: null, borderRight: null,
+			padding: '0.5ex 0.5em'
+		},
+	}, {
+		left: {
+			style: {
+				borderLeft: '1px solid #888',
+			},
+		},
+		right: {
+			style: {
+				borderRight: '1px solid #888',
+			},
+		},
+		topdiv: {
+			style: {
+				borderTop: '1px solid #888',
+			}
+		}
+	});
+
 	// Inflect a simple table: minor vertical division and horizontal values
 	tr.body = function({p:basepath, optimization, ignore, i, values, gutter, rows=[]}) {
 		let prevv;
 		for (let v of values[2]) {
 			let path = model.Path(basepath).add(v);
 			let row = [];
-			if (gutter > 1) row.push(th.space());
+			if (gutter > 1) row.push(th.space({style:{paddingLeft:'1.5em'}}));
 			row.push(th.format_value.minor(v));
 			let getv = j => v in values ? values[v][j] : values[j];
 			let groups = getgroups({p:path, optimization, ignore, values:values.slice(0,3).concat([3,4].map(getv))});
-			//console.log(path.toString(), groups, groups.map(g=>g[0].p.map));
+			let last3 = NaN;
 			for (let group of groups) {
 				let ditto, _ = group.length-1, {p,span} = group[0];
 				let {_3:_30, _4:_40} = group[0];
@@ -535,8 +565,15 @@ function word_table_values(w,ignore=null) {
 				if (link) val = view.make_link(link, val);
 				if (_) val = h('span', [view.arrow.float.left, view.arrow.float.right, val]);
 				else if (ditto && optimization & 1) val = nbsp+'\u2044'+nbsp+'\u2044';
-				row.push(h('td', {key:p.toString(), colSpan:span}, val));
+				var props = {key:p.toString(), colSpan:span};
+				var pos = [];
+				if (_3 !== last3) pos.push('left');
+				if (group === groups[groups.length-1]) pos.push('right');
+				props = cell_props.call(this, pos, props);
+				//console.log(cell_props.live.simplify().style, props.style, props.style.borderBottom);
+				row.push(h('td', props, val));
 				//if (extras) row.push(...extras(p));
+				last3 = _3;
 			}
 			rows.push(row);
 			prevv = v;
@@ -584,7 +621,7 @@ function word_table_values(w,ignore=null) {
 			return values[1].map(_1 => [
 				tr.format_value(_1),
 				tr.format_word(w.path(_1), w.lang, true)
-			]).reduce(reduconcat);
+			]).reduce(reduconcat,[]);
 		}
 		var gutter = 1;
 		if (values[0]) {
@@ -604,7 +641,7 @@ function word_table_values(w,ignore=null) {
 					], gutter,
 					ignore, i,
 				})
-			]).reduce(reduconcat);
+			]).reduce(reduconcat,[]);
 		}
 		return tr.subtable({
 			p: model.Path({word:w}), values, gutter,
@@ -624,7 +661,6 @@ function word_table_values(w,ignore=null) {
 						el !== undefined ? h(i || noheader ? 'td' : 'th', {key:autokey(el, k)}, el) : el
 				))
 		);
-		console.log(rows);
 		return h('table', props||{}, [h('tbody', rows)]);
 	};
 
@@ -658,9 +694,9 @@ function word_table_values(w,ignore=null) {
 
 	view.render = function() {
 		var w = pantheum.view.word;
-		w.pull().then(function() {
+		w.pullall().then(function() {
 			var values = word_table_values(w);
-			ReactDOM.render(pantheum.view.create_table(pantheum.view.do_table(w, values)), document.getElementById('inflection2'));
+			ReactDOM.render(pantheum.view.create_table(pantheum.view.do_table(w, values), {noheader:true}, {style:{borderCollapse:'collapse',fontSize:'15pt'}}), document.getElementById('inflection2'));
 		});
 	};
 })(pantheum.view);

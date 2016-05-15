@@ -17,20 +17,32 @@ describe('basic functionality', function() {
 			marginLeft: '4',
 		}
 	};
+	var testresult = {
+		'data-a': 1,
+		'data-b': 2,
+		'data-c': 3,
+		'data-d': 4,
+		style: {
+			marginTop: '1',
+			marginRight: '2',
+			marginBottom: '3',
+			marginLeft: '4',
+		}
+	};
 	var testthis = {
 		tru: true
 	};
-	for (let live of ['', '.live']) {
-		for (let make of ['.make', ' (new hash)', '']) {
-			describe('expand'+live+(make), function() {
+	var makes = {
+		'': ['', ' (new hash)'],
+		'.live': ['', ' (new hash)'],
+		'.proto': [''],
+	}
+	for (let live of ['', '.live', '.proto']) {
+		for (let make of makes[live]) {
+			describe('expand'+live+make, function() {
 				var result, style, c;
-				if (make === '.make') {
-					if (live) c = expand.live.make;
-					else c = expand.make;
-				} else {
-					if (live) c = expand.live;
-					else c = expand;
-				}
+				if (live) c = expand[live.substr(1)];
+				else c = expand;
 				it('should process objects', function() {
 					var style = c({style:{
 						margin: {bottomright:'none',topleft:'2'},
@@ -53,17 +65,16 @@ describe('basic functionality', function() {
 						},
 					}}).style.marginLeft.should.equal('2');
 				});
-				it('should '+(make==='.make'?'not ':'')+'return the first argument', function() {
+				it('should return the first argument', function() {
 					result = {};
-					if (make === '.make') {
-						result = c(test);
-						result.should.not.equal(test);
-					} else if (!make) {
+					if (live === '.proto') {
+						(result = c({}, test)).should.not.be.exactly(test);
+					} else if (make) {
+						c(result, test).should.be.exactly(result);
+					} else {
 						Object.assign(result, test);
 						result.style = Object.assign({}, test.style);
 						c(result).should.be.exactly(result);
-					} else {
-						c(result, test).should.be.exactly(result);
 					}
 				});
 				describe('data', function() {
@@ -116,9 +127,62 @@ describe('basic functionality', function() {
 						});
 					});
 				});
+				if (live)
+					it('should simplify to testresult', function() {
+						result.simplify().should.deepEqual(testresult);
+					});
 			});
 		}
 	}
+});
+
+describe('more variants:', function() {
+	describe('expand.proto', function() {
+		var live, proto;
+		it('should retain previous values', function() {
+			live = expand.proto({style:{
+				margin: '1 2 4 6'
+			}});
+			proto = expand.proto(live);
+			proto.style.margin.should.deepEqual({
+				top:'1',right:'2',bottom:'4',left:'6',
+			});
+		});
+		it('should accept new values', function() {
+			proto.style.marginLeft = '8';
+			proto.style.margin.should.deepEqual({
+				top:'1',right:'2',bottom:'4',left:'8',
+			});
+		});
+		it('should keep values separate', function() {
+			live.style.margin.should.deepEqual({
+				top:'1',right:'2',bottom:'4',left:'6',
+			});
+		});
+	});
+	describe('expand.style.proto', function() {
+		var live, proto;
+		it('should retain previous values', function() {
+			live = expand.style.proto({
+				margin: '1 2 4 6'
+			});
+			proto = expand.style.proto(live);
+			proto.margin.should.deepEqual({
+				top:'1',right:'2',bottom:'4',left:'6',
+			});
+		});
+		it('should accept new values', function() {
+			proto.marginLeft = '8';
+			proto.margin.should.deepEqual({
+				top:'1',right:'2',bottom:'4',left:'8',
+			});
+		});
+		it('should keep values separate', function() {
+			live.margin.should.deepEqual({
+				top:'1',right:'2',bottom:'4',left:'6',
+			});
+		});
+	});
 });
 
 describe('data manipulation', function() {
