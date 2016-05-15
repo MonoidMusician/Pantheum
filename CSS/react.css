@@ -19,6 +19,20 @@
     font-style: italic;
 }
 @font-face {
+    font-family: "Linux Biolinum";
+    src: url(/Fonts/LinBiolinum_R.woff);
+}
+@font-face {
+    font-family: "Linux Biolinum";
+    src: url(/Fonts/LinBiolinum_RB.woff);
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Linux Biolinum";
+    src: url(/Fonts/LinBiolinum_RI.woff);
+    font-style: italic;
+}
+@font-face {
     font-family: "Tengwar";
     src: url(/Fonts/tengtelc.ttf);
 }
