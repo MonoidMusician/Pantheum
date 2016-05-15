@@ -15,7 +15,7 @@
 	};
 	view.Attribute = createClass({
 		displayName: 'view.Attribute',
-		delete_API: function delete_API() {
+		delete_API() {
 			var {tag, value, id, onDelete} = this.props;
 			$.get(pantheum.api_path+'add-attributes.php',
 				  'attr=!'+tag+'&id='+id)
