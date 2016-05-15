@@ -1,6 +1,7 @@
 entr_trigger
 /Includes/mysql.php
-/JS/model/mysql.js
+/node/model/mysql.js
+/node/build
 chroot.sh
 llath/save.html
 load_eo_words.php
