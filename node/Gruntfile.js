@@ -10,10 +10,9 @@ module.exports = function(grunt) {
 				presets: ['babel-preset-es2015'],
 			},
 			build: {
-				cwd: 'model',
-				src: ['*.js'],
-				dest: 'build/model',
 				expand: true,
+				src: ['model/*.js', 'react/*.js'],
+				dest: 'build/',
 			},
 		},
 		browserify: {
@@ -23,7 +22,7 @@ module.exports = function(grunt) {
 			build: {
 				files: {
 					'build/model.js': 'build/model/pantheum.js',
-					'build/react.js': 'react/pantheum.js',
+					'build/react.js': 'build/react/pantheum.js',
 				}
 			},
 		},

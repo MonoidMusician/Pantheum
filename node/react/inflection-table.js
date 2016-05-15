@@ -83,7 +83,7 @@ function is_fillable(v) {
 	return true;
 }
 
-var model = pantheum.model;
+var model = require('../model');
 
 // Parse the depath into the necessary row/column values for the table
 function word_table_values(w,ignore=null) {
@@ -360,29 +360,22 @@ function word_table_values(w,ignore=null) {
 	_filter_ignore2(values[2],ignore,model.Path({word:w}),values[0],values[1]);
 	_filter_ignore2(values[3],ignore,model.Path({word:w}),values[0]);
 	_filter_ignore2(values[4],ignore,model.Path({word:w}),values[0],values[3]);
-	/*var_dump(values[0]);
-	var_dump(values[1]);
-	var_dump(values[2]);
-	var_dump(values[3]);
-	var_dump(values[4]);*/
 	return values;
 }
 
-(function(view) {
-	var createClass = function(c) {
-		var r = React.createClass(c);
-		r.h = h.bind(undefined, r);
-		return r;
-	};
+var React = require('react');
+var h = require('react-hyperscript');
+
+module.exports = function(view) {
 	var reduconcat = (a,b)=>a.concat(b);
 	function is_element(el, ...types) {
 		return React.isValidElement(el) && (!types || types.includes(el.type));
 	}
 
-	view.Scrollable = createClass({
+	view.Scrollable = view.createClass({
 		displayName: 'view.Scrollable',
 		render: function renderScrollable() {
-			return h('div', {...this.props, className:'scrollable'}, this.children);
+			return h('div', Object.assign(this.props, {className:'scrollable'}), this.children);
 		},
 	});
 
@@ -405,20 +398,12 @@ function word_table_values(w,ignore=null) {
 		},
 	};
 	var {th,td,tr} = view.table;
-	var nbsp = '\u00A0';
-	var noselect = {msUserSelect:'none',WebkitUserSelect:'none',MozUserSelect:'none',userSelect:'none'};
+	var nbsp = '';//'\u00A0';
 	th.blank = function(props={}) {
-		if (!props.style) props.style = noselect;
 		return h('th', props, nbsp);
 	};
-	th.space = function(padding='1.5em') {
-		var props = {};
-		if (this && !this['_notProps'])
-			Object.assign(props, this);
-		if (!props.style) props.style = {};
-		if (!props.style.padding && !props.style.paddingLeft)
-			props.style.paddingLeft = padding;
-		return h('th', props);
+	th.space = function(props={}) {
+		return h('th', props, nbsp+nbsp+nbsp);
 	};
 
 	var format_value_props = view.expand.React({
@@ -444,6 +429,7 @@ function word_table_values(w,ignore=null) {
 		greatest: {
 			style: {
 				fontWeight: 'bold',
+				//fontStyle: 'italic',
 				fontFamily: 'Linux Biolinum',
 				textTransform: 'uppercase',
 				paddingRight: '1em',
@@ -552,7 +538,7 @@ function word_table_values(w,ignore=null) {
 		for (let v of values[2]) {
 			let path = model.Path(basepath).add(v);
 			let row = [];
-			if (gutter > 1) row.push(th.space());
+			if (gutter > 1) row.push(th.space({style:{paddingLeft:'1.5em'}}));
 			row.push(th.format_value.minor(v));
 			let getv = j => v in values ? values[v][j] : values[j];
 			let groups = getgroups({p:path, optimization, ignore, values:values.slice(0,3).concat([3,4].map(getv))});
@@ -700,28 +686,10 @@ function word_table_values(w,ignore=null) {
 
 
 	view.render = function() {
-		var w = pantheum.view.word;
+		var w = view.word;
 		w.pullall().then(function() {
-			ReactDOM.render(
-				view.Entry.h({word:w}),
-				document.getElementById('dictionary')
-			);
 			var values = word_table_values(w);
-			var options = {noheader:true};
-			var props = {
-				style: {
-					borderCollapse:'collapse',
-					fontSize:'15pt',
-				}
-			};
-			ReactDOM.render(
-				pantheum.view.create_table(pantheum.view.do_table(w, values), options, props), document.getElementById('inflection2')
-			);
+			ReactDOM.render(view.create_table(view.do_table(w, values), {noheader:true}, {style:{borderCollapse:'collapse',fontSize:'15pt'}}), document.getElementById('inflection2'));
 		});
 	};
-})(pantheum.view);
-
-
-window.word_table_values = word_table_values;
-
-
+};

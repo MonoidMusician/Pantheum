@@ -1,15 +1,10 @@
-(function({view, model}) {
-	"use strict";
-	var createClass = function(c) {
-		var r = React.createClass(c);
-		r.h = h.bind(undefined, r);
-		return r;
-	};
+var h = require('react-hyperscript');
 
+module.exports = function(view) {
 	view.format_value = function format_value(value) {
 		return view.FormattedValue.h({value});
 	};
-	view.FormattedValue = createClass({
+	view.FormattedValue = view.createClass({
 		displayName: 'view.FormattedValue',
 		render: function renderFormattedValue() {
 			var {value:v} = this.props;
@@ -27,7 +22,7 @@
 	view.format_word = function format_word(value) {
 		return view.FormattedWord.h({value});
 	};
-	view.FormattedWord = createClass({
+	view.FormattedWord = view.createClass({
 		displayName: 'view.FormattedWord',
 		render: function renderFormattedWord() {
 			var {value:v} = this.props;
@@ -39,4 +34,4 @@
 			return h('span', v);
 		},
 	});
-})(pantheum);
+};

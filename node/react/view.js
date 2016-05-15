@@ -1,26 +1,12 @@
-(function(view) {
-	"use strict";
-	var createClass = function(c) {
-		var r = React.createClass(c);
-		r.h = h.bind(undefined, r);
-		return r;
-	};
-	var propsdata = function(props, data) {
-		for (let p in data) {
-			props["data-"+p] = data[p];
-		}
-		return props;
-	};
-	var $dom = function(component) {
-		return $(ReactDOM.findDOMNode(component));
-	};
+var h = require('react-hyperscript');
 
-	view.Input = createClass({
+module.exports = function(view) {
+	view.Input = view.createClass({
 		displayName: 'view.Input',
 		componentDidMount: function() {
-			var input = $dom(this);
+			var input = view.$dom(this);
 			if (this.props.autoSize)
-				input.autosizeInput();
+				input.autosizeInput(this.props.autoSize||{space:30});
 			if (this.props.autoFocus)
 				input[0].focus(); // actually redundant...
 			if (this.props.autoSelect)
@@ -34,7 +20,7 @@
 				this.props.onNewValue(value);
 		},
 		render: function() {
-			return h('input', {...this.props, onChange: this.handleChange});
+			return h('input', Object.assign(this.props, {onChange: this.handleChange}));
 		}
 	});
 
@@ -100,7 +86,7 @@
 		opacity: 1;
 	}
 	*/
-	view.Checkbox = createClass({
+	view.Checkbox = view.createClass({
 		displayName: 'view.Checkbox',
 		getInitialState: function() {
 			return {hover:false, focus:false};
@@ -144,7 +130,7 @@
 				onKeyPress: this.handleKeyPress,
 				tabIndex: 0,
 			}, [
-				h('input', {...this.props, onChange: this.handleChange, type:'checkbox', style: style('input')}),
+				h('input', Object.assign({}, this.props, {onChange: this.handleChange, type:'checkbox', style: style('input')})),
 				h('span', {style: style('box')}),
 				h('span', {style: style('check')}),
 				h('span', this.props.children)
@@ -193,7 +179,7 @@
 		}
 	}
 
-	view.EditableText = createClass({
+	view.EditableText = view.createClass({
 		displayName: 'view.EditableText',
 		getInitialState: function() {
 			return {
@@ -232,9 +218,8 @@
 			else if (key === 27) this.cancel();
 		},
 		componentDidUpdate: function(){
-			//console.log('wasfocused:', this.state.wasfocused, this._edit && ReactDOM.findDOMNode(this._edit));
 			if (this.wasfocused && this._edit)
-				ReactDOM.findDOMNode(this._edit).focus();
+				view.$dom(this._edit)[0].focus();
 		},
 		render: function() {
 			var text = this.props.display || this.state.value;
@@ -270,13 +255,13 @@
 		}
 	});
 
-	view.Abbreviation = createClass({
+	view.Abbreviation = view.createClass({
 		displayName: 'view.Abbreviation',
 		render: function() {
 			return h('abbr', {title:this.props.title}, this.props.children);
 		},
 		componentDidMount: function() {
-			$dom(this).qtip({
+			view.$dom(this).qtip({
 				style: {
 					classes: "qtip-light qtip-abbr"
 				},
@@ -296,17 +281,17 @@
 		},
 		componentDidUpdate: function() {
 			// Hint qtip to update
-			$dom(this).attr('title', this.props.title);
+			view.$dom(this).attr('title', this.props.title);
 		},
 		componentWillUnmount: function() {
-			$dom(this).qtip('destroy', true);
+			view.$dom(this).qtip('destroy', true);
 		}
 	});
 	view.format_abbr = function(desc, ...children) {
 		return view.Abbreviation.h({title:desc}, children);
 	};
 
-	view.Icon = createClass({
+	view.Icon = view.createClass({
 		displayName: 'view.Icon',
 		getInitialState: function() {
 			return {hover:false, focus:false, active:false};
@@ -348,7 +333,7 @@
 			else if (this.state.focus) style.color = '#CC3333';
 			else if (this.state.hover) style.color = '#DA9031';
 			else style.color = '#DA7B00';
-			return h('a', propsdata({
+			return h('a', view.expand({
 				href: this.props.link||"javascript:void(0)",
 				onClick: this.props.action||this.props.onClick,
 				onKeyUp: this.handleKeyUp,
@@ -363,10 +348,11 @@
 				id: this.props.id,
 				style: style,
 				tabIndex: 0,
-			}, {glyph}));
+				data: {glyph},
+			}));
 		},
 		componentDidMount: function() {
-			$dom(this).qtip({
+			view.$dom(this).qtip({
 				style: {
 					classes: "qtip-light qtip-abbr"
 				},
@@ -437,4 +423,4 @@
 			};
 		}
 	}
-})(pantheum.view);
+};

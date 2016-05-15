@@ -1,25 +1,25 @@
-Plugins.AutosizeInput.getDefaultOptions().space = 30;
+var ReactDOM = require('react-dom');
+var h = require('react-hyperscript');
 
-(function({view, model}) {
-	"use strict";
+var model = require('../model');
+var user = require('../user');
+
+var la_ipa = {transforms:{"IPA transcription":v=>v}};
+
+module.exports = function(view) {
 	var languages = {
 		"la": "Latin",
 		"en": "English",
 	};
-	var createClass = function(c) {
-		var r = React.createClass(c);
-		r.h = h.bind(undefined, r);
-		return r;
-	};
 
-	view.Language = createClass({
+	view.Language = view.createClass({
 		displayName: 'view.Language',
 		render: function renderLanguage() {
 			var title = this.props.name || languages[this.props.children];
 			return h('sup', {title}, ["[",this.props.children,"]"]);
 		},
 		componentDidMount: function() {
-			$(ReactDOM.findDOMNode(this)).qtip({
+			view.$dom(this).qtip({
 				style: {
 					classes: "qtip-light qtip-abbr"
 				},
@@ -38,7 +38,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			});
 		}
 	});
-	view.WordName = createClass({
+	view.WordName = view.createClass({
 		displayName: 'view.WordName',
 		handleNewValue(name) {
 			console.log(name);
@@ -48,7 +48,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			if (this.props.word.lang)
 				classes.push("format-word-"+this.props.word.lang);
 			return view.EditableText.h({
-				disabled: !pantheum.user.administrator,
+				disabled: !user.administrator,
 				spanClassName: classes.join(" "),
 				onNewValue: this.handleNewValue,
 				value: this.props.word.name,
@@ -56,7 +56,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			});
 		}
 	});
-	view.Definitions = createClass({
+	view.Definitions = view.createClass({
 		displayName: 'view.Definitions',
 		handleNewValue(id) {
 			return (name) => {
@@ -65,7 +65,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		},
 		render: function renderDefinitions() {
 			var edit;
-			if (pantheum.user.administrator)
+			if (user.administrator)
 				edit = view.Icon.h({type:"del"});
 			return h('ol', this.props.definitions.map((def, key) => {
 				var tag = def.form_tag;
@@ -76,7 +76,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 					tag && def.tag.value && ' “'+def.tag.value+'”',
 					tag && ') ',
 					view.EditableText.h({
-						disabled: !pantheum.user.administrator,
+						disabled: !user.administrator,
 						onNewValue: this.handleNewValue(def.id),
 						value: def.value.split('\n').join(', '),
 					}),
@@ -86,7 +86,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		}
 	});
 
-	view.Inflection = createClass({
+	view.Inflection = view.createClass({
 		displayName: 'view.Inflection',
 		getInitialState() {
 			return {onlyleaves:false};
@@ -96,7 +96,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 		},
 		render: function renderInflection() {
 			var edit;
-			if (pantheum.user.administrator)
+			if (user.administrator)
 				edit = view.Icon.h({type:"del"});
 			var {onlyleaves} = this.state;
 			var mgr = this.props.mgr;
@@ -107,7 +107,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 				...sorted.map(
 					(form, key) => mgr.all_sub_keys.map(k=>form.key_value(k)).concat([
 						view.EditableText.h({
-							disabled: !pantheum.user.administrator,
+							disabled: !user.administrator,
 							onNewValue: this.handleNewValue,
 							value: form.value && form.value.split('\n').join(', '),
 							key: form.value,
@@ -124,13 +124,13 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			]);
 		}
 	});
-	view.EntryName = createClass({
+	view.EntryName = view.createClass({
 		displayName: 'view.EntryName',
 		render: function renderEntryName() {
 			return h('span', [view.Language.h(this.props.word.lang), view.WordName.h(this.props)]);
 		}
 	});
-	view.Wiktionary = createClass({
+	view.Wiktionary = view.createClass({
 		displayName: 'view.Wiktionary',
 		render: function renderWiktionary() {
 			// TODO: slugify (transform æ, œ, macrons....)
@@ -140,7 +140,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			}, this.props.text||"Wiktionary");
 		}
 	});
-	view.LewisShort = createClass({
+	view.LewisShort = view.createClass({
 		displayName: 'view.LewisShort',
 		render: function renderLewisShort() {
 			if (this.props.word.lang != 'la') return h('span');
@@ -151,7 +151,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			}, this.props.word.text||"Lewis & Short")]);
 		}
 	});
-	view.PronunciationTool = createClass({
+	view.PronunciationTool = view.createClass({
 		displayName: 'view.PronunciationTool',
 		transform: la_ipa.transforms["IPA transcription"],
 		getInitialState() {
@@ -167,7 +167,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			]);
 		}
 	});
-	view.Entry = createClass({
+	view.Entry = view.createClass({
 		displayName: 'view.Entry',
 		getInitialState() {
 			return {toolsOpen: false};
@@ -187,8 +187,8 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 					view.Icon.h.refresh( { key:k++ }),
 					view.Icon.h.del(     { key:k++ }),
 					h('div', {key:k++,style:{"paddingLeft":"2em"}}, [
-						view.Wiktionary.h({...this.props,key:0}),
-						view.LewisShort.h({...this.props,key:1}),
+						view.Wiktionary.h(Object.assign(this.props, {key:0})),
+						view.LewisShort.h(Object.assign(this.props, {key:1})),
 						h('br', {key:2}),
 						'Pronunciation: ',
 						view.PronunciationTool.h({key:4})
@@ -216,7 +216,7 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			transitive:false
 		},
 	};
-	view.word = word = pantheum.model.Word(word, true);
+	view.word = word = model.Word(word, true);
 	word.onAttrDelete = function(tag, value) {
 		delete word.attrs[tag];
 		view.render();
@@ -227,4 +227,4 @@ Plugins.AutosizeInput.getDefaultOptions().space = 30;
 			document.getElementById('dictionary')
 		));
 	};
-})(pantheum);
+};

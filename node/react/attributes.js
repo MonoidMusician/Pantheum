@@ -1,19 +1,18 @@
-(function(view) {
-	"use strict";
-	var createClass = function(c) {
-		var r = React.createClass(c);
-		r.h = h.bind(undefined, r);
-		return r;
-	};
+var h = require('react-hyperscript');
+
+var user = require('../user');
+
+module.exports = function(view) {
+	var {createClass, $dom, React, ReactDOM} = view;
 
 	var format_abbr_del = function(abbr, desc, action) {
 		return h('span', [view.format_abbr(desc, abbr), view.del({action:action, key:1})]);
 	};
 	view.del = function(props) {
-		if (pantheum.user.administrator)
+		if (user.administrator)
 			return view.Icon.h.small.del(props);
 	};
-	view.Attribute = createClass({
+	view.Attribute = view.createClass({
 		displayName: 'view.Attribute',
 		delete_API() {
 			var {tag, value, id, onDelete} = this.props;
@@ -117,7 +116,7 @@
 		if (React.isValidElement(a)) return a;
 		var [tag, value] = a.split("=");
 		if (!value) return a;
-		return view.Attribute.h({...props, key: tag, tag, value});
+		return view.Attribute.h(Object.assign(props, {key: tag, tag, value}));
 	}};
 
 	function intersperse(arr, sep) {
@@ -130,7 +129,7 @@
 		}, [arr[0]]);
 	}
 
-	view.Attributes = createClass({
+	view.Attributes = view.createClass({
 		displayName: 'view.Attributes',
 		handleNewValue(value) {
 			console.log(value);
@@ -142,20 +141,20 @@
 				onDelete: this.props.onAttrDelete,
 			};
 			var spart = view.EditableText.h({
-				key:0, disabled: !pantheum.user.administrator,
+				key:0, disabled: !user.administrator,
 				value: this.props.word.spart,
 				onNewValue: this.handleNewValue,
 			});
 			var attrs = [spart];
 			if (!Array.isArray(this.props.word.attrs)) {
-				$.each(this.props.word.attrs, function(key, value) {
-					attrs.push(key+'='+value);
-				})
+				for (let key in this.props.word.attrs) {
+					attrs.push(key+'='+this.props.word.attrs[key]);
+				}
 			} else attrs.push(...this.props.word.attrs);
-			if (pantheum.user.administrator) attrs.push(view.Icon.h.add({key:attrs.length}));
+			if (user.administrator) attrs.push(view.Icon.h.add({key:attrs.length}));
 			attrs = attrs.map(view.create_attribute(props));
 			return h('span', ['(', ...intersperse(attrs, '; '), ')']);
 		}
 	});
 
-})(pantheum.view);
+};
