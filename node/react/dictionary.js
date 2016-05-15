@@ -66,7 +66,7 @@ module.exports = function(view) {
 		render: function renderDefinitions() {
 			var edit;
 			if (user.administrator)
-				edit = view.Icon.h({type:"del"});
+				edit = view.Icon.h({type:"delete"});
 			return h('ol', this.props.definitions.map((def, key) => {
 				var tag = def.form_tag;
 				return h('li', {key}, [
@@ -97,7 +97,7 @@ module.exports = function(view) {
 		render: function renderInflection() {
 			var edit;
 			if (user.administrator)
-				edit = view.Icon.h({type:"del"});
+				edit = view.Icon.h({type:"delete"});
 			var {onlyleaves} = this.state;
 			var mgr = this.props.mgr;
 			var sorted = model.Path.sort(this.props.forms);
@@ -170,10 +170,13 @@ module.exports = function(view) {
 	view.Entry = view.createClass({
 		displayName: 'view.Entry',
 		getInitialState() {
-			return {toolsOpen: false};
+			return {toolsOpen: false, classic:true};
 		},
 		toggleTools() {
 			this.setState({toolsOpen: !this.state.toolsOpen});
+		},
+		handleCheckbox(classic) {
+			this.setState({classic});
 		},
 		render: function renderEntry() {
 			var tools, action = this.toggleTools;
@@ -185,7 +188,7 @@ module.exports = function(view) {
 					view.Icon.h.tools(   { key:k++, className: "hider", action }),
 					view.Icon.h.hardlink({ key:k++, link: "dictionary.php?id="+this.props.id }),
 					view.Icon.h.refresh( { key:k++ }),
-					view.Icon.h.del(     { key:k++ }),
+					view.Icon.h.delete(     { key:k++ }),
 					h('div', {key:k++,style:{"paddingLeft":"2em"}}, [
 						view.Wiktionary.h(Object.assign({}, this.props, {key:0})),
 						view.LewisShort.h(Object.assign({}, this.props, {key:1})),
@@ -201,7 +204,14 @@ module.exports = function(view) {
 				view.Attributes.h(this.props),
 				...tools,
 				view.Definitions.h({definitions:this.props.word.definitions}),
-				view.Inflection.h({forms:this.props.word.forms, mgr:this.props.word.mgr}),
+				view.Checkbox.h({
+					checked: this.state.classic,
+					onNewValue: this.handleCheckbox,
+				}, 'Show classic inflection table'),
+				h('div', {style:{marginBottom:'1ex'}}),
+				this.state.classic ?
+					view.InflectionTable.h({word:this.props.word}) :
+					view.Inflection.h({forms:this.props.word.forms, mgr:this.props.word.mgr}),
 				h('hr'),
 			]);
 		}

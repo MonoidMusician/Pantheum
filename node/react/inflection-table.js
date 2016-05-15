@@ -398,12 +398,27 @@ module.exports = function(view) {
 		},
 	};
 	var {th,td,tr} = view.table;
-	var nbsp = '';//'\u00A0';
+	var noselect = {
+		userSelect:'none',
+		msUserSelect:'none',
+		WebkitUserSelect:'none',
+		MozUserSelect:'none',
+	};
+	var nbsp = '\u00A0';
 	th.blank = function(props={}) {
+		if (!props.style) props.style = noselect;
 		return h('th', props, nbsp);
 	};
-	th.space = function(props={}) {
-		return h('th', props, nbsp+nbsp+nbsp);
+	th.space = function(space='1.5em') {
+		var props = {};
+		if (this && !this['_notProps'])
+			props = Object.assign(props, this);
+		if (space) {
+			if (!props.style) props.style = {};
+			if (!props.style.padding && !props.style.paddingLeft)
+				props.style.paddingLeft = space;
+		}
+		return h('th', props);
 	};
 
 	var format_value_props = view.expand.React({
@@ -538,7 +553,7 @@ module.exports = function(view) {
 		for (let v of values[2]) {
 			let path = model.Path(basepath).add(v);
 			let row = [];
-			if (gutter > 1) row.push(th.space({style:{paddingLeft:'1.5em'}}));
+			if (gutter > 1) row.push(th.space('1.5em'));
 			row.push(th.format_value.minor(v));
 			let getv = j => v in values ? values[v][j] : values[j];
 			let groups = getgroups({p:path, optimization, ignore, values:values.slice(0,3).concat([3,4].map(getv))});
@@ -684,12 +699,12 @@ module.exports = function(view) {
 		return view.create_table(data, options, ...arg);
 	};
 
-
-	view.render = function() {
-		var w = view.word;
-		w.pullall().then(function() {
-			var values = word_table_values(w);
-			ReactDOM.render(view.create_table(view.do_table(w, values), {noheader:true}, {style:{borderCollapse:'collapse',fontSize:'15pt'}}), document.getElementById('inflection2'));
-		});
-	};
+	view.InflectionTable = view.createClass({
+		displayName: 'view.InflectionTable',
+		render: function() {
+			var {word, values, ignore, optimization} = this.props;
+			if (!values) values = word_table_values(word);
+			return view.create_table(view.do_table(word, values, ignore, optimization), {noheader:true}, {style:{borderCollapse:'collapse'}});
+		},
+	});
 };

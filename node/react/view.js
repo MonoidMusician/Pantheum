@@ -119,9 +119,9 @@ module.exports = function(view) {
 				this.props.onNewValue(checked);
 		},
 		render: function() {
-			var style = k => view.expand.style.make.call(this, view.Checkbox.style[k]);
+			var style = (k,a) => view.expand.style.make.call(this, a, view.Checkbox.style[k]);
 			return h('label', {
-				style: style('label'),
+				style: style('label', this.props.style),
 				onMouseEnter: this.enter,
 				onMouseLeave: this.leave,
 				onFocus: this.focus,
@@ -322,9 +322,12 @@ module.exports = function(view) {
 		},
 		render: function() {
 			var glyph = view.Icon.glyphs[this.props.type];
+			var title = (s=>s[0].toUpperCase()+s.substr(1))(this.props.type);
+
 			var classes = this.props.className || [];
 			if (typeof classes === 'string') classes = classes.split(" ");
 			classes.push('oi', 'inline', 'spaced');
+
 			var styles = [view.Icon.style.base];
 			if (this.props.small) styles.push(view.Icon.style.small);
 			if (this.props.nospace) styles.push({paddingLeft:null});
@@ -333,7 +336,8 @@ module.exports = function(view) {
 			else if (this.state.focus) style.color = '#CC3333';
 			else if (this.state.hover) style.color = '#DA9031';
 			else style.color = '#DA7B00';
-			return h('a', view.expand({
+
+			var props = view.expand({
 				href: this.props.link||"javascript:void(0)",
 				onClick: this.props.action||this.props.onClick,
 				onKeyUp: this.handleKeyUp,
@@ -344,12 +348,13 @@ module.exports = function(view) {
 				onFocus: this.handleFocus,
 				onBlur: this.handleBlur,
 				className: classes.join(" "),
-				title: this.props.desc,
+				title: this.props.desc||title,
 				id: this.props.id,
 				style: style,
 				tabIndex: 0,
 				data: {glyph},
-			}));
+			});
+			return h('a', props);
 		},
 		componentDidMount: function() {
 			view.$dom(this).qtip({
@@ -379,15 +384,6 @@ module.exports = function(view) {
 			textDecoration: 'none',
 			outline: 'none',
 			border: 'none',
-			':hover': {
-				color: '#DA9031'
-			},
-			':focus': {
-				color: '#CC333'
-			},
-			':active': {
-				color:'red'
-			},
 		},
 		small: {
 			verticalAlign: 'inherit',
@@ -399,7 +395,7 @@ module.exports = function(view) {
 		"edit": "pencil",
 		"refresh": "reload",
 		"hardlink": "link-intact",
-		"del": "trash",
+		"delete": "trash",
 		"tools": "wrench",
 		"rename": "text",
 		"change POS": "compass", // FIXME

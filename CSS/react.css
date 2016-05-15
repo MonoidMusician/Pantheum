@@ -36,3 +36,13 @@
     font-family: "Tengwar";
     src: url(/Fonts/tengtelc.ttf);
 }
+
+.qtip.qtip-medium {
+    font-size: 12pt !important;
+}
+.qtip.qtip-abbr {
+    font-weight: bold !important;
+}
+.qtip {
+    font-size: 10pt !important;
+}

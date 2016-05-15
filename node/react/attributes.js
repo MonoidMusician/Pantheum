@@ -6,11 +6,11 @@ module.exports = function(view) {
 	var {createClass, $dom, React, ReactDOM} = view;
 
 	var format_abbr_del = function(abbr, desc, action) {
-		return h('span', [view.format_abbr(desc, abbr), view.del({action:action, key:1})]);
+		return h('span', [view.format_abbr(desc, abbr), view.delete({action:action, key:1})]);
 	};
-	view.del = function(props) {
+	view.delete = function(props) {
 		if (user.administrator)
-			return view.Icon.h.small.del(props);
+			return view.Icon.h.small.delete(props);
 	};
 	view.Attribute = view.createClass({
 		displayName: 'view.Attribute',
@@ -108,7 +108,7 @@ module.exports = function(view) {
 		render: function renderAttribute() {
 			var r = this._render();
 			if (typeof r === 'string')
-				return h('span', [r, view.del(this.delete_API)]);
+				return h('span', [r, view.delete(this.delete_API)]);
 			return r;
 		}
 	});
