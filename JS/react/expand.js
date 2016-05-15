@@ -315,15 +315,32 @@ var simplify = {
 	configurable: true,
 	value: function() {
 		var dfault = {};
-		var r = Object.assign({}, this, {style:{}});
+		var r = Object.assign({}, this);
+		r.style = simplify.style.value.call(this.style);
+		return r;
+	},
+};
+simplify.style = {
+	enumerable: false,
+	configurable: true,
+	value: function() {
+		var dfault = {};
+		var r = {};
 		for (let [name, prop] of style) {
 			var df = prop.get.call(dfault);
-			if (df != undefined && df !== this.style[name])
-				r.style[name] = this.style[name].toString();
+			if (df != undefined && df !== this[name])
+				r[name] = this[name].toString();
 		}
 		return r;
 	},
-}
+};
+var toString = {
+	enumerable: false,
+	configurable: true,
+	value: function() {
+		return require('react/lib/CSSPropertyOperations').createMarkupForStyles(simplify.style.value.call(this));
+	},
+};
 
 function expand(r, ...props) {
 	for (let p of [r, ...props]) {
@@ -365,14 +382,16 @@ function defprop(obj, name, prop, ...vals) {
 		obj[name] = v;
 }
 function live(r, ...props) {
+	// Ensure we have a style
+	if (!r.style) r.style = {};
+
 	// Method to make this into a simple object again
 	Object.defineProperty(r, 'simplify', simplify);
+	Object.defineProperty(r.style, 'simplify', simplify.style);
+	Object.defineProperty(r.style, 'toString', toString);
 
 	// Create the data properties
 	defprop.call(this, r, 'data', data);
-
-	// Ensure we have a style
-	if (!r.style) r.style = {};
 
 	// Copy our style values to ensure they are added
 	// (even if a magic method sets it in the object)
@@ -463,6 +482,7 @@ expand.style.proto = function(r, ...props) {
 
 expand.React = function(props, classes) {
 	function _clsz(classes) {
+		if (!classes) return [];
 		if (typeof classes === 'string')
 			return classes.trim().split(/\s+/g);
 		if (classes.length > 1)

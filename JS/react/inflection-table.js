@@ -405,12 +405,20 @@ function word_table_values(w,ignore=null) {
 		},
 	};
 	var {th,td,tr} = view.table;
-	var nbsp = '';//'\u00A0';
+	var nbsp = '\u00A0';
+	var noselect = {msUserSelect:'none',WebkitUserSelect:'none',MozUserSelect:'none',userSelect:'none'};
 	th.blank = function(props={}) {
+		if (!props.style) props.style = noselect;
 		return h('th', props, nbsp);
 	};
-	th.space = function(props={}) {
-		return h('th', props, nbsp+nbsp+nbsp);
+	th.space = function(padding='1.5em') {
+		var props = {};
+		if (this && !this['_notProps'])
+			Object.assign(props, this);
+		if (!props.style) props.style = {};
+		if (!props.style.padding && !props.style.paddingLeft)
+			props.style.paddingLeft = padding;
+		return h('th', props);
 	};
 
 	var format_value_props = view.expand.React({
@@ -436,7 +444,6 @@ function word_table_values(w,ignore=null) {
 		greatest: {
 			style: {
 				fontWeight: 'bold',
-				//fontStyle: 'italic',
 				fontFamily: 'Linux Biolinum',
 				textTransform: 'uppercase',
 				paddingRight: '1em',
@@ -545,7 +552,7 @@ function word_table_values(w,ignore=null) {
 		for (let v of values[2]) {
 			let path = model.Path(basepath).add(v);
 			let row = [];
-			if (gutter > 1) row.push(th.space({style:{paddingLeft:'1.5em'}}));
+			if (gutter > 1) row.push(th.space());
 			row.push(th.format_value.minor(v));
 			let getv = j => v in values ? values[v][j] : values[j];
 			let groups = getgroups({p:path, optimization, ignore, values:values.slice(0,3).concat([3,4].map(getv))});
@@ -695,8 +702,21 @@ function word_table_values(w,ignore=null) {
 	view.render = function() {
 		var w = pantheum.view.word;
 		w.pullall().then(function() {
+			ReactDOM.render(
+				view.Entry.h({word:w}),
+				document.getElementById('dictionary')
+			);
 			var values = word_table_values(w);
-			ReactDOM.render(pantheum.view.create_table(pantheum.view.do_table(w, values), {noheader:true}, {style:{borderCollapse:'collapse',fontSize:'15pt'}}), document.getElementById('inflection2'));
+			var options = {noheader:true};
+			var props = {
+				style: {
+					borderCollapse:'collapse',
+					fontSize:'15pt',
+				}
+			};
+			ReactDOM.render(
+				pantheum.view.create_table(pantheum.view.do_table(w, values), options, props), document.getElementById('inflection2')
+			);
 		});
 	};
 })(pantheum.view);
