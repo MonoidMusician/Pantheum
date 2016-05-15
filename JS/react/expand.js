@@ -422,6 +422,9 @@ expand.style.live = wrapstyle(expand.live);
 expand.style.make = wrapstyle(expand.make);
 expand.style.live.make = wrapstyle(expand.live.make);
 
+
+var stampit = require('stampit');
+
 expand.React = stampit({
 	methods: {
 		make: function make(component, classes, ...props) {
