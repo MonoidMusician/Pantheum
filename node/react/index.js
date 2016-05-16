@@ -5,6 +5,7 @@ var ReactDOMServer = require('react-dom/server');
 var h = require('react-hyperscript');
 
 var view = {React, ReactDOM, ReactDOMServer, h};
+view.pages = {};
 module.exports = view;
 
 var model = require('../model');

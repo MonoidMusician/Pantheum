@@ -216,28 +216,42 @@ module.exports = function(view) {
 			]);
 		}
 	});
-	var word = {
-		id: 10176,
-		entry: "sum, esse, fui", // TODO: should be calculated from spart and forms (and attrs)
-		attrs: {
-			common:true,
-			copulative:true,
-			irregular:true,
-			transitive:false
+	view.pages['sum'] = {
+		title: 'sum | Dictionary | Pantheum',
+		heading: 'Dictionary entry for sum, esse, fui',
+		data(get, form) {
+			var word = {
+				id: 10176,
+				entry: "sum, esse, fui", // TODO: should be calculated from spart and forms (and attrs)
+				attrs: {
+					common:true,
+					copulative:true,
+					irregular:true,
+					transitive:false
+				},
+			};
+			view.word = word = model.Word(word, true);
+			return word.pullall();
 		},
-	};
-	view.word = word = model.Word(word, true);
-	word.onAttrDelete = function(tag, value) {
-		delete word.attrs[tag];
-		view.render();
-	};
-	view.render = function() {
-		ReactDOM.render(
-			view.Entry.h({word}),
-			document.getElementById('dictionary')
-		);
-	};
-	view.render_pull = function() {
-		word.pullall().then(view.render);
+		toJSON(word) {
+			return word.toJSON();
+		},
+		fromJSON(json) {
+			var word;
+			view.word = word = model.Word({}, true).fromJSON(json);
+			Object.assign(word, {
+				entry: "sum, esse, fui", // TODO: should be calculated from spart and forms (and attrs)
+				attrs: {
+					common:true,
+					copulative:true,
+					irregular:true,
+					transitive:false
+				}
+			});
+			return word;
+		},
+		render(word) {
+			return view.Entry.h({word});
+		},
 	};
 };
