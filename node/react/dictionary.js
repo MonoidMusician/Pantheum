@@ -232,9 +232,12 @@ module.exports = function(view) {
 		view.render();
 	};
 	view.render = function() {
-		word.pullall().then(w=>ReactDOM.render(
+		ReactDOM.render(
 			view.Entry.h({word}),
 			document.getElementById('dictionary')
-		));
+		);
+	};
+	view.render_pull = function() {
+		word.pullall().then(view.render);
 	};
 };

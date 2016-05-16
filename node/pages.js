@@ -58,8 +58,9 @@ router.route('/dictionary').get(handler(function*(req, res) {
 	});
 }));
 
+var file = fs.readFileSync('../playground.html', 'utf8');
 router.route('/playground').get(handler(function*(req, res) {
-	var file = fs.readFileSync('../playground.html', 'utf8');
+	var result = file;
 	model.Word({
 		id: 10176,
 		entry: "sum, esse, fui", // TODO: should be calculated from spart and forms (and attrs)
@@ -71,17 +72,14 @@ router.route('/playground').get(handler(function*(req, res) {
 		}
 	}, true).pullall().then(function(word) {
 		var entry = view.Entry.h({word});
-		var root = view.Page.h({
-			title: 'Dictionary',
-			links: [
-				{rel:'stylesheet', type:'text/css', href:'/CSS/react.css'},
-				{rel:'stylesheet', type:'text/css', href:'/Images/open-iconic/font/css/open-iconic.css'},
-			]
-		}, entry);
-		file.replace(
+		var json = word.toJSON();
+		result = result.replace(
 			'<div id="dictionary"></div>',
-			ReactDOMServer.renderToString(entry)
-		);
-		res.send(file);
+			'<div id="dictionary">'+ReactDOMServer.renderToString(entry)+'</div>'
+		).replace(
+			'pantheum.view.render_pull',
+			'pantheum.view.word.fromJSON('+JSON.stringify(json)+');'+
+			'pantheum.view.render');
+		res.send(result);
 	});
 }));

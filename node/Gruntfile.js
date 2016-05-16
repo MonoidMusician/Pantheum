@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 			},
 			build: {
 				expand: true,
-				src: 'model react languages user'.split(' ').map(d=>d+'/*.js').concat('pantheum.js'),
+				src: 'model react languages user'.split(' ').map(d=>d+'/*.js').concat('pantheum.js', 'la_ipa.js'),
 				dest: 'build/',
 			},
 		},

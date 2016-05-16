@@ -38,7 +38,7 @@ module.exports = function(model) {
 			visited.push([data, this]);
 			this.word = data.word && common.visit(visited, data.word, model.Word.fromData.cacheable(this.cacheable));
 
-			for (let d of [...columns, "id", "word", "tag"])
+			for (let d of [...columns, "id", "form_tag"])
 				if (data[d] != null)
 					this[d] = data[d];
 

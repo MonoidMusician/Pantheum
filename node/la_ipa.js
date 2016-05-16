@@ -22,12 +22,11 @@ var user = require('./user');
 
 var la_ipa = (function () {
 	var my = {};
-	my.constructor = arguments.callee;
 
 	my.mix = function () {
 		var arg = arguments;
 		return function(r) {
-			for (i in arg) {
+			for (let i in arg) {
 				r = arg[i](r);
 			}
 			return r;
@@ -244,8 +243,6 @@ var la_ipa = (function () {
 		};
 	})();
 	my.tengwar = function(r) {
-		if (typeof $ !== 'undefined' && !$('#tengwar-font').length)
-			$('head').append('<style id="tengwar-font">.format-word-la { font-family: Tengwar !important; font-weight: normal !important; }</style>');
 		var t = my.tengwar_map;
 		return (
 			r.toLowerCase()
@@ -516,7 +513,7 @@ var la_ipa = (function () {
 	// Adapted from: https://sim0n.wordpress.com/2009/03/28/javascript-char-code-to-unicode-fullwidth-latin/
 	my.fullwidth = function (r) {
 		var ret = "";
-		for(i=0; i<r.length; i++) {
+		for (let i=0; i<r.length; i++) {
 			if(r.charCodeAt(i) >= 33 && r.charCodeAt(i) <= 270) {
 				ret += String.fromCharCode(r.charCodeAt(i) + 65248);
 			} else if(r.charCodeAt(i) == 32) {
@@ -624,9 +621,6 @@ var la_ipa = (function () {
 			this.textContent = r;
 		});
 	}
-	if (typeof $ !== 'undefined') $(function() {
-		my.format();
-	});
 
 	return my;
 }());

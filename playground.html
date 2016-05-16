@@ -24,22 +24,22 @@
 			ga('send', 'pageview');
 		*/</script>
 		<script type="text/javascript" src="/JS/lib/jquery.js"></script>
+		<!--
 		<script type="text/javascript" src="/JS/lib/md5.js"></script>
 		<script type="text/javascript" src="/JS/lib/sha512.min.js"></script>
 		<script type="text/javascript" src="/JS/lib/whirlpool.min.js"></script>
 		<script type="text/javascript" src="/JS/login.js"></script>
 		<script type="text/javascript" src="/JS/lib/util.js"></script>
 		<script type="text/javascript" src="/JS/lib/compat.js"></script>
+		-->
 		<script type="text/javascript" src="/JS/lib/unorm.js"></script>
-		<script type="text/javascript" src="/JS/lib/la_ipa.js"></script>
 		<script type="text/javascript" src="/JS/lib/i18next.js"></script>
 		<script type="text/javascript" src="/JS/lib/jquery.autosize.input.min.js"></script>
 		<script type="text/javascript" src="/JS/lib/jquery.qtip.min.js"></script>
 		<script type="text/javascript" src="/JS/lib/select2.min.js"></script>
-		<script type="text/javascript" src="/JS/lib/html.sortable.min.js"></script>
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.8.0/polyfill.min.js"></script>
-		<script type="text/javascript" src="/node/build/bundle.js"></script>
+		<script type="text/javascript" src="/node/build/browser.js"></script>
 		<!--
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
 		<script>babel.pipeline.addFilter(({key}) => key !== 'regenerator');</script>
@@ -55,7 +55,7 @@
 		<h1>Dictionary Test page</h1>
 		<section id="content">
 			<div id="dictionary"></div>
-			<script>pantheum.view.render()</script>
+			<script>pantheum.view.render_pull()</script>
 		</section>
 	</body>
 </html>
