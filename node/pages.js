@@ -9,6 +9,9 @@ var view = require('./react');
 var model = require('./model');
 
 var router = express.Router();
+
+var doctype = '<!DOCTYPE html>';
+
 module.exports = router;
 
 var handle = function(res, err) {
@@ -28,12 +31,13 @@ var handler = function(gen) {
 	});
 };
 
-router.route('/').get(function(req, res) {
-	var root = view.Page.h({
-		title: 'HALLO',
-	}, 'hello');
-	res.send(ReactDOMServer.renderToString(root));
-});
+router.route('/').get(handler(function*(req, res) {
+	var data = yield Promise.resolve(view.pages["home"].data());
+	var html = view.Page.h({
+		page: "home", data,
+	});
+	res.send(doctype + ReactDOMServer.renderToStaticMarkup(html));
+}));
 
 for (let page in view.pages) {
 	router.route('/'+page).get(handler(function*(req, res) {
@@ -41,6 +45,6 @@ for (let page in view.pages) {
 		var html = view.Page.h({
 			page, data,
 		});
-		res.send(ReactDOMServer.renderToStaticMarkup(html));
+		res.send(doctype + ReactDOMServer.renderToStaticMarkup(html));
 	}));
 }

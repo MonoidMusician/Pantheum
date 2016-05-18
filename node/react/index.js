@@ -28,3 +28,4 @@ require('./format')(view);
 require('./inflection-table')(view);
 require('./attributes')(view);
 require('./dictionary')(view);
+require('./public')(view);
