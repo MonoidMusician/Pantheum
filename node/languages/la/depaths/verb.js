@@ -1,5 +1,3 @@
-var model = require('../model');
-
 var parts = {
 	"number": ["singular","plural"],
 	"case":["vocative","nominative","accusative","ablative","dative","genitive","locative"],
@@ -8,7 +6,7 @@ var parts = {
 	"voice":["active","passive"],
 	"tense":["present","imperfect","future","perfect","pluperfect","future-perfect"]
 };
-model.Depath.add("la", "verb", new model.Depath("verb", {"mood":{
+module.exports = {"mood":{
 	"indicative":{
 		"voice": parts["voice"],
 		"tense": parts["tense"],
@@ -77,4 +75,4 @@ model.Depath.add("la", "verb", new model.Depath("verb", {"mood":{
 			"ablative"
 		]
 	}
-}}));
+}};
