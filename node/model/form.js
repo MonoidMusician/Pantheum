@@ -456,6 +456,14 @@ module.exports = function(model) {
 			return this;
 		},
 		move(wen, hash) {return wen.set(this.remove(hash), hash);},
+		mapping() {
+			var r = {};
+			for (let i in this.mgr.all_sub_keys) {
+				let k = this.mgr.all_sub_keys[i];
+				r[k] = this.map[i];
+			}
+			return r;
+		},
 	};
 	var statics = {
 		table: "forms",

@@ -3,8 +3,9 @@ var model = require('../../model');
 var depaths = require('./depaths');
 
 for (let spart in depaths) {
-	var depath = depaths[spart];
-	if (!(depath instanceof model.Depath)) depath = new model.Depath('la/'+spart, depaths[spart]);
+	if (!(depaths[spart] instanceof model.Depath))
+		depaths[spart] = new model.Depath('la/'+spart, depaths[spart]);
+	model.Depath.add('la', spart, depaths[spart]);
 }
 
 var translate = require('./translate');

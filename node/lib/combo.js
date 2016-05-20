@@ -51,10 +51,9 @@ Permutator.Combo = (function() {
 			if (arg[i] === undefined) return;
 		return Permutator.issimple(arg) ? arg : (arg.filter ? arg.filter(filterer).map(mapper) : arg);
 	}
-	function* _iterate(...arg) {
+	function* _iterate(one, ...arg) {
 		if (!arg.length) yield '';
 		else {
-			var one = arg[0];
 			if (Permutator.issimple(one)) {
 				if (arg.length)
 					for (let l of _iterate.apply(null, arg))
@@ -69,17 +68,17 @@ Permutator.Combo = (function() {
 			}
 		}
 	}
-	function* iterate(...arg) {
-		if (!arg.length) yield '';
+	function* iterate(one, ...arg) {
+		if (!arguments.length) yield '';
 		else {
 			if (Permutator.issimple(one)) {
 				if (arg.length)
-					for (let l of iterate.apply(null, arg))
+					for (let l of iterate(...arg))
 						yield one + l;
 				else yield one;
 			} else {
 				if (arg.length)
-					for (let r of iterate.apply(null, arg))
+					for (let r of iterate(...arg))
 						for (let l of one)
 							yield* iterate(l,r);
 				else for (let l of one) yield* iterate(l);

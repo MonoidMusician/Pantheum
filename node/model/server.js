@@ -1,6 +1,7 @@
 "use strict";
 var stampit = require('stampit');
 var Promise = require('bluebird');
+var connection = require('./mysql');
 var queryP = require('./mysqlpromise');
 
 // Each derive class must have
@@ -128,6 +129,14 @@ var methods = {
 			this.cache();
 			return this;
 		});
+	},
+	close() {
+		return new Promise((resolve, reject) => {
+			connection.end(err => {
+				if (err) return reject(err);
+				return resolve(this);
+			});
+		})
 	},
 };
 var common = stampit({methods});
