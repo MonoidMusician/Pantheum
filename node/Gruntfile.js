@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 			},
 			build: {
 				expand: true,
-				src: 'model react languages user'.split(' ').map(d=>d+'/*.js').concat('pantheum.js', 'la_ipa.js'),
+				src: 'model react user lib'.split(' ').map(d=>d+'/*.js').concat('languages/**/*.js', 'pantheum.js', 'la_ipa.js'),
 				dest: 'build/',
 			},
 		},
@@ -23,6 +23,11 @@ module.exports = function(grunt) {
 				files: {
 					'build/browser.js': 'build/pantheum.js',
 				}
+			},
+			devel: {
+				files: {
+					'build/browser.js': 'pantheum.js',
+				},
 			},
 		},
 		uglify: {
@@ -43,5 +48,6 @@ module.exports = function(grunt) {
 
 	// Default task(s).
 	grunt.registerTask('default', ['babel', 'browserify', 'uglify']);
+	grunt.registerTask('devel', ['browserify:devel']);
 
 };

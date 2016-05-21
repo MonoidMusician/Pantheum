@@ -1,6 +1,7 @@
 var user = require('../../user');
 var {Combo, PermuteOrder} = require('../../lib/combo');
 var inflect = require('../en/inflect');
+var format = require('../../lib/string').normalize_punctuation;
 
 var translate = {};
 module.exports = translate;
@@ -36,9 +37,28 @@ function phrase(...arg) {
 	return new Combo(...inter);
 }
 
-translate["en"] = function la2en(path, only_one=false) {
+translate.en = function la2en(path, only_one=false) {
+	var result = la2en.inner(path, only_one);
+	if (result) {
+		if (only_one) {
+			if (typeof result !== 'string')
+				result = result[0];
+			result = format(result);
+		} else {
+			if (typeof result === 'string')
+				result = new Combo(result);
+			result = Object.assign(function* result(res) {
+				for (let r of res) {
+					yield format(r);
+				}
+			}(result), {combo:result, 0:format(result[0])});
+		}
+	}
+	return result;
+};
+translate.en.inner = function _la2en(path, only_one=false) {
 	var APOS = '’'; // FIXME
-	var arch = user.udata && user.data.archtrans;
+	var arch = user && user.archtrans;
 
 	var choose = function(...arg) {
 		var [standard, archaïc, extra] = arg.map(
@@ -168,7 +188,7 @@ translate["en"] = function la2en(path, only_one=false) {
 			case 'indicative':
 				let pronoun = [
 					'I', 'we',
-					'thou',/*/choose(['you (sg.)', 'you'], 'thou'),/*/
+					/*'thou',/*/choose(['you (sg.)', 'you'], 'thou'),/*/
 					'ye',/*/phrase(['','all'], choose(['you (pl.)', 'you'], 'ye', ['y'+APOS+'all'])),/*/
 					'he',/*/choices('he', 'she', 'it'),/**/
 					'they'
@@ -220,7 +240,7 @@ translate["en"] = function la2en(path, only_one=false) {
 						}
 						if (!psv && _p > 1 && !pl) {
 							if (_p == 3) d = d4;
-							else d = choices(d4, d);
+							else d = choose(d, d4);
 						}
 						break;
 					case 'imperfect':
@@ -311,5 +331,5 @@ translate["en"] = function la2en(path, only_one=false) {
 		}
 		return phrase(preposition, d);
 	}
-	return choices(...d);
+	return only_one ? d : choices(...d);
 };

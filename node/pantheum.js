@@ -6,5 +6,7 @@ window.la_ipa = require('./la_ipa');
 window.pantheum = {
 	model: require('./model'),
 	view: require('./react'),
+	user: require('./user'),
 };
 require('./languages/la');
+window.la2en = require('./languages/la/translate').en;

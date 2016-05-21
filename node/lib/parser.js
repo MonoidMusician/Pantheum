@@ -1,4 +1,3 @@
-"use strict";
 exports.swap_escaping = function swap_escaping(s) {
 	s = s.split('\\\\');
 	for (let r of ['{','}','(',')','[',']','|'])

@@ -95,7 +95,7 @@ Permutator.Combo = (function() {
 		if (!v) return '';
 		if (Array.isArray(v)) return getsingle(v[0]);
 		if (Permutator.issimple(v)) return v;
-		return v.single;
+		return v[0];
 	}
 	function getrepr(v) {
 		if (!v) return '';
@@ -116,7 +116,7 @@ Permutator.Combo = (function() {
 	Permutator.derived(Combo);
 	Combo.prototype.clear = function() {
 		this.length = 1;
-		this.single = "";
+		this[0] = "";
 		return (this.data = []);
 	};
 	Combo.prototype[Symbol.iterator] = function*() {
@@ -135,7 +135,7 @@ Permutator.Combo = (function() {
 		for (let a of arg) {
 			a = filter(a);
 			if (a === undefined) return this.clear();
-			this.single += getsingle(a);
+			this[0] += getsingle(a);
 			this.data.unshift(a);
 			this.length *= getlength(a);
 		}
@@ -148,7 +148,7 @@ Permutator.Combo = (function() {
 		for (let a of arg) {
 			a = filter(a);
 			if (a === undefined) return this.clear();
-			this.single += getsingle(a);
+			this[0] += getsingle(a);
 			this.data.push(a);
 			this.length *= getlength(a);
 		}
