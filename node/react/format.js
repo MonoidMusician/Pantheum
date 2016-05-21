@@ -40,7 +40,7 @@ module.exports = function(view) {
 					adjust: {y:5},
 				},
 				show: {
-					delay: 600,
+					delay: 400,
 				},
 				hide: {
 					fixed: true,

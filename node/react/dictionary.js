@@ -71,13 +71,10 @@ module.exports = function(view) {
 		componentDidMount() {
 			var element = view.$dom(this)[0];
 			element.textContent = this.props.long;
-			console.log(element, element.textContent, element.offsetWidth);
 			var max = element.offsetWidth || undefined;
 			element.textContent = this.props.short;
-			console.log(element, element.textContent, element.offsetWidth);
 			var min = element.offsetWidth || undefined;
 			this.setState({min,max});
-			console.log(min, max);
 		},
 		render: function renderRevealText() {
 			var {hover, min, max} = this.state;
@@ -96,7 +93,7 @@ module.exports = function(view) {
 					whiteSpace: 'nowrap',
 					overflow: 'hidden',
 					verticalAlign: 'text-top',
-					transition: 'width ease-in '+(hover ? '0.4s' : '0.1s'),
+					transition: 'width '+(hover ? '0.4s ease-out' : '0.2s ease-in'),
 					width,
 				},
 				onMouseOver: this.handleMouseOver,

@@ -7,6 +7,6 @@ window.pantheum = {
 	model: require('./model'),
 	view: require('./react'),
 	user: require('./user'),
+	languages: require('./languages'),
 };
-require('./languages/la');
 window.la2en = require('./languages/la/translate').en;

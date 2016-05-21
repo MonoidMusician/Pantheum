@@ -1,4 +1,3 @@
-
 module.exports = function(model) {
 	var _unique = (val,idx,self) => self.indexOf(val) === idx;
 	function _subscript(obj, k) {
@@ -122,16 +121,13 @@ module.exports = function(model) {
 			else this.aliases[alias] = value;
 		}
 	}
-	Depath.depaths = {};
 	Depath.of = function(word) {
 		return this.for(word.lang, word.spart);
 	};
 	Depath.for = function(lang, spart) {
-		return this.depaths[lang] && this.depaths[lang][spart];
-	};
-	Depath.add = function(lang, spart, depath) {
-		if (!this.depaths[lang]) this.depaths[lang] = {};
-		return this.depaths[lang][spart] = depath;
+		if (!lang) return;
+		if (typeof lang === 'string') lang = require('../languages')[lang];
+		return lang.depaths && lang.depaths[spart];
 	};
 	model.Depath = Depath;
 };

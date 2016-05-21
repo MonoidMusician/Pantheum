@@ -1,5 +1,6 @@
 var stampit = require('stampit');
 
+var languages = require('../languages');
 var common = require('./common');
 
 module.exports = function(model) {
@@ -23,6 +24,8 @@ module.exports = function(model) {
 			for (let d of [...columns, "id"])
 				if (data[d] != null)
 					this[d] = data[d];
+			if (this.lang in languages)
+				this.lang = languages[this.lang];
 
 			// Reconstruct recursive structures
 			if (!visited) visited = [];
@@ -56,6 +59,8 @@ module.exports = function(model) {
 			for (let d of columns)
 				if (row[prefix+d] !== undefined)
 					this[d] = row[prefix+d];
+			if (this.lang in languages)
+				this.lang = languages[this.lang];
 			return this;
 		},
 		toSQL() {

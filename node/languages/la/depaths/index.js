@@ -1,3 +1,3 @@
 module.exports = {
-	'verb': require('./verb')
+	'verb': require('./verb'),
 };

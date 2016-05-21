@@ -29,7 +29,7 @@ module.exports = function(model) {
 		},
 		set word(word) {
 			// This REALLY needs to be cacheable!
-			this._word = common.construct(model.Word, word, true);
+			this._word = common.construct(model.Word, word, this.cacheable || true);
 			this.mgr = this.word.mgr;
 			this.add2(this.word.df_path_values);
 		},

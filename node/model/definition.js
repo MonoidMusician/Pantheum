@@ -1,5 +1,6 @@
 var stampit = require('stampit');
 
+var languages = require('../languages');
 var common = require('./common');
 
 module.exports = function(model) {
@@ -13,7 +14,7 @@ module.exports = function(model) {
 			this._id = id;
 		},
 		set word(word) {
-			this._word = common.construct(model.Word, word, !!this.cacheable);
+			this._word = common.construct(model.Word, word, this.cacheable);
 		},
 		set tag(tag) {
 			this._tag = common.construct(model.Path, Object.assign({word:this.word}, tag));
@@ -41,6 +42,8 @@ module.exports = function(model) {
 			for (let d of [...columns, "id", "form_tag"])
 				if (data[d] != null)
 					this[d] = data[d];
+			if (this.lang in languages)
+				this.lang = languages[this.lang];
 
 			return this;
 		},
@@ -61,6 +64,8 @@ module.exports = function(model) {
 			for (let d of columns)
 				if (row[prefix+d] !== undefined)
 					this[d] = row[prefix+d];
+			if (this.lang in languages)
+				this.lang = languages[this.lang];
 			if (row.word_id != null)
 				this.word_id = row.word_id;
 			if (row.form_tag != null) {
