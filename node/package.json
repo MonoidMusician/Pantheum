@@ -5,6 +5,7 @@
   "license": "GPL-3.0",
   "main": "server.js",
   "dependencies": {
+    "bluebird": "^3.4.0",
     "body-parser": "^1.15.0",
     "connect": "^3.4.1",
     "cycle": "^1.0.3",
