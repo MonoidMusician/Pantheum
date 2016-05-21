@@ -56,6 +56,79 @@ module.exports = function(view) {
 			});
 		}
 	});
+
+	view.RevealText = view.createClass({
+		displayName: 'view.RevealText',
+		getInitialState() {
+			return {min:undefined, max:undefined, hover:false};
+		},
+		handleMouseOver() {
+			this.setState({hover:true});
+		},
+		handleMouseOut() {
+			this.setState({hover:false});
+		},
+		componentDidMount() {
+			var element = view.$dom(this)[0];
+			element.textContent = this.props.long;
+			console.log(element, element.textContent, element.offsetWidth);
+			var max = element.offsetWidth || undefined;
+			element.textContent = this.props.short;
+			console.log(element, element.textContent, element.offsetWidth);
+			var min = element.offsetWidth || undefined;
+			this.setState({min,max});
+			console.log(min, max);
+		},
+		render: function renderRevealText() {
+			var {hover, min, max} = this.state;
+			var {short,long} = this.props;
+			var width, text;
+			if (hover) {
+				width = max;
+				text = long;
+			} else {
+				width = min;
+				text = short;
+			}
+			return h('span', {
+				style: {
+					display: 'inline-block',
+					whiteSpace: 'nowrap',
+					overflow: 'hidden',
+					verticalAlign: 'text-top',
+					transition: 'width ease-in '+(hover ? '0.4s' : '0.1s'),
+					width,
+				},
+				onMouseOver: this.handleMouseOver,
+				onMouseOut: this.handleMouseOut,
+			}, text);
+		},
+	});
+
+	view.DefTag = view.createClass({
+		displayName: 'view.DefTag',
+		getInitialState() {
+			return {hover:false};
+		},
+		render: function renderDefTag() {
+			var path = this.props.path, {tag, value} = path;
+			var children = [];
+			if (!path || (!tag && !value)) return h('span');
+			if (tag) {
+				if (tag.includes('/'))
+					tag = view.RevealText.h({
+						long: tag,
+						short: tag.split('/')[0] + '/…',
+					});
+				children.push(tag);
+				if (value) children.push(' ');
+			}
+			if (value) {
+				children.push('“'+value+'”');
+			}
+			return h('span', ['(',...children,') ']);
+		},
+	})
 	view.Definitions = view.createClass({
 		displayName: 'view.Definitions',
 		handleNewValue(id) {
@@ -68,13 +141,9 @@ module.exports = function(view) {
 			if (user.administrator)
 				edit = view.Icon.h({type:"delete"});
 			return h('ol', this.props.definitions.map((def, key) => {
-				var tag = def.form_tag;
 				return h('li', {key}, [
 					view.Language.h(def.lang),
-					tag && '(',
-					tag && tag,
-					tag && def.tag.value && ' “'+def.tag.value+'”',
-					tag && ') ',
+					view.DefTag.h({path:def.tag}),
 					view.EditableText.h({
 						disabled: !user.administrator,
 						onNewValue: this.handleNewValue(def.id),
