@@ -1,6 +1,10 @@
 var h = require('react-hyperscript');
 var ReactDOMServer = require('react-dom/server');
 
+var MaterialUI = require('material-ui');
+MaterialUI.styles = require('material-ui/styles');
+MaterialUI.svgicons = require('material-ui/svg-icons');
+
 module.exports = function(view) {
 	view.RequireFonts = view.createClass({
 		displayName: 'view.RequireFonts',
@@ -20,23 +24,24 @@ module.exports = function(view) {
 		if (!props.rel) props = Object.assign({rel:'stylesheet'}, props);
 		return h('link', props);
 	};
-	var icons = [{ rel: "apple-touch-icon", sizes: "57x57", href: "/Images/icons/apple-icon-57x57.png" },
-	{ rel: "apple-touch-icon", sizes: "60x60", href: "/Images/icons/apple-icon-60x60.png" },
-	{ rel: "apple-touch-icon", sizes: "72x72", href: "/Images/icons/apple-icon-72x72.png" },
-	{ rel: "apple-touch-icon", sizes: "76x76", href: "/Images/icons/apple-icon-76x76.png" },
-	{ rel: "apple-touch-icon", sizes: "114x114", href: "/Images/icons/apple-icon-114x114.png" },
-	{ rel: "apple-touch-icon", sizes: "120x120", href: "/Images/icons/apple-icon-120x120.png" },
-	{ rel: "apple-touch-icon", sizes: "144x144", href: "/Images/icons/apple-icon-144x144.png" },
-	{ rel: "apple-touch-icon", sizes: "152x152", href: "/Images/icons/apple-icon-152x152.png" },
-	{ rel: "apple-touch-icon", sizes: "180x180", href: "/Images/icons/apple-icon-180x180.png" },
-	{ rel: "icon", type: "image/png", sizes: "192x192",  href: "/Images/icons/android-icon-192x192.png" },
-	{ rel: "icon", type: "image/png", sizes: "32x32", href: "/Images/icons/favicon-32x32.png" },
-	{ rel: "icon", type: "image/png", sizes: "96x96", href: "/Images/icons/favicon-96x96.png" },
-	{ rel: "icon", type: "image/png", sizes: "16x16", href: "/Images/icons/favicon-16x16.png" },
-	{ type: null, rel: "manifest", href: "/manifest.json"}].map(linkify);
 
-	var public_navigation = [ { href: "/", title: "Home" }, { href: "/quiz", title: "Quiz" }, { href: "/help", title: "Help" }, { href: "/login", title: "Login" }, { href: "/sum", title: "Sum - Dictionary" } ];
-	
+	var icons = [
+		{ rel: "apple-touch-icon", sizes: "57x57", href: "/Images/icons/apple-icon-57x57.png" },
+		{ rel: "apple-touch-icon", sizes: "60x60", href: "/Images/icons/apple-icon-60x60.png" },
+		{ rel: "apple-touch-icon", sizes: "72x72", href: "/Images/icons/apple-icon-72x72.png" },
+		{ rel: "apple-touch-icon", sizes: "76x76", href: "/Images/icons/apple-icon-76x76.png" },
+		{ rel: "apple-touch-icon", sizes: "114x114", href: "/Images/icons/apple-icon-114x114.png" },
+		{ rel: "apple-touch-icon", sizes: "120x120", href: "/Images/icons/apple-icon-120x120.png" },
+		{ rel: "apple-touch-icon", sizes: "144x144", href: "/Images/icons/apple-icon-144x144.png" },
+		{ rel: "apple-touch-icon", sizes: "152x152", href: "/Images/icons/apple-icon-152x152.png" },
+		{ rel: "apple-touch-icon", sizes: "180x180", href: "/Images/icons/apple-icon-180x180.png" },
+		{ rel: "icon", type: "image/png", sizes: "192x192",  href: "/Images/icons/android-icon-192x192.png" },
+		{ rel: "icon", type: "image/png", sizes: "32x32", href: "/Images/icons/favicon-32x32.png" },
+		{ rel: "icon", type: "image/png", sizes: "96x96", href: "/Images/icons/favicon-96x96.png" },
+		{ rel: "icon", type: "image/png", sizes: "16x16", href: "/Images/icons/favicon-16x16.png" },
+		{ type: null, rel: "manifest", href: "/manifest.json"}
+	].map(linkify);
+
 	view.RawPage = view.createClass({
 		displayName: 'Page',
 		render: function() {
@@ -59,25 +64,45 @@ module.exports = function(view) {
 	};
 
 	view.Navigation = view.createClass({
-		render: function() {
+		displayName: 'view.Navigation',
+		getInitialState() {
+			return { open: true };
+		},
+		handleChange(event, value) {
+			console.log("change", value);
+			console.log("Loading page 'home'");
+			var page = view.pages["home"];
+			Promise.resolve(page.data()).then(data => {
+				ReactDOM.render(
+					page.render(data),
+					document.getElementById('content')
+				)
+			});
+		},
+		render: function renderNavigation() {
 			var elements = [];
 
-			for (var i in this.props.pages) {
+			for (var page of this.props.pages) {
+				var props = { href: page.href };
+				if (page.image)
+					props.leftIcon = page.image;
+				if (page.value)
+					props.value = page.value;
+				if (page.event)
+					props.onTouchTap = page.event;
 				elements.push(
-					h('li', [
-						h('a',
-							{ href: this.props.pages[i].href },
-							this.props.pages[i].title
-						)
-					])
+					h(MaterialUI.MenuItem, props, page.title)
 				);
 			}
 
-			return h("header", [
-				h("nav", [
-					h("ul", elements)
-				])
-			]);
+			return h(MaterialUI.Drawer, {
+				docked: true,
+				open: true
+			}, h(MaterialUI.Menu, {
+				onItemTouchTap: console.log,
+				onChange: this.handleChange,
+				value:"home"
+			}, elements));
 		}
 	})
 
@@ -103,10 +128,8 @@ module.exports = function(view) {
 				].map(src=>({src})),
 			});
 			if (page.title) props.title = page.title;
-			var children = [
-				view.Navigation.h({ pages: public_navigation }),
-				h('h1#title', page.heading||page.title),
-			];
+			var children = [];
+			if (page.heading) children.push(h('h1#title', page.heading));
 			if (this.props.data) {
 				var component = page.render(this.props.data);
 				var content = {dangerouslySetInnerHTML:{__html:ReactDOMServer.renderToString(component)}};
@@ -122,6 +145,7 @@ module.exports = function(view) {
 				children.push(h('section#content'));
 				children.push(rawscript(`(function(view){
 					var page = view.pages[${JSON.stringify(this.props.page)}];
+					console.log("Loading page "+${JSON.stringify(this.props.page)});
 					Promise.resolve(page.data()).then(data => {
 						ReactDOM.render(
 							page.render(data),

@@ -1,5 +1,5 @@
 var h = require('react-hyperscript');
-var la_ipa = require('../la_ipa');
+var la_ipa = require('../lib/la_ipa');
 
 module.exports = function(view) {
 	view.format_value = function format_value(value) {

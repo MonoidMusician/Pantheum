@@ -37,6 +37,10 @@
     src: url(/Fonts/tengtelc.ttf);
 }
 
+body {
+	font-family: 'Linux Libertine';
+}
+
 .qtip.qtip-medium {
     font-size: 12pt !important;
 }

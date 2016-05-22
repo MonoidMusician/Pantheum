@@ -48,6 +48,7 @@ module.exports = function(grunt) {
 
 	// Default task(s).
 	grunt.registerTask('default', ['babel', 'browserify:build', 'uglify']);
+	grunt.registerTask('quick', ['babel', 'browserify:build']);
 	grunt.registerTask('devel', ['browserify:devel']);
 
 };

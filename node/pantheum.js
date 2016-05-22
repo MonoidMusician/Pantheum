@@ -10,3 +10,6 @@ window.pantheum = {
 	languages: require('./languages'),
 };
 window.la2en = require('./languages/la/translate').en;
+window.MaterialUI = require('material-ui');
+window.MaterialUI.svgicons = require('material-ui/svg-icons');
+window.MaterialUI.styles = require('material-ui/styles');
