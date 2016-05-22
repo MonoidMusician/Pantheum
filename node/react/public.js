@@ -37,12 +37,17 @@ module.exports = function(view) {
 			return null;
 		},
 		render() {
-			return App.h({page:'home'}, h('div', 'Welcome! CONTENT GOES HERE'));
+			return App.h({page:'home'}, [
+				h('h1#title', 'Welcome'),
+				h('span', 'Welcome to the Pantheum, quizzes and a dictionary for Latin, created by Nick Scheel with website design by Alex Scheel.'),
+				h('div#buttons', [
+					h(MaterialUI.FlatButton, { href: '/quiz', linkButton:true }, 'Quiz')
+				])
+			]);
 		},
 	};
 	view.pages['quiz'] = {
 		title: 'Quiz | Pantheum',
-		heading: 'Quiz',
 		data() {
 
 		},
@@ -52,7 +57,6 @@ module.exports = function(view) {
 	};
 	view.pages['help'] = {
 		title: 'Help | Pantheum',
-		heading: 'Help',
 		data() {
 
 		},
@@ -62,7 +66,6 @@ module.exports = function(view) {
 	};
 	view.pages['login'] = {
 		title: 'Login | Pantheum',
-		heading: 'Login',
 		data() {
 
 		},
