@@ -4,7 +4,7 @@ var h = require('react-hyperscript');
 var model = require('../model');
 var user = require('../user');
 
-var la_ipa = require('../la_ipa');
+var la_ipa = require('../lib/la_ipa');
 
 module.exports = function(view) {
 	var languages = {

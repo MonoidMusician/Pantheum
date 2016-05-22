@@ -18,7 +18,7 @@
 
 **/
 
-var user = require('./user');
+var user = require('../user');
 
 var la_ipa = (function () {
 	var my = {};
