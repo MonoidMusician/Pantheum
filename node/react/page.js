@@ -69,15 +69,19 @@ module.exports = function(view) {
 			return { open: true };
 		},
 		handleChange(event, value) {
-			console.log("change", value);
-			console.log("Loading page 'home'");
-			var page = view.pages["home"];
-			Promise.resolve(page.data()).then(data => {
-				ReactDOM.render(
-					page.render(data),
-					document.getElementById('content')
-				)
-			});
+			if (value in view.pages) {
+				console.log("Loading page "+value);
+				var page = view.pages[value];
+				window.history.pushState(value, page.title, '/'+value);
+				window.document.title = page.title;
+				Promise.resolve(page.data()).then(data => {
+					ReactDOM.render(
+						page.render(data),
+						document.getElementById('content')
+					)
+				});
+				event.preventDefault();
+			}
 		},
 		render: function renderNavigation() {
 			var elements = [];
@@ -99,9 +103,8 @@ module.exports = function(view) {
 				docked: true,
 				open: true
 			}, h(MaterialUI.Menu, {
-				onItemTouchTap: console.log,
 				onChange: this.handleChange,
-				value:"home"
+				value: this.props.value,
 			}, elements));
 		}
 	})
@@ -145,7 +148,6 @@ module.exports = function(view) {
 				children.push(h('section#content'));
 				children.push(rawscript(`(function(view){
 					var page = view.pages[${JSON.stringify(this.props.page)}];
-					console.log("Loading page "+${JSON.stringify(this.props.page)});
 					Promise.resolve(page.data()).then(data => {
 						ReactDOM.render(
 							page.render(data),

@@ -9,12 +9,12 @@ MaterialUI.styles = require('material-ui/styles');
 MaterialUI.svgicons = require('material-ui/svg-icons');
 
 var public_navigation = [
-	{ href: "/", value: "home", image: h(MaterialUI.svgicons.ActionHome), title: "Home" },
-	{ href: "/quiz", value: "quiz", image: h(MaterialUI.svgicons.ActionClass), title: "Quiz" },
-	{ href: "/help", value: "help",  image: h(MaterialUI.svgicons.ActionHelp), title: "Help" },
-	{ href: "/login", value: "login", image: h(MaterialUI.svgicons.ActionFingerprint), title: "Login" },
+	{ value: "home", image: h(MaterialUI.svgicons.ActionHome), title: "Home" },
+	{ value: "quiz", image: h(MaterialUI.svgicons.ActionClass), title: "Quiz" },
+	{ value: "help",  image: h(MaterialUI.svgicons.ActionHelp), title: "Help" },
+	{ value: "login", image: h(MaterialUI.svgicons.ActionFingerprint), title: "Login" },
 	{ href: "/sum", value: "sum", image: h(MaterialUI.svgicons.ActionDescription), title: "Sum - Dictionary" },
-	{ title: "Noload home", value: "_home", event: console.log.bind(console) }
+	{ href: "/CSS/react.css", title: "CSS" },
 ];
 
 module.exports = function(view) {
@@ -24,7 +24,7 @@ module.exports = function(view) {
 			return h(MaterialUI.styles.MuiThemeProvider, {muiTheme:MaterialUI.styles.getMuiTheme()}, [
 				h("div", { style: { marginLeft: navigationWidth } }, [
 					h(MaterialUI.AppBar, { title: "Latin", iconClassNameRight: "muidocs-icon-navigation-expand-more", style: {backgroundColor:'#CC3333'} }),
-					view.Navigation.h({ pages: public_navigation }),
+					view.Navigation.h({ pages: public_navigation, value: this.props.page }),
 					h("div", {}, this.props.children)
 				])
 			]);
@@ -37,7 +37,7 @@ module.exports = function(view) {
 			return null;
 		},
 		render() {
-			return App.h({}, h('div', 'Welcome! CONTENT GOES HERE'));
+			return App.h({page:'home'}, h('div', 'Welcome! CONTENT GOES HERE'));
 		},
 	};
 	view.pages['quiz'] = {
@@ -47,7 +47,7 @@ module.exports = function(view) {
 
 		},
 		render() {
-			return App.h({}, h('div', 'Quiz! CONTENT GOES HERE'));
+			return App.h({page:'quiz'}, h('div', 'Quiz! CONTENT GOES HERE'));
 		},
 	};
 	view.pages['help'] = {
@@ -57,7 +57,7 @@ module.exports = function(view) {
 
 		},
 		render() {
-			return App.h({}, h('div', 'Help! CONTENT GOES HERE'));
+			return App.h({page:'help'}, h('div', 'Help! CONTENT GOES HERE'));
 		},
 	};
 	view.pages['login'] = {
@@ -67,7 +67,7 @@ module.exports = function(view) {
 
 		},
 		render() {
-			return App.h({}, h('div', 'Login! CONTENT GOES HERE'));
+			return App.h({page:'login'}, h('div', 'Login! CONTENT GOES HERE'));
 		},
 	};
 };
