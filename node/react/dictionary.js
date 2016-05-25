@@ -1,10 +1,12 @@
 var ReactDOM = require('react-dom');
 var h = require('react-hyperscript');
+var MaterialUI = require('material-ui');
 
 var model = require('../model');
 var user = require('../user');
 
 var la_ipa = require('../lib/la_ipa');
+
 
 module.exports = function(view) {
 	var languages = {
@@ -157,7 +159,7 @@ module.exports = function(view) {
 		getInitialState() {
 			return {onlyleaves:false};
 		},
-		handleCheckbox(onlyleaves) {
+		handleCheckbox(event, onlyleaves) {
 			this.setState({onlyleaves});
 		},
 		render: function renderInflection() {
@@ -182,10 +184,11 @@ module.exports = function(view) {
 				)
 			];
 			return h('div', [
-				view.Checkbox.h({
+				h(MaterialUI.Checkbox, {
+					label: 'Show only leaf nodes',
 					checked: this.state.onlyleaves,
-					onNewValue: this.handleCheckbox,
-				}, 'Show only leaf nodes'),
+					onCheck: this.handleCheckbox,
+				}),
 				view.create_table.merge_vertical(rows, {}, {className:'inflection'}),
 			]);
 		}
@@ -241,7 +244,7 @@ module.exports = function(view) {
 		toggleTools() {
 			this.setState({toolsOpen: !this.state.toolsOpen});
 		},
-		handleCheckbox(classic) {
+		handleCheckbox(event, classic) {
 			this.setState({classic});
 		},
 		render: function renderEntry() {
@@ -270,10 +273,11 @@ module.exports = function(view) {
 				view.Attributes.h(this.props),
 				...tools,
 				view.Definitions.h({definitions:this.props.word.definitions}),
-				view.Checkbox.h({
+				h(MaterialUI.Checkbox, {
+					label: 'Show classic inflection table',
 					checked: this.state.classic,
-					onNewValue: this.handleCheckbox,
-				}, 'Show classic inflection table'),
+					onCheck: this.handleCheckbox,
+				}),
 				h('div', {style:{marginBottom:'1ex'}}),
 				this.state.classic ?
 					view.InflectionTable.h({word:this.props.word}) :
@@ -317,7 +321,8 @@ module.exports = function(view) {
 			return word;
 		},
 		render(word) {
-			return view.Entry.h({word});
+			var muiTheme = MaterialUI.styles.getMuiTheme();
+			return h(MaterialUI.styles.MuiThemeProvider, {muiTheme}, view.Entry.h({word}));
 		},
 	};
 };
