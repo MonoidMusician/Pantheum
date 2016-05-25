@@ -321,8 +321,8 @@ module.exports = function(view) {
 			return word;
 		},
 		render(word) {
-			var muiTheme = MaterialUI.styles.getMuiTheme();
-			return h(MaterialUI.styles.MuiThemeProvider, {muiTheme}, view.Entry.h({word}));
+			var muiTheme = require('./style/muiTheme');
+			return h(MaterialUI.styles.MuiThemeProvider, {muiTheme}, require('./display/Entry').h({word}));
 		},
 	};
 };

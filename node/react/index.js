@@ -23,7 +23,7 @@ view.$dom = function $dom(component) {
 view.expand = require('./expand');
 
 require('./view')(view);
-require('./page')(view);
+require('./html')(view);
 require('./format')(view);
 require('./inflection-table')(view);
 require('./attributes')(view);
