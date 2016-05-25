@@ -1,3 +1,4 @@
+var React = require('react');
 var h = require('react-hyperscript');
 var MaterialUI = require('material-ui');
 
@@ -27,6 +28,9 @@ var Inflection = createClass({
 	},
 	handleCheckbox(event, onlyleaves) {
 		this.setState({onlyleaves});
+	},
+	contextTypes: {
+		user: React.PropTypes.object,
 	},
 	render: function renderInflection() {
 		var edit;

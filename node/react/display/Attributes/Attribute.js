@@ -2,8 +2,8 @@ var h = require('react-hyperscript');
 var React = require('react');
 
 var Icon = require('../../components/Icon');
+var Abbreviation = require('../../components/Abbreviation');
 var createClass = require('../../createClass');
-var Abbreviation = require('../Abbreviation');
 
 module.exports = createClass({
 	displayName: 'view.Attribute',

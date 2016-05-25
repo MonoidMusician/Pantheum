@@ -22,6 +22,9 @@ module.exports = createClass({
 	handleNewValue(value) {
 		console.log(value);
 	},
+	contextTypes: {
+		user: React.PropTypes.object,
+	},
 	render: function renderAttributes() {
 		var user = this.props.user || this.context.user;
 		var props = {

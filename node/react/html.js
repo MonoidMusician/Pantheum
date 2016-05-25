@@ -134,7 +134,7 @@ module.exports = function(view) {
 			var children = [];
 			if (page.heading) children.push(h('h1#title', page.heading));
 			if (this.props.data) {
-				var component = page.render(this.props.data);
+				var component = page.render(this.props.data, this.props.req);
 				var content = {dangerouslySetInnerHTML:{__html:ReactDOMServer.renderToString(component)}};
 				children.push(h('section#content', content));
 				children.push(rawscript(`(function(view){

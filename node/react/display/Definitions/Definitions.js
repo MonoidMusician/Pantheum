@@ -1,6 +1,8 @@
+var React = require('react');
 var h = require('react-hyperscript');
 
 var EditableText = require('../../components/EditableText');
+var Icon = require('../../components/Icon');
 
 var createClass = require('../../createClass');
 var Language = require('../Language');
@@ -14,11 +16,14 @@ module.exports = createClass({
 			console.log(name);
 		};
 	},
+	contextTypes: {
+		user: React.PropTypes.object,
+	},
 	render: function renderDefinitions() {
 		var edit;
 		var user = this.props.user || this.context.user;
 		if (user && user.administrator)
-			edit = view.Icon.h({type:"delete"});
+			edit = Icon.h({type:"delete"});
 		return h('ol', this.props.definitions.map((def, key) => {
 			return h('li', {key}, [
 				Language.h(def.lang),
