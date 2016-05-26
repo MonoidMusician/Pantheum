@@ -127,7 +127,8 @@ module.exports = function(view) {
 					'/JS/lib/jquery.qtip.min.js',
 					'/JS/lib/select2.min.js',
 					'https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.8.0/polyfill.min.js',
-					'/node/build/browser.js',
+					'/node/build/static.js',
+					'/node/build/pantheum.js',
 				].map(src=>({src})),
 			});
 			if (page.title) props.title = page.title;

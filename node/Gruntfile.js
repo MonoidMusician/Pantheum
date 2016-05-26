@@ -38,6 +38,30 @@ module.exports = function(grunt) {
 					'build/browser.js': 'pantheum.js',
 				},
 			},
+			static: {
+				files: {
+					'build/static.js': 'static.js',
+				},
+			},
+			develite: {
+				options: {
+					watch: true,
+					keepAlive: true,
+					transform: [
+						['exposify', {expose:{
+							'react': 'window.React',
+							'react-dom': 'window.ReactDOM',
+							'react-hyperscript': 'window.h',
+							'material-ui': 'window.MaterialUI',
+							'material-ui/svg-icons': 'window.MaterialUI.svgicons',
+							'material-ui/styles': 'window.MaterialUI.styles',
+						}}]
+					],
+				},
+				files: {
+					'build/pantheum.js': 'pantheum.js',
+				},
+			},
 		},
 		uglify: {
 			options: {
@@ -67,4 +91,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('quick', ['babel:build', 'browserify:build']);
 	grunt.registerTask('devel', 'browserify:devel');
 	grunt.registerTask('develive', 'browserify:develive');
+	grunt.registerTask('static', 'browserify:static');
+	grunt.registerTask('develite', 'browserify:develite');
 };
