@@ -1,31 +1,6 @@
-var React = require('react');
-// FIXME: don't require both!
-var ReactDOM = require('react-dom');
-var ReactDOMServer = require('react-dom/server');
-var h = require('react-hyperscript');
+module.exports.expand = require('./expand');
 
-var view = {React, ReactDOM, ReactDOMServer, h};
-view.pages = {};
-module.exports = view;
-
-var model = require('../model');
-
-
-view.createClass = function createClass(c) {
-	var r = React.createClass(c);
-	r.h = h.bind(undefined, r);
-	return r;
-};
-view.$dom = function $dom(component) {
-	return $(ReactDOM.findDOMNode(component));
-};
-
-view.expand = require('./expand');
-
-require('./view')(view);
-require('./html')(view);
-require('./format')(view);
-require('./inflection-table')(view);
-require('./attributes')(view);
-require('./dictionary')(view);
-require('./public')(view);
+Object.assign(module.exports, require('./components'), require('./display'));
+module.exports.Page = require('./html');
+module.exports.pages = require('./pages');
+module.exports.style = require('./style');

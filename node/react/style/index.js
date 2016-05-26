@@ -1,2 +1,2 @@
 module.exports.colors = require('./colors');
-module.exports.muiTheme = require('./muiTheme');
+module.exports.getMuiTheme = require('./muiTheme');
