@@ -5,9 +5,6 @@ var createClass = require('../../createClass');
 
 module.exports = createClass({
 	displayName: 'view.Navigation',
-	getInitialState() {
-		return { open: true };
-	},
 	handleChange(event, value) {
 		var view = require('../../');
 		if (value in view.pages) {
@@ -19,7 +16,9 @@ module.exports = createClass({
 				ReactDOM.render(
 					page.render(data),
 					document.getElementById('content')
-				)
+				);
+				if (this.props.onRequestChange)
+					this.props.onRequestChange(false, 'new page');
 			});
 			event.preventDefault();
 		}
@@ -40,10 +39,7 @@ module.exports = createClass({
 			);
 		}
 
-		return h(MaterialUI.Drawer, {
-			docked: true,
-			open: true
-		}, h(MaterialUI.Menu, {
+		return h(MaterialUI.Drawer, this.props, h(MaterialUI.Menu, {
 			onChange: this.handleChange,
 			value: this.props.value,
 		}, elements));

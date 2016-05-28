@@ -1,23 +1,57 @@
 var h = require('react-hyperscript');
-var MaterialUI = require('material-ui')
+var MaterialUI = require('material-ui');
+MaterialUI.svgicons = require('material-ui/svg-icons');
 
 var createClass = require('../createClass');
 
+var getMuiTheme = require('../style/muiTheme');
+var UserProvider = require('../display/UserProvider');
+
 var navigationWidth = 256;
 
-var Navigation = require('./navigation');
-var public_navigation = require('./navigation/public');
-
-var getMuiTheme = require('../style/muiTheme');
+var Navigation = require('./Navigation');
+var AppBar = require('./AppBar');
+var public_navigation = require('./Navigation/public');
 
 module.exports = createClass({
 	displayName: 'view.App',
+	getInitialState() {
+		return {
+			navOpen: false,
+			notifications: null,
+		};
+	},
+	toggleNav() {
+		this.setState({navOpen: !this.state.navOpen});
+	},
+	handleNav(navOpen) {
+		this.setState({navOpen});
+	},
+	toggleNotifications() {
+		var notifications = this.state.notifications;
+		if (notifications === null) notifications = [null];
+		else notifications = null;
+		this.setState({notifications});
+	},
 	render: function renderApp() {
+		var user = {
+			administrator:true,
+			notifications: this.state.notifications,
+		};
 		return h(MaterialUI.styles.MuiThemeProvider, {muiTheme:getMuiTheme(this.props.req)}, [
-			h("div", { style: { marginLeft: navigationWidth } }, [
-				h(MaterialUI.AppBar, { title: "Latin", iconClassNameRight: "muidocs-icon-navigation-expand-more" }),
-				Navigation.h({ pages: this.props.navigation || public_navigation, value: this.props.page }),
-				h("div", {}, this.props.children)
+			h(UserProvider, {user}, [
+				AppBar.h({
+					onLeftIconButtonTouchTap: this.toggleNav,
+					onRightIconButtonTouchTap: this.toggleNotifications,
+				}),
+				Navigation.h({
+					pages: this.props.navigation || public_navigation,
+					value: this.props.page,
+					open: this.state.navOpen,
+					docked: false,
+					onRequestChange: this.handleNav,
+				}),
+				h('div', {}, this.props.children)
 			])
 		]);
 	},
