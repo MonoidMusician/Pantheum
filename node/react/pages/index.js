@@ -1,3 +1,4 @@
+module.exports.quiz = require('./quiz');
 module.exports.dictionary = require('./dictionary');
 module.exports.home = require('./home');
 module.exports.sum = require('./sum');
@@ -5,15 +6,6 @@ module.exports.sum = require('./sum');
 var h = require('react-hyperscript');
 var App = require('../app');
 
-module.exports.quiz = {
-	title: 'Quiz | Pantheum',
-	data() {
-
-	},
-	render(data, req) {
-		return App.h({page:'quiz',req}, h('div', 'Quiz! CONTENT GOES HERE'));
-	},
-};
 module.exports.help = {
 	title: 'Help | Pantheum',
 	data() {},
