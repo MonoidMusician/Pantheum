@@ -124,7 +124,12 @@ module.exports = (function(view) {
 	view.Scrollable = view.createClass({
 		displayName: 'view.Scrollable',
 		render: function renderScrollable() {
-			return h('div', Object.assign({}, this.props, {className:'scrollable'}), this.children);
+			return h('div', Object.assign({
+				style: Object.assign({}, this.props, {
+					overflow: 'auto',
+					WebkitOverflowScrolling: 'touch',
+				}, this.props.style)
+			}), this.props.children);
 		},
 	});
 
@@ -181,6 +186,7 @@ module.exports = (function(view) {
 				fontFamily: 'Linux Biolinum',
 				fontSize: '95%',
 				paddingRight: '0.4em',
+				whiteSpace: 'nowrap',
 			},
 		},
 		major: {
@@ -188,6 +194,7 @@ module.exports = (function(view) {
 				fontWeight: 'bold',
 				fontFamily: 'Linux Biolinum',
 				paddingRight: '0.4em',
+				whiteSpace: 'nowrap',
 			},
 		},
 		greatest: {
@@ -197,6 +204,7 @@ module.exports = (function(view) {
 				fontFamily: 'Linux Biolinum',
 				textTransform: 'uppercase',
 				paddingRight: '1em',
+				whiteSpace: 'nowrap',
 			},
 		},
 	});
@@ -453,7 +461,7 @@ module.exports = (function(view) {
 		render: function() {
 			var {word, values, ignore, optimization} = this.props;
 			if (!values) values = word_table_values(word);
-			return view.create_table(view.do_table(word, values, ignore, optimization), {noheader:true}, {style:{borderCollapse:'collapse'}});
+			return view.Scrollable.h({}, view.create_table(view.do_table(word, values, ignore, optimization), {noheader:true}, {style:{borderCollapse:'collapse'}}));
 		},
 	});
 

@@ -20,8 +20,8 @@ module.exports = createClass({
 				classes: "qtip-light qtip-abbr"
 			},
 			position: {
-				at: "center left",
-				my: "center right",
+				at: "top center",
+				my: "bottom left",
 				adjust: {y:5},
 			},
 			show: {

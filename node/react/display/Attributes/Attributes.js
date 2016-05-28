@@ -30,12 +30,12 @@ module.exports = createClass({
 		var props = {
 			word: this.props.word,
 			id: this.props.word.id,
-			lang: this.props.word.lang,
+			lang: this.props.word.lang.toString(),
 			onDelete: this.props.onAttrDelete,
 		};
 		var spart = EditableText.h({
 			key:0, disabled: !user || !user.administrator,
-			value: this.props.word.spart,
+			value: this.props.word.spart.toString(),
 			onNewValue: this.handleNewValue,
 		});
 		var attrs = [spart];
@@ -46,6 +46,6 @@ module.exports = createClass({
 		} else attrs.push(...this.props.word.attrs);
 		if (user && user.administrator) attrs.push(Icon.h.add({key:attrs.length}));
 		attrs = attrs.map(create_attribute(props));
-		return h('span', ['(', ...intersperse(attrs, '; '), ')']);
+		return h('span', intersperse(attrs, '; '));
 	}
 });

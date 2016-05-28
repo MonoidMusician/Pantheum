@@ -1,6 +1,7 @@
 var React = require('react');
 var h = require('react-hyperscript');
 var MaterialUI = require('material-ui');
+MaterialUI.svgicons = require('material-ui/svg-icons');
 
 var model = require('../../model');
 var createClass = require('../createClass');
@@ -42,7 +43,13 @@ var Inflection = createClass({
 		var sorted = model.Path.sort(this.props.forms);
 		if (onlyleaves) sorted = sorted.filter((form, i) => i===sorted.length-1 || !sorted[i+1].issub(form));
 		var rows = [
-			mgr.all_sub_keys.concat(['value']),
+			mgr.all_sub_keys.concat(['value']).map(
+				k => h('th', {
+					style: {
+						textAlign: 'left',
+					},
+				}, k)
+			),
 			...sorted.map(
 				(form, key) => mgr.all_sub_keys.map(k=>form.key_value(k)).concat([
 					EditableText.h({
@@ -62,12 +69,6 @@ var Inflection = createClass({
 			}),
 			create_table.merge_vertical(rows, {}, {className:'inflection'}),
 		]);
-	}
-});
-var EntryName = createClass({
-	displayName: 'view.EntryName',
-	render: function renderEntryName() {
-		return h('span', [Language.h({}, this.props.word.lang), WordName.h(this.props)]);
 	}
 });
 var Wiktionary = createClass({
@@ -102,7 +103,11 @@ var PronunciationTool = createClass({
 	},
 	render: function renderPronunciationTool() {
 		return h('span', [
-			h('input',{onChange:this.handleChange}),
+			h(MaterialUI.TextField,{
+				floatingLabelText: 'Pronounce!',
+				hintText: 'Orthography',
+				onChange:this.handleChange,
+			}),
 			h('span', this.transform(this.state.value))
 		]);
 	}
@@ -118,42 +123,72 @@ module.exports = createClass({
 	handleCheckbox(event, classic) {
 		this.setState({classic});
 	},
+	contextTypes: {
+		user: React.PropTypes.object,
+	},
 	render: function renderEntry() {
 		var tools, action = this.toggleTools;
+		var user = this.props.user || this.context.user;
+		var editor = user && user.administrator;
+		var k = 0;
 		if (!this.state.toolsOpen) {
 			tools = [Icon.h.tools({action})];
 		} else {
-			var k = 0;
 			tools = [
-				Icon.h.tools(   { key:k++, className: "hider", action }),
+				Icon.h.tools(   { key:k++, action }),
 				Icon.h.hardlink({ key:k++, link: "dictionary.php?id="+this.props.id }),
 				Icon.h.refresh( { key:k++ }),
 				Icon.h.delete(     { key:k++ }),
-				h('div', {key:k++,style:{"paddingLeft":"2em"}}, [
+				h('div', {key:k++,style:{paddingLeft:'2em'}}, [
 					Wiktionary.h(Object.assign({}, this.props, {key:0})),
 					LewisShort.h(Object.assign({}, this.props, {key:1})),
 					h('br', {key:2}),
-					'Pronunciation: ',
+					"Pronunciation: ",
 					PronunciationTool.h({key:4})
 				])
 			];
 		}
-		return h('section', {id:this.id}, [
-			EntryName.h(this.props),
-			" ",
-			Attributes.h(this.props),
-			...tools,
-			Definitions.h({definitions:this.props.word.definitions}),
-			h(MaterialUI.Checkbox, {
-				label: 'Show classic inflection table',
-				checked: this.state.classic,
-				onCheck: this.handleCheckbox,
-			}),
-			h('div', {style:{marginBottom:'1ex'}}),
-			this.state.classic ?
-				InflectionTable.h({word:this.props.word}) :
-				Inflection.h({forms:this.props.word.forms, mgr:this.props.word.mgr}),
-			h('hr'),
+		return h(MaterialUI.Card, {
+			expandable: !editor,
+		}, [
+			h(MaterialUI.CardTitle, {
+				actAsExpander: !editor,
+				title: [Language.h({key:0}, this.props.word.lang), WordName.h(Object.assign({}, this.props, {key:1}))],
+				subtitle: Attributes.h(this.props),
+			}, Definitions.h({definitions:this.props.word.definitions})),
+			h(MaterialUI.CardTitle, {
+				expandable: !editor,
+			}, [
+				h(MaterialUI.Checkbox, {
+					label: "Show classic inflection table",
+					checked: this.state.classic,
+					onCheck: this.handleCheckbox,
+				}),
+				h('div', {style:{marginBottom:'1ex'}}),
+				this.state.classic ?
+					InflectionTable.h({word:this.props.word}) :
+					Inflection.h({forms:this.props.word.forms, mgr:this.props.word.mgr}),
+			]),
+			...(editor ? [h(MaterialUI.CardActions, [
+				h(MaterialUI.FlatButton, {
+					label: "Hardlink",
+					icon: h(MaterialUI.svgicons.ContentLink),
+					href: "dictionary.php?id="+this.props.id,
+					linkButton: true,
+				}),
+				h(MaterialUI.FlatButton, {
+					label: "Refresh",
+					icon: h(MaterialUI.svgicons.NavigationRefresh),
+				}),
+				h(MaterialUI.FlatButton, {
+					label: "Delete",
+					icon: h(MaterialUI.svgicons.ActionDeleteForever)
+				}),
+				PronunciationTool.h(),
+				h('br'),
+				Wiktionary.h(this.props),
+				LewisShort.h(this.props),
+			])] : [])
 		]);
 	}
 });

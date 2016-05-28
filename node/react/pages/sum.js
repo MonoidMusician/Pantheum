@@ -43,6 +43,7 @@ module.exports = {
 	},
 	render(word, req) {
 		var muiTheme = require('../style/muiTheme')(req);
-		return h(MaterialUI.styles.MuiThemeProvider, {muiTheme}, h(UserProvider, {user:{administrator:true}},  Entry.h({word})));
+		var user = {administrator:true};
+		return h(MaterialUI.styles.MuiThemeProvider, {muiTheme}, h(UserProvider, {user},  Entry.h({word})));
 	},
 };
