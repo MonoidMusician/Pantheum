@@ -34,7 +34,7 @@ var handler = function(gen) {
 router.route('/').get(handler(function*(req, res) {
 	var data = yield Promise.resolve(view.pages["home"].data());
 	var html = view.Page.h({
-		page: "home", data,
+		page: "home", data, req,
 	});
 	res.send(doctype + ReactDOMServer.renderToStaticMarkup(html));
 }));
@@ -43,7 +43,7 @@ for (let page in view.pages) {
 	router.route('/'+page).get(handler(function*(req, res) {
 		var data = yield Promise.resolve(view.pages[page].data());
 		var html = view.Page.h({
-			page, data,
+			page, data, req,
 		});
 		res.send(doctype + ReactDOMServer.renderToStaticMarkup(html));
 	}));

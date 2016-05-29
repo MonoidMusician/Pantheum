@@ -1,13 +1,23 @@
 // BASE SETUP
 
 // call the packages we need
-var express     = require('express');
-var bodyParser  = require('body-parser');
-var morgan      = require('morgan');
-var serveStatic = require('serve-static');
+var express      = require('express');
+var session      = require('express-session');
+var cookieParser = require('cookie-parser');
+var express      = require('express');
+var bodyParser   = require('body-parser');
+var morgan       = require('morgan');
+var serveStatic  = require('serve-static');
 
 // Create our server app
 var app = express();
+app.use(cookieParser());
+app.use(session({
+	resave: false,
+	saveUninitialized: false,
+	secret: 'ksHFIbtlzMUuFdLOMdkkFtLZH2HC78',
+}));
+
 
 // Display request status
 app.use(morgan('dev')); // log requests to the console
