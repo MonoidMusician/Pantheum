@@ -87,4 +87,3 @@ CREATE TABLE connections
         FOREIGN KEY (from_word_id) REFERENCES words(word_id) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (to_word_id) REFERENCES words(word_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-

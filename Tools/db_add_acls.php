@@ -9,6 +9,10 @@
 	sro('/Includes/functions.php');
 	requireRank(1);
 
+	// ACLs are in the format: RW, where R and W are either N - none, S - Self,
+	// or E - everyone. E.g., grades: SN would denote read only access of grades
+	// to only the current user.
+
 	$M_result = $mysqli->query("SELECT * FROM classes;");
 	while ($M_row = $M_result->fetch_assoc()) {
 		$n = $M_row['class_name'];
@@ -22,7 +26,7 @@
 
 		$i = $M_row2['id'];
 
-		$mysqli->query("INSERT INTO class_acls (user_id, class_id, grades, create_quiz, add_users, take_quiz) VALUES ('$t', '$i', 'WE', 'WE', 'WE', 'WS');");
+		$mysqli->query("INSERT INTO class_acls (user_id, class_id, grades, create_quiz, add_users, take_quiz) VALUES ('$t', '$i', 'EE', 'EE', 'EE', 'SS');");
 	}
 
 	$M_result = $mysqli->query("SELECT * FROM users;");
@@ -36,9 +40,9 @@
 		echo "\n\n";
 
 		if ("$r" == '1') {
-			$mysqli->query("INSERT INTO acls (user_id, admin_panel, add_words, teacher_panel, class_settings, user_settings, user_password) VALUES ($u, 'WE', 'WE', 'WE', 'WE', 'WE', 'WE');");
+			$mysqli->query("INSERT INTO acls (user_id, admin_panel, add_words, teacher_panel, class_settings, user_settings, user_password) VALUES ($u, 'EE', 'EE', 'EE', 'EE', 'EE', 'EE');");
 		} else if ("$r" == '4') {
-			$mysqli->query("INSERT INTO acls (user_id, admin_panel, add_words, teacher_panel, class_settings, user_settings, user_password) VALUES ($u, 'NN', 'NN', 'NN', 'WS', 'WS', 'WS');");
+			$mysqli->query("INSERT INTO acls (user_id, admin_panel, add_words, teacher_panel, class_settings, user_settings, user_password) VALUES ($u, 'NN', 'NN', 'NN', 'SS', 'SS', 'SS');");
 		} else {
 			echo "Unknown rank";
 		}
@@ -58,7 +62,7 @@
 
 				$i = $M_row3['id'];
 
-				$mysqli->query("INSERT INTO class_acls (user_id, class_id, grades, create_quiz, add_users, take_quiz) VALUES ('$u', '$i', 'RS', 'NN', 'NN', 'WS');");
+				$mysqli->query("INSERT INTO class_acls (user_id, class_id, grades, create_quiz, add_users, take_quiz) VALUES ('$u', '$i', 'SN', 'NN', 'NN', 'SS');");
 			}
 		}
 	}
