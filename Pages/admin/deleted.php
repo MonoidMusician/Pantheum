@@ -3,8 +3,8 @@
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
-    
-    requireRank('1');
+
+    requireRank(1);
 ?>
 <h2>Deleted</h2>
 <div id="adUControls"></div>

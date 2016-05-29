@@ -10,7 +10,7 @@
 
 	global $mysqli;
 
-	$M_query = "SELECT * FROM words;";
+	$M_query = "SELECT * FROM words LIMIT 100;";
 	$M_result = $mysqli->query($M_query);
 	while ($M_row = $M_result->fetch_assoc()) {
 		$id = $M_row['word_id'];
