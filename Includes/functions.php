@@ -10,7 +10,7 @@
 	function requireRank($rank, $die=TRUE) {
 		global $srank;
 
-		if (!requireLoggedIn($die)) return FALSE;;
+		if (!requireLoggedIn($die)) return FALSE;
 
 		if ($die and $srank > $rank) {
 			sro('/Pages/restricted/admin.php');
@@ -25,6 +25,38 @@
 			sro('/Pages/restricted/logged-out.php');
 			die("");
 		} else return $sli == 'true';
+	}
+
+	function hasACL($name, $action, $level, $uid) {
+		global $suid;
+
+		$n = cleanInput('/[^a-zA-Z0-9_]/', strtolower($name));
+		$a = strtolower($action);
+		$l = strtoupper($level);
+
+		$M_result = $mysqli->query("SELECT $n FROM acls WHERE user_id=$suid;");
+		$M_row = $M_result->fetch_assoc();
+		$v = strtoupper($M_row[$n]);
+		$s = -1;
+
+		if ($a == 'read' || $a == 'r') {
+			$s = 0;
+		} else if ($a == 'write' || $a == 'w') {
+			$s = 1;
+		}
+
+		if ($s == -1) {
+			error_log("Invalid ACL action: $a / $action.");
+			return false;
+		}
+
+		$g = substr($v, $s, 1);
+
+		if ($g == $l || ($g == 'E' && $l == 'S')) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	function logEvent($script, $type, $content) {
