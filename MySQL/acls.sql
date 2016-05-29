@@ -57,7 +57,7 @@ CREATE TABLE class_quiz (
 CREATE TABLE class_grades (
     user_id BIGINT UNSIGNED NOT NULL,
     class_id BIGINT UNSIGNED NOT NULL,
-    class_quiz_id BIGINT UNSIGNED NOT NULL
+    class_quiz_id BIGINT UNSIGNED NOT NULL,
     automatic_grade_earned INT,
     automatic_grade_total INT,
     grade_earned INT,
@@ -65,5 +65,5 @@ CREATE TABLE class_grades (
 
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (class_id) REFERENCES class(id) ON DELETE CASCADE ON UPDATE CASCADE,
-        FOREIGN KEY (class_quiz_id) REFERENCES class_quiz(id) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (class_quiz_id) REFERENCES class_quiz(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
