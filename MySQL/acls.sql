@@ -23,9 +23,12 @@ CREATE TABLE acls (
 );
 
 CREATE TABLE class (
-    id BIGINT UNSIGNED PRIMARY KEY,
+    id BIGINT UNSIGNED AUTO_INCREMENT,
     name VARCHAR(100),
-    description VARCHAR(1024)
+    description VARCHAR(1024),
+	visible BOOLEAN,
+
+		PRIMARY KEY(id)
 );
 
 CREATE TABLE class_acls (
