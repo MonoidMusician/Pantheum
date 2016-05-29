@@ -27,14 +27,18 @@
 		} else return $sli == 'true';
 	}
 
-	function hasACL($name, $action, $level, $uid) {
-		global $suid;
+	function hasACL($name, $action, $level) {
+		global $suid, $mysqli;
 
 		$n = cleanInput('/[^a-zA-Z0-9_]/', strtolower($name));
 		$a = strtolower($action);
 		$l = strtoupper($level);
 
 		$M_result = $mysqli->query("SELECT $n FROM acls WHERE user_id=$suid;");
+		if ($M_result == false) {
+			return false;
+		}
+
 		$M_row = $M_result->fetch_assoc();
 		$v = strtoupper($M_row[$n]);
 		$s = -1;

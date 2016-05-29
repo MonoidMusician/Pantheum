@@ -14,7 +14,7 @@
         $M_query = "SELECT * FROM users WHERE id='$uid';";
         $M_result = $mysqli->query($M_query);
         if ($M_row = $M_result->fetch_assoc()) {
-            $result = $M_row;
+            $result = json_encode($M_row);
 
             return $result;
         } else {

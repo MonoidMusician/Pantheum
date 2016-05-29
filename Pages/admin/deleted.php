@@ -5,6 +5,10 @@
     sro('/Includes/functions.php');
 
     requireRank(1);
+	if (!hasACL('admin_panel', 'R', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 ?>
 <h2>Deleted</h2>
 <div id="adUControls"></div>

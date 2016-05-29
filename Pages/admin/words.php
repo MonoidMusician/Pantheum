@@ -3,8 +3,12 @@
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
-    
+
     requireRank('1');
+	if (!hasACL('admin_panel', 'R', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 ?>
 <h2>Words</h2>
 <div id="awUControls"></div>

@@ -5,6 +5,10 @@
     sro('/Includes/functions.php');
 
     requireRank('1');
+	if (!hasACL('admin_panel', 'R', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 
     $uid = cleanInput('/[^0-9]/', $_GET['id']);
     $user = json_decode(getUser($uid), true);

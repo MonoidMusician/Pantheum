@@ -5,6 +5,10 @@
     sro('/Includes/functions.php');
 
     requireRank(1);
+	if (!hasACL('admin_panel', 'R', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 ?>
 <header id="aheader">
     <h2 id="atitle">Admin Control Panel</h2>

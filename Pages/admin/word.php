@@ -3,12 +3,16 @@
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
-    
+
     sro('/PHP5/lib/PHPLang/db.php');
     sro('/PHP5/lib/PHPLang/display.php');
-    
+
     requireRank('1');
-    
+	if (!hasACL('admin_panel', 'R', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
+
     $uid = cleanInput('/[^0-9]/', $_GET['id']);
     $word = WORD(defaultDB(), intval($uid));
 ?>
@@ -49,7 +53,7 @@
                 event.data.instance.saveData();
                 event.data.instance.storage['npassword'] = loginHash(event.data.instance.storage['username'], event.data.instance.storage['npassword']);
                 event.data.instance.storage['cpassword'] = loginHash(event.data.instance.storage['username'], event.data.instance.storage['cpassword']);
-                
+
                 if (event.data.instance.changed.length != 0) {
                     $('#' + event.data.instance.selement + '-saving').html('Saving...');
                     event.data.instance.ledited = event.data.element;
@@ -59,7 +63,7 @@
             });
         });
         settings.load();
-        
+
         // Misc functions
         $(document).on('click', '#logoff', function() {
             $.get('/PHP5/admin/user/logoff.php?uid=<?php echo $uid; ?>', function(data) {
@@ -72,4 +76,3 @@
         });
     });
 </script>
-

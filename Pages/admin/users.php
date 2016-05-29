@@ -5,6 +5,10 @@
     sro('/Includes/functions.php');
 
     requireRank(1);
+	if (!hasACL('admin_panel', 'R', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 ?>
 <h2>Users</h2>
 <p>Click on the user in table below to edit settings.</p>
