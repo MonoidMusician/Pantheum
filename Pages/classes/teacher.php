@@ -4,15 +4,20 @@
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
 
-	global $sli;
-	
+	global $sli, $suid;
+
 	if (isset($sli)) {
-		if (hasACL('admin_panel', 'R', 'S')) {
-			sro('/Pages/admin/admin.php');
-		} else {
-			sro('/Pages/restricted/admin.php');
+		if (!hasACL('teacher_panel', 'R', 'S')) {
+			sro('/Pages/restricted/teacher.php');
+			die("");
 		}
 	} else {
 		sro('/Pages/restricted/logged-out.php');
+		die("");
 	}
 ?>
+<header>
+	<h1>Class Settings</h1>
+</header>
+<article>
+</article>

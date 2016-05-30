@@ -19,8 +19,16 @@
 	} else {
 ?>
 					<li class="global-nav"><a data-i18n="nav.settings" class="global-nav" href="<?php print rgd('/user.php'); ?>">Settings</a></li>
+
 <?php
-		if ($srank == '1') {
+		if (hasACL('teacher_panel', 'R', 'S')) {
+?>
+					<li class="global-nav"><a data-i18n="nav.admin" class="global-nav" href="<?php print rgd('/classes.php'); ?>">Classes</a></li>
+<?php
+		}
+?>
+<?php
+		if (hasACL('admin_panel', 'R', 'S')) {
 ?>
 					<li class="global-nav"><a data-i18n="nav.admin" class="global-nav" href="<?php print rgd('/admin.php'); ?>">Admin</a></li>
 <?php
