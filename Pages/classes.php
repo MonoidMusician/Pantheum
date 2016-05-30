@@ -15,12 +15,12 @@
 			}
 		} else if (hasACL('class', 'R', 'S')){
 			if (!isset($_GET['class'])) {
-				sro('/Pages/classes/student-select.php');
+				sro('/Pages/classes/select-class.php');
 			} else {
 				sro('/Pages/classes/student.php');
 			}
 		} else {
-			sro('/Pages/restricted/not-student.php');
+			sro('/Pages/restricted/student.php');
 		}
 	} else {
 		sro('/Pages/restricted/logged-out.php');

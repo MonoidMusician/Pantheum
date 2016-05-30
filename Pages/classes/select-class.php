@@ -7,8 +7,8 @@
 	global $sli, $suid;
 
 	if (isset($sli)) {
-		if (!hasACL('teacher_panel', 'R', 'S')) {
-			sro('/Pages/restricted/teacher.php');
+		if (!hasACL('teacher_panel', 'R', 'S') && !hasACL('class', 'R', 'S')) {
+			sro('/Pages/restricted/student.php');
 			die("");
 		}
 	} else {
@@ -31,10 +31,10 @@
 	</select>
 	<button onclick="window.location.href='/classes.php?class=' + $('#select-class').val();">View Class</button>
 	<?php
-		if (hasACL('teacher_panel', 'R', 'S')) {
+		if (hasACL('teacher_panel', 'W', 'S')) {
 	?>
 			<p>--OR--</p>
-			<button>Create Class</button>
+			<button onclick="window.location.href='/create_class.php';">Create Class</button>
 	<?php
 		}
 	?>
