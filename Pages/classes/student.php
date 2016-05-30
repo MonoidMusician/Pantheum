@@ -7,7 +7,7 @@
 	global $sli;
 
 	if (isset($sli)) {
-		if (!hasACL('teacher_panel', 'R', 'S') || !hasACL('class', 'R', 'S')) {
+		if (!hasACL('class', 'R', 'S')) {
 			sro('/Pages/restricted/teacher.php');
 			die("");
 		}
@@ -41,9 +41,9 @@
         cpage.setPages([
             ["#overview", "Overview", "Overview | Student Panel | Pantheum ", "/Pages/classes/student-overview.php", true],
             ["#quizzes", "Quizzes", "Quizzes | Student Panel | Pantheum", "/Pages/classes/student-quizzes.php", true],
-            ["#settings", "Settings", "Settings | Student Panel | Pantheum", "/Pages/classes/student-settings.php", false]
+            ["#settings", "Settings", "Settings | Student Panel | Pantheum", "/Pages/classes/student-settings.php", true]
         ], dpage);
-        cpage.setNavigation('tnav', 'ul');
+        cpage.setNavigation('cnav', 'ul');
         cpage.load();
     });
 </script>

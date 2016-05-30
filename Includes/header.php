@@ -21,9 +21,9 @@
 					<li class="global-nav"><a data-i18n="nav.settings" class="global-nav" href="<?php print rgd('/user.php'); ?>">Settings</a></li>
 
 <?php
-		if (hasACL('teacher_panel', 'R', 'S')) {
+		if (hasACL('teacher_panel', 'R', 'S') || hasACL('class', 'R', 'S')) {
 ?>
-					<li class="global-nav"><a data-i18n="nav.admin" class="global-nav" href="<?php print rgd('/classes.php'); ?>">Classes</a></li>
+					<li class="global-nav"><a data-i18n="nav.classes" class="global-nav" href="<?php print rgd('/classes.php'); ?>">Classes</a></li>
 <?php
 		}
 ?>
