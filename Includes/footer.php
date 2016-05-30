@@ -1,6 +1,6 @@
 
 		<footer>
 			<p>
-				Copyright (C) 2015 Alex and Nick Scheel.
+				Copyright (C) 2015, 2016 Alex and Nick Scheel.
 			</p>
 		</footer>

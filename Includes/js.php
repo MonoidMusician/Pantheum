@@ -5,7 +5,7 @@
 ?>
 		<script>var pantheum = {
 			_private:{},
-			user:{administrator:true},
+			user:{administrator:<?php print hasACL('admin_panel', 'R', 'S'); ?>},
 			api_path: '/PHP5/dictionary/',
 			view: {},
 			model: {},

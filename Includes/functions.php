@@ -10,6 +10,8 @@
 	function requireRank($rank, $die=TRUE) {
 		global $srank;
 
+		error_log("Warning: requireRank is depricated.");
+
 		if (!requireLoggedIn($die)) return FALSE;
 
 		if ($die and $srank > $rank) {
