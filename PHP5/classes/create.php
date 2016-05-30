@@ -14,5 +14,15 @@
 		die('{"result": "Must be logged in."}');
 	}
 
-	die('{"result": "Not implemented"}');
+	$name = cleanInput('prepared', $_POST['n']);
+	$description = cleanInput('prepared', $_POST['d']);
+	$school = cleanInput('prepraed', $_POST['s']);
+
+	$query = $mysqli->prepare("INSERT INTO classes (nam, description, school) VALUES (?, ?, ?);");
+	$query->bind_param("sss", $name, $description, $school);
+	if ($query->execute()) {
+		print '{"result": "success"}';
+	} else {
+		die('{"result": "Unable to create class."}');
+	}
 ?>
