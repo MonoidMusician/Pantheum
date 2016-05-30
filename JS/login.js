@@ -65,24 +65,20 @@ function loginSubmit(username, password, error) {
     var password2 = loginHash2(username, password);
     if ((username != '') && (password != '')) {
         password = loginHash(username, password);
-        $.post("/PHP5/login.php", { u: username, p: password, p2: password2 }, function(data) {
+        $.post("/PHP5/login.php", { u: username, p: password, p2: password2 }, function(raw) {
+			data = JSON.parse(raw)['result'];
             if (data == 'success') {
                 window.location.href = '/index.php';
-                if (window.ga)
+
+                if (window.ga) {
                     ga('send', 'event', 'User', 'login', username);
-                if ($.jStorage) $.jStorage.flush();
+				}
+
+                if ($.jStorage) {
+					$.jStorage.flush();
+				}
             } else {
-                if (data == '1') {
-                    $(error).html('Already logged in.');
-                } else if (data == '2') {
-                    $(error).html('Error logging in.');
-                } else if (data == '3') {
-                    $(error).html('User is banned.');
-                } else if (data == '4') {
-                    $(error).html('Missing values.');
-                } else {
-                    $(error).html('Error logging in (' + data + ').');
-                }
+                $(error).html('Error logging in: ' + data);
             }
         });
     } else {

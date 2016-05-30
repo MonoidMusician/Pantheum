@@ -8,14 +8,14 @@
 
 	if ((isset($sli)) && ($sli == 'true')) {
 		logEvent('login', 'logged-in', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-		die('1');
+		die('{ "result": "Unknown error."}');
 	} else {
 		$username = cleanInput('/[^a-zA-Z0-9]/', $_POST['u']);
 		$password = cleanInput('/[^a-zA-Z0-9]/', $_POST['p']);
 		$password2 = cleanInput('/[^a-zA-Z0-9]/', $_POST['p2']);
 		if (($username != $_POST['u']) || ($username == '') || ($password == '')) {
 			logEvent('login', 'blank-input', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-			die('4');
+			die('{ "result": "Passwords did not match."}');
 		}
 
 		$M_query = "SELECT * FROM users WHERE username='$username';";
@@ -39,7 +39,7 @@
 
 			if ($M_row['rank'] == 'b') {
 				logEvent('login', 'banned-user', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}"));
-				die ('3');
+				die ('{ "result": "Bad username."}');
 			}
 
 
@@ -65,18 +65,18 @@
 
 				if ($M_result6) {
 					logEvent('login', 'success', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}, M_query6: `$M_query6`"));
-					print "success";
+					print '{ "result": "success"}';
 				} else {
 					logEvent('login', 'ip-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}, M_query6: `$M_query6`"));
-					die('1');
+					die('{ "result": "Unknown error."}');
 				}
 			} else {
 				logEvent('login', 'bad-password', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, password: `$password`, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}"));
-				die('2');
+				die('{ "result": "Wrong password."}');
 			}
 		} else {
 			logEvent('login', 'no-user', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`"));
-			die('2');
+			die('{ "result": "Wrong password."}');
 		}
 	}
 ?>
