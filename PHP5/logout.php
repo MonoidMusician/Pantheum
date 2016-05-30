@@ -4,24 +4,7 @@
 
 	sro('/Includes/mysql.php');
 
-	global $mysqli;
-
-	$suid = $_SESSION['uid'];
-
-	$M_query = "SELECT * FROM users WHERE id='$suid';";
-	$M_result = $mysqli->query($M_query);
-	$M_row = $M_result->fetch_assoc();
-
-	$current = json_decode($M_row['currentip'] ? $M_row['currentip'] : '[]', true);
-	foreach ($current as $key=>$ip) {
-		if ($ip == $_SERVER['REMOTE_ADDR']) {
-			unset($current[$key]);
-		}
-	}
-	$current = json_encode($current);
-
-	$M_query2 = "UPDATE users SET currentip='$current' WHERE id='$suid';";
-	$M_result2 = $mysqli->query($M_query2);
+	global $sli, $suid, $suname, $srank;
 
 	$_SESSION = array();
 
