@@ -66,7 +66,7 @@ function loginSubmit(username, password, error) {
     if ((username != '') && (password != '')) {
         password = loginHash(username, password);
         $.post("/PHP5/login.php", { u: username, p: password, p2: password2 }, function(raw) {
-			data = JSON.parse(raw)['result'];
+			var data = JSON.parse(raw)['result'];
             if (data == 'success') {
                 window.location.href = '/index.php';
 
