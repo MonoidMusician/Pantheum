@@ -16,6 +16,7 @@ module.exports = createClass({
 			language: null,
 			searching: false,
 			words: [],
+			snackbar: null,
 		};
 	},
 	handleLanguage: function(event, index, language) {
@@ -81,11 +82,22 @@ module.exports = createClass({
 				this.handleSearch();
 			},
 			onDelete: () => {
-				this.setState({words: this.state.words.filter(w => w !== word)});
+				this.setState({
+					words: this.state.words.filter(w => w !== word),
+					snackbar: {
+						message: "Word deleted",
+					},
+				});
+				return true;
 			},
 		});
 		if (this.state.searching) children.push(h(MaterialUI.LinearProgress));
 		else children.push(...this.state.words.map(makeentry));
+		children.push(h(MaterialUI.Snackbar, Object.assign({
+			open: !!this.state.snackbar,
+			onRequestClose: (e) => this.setState({snackbar: null}),
+			autoHideDuration: 3000,
+		}, this.state.snackbar || {message: ''})));
 		return h('div#form', children);
 	},
 });
