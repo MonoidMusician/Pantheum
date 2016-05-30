@@ -1,3 +1,0 @@
-"Define random words":
-	could not complete sentence results were not unique (laugh,refuse,demonstrate,(singular) that,demonstrate)
-
