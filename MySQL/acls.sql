@@ -15,7 +15,7 @@ CREATE TABLE acls (
     admin_panel CHAR(2),
     add_words CHAR(2),
     teacher_panel CHAR(2),
-    class_settings CHAR(2),
+    class CHAR(2),
     user_settings CHAR(2),
     user_password CHAR(2),
 

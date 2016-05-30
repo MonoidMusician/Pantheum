@@ -27,14 +27,19 @@
 		} else return $sli == 'true';
 	}
 
-	function hasACL($name, $action, $level) {
+	function hasACL($name, $action, $level, $uid=false) {
 		global $suid, $mysqli;
 
 		$n = cleanInput('/[^a-zA-Z0-9_]/', strtolower($name));
 		$a = strtolower($action);
 		$l = strtoupper($level);
+		$u = cleanInput('/[^0-9]/', strtolower($suid));
 
-		$M_result = $mysqli->query("SELECT $n FROM acls WHERE user_id=$suid;");
+		if ($uid != false) {
+			$u = cleanInput('/[^0-9]/', strtolower($uid));
+		}
+
+		$M_result = $mysqli->query("SELECT $n FROM acls WHERE user_id=$u;");
 		if ($M_result == false) {
 			return false;
 		}

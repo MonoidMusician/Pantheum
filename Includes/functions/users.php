@@ -54,6 +54,34 @@
         return $rank;
     }
 
+	function getClasses($uid) {
+		global $mysqli, $suid;
+
+		$u = cleanInput('/[^0-9]/', strtolower($uid));
+
+		$result = [];
+
+		if (hasACL("teacher_panel", "R", "E")) {
+			$M_result = $mysqli->query("SELECT name,id FROM class;");
+			while ($M_row = $M_result->fetch_assoc()) {
+				$result[] = [ "id" => $M_row['id'], "name" => $M_row['name'] ];
+			}
+		} else {
+			$M_result = $mysqli->query("SELECT class_id FROM class_acls WHERE user_id=$uid;");
+			while ($M_row = $M_result->fetch_assoc()) {
+				$M_result2 = $mysqli->query("SELECT name FROM class WHERE id=" . $M_row['class_id'] . ";");
+				$n = "Unknown";
+				if ($M_result2 != false) {
+					$M_row2 = $M_result2->fetch_assoc();
+					$n = $M_row2['name'];
+				}
+				$result[] = [ "id" => $M_row['class_id'], "name" => $n ];
+			}
+		}
+
+		return $result;
+	}
+
     function setForceLogout($uid) {
         global $mysqli;
         $fl = '' . time() . ',' . $_SERVER['REMOTE_ADDR'] . '';
