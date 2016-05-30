@@ -95,27 +95,14 @@ function changePassword(username, old, new1, new2, error) {
         old = loginHash2(username, old);
         new1 = loginHash2(username, new1);
         new2 = loginHash2(username, new2);
-        $.post("/PHP5/user/change-password.php", { u: username, p: old, n1: new1, n2: new2 }, function(data) {
+        $.post("/PHP5/user/change-password.php", { u: username, p: old, n1: new1, n2: new2 }, function(raw) {
+            var data = JSON.parse(raw)['result'];
             if (data == 'success') {
                 window.location.href = '/index.php';
 
                 $.jStorage.flush();
             } else {
-                if (data == '1') {
-                    $(error).html('Unknown error.');
-                } else if (data == '2') {
-                    $(error).html('Wrong password.');
-                } else if (data == '3') {
-                    $(error).html('Bad username.');
-                } else if (data == '4') {
-                    $(error).html('Passwords did not match.');
-                } else if (data == '5') {
-                    $(error).html('Missing form.');
-                } else if (data == '6') {
-                    $(error).html('You\'ve been logged out.');
-                } else {
-                    $(error).html('Error logging in (' + data + ').');
-                }
+                $(error).html("Error changing password: " + data);
             }
         });
     } else {

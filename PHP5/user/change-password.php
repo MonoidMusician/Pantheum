@@ -8,7 +8,7 @@
 
 	if (!isset($sli) || $sli != 'true') {
 		logEvent('pswd-change', 'logged-out', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-		die('6');
+		die('{"result": "Not logged in."}');
 	} else {
 		$username = cleanInput('/[^a-zA-Z0-9]/', $_POST['u']);
 		$password = cleanInput('/[^a-zA-Z0-9]/', $_POST['p']);
@@ -16,11 +16,11 @@
 		$newpass2 = cleanInput('/[^a-zA-Z0-9]/', $_POST['n2']);
 		if (($username != $_POST['u']) || ($username == '') || ($password == '') || ($newpassw == '') || ($newpass2 == '')) {
 			logEvent('pswd-change', 'blank-input', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-			die('5');
+			die('{"result": "Missing form data."}');
 		}
 		if (($newpassw != $newpass2)) {
 			logEvent('pswd-change', 'mismatched-passwords', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-			die('4');
+			die('{"result": "New passwords do not match."}');
 		}
 
 		$M_query = "SELECT * FROM users WHERE username='$username';";
@@ -49,18 +49,18 @@
 
 				if ($M_result6) {
 					logEvent('pswd-change', 'success', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}, M_query6: `$M_query6`"));
-					print "success";
+					print '{"result": "success"}';
 				} else {
 					logEvent('pswd-change', 'misc-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}, M_query6: `$M_query6`"));
-					die('1');
+					die('{"result": "Error saving password."}');
 				}
 			} else {
 				logEvent('pswd-change', 'bad-password', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, password: `$password`, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}"));
-				die('2');
+				die('{"result": "Incorrect old password."}');
 			}
 		} else {
 			logEvent('pswd-change', 'no-user', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`"));
-			die('3');
+			die('{"result": "Incorrect username."}');
 		}
 	}
 ?>
