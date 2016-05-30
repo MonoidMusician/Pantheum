@@ -42,14 +42,14 @@
         }
 
         cpage.setPages([
-            ["#overview", "Overview", "Overview | Teacher Panel | Pantheum ", "/Pages/class/teacher-overview.php", true],
-            ["#students", "Students", "Students | Teacher Panel | Pantheum", "/Pages/class/teacher-students.php", true],
-            ["#student", "Student", "Student | Teacher Panel | Pantheum", ["/Pages/class/teacher-student.php", ["id"]], false],
-	    ["#addstudents", "Add Students", "Add Students | Teacher Panel | Pantheum", "/Pages/class/teacher-add-students.php", false],
-            ["#quizzes", "Quizzes", "Quizzes | Teacher Panel | Pantheum", "/Pages/class/teacher-quizzes.php", true],
-	    ["#createquiz", "Create Quiz", "Create Quiz | Teacher Panel | Pantheum", "/Pages/class/teacher-create-quiz.php", false],
-            ["#quiz", "Quiz", "Quiz | Teacher Panel | Pantheum", ["/Pages/class/teacher-quiz.php", ["id"]], false],
-	    ["#analytics", "Analytics", "Analytics | Teacher Panel | Pantheum", "/Pages/class/teacher-analytics.php", true]
+            ["#overview", "Overview", "Overview | Teacher Panel | Pantheum ", "/Pages/classes/teacher-overview.php", true],
+            ["#students", "Students", "Students | Teacher Panel | Pantheum", "/Pages/classes/teacher-students.php", true],
+            ["#student", "Student", "Student | Teacher Panel | Pantheum", ["/Pages/classes/teacher-student.php", ["id"]], false],
+	    ["#addstudents", "Add Students", "Add Students | Teacher Panel | Pantheum", "/Pages/classes/teacher-add-students.php", false],
+            ["#quizzes", "Quizzes", "Quizzes | Teacher Panel | Pantheum", "/Pages/classes/teacher-quizzes.php", true],
+	    ["#createquiz", "Create Quiz", "Create Quiz | Teacher Panel | Pantheum", "/Pages/classes/teacher-create-quiz.php", false],
+            ["#quiz", "Quiz", "Quiz | Teacher Panel | Pantheum", ["/Pages/classes/teacher-quiz.php", ["id"]], false],
+	    ["#analytics", "Analytics", "Analytics | Teacher Panel | Pantheum", "/Pages/classes/teacher-analytics.php", true]
         ], dpage);
         cpage.setNavigation('tnav', 'ul');
         cpage.load();

@@ -5,7 +5,7 @@
 ?>
 		<script>var pantheum = {
 			_private:{},
-			user:{administrator:<?php print hasACL('admin_panel', 'R', 'S'); ?>},
+			user:{administrator:<?php print hasACL('admin_panel', 'R', 'S') ? 'true' : 'false'; ?>},
 			api_path: '/PHP5/dictionary/',
 			view: {},
 			model: {},
@@ -51,4 +51,3 @@
 		<script type="text/javascript" src="/JS/lib/html.sortable.min.js"></script>
 		<script type="text/javascript" src="/JS/view.js"></script>
 		<script>$(pantheum.init)</script>
-

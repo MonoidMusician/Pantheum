@@ -39,9 +39,9 @@
         }
 
         cpage.setPages([
-            ["#overview", "Overview", "Overview | Student Panel | Pantheum ", "/Pages/class/student-overview.php", true],
-            ["#quizzes", "Quizzes", "Quizzes | Student Panel | Pantheum", "/Pages/class/student-quizzes.php", true],
-            ["#settings", "Settings", "Settings | Student Panel | Pantheum", "/Pages/class/student-settings.php", false]
+            ["#overview", "Overview", "Overview | Student Panel | Pantheum ", "/Pages/classes/student-overview.php", true],
+            ["#quizzes", "Quizzes", "Quizzes | Student Panel | Pantheum", "/Pages/classes/student-quizzes.php", true],
+            ["#settings", "Settings", "Settings | Student Panel | Pantheum", "/Pages/classes/student-settings.php", false]
         ], dpage);
         cpage.setNavigation('tnav', 'ul');
         cpage.load();
