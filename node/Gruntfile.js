@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 			},
 			build: {
 				expand: true,
-				src: 'model react user lib'.split(' ').map(d=>d+'/*.js').concat('languages/**/*.js', 'pantheum.js', 'la_ipa.js'),
+				src: 'model react user lib'.split(' ').map(d=>d+'/**/*.js').concat('languages/**/*.js', 'pantheum.js', 'la_ipa.js'),
 				dest: 'build/',
 			},
 		},
@@ -19,15 +19,27 @@ module.exports = function(grunt) {
 			options: {
 				ignore: ['cls-bluebird'],
 			},
-			build: {
+			static: {
 				files: {
-					'build/browser.js': 'build/pantheum.js',
-				}
-			},
-			devel: {
-				files: {
-					'build/browser.js': 'pantheum.js',
+					'build/static.js': 'static.js',
 				},
+			},
+			build: {
+				options: {
+					transform: [
+						['exposify', {expose:{
+							'react': 'window.React',
+							'react-dom': 'window.ReactDOM',
+							'react-hyperscript': 'window.h',
+							'material-ui': 'window.MaterialUI',
+							'material-ui/svg-icons': 'window.MaterialUI.svgicons',
+							'material-ui/styles': 'window.MaterialUI.styles',
+						}}]
+					],
+				},
+				files: {
+					'build/pantheum.js': 'build/pantheum.js',
+				}
 			},
 			develive: {
 				options: {
@@ -36,11 +48,6 @@ module.exports = function(grunt) {
 				},
 				files: {
 					'build/browser.js': 'pantheum.js',
-				},
-			},
-			static: {
-				files: {
-					'build/static.js': 'static.js',
 				},
 			},
 			develite: {
@@ -87,10 +94,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	// Default task(s).
+	grunt.registerTask('static', 'browserify:static');
+	grunt.registerTask('develive', 'browserify:develive');
+	grunt.registerTask('develite', 'browserify:develite');
+
 	grunt.registerTask('default', ['babel:build', 'browserify:build', 'uglify']);
 	grunt.registerTask('quick', ['babel:build', 'browserify:build']);
 	grunt.registerTask('devel', 'browserify:devel');
-	grunt.registerTask('develive', 'browserify:develive');
-	grunt.registerTask('static', 'browserify:static');
-	grunt.registerTask('develite', 'browserify:develite');
 };

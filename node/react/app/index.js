@@ -37,8 +37,20 @@ module.exports = createClass({
 		var user = {
 			administrator:true,
 			notifications: this.state.notifications,
+			/*
+			palette: {
+				primary1Color: '#0080ff',
+				primary2Color: '#0037FF',
+				accent1Color: '#BA6EFF',
+			},
+			*/
 		};
-		return h(MaterialUI.styles.MuiThemeProvider, {muiTheme:getMuiTheme(this.props.req)}, [
+		return h(MaterialUI.styles.MuiThemeProvider, {
+			muiTheme:getMuiTheme({
+				req: this.props.req,
+				user,
+			})
+		}, [
 			h(UserProvider, {user}, [
 				AppBar.h({
 					onLeftIconButtonTouchTap: this.toggleNav,

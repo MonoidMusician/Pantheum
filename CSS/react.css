@@ -50,3 +50,8 @@ body {
 .qtip {
     font-size: 10pt !important;
 }
+
+/* Override Material UI default font */
+button, a[type=button] {
+	font-family: 'Linux Biolinum' !important;
+}

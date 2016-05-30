@@ -1,14 +1,14 @@
 var h = require('react-hyperscript');
 var MaterialUI = require('material-ui');
-
-var colors = require('../../style/colors');
+var muiThemeable = require('material-ui/styles/muiThemeable').default; // wat??
 
 var createClass = require('../../createClass');
 
 var NAME = 'quiz-category';
 
-var TopicSelectable = createClass({
+var TopicSelectable = muiThemeable()(createClass({
 	render: function renderTopicSelectable() {
+		var {palette} = this.props.muiTheme;
 		return h('span', [
 			h('input', Object.assign({}, this.props, {
 				type: 'radio',
@@ -19,15 +19,15 @@ var TopicSelectable = createClass({
 				style: Object.assign({
 					margin: '0px 3px',
 					padding: '5px 5px 2px',
-					borderBottom: '2px solid '+colors.bold,
-					color: this.props.checked ? colors.bold : colors.primary,
+					borderBottom: '2px solid '+palette.primary1Color,
+					color: this.props.checked ? palette.primary2Color : palette.primary1Color,
 					fontWeight: this.props.checked ? 'bold' : 'normal',
 					lineHeight: '1.5'
 				}, this.props.style),
 			}, this.props.children)
 		])
 	}
-});
+}));
 
 module.exports = createClass({
 	render() {
@@ -43,7 +43,7 @@ module.exports = createClass({
 			}, topic);
 			if (tprops.checked)
 				childs = tprops.children;
-			children.push(TopicSelectable.h(tprops, tprops.label));
+			children.push(h(TopicSelectable, tprops, tprops.label));
 		}
 		children = [h('div', {style:{marginBottom:15}}, children)];
 		if (childs) children = children.concat(childs);

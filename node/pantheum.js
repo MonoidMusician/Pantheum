@@ -1,3 +1,4 @@
+window.Promise = require('bluebird');
 window.la_ipa = require('./lib/la_ipa');
 window.pantheum = {
 	model: require('./model'),

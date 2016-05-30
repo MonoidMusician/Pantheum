@@ -1,7 +1,6 @@
 module.exports.quiz = require('./quiz');
 module.exports.dictionary = require('./dictionary');
 module.exports.home = require('./home');
-module.exports.sum = require('./sum');
 
 var h = require('react-hyperscript');
 var App = require('../app');
