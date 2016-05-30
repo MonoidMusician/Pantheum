@@ -15,13 +15,11 @@
     </div>
     <script type="text/javascript">
         $('#signupsubmit').click(function(e) {
-            if (value != 'xx') {
                 var username = $('#signupusername').val();
                 var password = $('#signuppassword').val();
                 var cpassword = $('#signupconfirmpassword').val();
                 var email = $('#signupemail').val();
                 var classid = $('input[name=signupclass]:checked').val();
-                //alert(classid);
                 if (username != '') {
                     if (password != '') {
                         if (cpassword != '') {
@@ -31,7 +29,7 @@
                                         $('#signuperror').html('Sending&nbsp;request...');
                                         password = loginHash(username, password);
                                         cpassword = loginHash(username, cpassword);
-                                        $.post("/PHP5/signup.php", { u: username, p: password, c: cpassword, e: email, v: value, l: classid }, function(data) {
+                                        $.post("/PHP5/signup.php", { u: username, p: password, c: cpassword, e: email, l: classid }, function(data) {
                                             if (data == 'success') {
                                                 $('#signuperror').html('Account&nbsp;created. Redirecting to login page...<!--<br>Please&nbsp;check&nbsp;your&nbsp;email.-->');
                                                 setTimeout(function(){window.location.replace('login.php');}, 2000);
@@ -70,35 +68,25 @@
                                                     default: 
                                                         $('#signuperror').html('Error:&nbsp;Unknown&nbsp;error&nbsp('+data+').');
                                                 }
-                                                $.get('/PHP5/getcode.php', function(data) {
-                                                    value = data;
-                                                });
-                                            }
-                                        });
-                                    } else {
-                                        $('#signuperror').html('Invalid&nbsp;email&nbsp;address.');
-                                    }
+                                        }
+                                    });
                                 } else {
-                                    $('#signuperror').html('Passwords&nbsp;do&nbsp;not&nbsp;match.');
+                                    $('#signuperror').html('Invalid&nbsp;email&nbsp;address.');
                                 }
                             } else {
-                                $('#signuperror').html('Missing&nbsp;email.');
+                                $('#signuperror').html('Passwords&nbsp;do&nbsp;not&nbsp;match.');
                             }
                         } else {
-                            $('#signuperror').html('Please&nbsp;confirm&nbsp;password.');
+                            $('#signuperror').html('Missing&nbsp;email.');
                         }
                     } else {
-                        $('#signuperror').html('Missing&nbsp;password.');
+                        $('#signuperror').html('Please&nbsp;confirm&nbsp;password.');
                     }
                 } else {
-                    $('#signuperror').html('Missing&nbsp;username.');
+                    $('#signuperror').html('Missing&nbsp;password.');
                 }
             } else {
-                $.get('/PHP5/getcode.php', function(data) {
-                    value = data;
-                });
-                
-                $('#signuperror').html('Error&nbsp;with&nbsp;magic&nbsp;code.<br>Please&nbsp;try&nbsp;again.');
+                $('#signuperror').html('Missing&nbsp;username.');
             }
         });
 
@@ -106,12 +94,6 @@
             if (e.which == 13) {
                 $('#signupsubmit').click();
             }
-        });
-        
-        value = 'xx';
-        
-        $.get('/PHP5/getcode.php', function(data) {
-            value = data;
         });
     </script>
 </article>

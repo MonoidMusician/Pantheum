@@ -14,16 +14,9 @@
 	$password = cleanInput('/[^a-zA-Z0-9]/', $_POST['p']);
 	$cpassword = cleanInput('/[^a-zA-Z0-9]/', $_POST['c']);
 	$email = cleanInput('/[^a-zA-Z0-9\@\.\_\-]/', $_POST['e']);
-	$code = cleanInput('/[^a-zA-Z0-9]/', $_POST['v']);
 	$classid = array_key_exists('l', $_POST) ? cleanInput('/[^a-z0-9]/', $_POST['l']) : NULL;
-	$vc = checkValidCode($code);
-	if ($vc != 0) {
-		logEvent('signup', 'invalid-code-' . $vc, encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-		die('2');
-	}
 
-
-	if (($username != $_POST['u']) || !(($username == '') || ($password != '') || ($cpassword != '') || ($email != '') || ($code != '')) || (count($_POST) < 5) || (count($_POST) > 6)) {
+	if (($username != $_POST['u']) || !(($username == '') || ($password != '') || ($cpassword != '') || ($email != '') || (count($_POST) < 5) || (count($_POST) > 6)) {
 		logEvent('signup', 'blank-input', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
 		die('4');
 	}
