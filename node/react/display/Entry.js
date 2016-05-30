@@ -141,7 +141,10 @@ var PronunciationTool = createClass({
 module.exports = createClass({
 	displayName: 'view.Entry',
 	getInitialState() {
-		return {toolsOpen: false, classic:true};
+		return {
+			classic: true,
+			deleteConfirm: false,
+		};
 	},
 	toggleTools() {
 		this.setState({toolsOpen: !this.state.toolsOpen});
@@ -157,31 +160,14 @@ module.exports = createClass({
 		var user = this.props.user || this.context.user;
 		var editor = user && user.administrator;
 		var k = 0;
-		if (!this.state.toolsOpen) {
-			tools = [Icon.h.tools({action})];
-		} else {
-			tools = [
-				Icon.h.tools(   { key:k++, action }),
-				Icon.h.hardlink({ key:k++, link: "dictionary.php?id="+this.props.id }),
-				Icon.h.refresh( { key:k++ }),
-				Icon.h.delete(     { key:k++ }),
-				h('div', {key:k++,style:{paddingLeft:'2em'}}, [
-					Wiktionary.h(Object.assign({}, this.props, {key:0})),
-					LewisShort.h(Object.assign({}, this.props, {key:1})),
-					h('br', {key:2}),
-					"Pronunciation: ",
-					PronunciationTool.h({key:4})
-				])
-			];
-		}
-		return h(MaterialUI.Card, {
-			expandable: !editor,
-		}, [
+		var children = [
+			// Word name, spart, attributes, definitions - visible by default
 			h(MaterialUI.CardTitle, {
 				actAsExpander: !editor,
 				title: [Language.h({key:0}, this.props.word.lang), WordName.h(Object.assign({}, this.props, {key:1}))],
 				subtitle: Attributes.h(this.props),
 			}, Definitions.h({definitions:this.props.word.definitions})),
+			// Inflection - expandable (use CardTitle to preserve font size)
 			h(MaterialUI.CardTitle, {
 				expandable: !editor,
 			}, [
@@ -195,26 +181,56 @@ module.exports = createClass({
 					InflectionTable.h({word:this.props.word}) :
 					Inflection.h({forms:this.props.word.forms, mgr:this.props.word.mgr}),
 			]),
-			...(editor ? [h(MaterialUI.CardActions, [
+		]
+		if (editor) {
+			var actions = [
 				h(MaterialUI.FlatButton, {
 					label: "Hardlink",
 					icon: h(MaterialUI.svgicons.ContentLink),
-					href: "dictionary.php?id="+this.props.id,
+					href: "dictionary?id="+this.props.word.id,
 					linkButton: true,
 				}),
-				h(MaterialUI.FlatButton, {
+			];
+			if (this.props.onRefresh)
+				actions.push(h(MaterialUI.FlatButton, {
 					label: "Refresh",
 					icon: h(MaterialUI.svgicons.NavigationRefresh),
-				}),
-				h(MaterialUI.FlatButton, {
+					onTouchTap: this.props.onRefresh,
+				}));
+			if (this.props.onDelete) {
+				actions.push(h(MaterialUI.FlatButton, {
 					label: "Delete",
-					icon: h(MaterialUI.svgicons.ActionDeleteForever)
-				}),
+					icon: h(MaterialUI.svgicons.ActionDeleteForever),
+					onTouchTap: (e) => this.setState({deleteConfirm: true}),
+				}));
+				children.push(h(MaterialUI.Dialog, {
+					modal: false,
+					open: this.state.deleteConfirm,
+					onRequestClose: (e) => this.setState({deleteConfirm: false}),
+					actions: [
+						h(MaterialUI.FlatButton, {
+							label: "Cancel",
+							primary: true,
+							onTouchTap: (e) => this.setState({deleteConfirm: false}),
+						}),
+						h(MaterialUI.FlatButton, {
+							label: "Delete",
+							primary: true,
+							onTouchTap: this.props.onDelete,
+						}),
+					]
+				}, "Delete this word?"));
+			}
+			actions.push(
 				PronunciationTool.h(),
 				h('br'),
 				Wiktionary.h(this.props),
-				LewisShort.h(this.props),
-			])] : [])
-		]);
+				LewisShort.h(this.props)
+			);
+			children.push(h(MaterialUI.CardActions, actions));
+		}
+		return h(MaterialUI.Card, {
+			expandable: !editor,
+		}, children);
 	}
 });

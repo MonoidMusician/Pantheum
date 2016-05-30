@@ -15,7 +15,7 @@ module.exports = createClass({
 		return {
 			language: null,
 			searching: false,
-			entries: [],
+			words: [],
 		};
 	},
 	handleLanguage: function(event, index, language) {
@@ -27,8 +27,8 @@ module.exports = createClass({
 			this.handleData([word])
 		});
 	},
-	handleData: function(entries) {
-		this.setState({searching:false, entries});
+	handleData: function(words) {
+		this.setState({searching:false, words});
 	},
 	render() {
 		var children = [
@@ -74,8 +74,18 @@ module.exports = createClass({
 				}),
 			])
 		];
+		var makeentry = word => Entry.h({
+			word,
+			onRefresh: () => {
+				this.setState({words: []});
+				this.handleSearch();
+			},
+			onDelete: () => {
+				this.setState({words: this.state.words.filter(w => w !== word)});
+			},
+		});
 		if (this.state.searching) children.push(h(MaterialUI.LinearProgress));
-		else children.push(...this.state.entries.map(word => Entry.h({word})));
+		else children.push(...this.state.words.map(makeentry));
 		return h('div#form', children);
 	},
 });
