@@ -1,13 +1,3 @@
-<?php
-	require_once('/var/www/config.php');
-	sro('/Includes/mysql.php');
-	sro('/Includes/session.php');
-	sro('/Includes/functions.php');
-
-	sro('/PHP5/lib/PHPLang/common.php');
-	sro('/PHP5/lib/PHPLang/db.php');
-	sro('/PHP5/lib/PHPLang/display.php');
-?>
 <header>
 	<h1 data-i18n>Help</h1>
 </header>

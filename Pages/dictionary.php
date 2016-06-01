@@ -10,7 +10,7 @@
 
 	global $sql_stmts;
 	$db = defaultDB();
-	$editor = requireRank(3, FALSE);
+	$editor = hasACL('add_words', 'R', 'S');
 	if (count($_GET)) {
 		if (!array_key_exists("id", $_GET) or !(
 			$ids = vec_norm(explode(",", $_GET["id"]), "intval")

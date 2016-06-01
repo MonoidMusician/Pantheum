@@ -1,15 +1,3 @@
-<?php
-	require_once('/var/www/config.php');
-	sro('/Includes/mysql.php');
-	sro('/Includes/session.php');
-	sro('/Includes/functions.php');
-
-	sro('/PHP5/lib/PHPLang/misc.php');
-	sro('/PHP5/lib/PHPLang/make_example.php');
-	sro('/PHP5/lib/PHPLang/db.php');
-	sro('/PHP5/lib/PHPLang/display.php');
-	global $OP_COMMA;
-?>
 <header>
 	<h1>Sentence maker</h1>
 </header>
@@ -91,7 +79,7 @@ function make_ordered_hash() {
 		return process(a.split(/\s+|(?=[\.,-\/#!$%\^&\*;:{}=\-_`~()])/g));
 	}
 	function wrapli(a,id) {
-		if (!a) return ''; 
+		if (!a) return '';
 		var html = '<li id="word-'+id+'">';
 		html += '<span data-value="'+a+'" data-id="'+id+'" onclick="insertAtCaret(last_active_element,&quot;<i>'+a+'</i>&quot;);">'+a+'</span>';
 		html += '<ul>';

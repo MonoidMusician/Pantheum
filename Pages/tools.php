@@ -1,13 +1,3 @@
-<?php
-	require_once('/var/www/config.php');
-	sro('/Includes/mysql.php');
-	sro('/Includes/session.php');
-	sro('/Includes/functions.php');
-
-	sro('/PHP5/lib/PHPLang/common.php');
-	sro('/PHP5/lib/PHPLang/db.php');
-	sro('/PHP5/lib/PHPLang/display.php');
-?>
 <header>
 	<h1>Tools</h1>
 </header>
@@ -1274,4 +1264,3 @@ var initMap = function() {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2kxU6e0-_Wqgaac-IJ7ZI5X1gEaG6IsE&callback=initMap&libraries=places" async defer></script>
 
 </article>
-
