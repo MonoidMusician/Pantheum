@@ -6,12 +6,12 @@
 	sro('/Includes/functions/email.php');
 	sro('/Includes/functions/users.php');
 
-	function requireRank($rank, $die=TRUE) {
+	function requireRank($rank, $die=true) {
 		global $srank;
 
 		error_log("Warning: requireRank is depricated.");
 
-		if (!requireLoggedIn($die)) return FALSE;
+		if (!requireLoggedIn($die)) return false;
 
 		if ($die and $srank > $rank) {
 			sro('/Pages/restricted/admin.php');
@@ -29,6 +29,11 @@
 	}
 
 	function hasACL($name, $action, $level, $uid=false) {
+
+		if (!requireLoggedIn($die)) {
+			return false;
+		}
+
 		global $suid, $mysqli;
 
 		$n = cleanInput('/[^a-zA-Z0-9_]/', strtolower($name));
