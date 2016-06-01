@@ -1,3 +1,14 @@
+<?php
+    require_once('/var/www/config.php');
+    sro('/Includes/mysql.php');
+    sro('/Includes/session.php');
+    sro('/Includes/functions.php');
+
+	if (!hasACL('add_words', 'R', 'S')) {
+		sro('/Pages/restricted/adder.php');
+		die("");
+	}
+?>
 <style>
 	form input:not([type="checkbox"]):not([type="radio"]) {
 		width: 0px;
@@ -219,7 +230,7 @@
 	<input id="verb1" name="verb1"><span id="verb_ending1">āre,</span><span></span>
 	<input id="verb2" name="verb2"><span id="verb_ending2">ī,</span><span></span>
 	<input id="verb3" name="verb3"><span id="verb_ending3">us</span><span></span>
-</div> 
+</div>
 <div class="noun">
 	<span class="present"></span>
 	<input id="noun0"><span id="noun_ending0">a,</span><span></span>
@@ -536,7 +547,7 @@ updater('#noun0', [], noun_endings);
 
 var comparison = [''];
 var adjective_comparison = [
-	
+
 ];
 var adjective_endings = [
 	[['#adjective1','#adjective2'], [
