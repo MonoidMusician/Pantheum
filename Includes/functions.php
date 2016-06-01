@@ -28,9 +28,15 @@
 		} else return $sli == 'true';
 	}
 
+	function isLoggedIn() {
+		global $sli;
+
+		return isset($sli) && $sli == 'true';
+	}
+
 	function hasACL($name, $action, $level, $uid=false) {
 
-		if (!requireLoggedIn($die)) {
+		if (!isLoggedIn(false)) {
 			return false;
 		}
 
