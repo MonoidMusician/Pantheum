@@ -5,9 +5,9 @@
 	sro('/Includes/functions.php');
 	global $mysqli;
 
-	if ((isset($sli)) && ($sli == 'true')) {
+	if (isLoggedIn()) {
 		logEvent('signup', 'logged-in', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-		die('1');
+		die('{"result": "User is already logged in."}');
 	}
 
 	$username = cleanInput('/[^a-zA-Z0-9]/', $_POST['u']);
@@ -16,15 +16,15 @@
 	$email = cleanInput('/[^a-zA-Z0-9\@\.\_\-]/', $_POST['e']);
 	$classid = array_key_exists('l', $_POST) ? cleanInput('/[^a-z0-9]/', $_POST['l']) : NULL;
 
-	if (($username != $_POST['u']) || !(($username == '') || ($password != '') || ($cpassword != '') || ($email != '') || (count($_POST) < 5) || (count($_POST) > 6)) {
+	if (($username != $_POST['u']) || ($username == '') || ($password == '') || ($cpassword == '') || ($email == '')) {
 		logEvent('signup', 'blank-input', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-		die('4');
+		die('{"result": "Error processing request. Please try again."}');
 	}
 
 
 	if ($password != $cpassword) {
 		logEvent('signup', 'password-mismatch', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
-		die('5');
+		die('{"result": "Passwords do not match."}');
 	}
 
 
@@ -34,7 +34,7 @@
 	if ($M_count != 0) {
 		$M_row = $M_result->fetch_assoc();
 		logEvent('signup', 'exists-username', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}"));
-		die('3');
+		die('{"result": "Username is already in use."}');
 	}
 
 
@@ -44,7 +44,7 @@
 	if ($M_counte != 0) {
 		$M_rowe = $M_resulte->fetch_assoc();
 		logEvent('signup', 'exists-email', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_row: ['" . implode("','", array_keys($M_row)) . "'], {'" . implode("', '", $M_row) . "'}, M_querye: `$M_querye`, M_rowe: ['" . implode("','", array_keys($M_rowe)) . "'], {'" . implode("', '", $M_rowe) . "'}"));
-		die('9');
+		die('{"result": "Email is already in use."}');
 	}
 
 
@@ -56,7 +56,7 @@
 	error_log(json_encode( $M_row1[0] ));
 	if (!(isset($M_row1[0])) || ($M_row1[0] > 10)) {
 		logEvent('signup', 'spamming', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`"));
-		die('6');
+		die('{"result": "Spamming signup detected."}');
 	}
 
 	if ($classid !== NULL) {
@@ -64,7 +64,7 @@
 		$M_resultL = $mysqli->query($M_queryL);
 		if (!$M_resultL) {
 			logEvent('signup', 'class-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`, M_queryL: `$M_queryL`"));
-			die('10');
+			die('{"result": "Unknown class."}');
 		}
 	}
 
@@ -86,7 +86,7 @@
 	$M_result2 = $mysqli->query($M_query2);
 	if (!$M_result2) {
 		logEvent('signup', 'create-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`, M_query2: `$M_query2`"));
-		die('7');
+		die('{"result": "Unknown error occurred creating account. Please try again."}');
 	}
 
 
@@ -94,7 +94,7 @@
 	$M_result3 = $mysqli->query($M_query3);
 	if (!$M_result3) {
 		logEvent('signup', 'select-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`, M_query2: `$M_query2`, M_query3: `$M_query3`"));
-		die('7');
+		die('{"result": "Unknown error occurred creating account. Please try again."}');
 	}
 
 
@@ -104,9 +104,9 @@
 	$M_result4 = $mysqli->query($M_query4);
 	if ($M_result4) {
 		logEvent('signup', 'success', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`, M_query2: `$M_query2`, M_query3: `$M_query3`, M_query4: `$M_query4`"));
-		print "success";
+		print '{"result": "success"}';
 	} else {
 		logEvent('signup', 'modify-error', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}, M_query: `$M_query`, M_querye: '`$M_querye`, M_query1: `$M_query1`, M_query2: `$M_query2`, M_query3: `$M_query3`, M_query4: `$M_query4`"));
-		die('7');
+		die('{"result": "Unknown error occurred creating account. Please try again."}');
 	}
 ?>
