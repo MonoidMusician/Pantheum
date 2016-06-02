@@ -6,7 +6,7 @@
 
 	global $mysqli;
 
-	if ((isset($sli)) && ($sli == 'true')) {
+	if (isLoggedIn()) {
 		logEvent('login', 'logged-in', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
 		die('{ "result": "User is already logged in."}');
 	}
