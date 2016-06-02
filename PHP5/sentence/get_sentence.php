@@ -8,6 +8,7 @@
 	sro('/PHP5/lib/PHPLang/make_example.php');
 	sro('/PHP5/lib/PHPLang/db.php');
 	sro('/PHP5/lib/PHPLang/display.php');
+	
 	$dir = "/var/www/Data/";
 	function get_id($value,$sentence) {
 		foreach ($sentence as $_ => $__) {
@@ -144,7 +145,7 @@ $(function(){
 		if (h > hght) hght = h;
 	});
 	$('.description-parent').height(hght);
-	
+
 	function clear() {
 		timeout = undefined;
 		$('.sentence > .word').removeClass('selected').removeClass('selected2');

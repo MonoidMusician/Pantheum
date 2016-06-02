@@ -10,7 +10,7 @@
 		logEvent('login', 'logged-in', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, POST: ['" . implode("','", array_keys($_POST)) . "'], {'" . implode("', '", $_POST) . "'}"));
 		die('{ "result": "User is already logged in."}');
 	}
-	
+
 	$username = cleanInput('/[^a-zA-Z0-9]/', $_POST['u']);
 	$password = cleanInput('/[^a-zA-Z0-9]/', $_POST['p']);
 	$password2 = cleanInput('/[^a-zA-Z0-9]/', $_POST['p2']);
@@ -63,9 +63,9 @@
 		$_SESSION['udata'] = $M_row['udata'];
 
 		if ($M_row['password'] == '') {
-			$M_query6 = "UPDATE users SET currentip='$current', password='$password2' WHERE id='" . $M_row['id'] . "';";
+			$M_query6 = "UPDATE users SET currentip='$current', password='$password2',old_password='' WHERE id='" . $M_row['id'] . "';";
 		} else {
-			$M_query6 = "UPDATE users SET currentip='$current' WHERE id='" . $M_row['id'] . "';";
+			$M_query6 = "UPDATE users SET currentip='$current',old_password='' WHERE id='" . $M_row['id'] . "';";
 		}
 		$M_result6 = $mysqli->query($M_query6);
 

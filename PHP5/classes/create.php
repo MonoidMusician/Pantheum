@@ -4,14 +4,12 @@
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
 
-	global $sli, $suid;
-
-	if (isset($sli)) {
-		if (!hasACL('teacher_panel', 'W', 'S')) {
-			die('{"result": "Must be a teacher to access."}');
-		}
-	} else {
+	if (!isLoggedIn()) {
 		die('{"result": "Must be logged in."}');
+	}
+
+	if (!hasACL('teacher_panel', 'W', 'S')) {
+		die('{"result": "Must be a teacher to access."}');
 	}
 
 	$name = cleanInput('prepared', $_POST['n']);
