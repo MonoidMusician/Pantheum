@@ -4,7 +4,10 @@
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
 
-	requireRank('1');
+	if (!hasACL('admin_panel', 'W', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 
 	$uid = cleanInput('/[^0-9]/', $_GET['uid']);
 
@@ -14,7 +17,7 @@
 	error_log($M_query);
 	$M_result = $mysqli->query($M_query);
 	if ($M_result) {
-		logEvent('users', 'force-logout', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, GET: ['" . implode("','", array_keys($_GET)) . "'], {'" . implode("', '", $_GET) . "'}, M_query: `$M_query`"));    
+		logEvent('users', 'force-logout', encodeHex("SESSION: ['" . implode("','", array_keys($_SESSION)) . "'], {'" . implode("', '", $_SESSION) . "'}, GET: ['" . implode("','", array_keys($_GET)) . "'], {'" . implode("', '", $_GET) . "'}, M_query: `$M_query`"));
 		print "success";
 	} else {
 		die($mysqli->error);

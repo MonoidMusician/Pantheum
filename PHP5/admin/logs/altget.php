@@ -6,7 +6,10 @@
 
 	global $mysqli;
 
-	requireRank('1');
+	if (!hasACL('admin_panel', 'R', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 
 	$M_query = "SELECT * FROM logs;";
 	$M_result = $mysqli->query($M_query);

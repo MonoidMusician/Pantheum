@@ -4,7 +4,10 @@
 	sro('/Includes/session.php');
 	sro('/Includes/functions.php');
 
-	requireRank('1');
+	if (!hasACL('admin_panel', 'W', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 
 	global $suid, $mysqli;
 

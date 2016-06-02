@@ -6,7 +6,10 @@
 
 	sro('/PHP5/lib/PHPLang/display.php');
 
-	requireRank('1');
+	if (!hasACL('admin_panel', 'R', 'S')) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 
 	global $mysqli;
 
