@@ -28,11 +28,6 @@
 <input id="confirm" type="password" placeholder="Repeat" required><br>
 <button id="submit" data-i18n="change_password">Change password</button><p id="password-error"><br>
 </form>
-<h3 data-i18n="change_email">Change Email</h3>
-<form id="#passwords">
-<input id="signupemail" class="signup" type="email" placeholder="Email"><br>
-<button id="submit2" data-i18n="change_email">Change email</button><p id="email-error"><br>
-</form>
 <script>
     $(function() {
         $(document).on('submit', '#passwords', function(event) {
