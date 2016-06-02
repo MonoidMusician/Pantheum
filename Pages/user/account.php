@@ -3,8 +3,22 @@
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
-    
-    requireLoggedIn(TRUE);
+
+    if (!isLoggedIn()) {
+		sro('/Pages/restricted/logged-out.php');
+		die("");
+	}
+
+	global $suid;
+	$level = 'S';
+	if (isset($_GET['uid']) && $suid != $_GET['uid']) {
+		$level = 'E';
+	}
+
+	if (!hasACL('user_password', 'R', $level)) {
+		sro('/Pages/restricted/admin.php');
+		die("$level");
+	}
 ?>
 <h2 data-i18n="account">Account</h2>
 <h3 data-i18n="change_password">Change Password</h3>

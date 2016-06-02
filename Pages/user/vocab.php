@@ -3,11 +3,25 @@
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
-    
+
     sro('/PHP5/lib/PHPLang/db.php');
     sro('/PHP5/lib/PHPLang/display.php');
-    
-    requireLoggedIn(TRUE);
+
+    if (!isLoggedIn()) {
+		sro('/Pages/restricted/logged-out.php');
+		die("");
+
+
+		global $suid;
+		$level = 'S';
+		if (isset($_GET['uid']) && $suid != $_GET['uid']) {
+			$level = 'E';
+		}
+
+		if (!hasACL('user_settings', 'R', $level)) {
+			sro('/Pages/restricted/admin.php');
+			die("");
+		}
 ?>
 <h2>Vocab</h2>
 <div id="uvUControls"></div>

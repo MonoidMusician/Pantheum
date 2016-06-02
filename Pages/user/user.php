@@ -3,8 +3,22 @@
     sro('/Includes/mysql.php');
     sro('/Includes/session.php');
     sro('/Includes/functions.php');
-    
-    requireLoggedIn(TRUE);
+
+    if (!isLoggedIn()) {
+		sro('/Pages/restricted/logged-out.php');
+		die("");
+	}
+
+	global $suid;
+	$level = 'S';
+	if (isset($_GET['uid']) && $suid != $_GET['uid']) {
+		$level = 'E';
+	}
+
+	if (!hasACL('user_settings', 'R', $level) && !hasACL('user_password', 'R', $level)) {
+		sro('/Pages/restricted/admin.php');
+		die("");
+	}
 ?>
 <header id="uheader">
     <h2 id="utitle" data-i18n>Settings</h2>
@@ -23,15 +37,27 @@
         } else {
             dpage = location.hash;
         }
-        
+
         var cpage = new jPage();
         cpage.init('ucontent', pantheum.update.bind(undefined, '#uheader, #upage'));
         cpage.setPages([
             ["#overview",    i18n.translatable('Overview'),    "Overview | Settings | Latin",    "/Pages/user/overview.php",    true],
-            ["#account",     i18n.translatable('Account'),     "Account | Settings | Latin",     "/Pages/user/account.php",     true],
-            ["#preferences", i18n.translatable('Preferences'), "Preferences | Settings | Latin", "/Pages/user/preferences.php", true],
-            ["#vocab",       i18n.translatable('Vocab'),       "Vocab | Settings | Latin",       "/Pages/user/vocab.php",       true],
-            //["#quizzes",     i18n.translatable('Quizzes'),     "Quizzes | Settings | Latin",     "/Pages/quiz/quizzes.php",     true],
+			<?php
+				if (hasACL('user_password', 'R', $level)) {
+			?>
+            		["#account",     i18n.translatable('Account'),     "Account | Settings | Latin",     "/Pages/user/account.php",     true],
+			<?php
+				}
+			?>
+			<?php
+				if (hasACL('user_settings', 'R', $level)) {
+			?>
+	            ["#preferences", i18n.translatable('Preferences'), "Preferences | Settings | Latin", "/Pages/user/preferences.php", true],
+	            ["#vocab",       i18n.translatable('Vocab'),       "Vocab | Settings | Latin",       "/Pages/user/vocab.php",       true],
+	            ["#quizzes",     i18n.translatable('Quizzes'),     "Quizzes | Settings | Latin",     "/Pages/quiz/quizzes.php",     true],
+			<?php
+				}
+			?>
         ], dpage);
         cpage.setNavigation('unav', 'ul');
         cpage.setBasepath('');
