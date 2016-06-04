@@ -18,8 +18,8 @@
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
-		<div id="content-wrapper">
-	        <section id="content">
+		<div class="column-right width-eighty mobile-width-full no-mobile-margin no-mobile-padding" id="content-wrapper">
+	        <section class="no-mobile-margin" id="content">
 	            <?php sro('/Pages/dictionary.php'); ?>
 	        </section>
 	        <?php sro('/Includes/footer.php'); ?>

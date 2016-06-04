@@ -51,7 +51,6 @@
 	            </script>
 	        </section>
 			<?php sro('/Includes/footer.php'); ?>
-            <div class="clear"><p>&nbsp;</p></div>
 		</div>
     </body>
 </html>
