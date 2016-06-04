@@ -477,28 +477,12 @@ sup.ordinal {font-size: 65%;}
 @media only screen
 and (min-device-width : 320px)
 and (max-device-width : 480px) {
-    html,body {
-        font-size: 1.1em;
-    }
-
     button.large {
         width: 230px;
     }
 
     input:not([type="checkbox"]):not([type="radio"]) {
         width: 240px;
-    }
-
-    nav.global-nav li {
-        font-size: 1.12em;
-
-        padding-top: 1.5px;
-        padding-bottom: 1.5px;
-        padding-left: 2px;
-        padding-right: 2px;
-
-        min-width: calc(14.285714285714% - 12px);
-        max-width: calc(33.3333333% - 12px);
     }
 
     .scrollable {
