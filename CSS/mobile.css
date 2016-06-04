@@ -95,4 +95,12 @@
   .mobile-width-full {
 	  width: 100% !important;
   }
+
+  footer {
+    font-size: 90%;
+
+    margin: 0;
+    padding-left: 25px;
+    padding-right: 25px;
+  }
 }

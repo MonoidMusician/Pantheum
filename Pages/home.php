@@ -10,3 +10,4 @@
 		sro('/Pages/home/home-logged-out.php');
 	}
 ?>
+<div class="clear" style="background-color: #efefef;"><p>&nbsp;</p></div>
