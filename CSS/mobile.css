@@ -1,9 +1,9 @@
 .mobile-only {
-  display: none;
+  display: none !important;
 }
 
 .desktop-only {
-  display: block;
+  display: block !important;
 }
 
 #mobile-menu {
