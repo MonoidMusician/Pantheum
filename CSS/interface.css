@@ -75,6 +75,7 @@ button.disabled {
 
 button.large {
     width: 354px;
+    max-width: 90%;
 }
 
 

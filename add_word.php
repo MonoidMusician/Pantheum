@@ -23,7 +23,6 @@
 			</section>
 			<?php sro('/Includes/footer.php'); ?>
 			<?php sro('/Includes/messages.php'); ?>
-            <div class="clear"><p>&nbsp;</p></div>
 		</div>
 	</body>
 </html>

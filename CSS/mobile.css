@@ -11,7 +11,7 @@
   height: 35px;
 }
 
-@media only screen and (max-width: 606px) {
+@media only screen and (max-width: 707px) {
   body {
     font-size: 110%;
   }
