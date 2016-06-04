@@ -1,5 +1,7 @@
 div#upage {
     position: relative;
+
+	min-height: 300px;
 }
 
 nav#unav {
