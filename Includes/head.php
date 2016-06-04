@@ -1,5 +1,6 @@
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,user-scalable=no">
+		<meta name="viewport" content="width=480">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<link rel="apple-touch-icon" sizes="57x57" href="/Images/icons/apple-icon-57x57.png">
 		<link rel="apple-touch-icon" sizes="60x60" href="/Images/icons/apple-icon-60x60.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="/Images/icons/apple-icon-72x72.png">

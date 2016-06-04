@@ -1,4 +1,4 @@
-$(function() {
+/*$(function() {
 	if (!$('article + article').length) return;
 	$w = $(window);
 	var min_width = 800;
@@ -28,4 +28,4 @@ $(function() {
 			timer = null;
 		}, 100);
 	});
-});
+});*/

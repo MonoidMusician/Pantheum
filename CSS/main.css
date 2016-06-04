@@ -40,10 +40,17 @@ html,body {
 
     overflow: hidden;
 
-    background-color: #fafafa;
+    background-color: #efefef;
 
-    font-size: 1.05em;
     font-family: "Linux Libertine" !important;
+}
+
+html {
+    font-size: 18px;
+}
+
+body {
+    font-size: 90%;
 }
 
 header.global-nav {
@@ -52,10 +59,10 @@ header.global-nav {
     margin: 0;
 
     height: 100%;
-    width: 20%;
-    float: left;
+    /*width: 20%;
+    float: left;*/
 
-    font-size: 0.9em;
+    font-size: 90%;
 }
 
 nav.global-nav {
@@ -67,8 +74,6 @@ nav.global-nav {
     width: 100%;
 
     background-color: #AA0000;
-
-    position: relative;
 }
 
 nav.global-nav ul {
@@ -136,11 +141,10 @@ div#content-wrapper {
     display: block !important;
 
     height: 100%;
-    width: calc(80% - 30px);
-    float: right;
+    /*width: calc(80% - 30px);
+    float: right;*/
 
     margin: 0 auto;
-    padding: 15px;
 
     overflow: auto;
 
@@ -155,11 +159,11 @@ section h1 {
 }
 
 section#content {
-	width: 100%;
+	width: calc(100% - 30px);
 
 	display: block;
 
-	padding: 5px;
+    padding: 15px;
 
     background-color: #efefef;
 }
@@ -233,7 +237,7 @@ footer {
     display: block !important;
 
 	margin-top: 75px;
-	margin-bottom: 75px;
+	margin-bottom: 25px;
 	margin-left: -15px;
 	margin-right: -15px;
 

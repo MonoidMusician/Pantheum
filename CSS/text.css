@@ -1,0 +1,51 @@
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-white {
+  color: #FFF;
+}
+
+.text-blue {
+  color: #36A;
+}
+
+.text-black {
+  color: #112;
+}
+
+.text-red {
+  color: #A00;
+}
+
+.text-gray {
+    color: #EEE;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-larger {
+  font-size: 125% !important;
+}
+
+.text-largest {
+  font-size: 150% !important;
+}
+
+.text-extreme {
+  font-size: 200% !important;
+}
+
+.text-monospace {
+  font-family: "Anonymous Pro", "Bitstream Vera Sans Mono", monospace;
+}

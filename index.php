@@ -15,12 +15,11 @@
         <title>Home | Pantheum</title>
         <?php sro('/Includes/css.php'); ?>
         <?php sro('/Includes/js.php'); ?>
-        <script type="text/javascript" src="/JS/lib/jquery.countdown.min.js"></script>
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
-		<div id="content-wrapper">
-	        <section id="content">
+		<div class="column-right width-eighty mobile-width-full no-mobile-margin no-mobile-padding" id="content-wrapper">
+	        <section class="no-mobile-margin" id="content">
 	            <?php sro('/Pages/home.php'); ?>
 	            <article class="secondary">
 	                <h1>
@@ -52,6 +51,7 @@
 	            </script>
 	        </section>
 			<?php sro('/Includes/footer.php'); ?>
+            <div class="clear"><p>&nbsp;</p></div>
 		</div>
     </body>
 </html>

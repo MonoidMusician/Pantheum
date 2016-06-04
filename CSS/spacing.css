@@ -1,0 +1,60 @@
+.column-left {
+  display: block;
+  float: left;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.column-right {
+  display: block;
+  float: right;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.column-center {
+  display: block;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin: 0 auto;
+}
+
+.width-full {
+  width: 100%;
+}
+
+.width-eighty {
+  width: 80%;
+}
+
+.width-half {
+  width: 46%;
+}
+
+.width-fourty-percent {
+  width: 40%;
+}
+
+.width-thirty-five-percent {
+  width: 35%;
+}
+
+.width-twenty {
+  width: 20%;
+}
+
+.width-third {
+  width: 31%;
+}
+
+.width-fourth {
+  width: 23%;
+}
+
+.width-eigth {
+  width: 10%;
+}
+
+.clear {
+  clear: both;
+}
