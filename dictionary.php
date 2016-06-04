@@ -18,10 +18,12 @@
     </head>
     <body>
         <?php sro('/Includes/header.php'); ?>
-        <section id="content">
-            <?php sro('/Pages/dictionary.php'); ?>
-        </section>
-        <?php sro('/Includes/footer.php'); ?>
-        <?php sro('/Includes/messages.php'); ?>
+		<div id="content-wrapper">
+	        <section id="content">
+	            <?php sro('/Pages/dictionary.php'); ?>
+	        </section>
+	        <?php sro('/Includes/footer.php'); ?>
+	        <?php sro('/Includes/messages.php'); ?>
+		</div>
     </body>
 </html>

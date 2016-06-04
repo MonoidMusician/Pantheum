@@ -14,10 +14,12 @@
 	</head>
 	<body>
 		<?php sro('/Includes/header.php'); ?>
-		<section id="content">
-			<h1>404</h1>
-			<p>Error: file not found.</p>
-		</section>
-		<?php sro('/Includes/footer.php'); ?>
+		<div id="content-wrapper">
+	        <section id="content">
+				<h1>404</h1>
+				<p>Error: file not found.</p>
+			</section>
+			<?php sro('/Includes/footer.php'); ?>
+		</div>
 	</body>
 </html>

@@ -15,10 +15,12 @@
 	</head>
 	<body>
 		<?php sro('/Includes/header.php'); ?>
-		<?php sro('/Includes/messages.php'); ?>
-		<section id="content">
-			<?php sro('/Pages/user.php'); ?>
-		</section>
-		<?php sro('/Includes/footer.php'); ?>
+		<div id="content-wrapper">
+	        <section id="content">
+				<?php sro('/Pages/user.php'); ?>
+			</section>
+			<?php sro('/Includes/footer.php'); ?>
+			<?php sro('/Includes/messages.php'); ?>
+		</div>
 	</body>
 </html>

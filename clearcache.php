@@ -17,10 +17,12 @@
 	</head>
 	<body>
 		<?php sro('/Includes/header.php'); ?>
-		<section id="content">
-		<script>$.jStorage.flush()</script>
-			Your cache is cleared.
-		</section>
-		<?php sro('/Includes/footer.php'); ?>
+		<div id="content-wrapper">
+	        <section id="content">
+				<script>$.jStorage.flush()</script>
+				Your cache is cleared.
+			</section>
+			<?php sro('/Includes/footer.php'); ?>
+		</div>
 	</body>
 </html>

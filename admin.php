@@ -16,9 +16,11 @@
 	</head>
 	<body>
 		<?php sro('/Includes/header.php'); ?>
-		<section id="content">
-			<?php sro('/Pages/admin.php'); ?>
-		</section>
-		<?php sro('/Includes/footer.php'); ?>
+		<div id="content-wrapper">
+	        <section id="content">
+				<?php sro('/Pages/admin.php'); ?>
+			</section>
+			<?php sro('/Includes/footer.php'); ?>
+		</div>
 	</body>
 </html>
