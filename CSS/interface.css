@@ -68,15 +68,6 @@ section#content a:focus {
     color: #CC3333;
     text-decoration: underline;
 }
-nav.global-nav a:focus
-{
-    background-color: #BB2222;
-    text-decoration: underline;
-}
-nav.global-nav a:hover
-{
-    background-color: #BB2222;
-}
 
 button.disabled {
     color: rgba(0,0,0,0.5) !important;

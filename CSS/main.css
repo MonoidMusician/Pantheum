@@ -72,37 +72,47 @@ nav.global-nav ul {
     list-style: none;
 }
 
-nav.global-nav a {
+nav.global-nav li {
+    display: inline-block;
+
+    min-width: calc(12.5% - 12px);
+    max-width: calc(25.0% - 12px);
+
+    margin-top: 15px;
+
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+nav.global-nav li a {
     display: inline-block;
     width: 100%;
     height: 100%;
 
     background-color: #aa0000;
-    border: 1px solid #CC3333;
+	border: 2px solid #aa0000;
 
     text-align: center;
     font-size: 1.3em;
     line-height: 1.3em;
+
+	padding-top: 2px;
 
     color: #efefef;
 
     text-decoration: none;
 }
 
-nav.global-nav li {
-    display: inline-block;
-
-    min-width: calc(14.285714285714% - 12px);
-    max-width: calc(33.3333333% - 12px);
-
-    margin-top: 5px;
-
-    margin-left: 5px;
-    margin-right: 5px;
+nav.global-nav li a:focus
+{
+    background-color: #BB2222;
+    text-decoration: underline;
 }
-
-nav.global-nav li:hover {
-    background-color: ;
+nav.global-nav li a:hover
+{
+    background-color: #cc3333;
+	border: 2px solid #aa0000;
+	border-bottom: none;
 }
 
 section h1 {
