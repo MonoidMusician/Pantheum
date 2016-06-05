@@ -57,7 +57,7 @@ module.exports = createClass({
 			var content = {dangerouslySetInnerHTML:{__html:ReactDOMServer.renderToString(component)}};
 			children.push(h('section#content', content));
 			children.push(rawscript(`(function(pages){
-				var page = pages[${JSON.stringify(this.props.page)}], data = page.fromJSON(${JSON.stringify(page.toJSON(this.props.data))});
+				var page = pages[${JSON.stringify(this.props.page)}], data = (page.fromJSON ? page.fromJSON.bind(page) : a=>a)(${JSON.stringify((page.toJSON ? page.toJSON.bind(page) : a=>a)(this.props.data))});
 				ReactDOM.render(
 					page.render(data),
 					document.getElementById('content')

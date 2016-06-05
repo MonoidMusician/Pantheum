@@ -25,7 +25,10 @@ module.exports = createClass({
 	handleSearch: function() {
 		this.setState({searching:true});
 		model.Word({id:10176}).pullall().then(word => {
-			this.handleData([word])
+			this.handleData([word]);
+		}).catch(err => {
+			console.log(err);
+			this.setState({searching: false});
 		});
 	},
 	handleData: function(words) {
@@ -72,6 +75,7 @@ module.exports = createClass({
 					label: "Search",
 					primary: true,
 					onTouchTap: this.handleSearch,
+					disabled: this.state.searching,
 				}),
 			])
 		];

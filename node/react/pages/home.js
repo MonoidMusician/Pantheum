@@ -6,7 +6,7 @@ var App = require('../app');
 module.exports = {
 	title: 'Home | Pantheum',
 	data(get, form) {
-		return null;
+		return true;
 	},
 	render(data, req) {
 		return App.h({page:'home',req}, [
