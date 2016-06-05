@@ -9,8 +9,6 @@ require('../languages/la');
 var router = express.Router();
 module.exports = router;
 
-connection.connect();
-
 var handle = function(res, err) {
 	console.log(err.stack);
 	if (err instanceof Error && !Object.keys(err).length)
