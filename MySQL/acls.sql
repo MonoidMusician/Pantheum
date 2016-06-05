@@ -26,6 +26,7 @@ CREATE TABLE class (
     id BIGINT UNSIGNED AUTO_INCREMENT,
     name VARCHAR(100),
     description VARCHAR(1024),
+    school VARCHAR(1024),
 	visible BOOLEAN,
 
 		PRIMARY KEY(id)

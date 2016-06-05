@@ -16,10 +16,10 @@
 
     function cleanPrepared($input) {
         $result = stripslashes(strip_tags(str_replace(chr(0), '', $input)));
-	while ($result != stripslashes(strip_tags($result))) {
-	    $result = stripslashes(strip_tags($result));
-	}
-	return $result;
+        while ($result != stripslashes(strip_tags($result))) {
+            $result = stripslashes(strip_tags($result));
+        }
+	    return $result;
     }
 
     function encodeHex($input) {
