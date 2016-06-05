@@ -13,9 +13,9 @@
     <h2 id="atitle">Admin Control Panel</h2>
 </header>
 <div id="apage">
-    <nav id="anav">
+    <nav id="anav" class="column-left width-eigth">
     </nav>
-    <article id="acontent" class="scrollable">
+    <article id="acontent" class="column-right width-eighty">
     </article>
 </div>
 <div class="clear"></div>

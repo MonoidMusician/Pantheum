@@ -1,19 +1,8 @@
-div#upage {
-    position: relative;
-
-	min-height: 300px;
-}
-
-nav#unav {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-}
-
 ul.jpage-ul {
     border: none;
     margin: 0 0;
     padding: 0;
+    list-style-type: none;
 }
 
 li.jpage-li {
@@ -31,48 +20,6 @@ section#content a.jpage-anchor {
 section#content a.jpage-anchor:hover {
     color: #DA7B00;
     text-decoration: none;
-}
-
-#ucontent {
-    word-wrap: break-word;
-    position: relative;
-    top: 0px;
-    left: 150px;
-}
-
-#alTable-tbody tr td {
-    border-bottom: 1px dotted #A00;
-    border-left: 1px dotted #A00;
-}
-
-#alTable-tbody tr td {
-    max-width: 500px;
-}
-
-#atTable-tbody tr td {
-    max-width: 500px;
-}
-
-#adTable-tbody tr td {
-    border-bottom: 1px dotted #A00;
-    border-left: 1px dotted #A00;
-}
-
-#adTable-tbody tr td {
-    max-width: 500px;
-}
-
-#adTable-tbody tr td {
-    max-width: 500px;
-}
-
-.jTableBodyInputEditing {
-    width: 250px !important;
-    height: 30px !important;
-}
-
-.jTableBodyInputEditing[type="number"] {
-    width: 50px !important;
 }
 
 ul#cases {

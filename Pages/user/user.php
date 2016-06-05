@@ -23,10 +23,10 @@
 <header id="uheader">
     <h2 id="utitle" data-i18n>Settings</h2>
 </header>
-<div id="upage" class="scrollable">
-    <nav id="unav">
+<div id="upage">
+    <nav id="unav" class="column-left width-eigth">
     </nav>
-    <article id="ucontent">
+    <article id="ucontent" class="column-right width-eighty">
     </article>
 </div>
 <script type="text/javascript">
