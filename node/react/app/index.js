@@ -1,6 +1,7 @@
 var h = require('react-hyperscript');
 var MaterialUI = require('material-ui');
 MaterialUI.svgicons = require('material-ui/svg-icons');
+MaterialUI.styles = require('material-ui/styles');
 
 var createClass = require('../createClass');
 
