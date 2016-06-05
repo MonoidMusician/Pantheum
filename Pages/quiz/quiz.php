@@ -65,12 +65,15 @@
 			post[id] = value;
 		});
 		$.post('/PHP5/quiz/startQuiz.php', post, function(data) {
+			data = data.trim();
 			quiz_lock = false;
 			var id, i;
 			if (data == 'no-credit') {
-				if (confirm('Warning: your results will not be saved because you are not logged in. Do you want to continue?'))
+				if (confirm('Warning: your results will not be saved because you are not logged in. Do you want to continue?')) {
 					data = 'success';
-				else return;
+				} else {
+					return;
+				}
 			}
 			if (!isNaN(i = parseInt(data))) {
 				id = i; data = 'success';

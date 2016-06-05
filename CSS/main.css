@@ -50,7 +50,7 @@ html {
 }
 
 body {
-    font-size: 90%;
+    font-size: 100%;
 }
 
 header.global-nav {
@@ -107,8 +107,8 @@ nav.global-nav li a {
     background-color: #aa0000;
 
     text-align: center;
-    font-size: 1.3em;
-    line-height: 1.3em;
+    font-size: 125%;
+    line-height: 145%;
 
     padding: 0;
     margin: 0;
@@ -146,7 +146,8 @@ div#content-wrapper {
 
     margin: 0 auto;
 
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     /*margin-top: 15px;
     margin-bottom: 15px;*/
@@ -207,7 +208,7 @@ input:not([type="checkbox"]):not([type="radio"]), button {
     padding-left: 5px;
     padding-right: 5px;
 
-    font-size: 1.1em;
+    font-size: 105%;
     font-family: inherit;
 
     box-sizing: border-box;
@@ -326,7 +327,7 @@ hr {
     text-align: center;
 }
 .jquiz-totalscore {
-    font-size: 2em;
+    font-size: 200%;
 }
 
 a.word-ref {
@@ -419,7 +420,7 @@ div.word-more-info {
 }
 
 p.signup {
-    font-size: 1.2em;
+    font-size: 100%;
 }
 
 .scrollable {

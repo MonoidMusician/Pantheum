@@ -1,17 +1,8 @@
-div#apage {
-    position: relative;
-}
-
-nav#anav {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-}
-
 ul.jpage-ul {
     border: none;
     margin: 0 0;
     padding: 0;
+    list-style-type: none;
 }
 
 li.jpage-li {
@@ -19,23 +10,6 @@ li.jpage-li {
     border: none;
     margin: 0 0;
     padding: 0;
-}
-
-section#content a.jpage-anchor {
-    color: #545454;
-    text-decoration: none;
-}
-
-section#content a.jpage-anchor:hover {
-    color: #DA7B00;
-    text-decoration: none;
-}
-
-#acontent {
-    word-wrap: break-word;
-    position: relative;
-    top: 0px;
-    left: 150px;
 }
 
 #alTable-tbody tr td {
