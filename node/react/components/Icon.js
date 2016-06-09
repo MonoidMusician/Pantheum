@@ -40,7 +40,7 @@ var Icon = createClass({
 		this.setState({focus:false});
 	},
 	render: function() {
-		if (this.props.type in Icon.material) {
+		if (0 && this.props.type in Icon.material) {
 			var size = this.props.small ? 24 : 36;
 			var iconSize = this.props.small ? 12 : 24;
 			var mprops = Object.assign({
