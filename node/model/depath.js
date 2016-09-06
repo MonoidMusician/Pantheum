@@ -43,7 +43,7 @@ module.exports = function(model) {
 			this.simple_keys = [];
 			this.recursive_keys = [];
 			this.name = name;
-			if (aliases == undefined) aliases = [];
+			if (aliases == undefined) aliases = {};
 			this.aliases = aliases;
 			if (init != undefined)
 			for (let k in init) {
