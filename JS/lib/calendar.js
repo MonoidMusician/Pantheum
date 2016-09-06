@@ -1,4 +1,3 @@
-
 (function ($) {
 	/* "YYYY-MM[-DD]" => Date */
 	function strToDate(str) {
@@ -6,10 +5,14 @@
 	};
 
 	/* Date => "YYYY-MM-DD" */
-	if (typeof d3 == 'undefined') {
+	if (typeof d3 === 'undefined') {
 		function dateToStr(d) {
 			return d.toISOString().split("T")[0];
 		};
+	} else {
+		function dateToStr(d) {
+			return d3.time.format.iso(d).split("T")[0];
+		}
 	}
 
 	$.fn.calendar = function (options) {

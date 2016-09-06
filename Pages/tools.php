@@ -4,7 +4,7 @@
 <article>
 <h2>Roman numerals</h2>
 <br>
-<input id="arabic-number" placeholder="Arabic Number" type="number" min="0" max="499999" value="<?= safe_get('number', $_GET) ?>">
+<input id="arabic-number" placeholder="Arabic Number" type="number" min="0" max="499999" value="<?= array_key_exists('number', $_GET) ? $_GET['number'] : NULL ?>">
 = <input id="roman-number" placeholder="Roman Numeral">
 <span id="output-uc"></span>
 <span id="output-lc"></span>
@@ -782,10 +782,6 @@ $('#arabic-number').trigger('keyup');
 <div id="solarchart" style="height: 500px; width: 800px; clear: both;"></div>
 
 <script>
-var dateToStr = function(d) {
-	return d3.time.format.iso(d).split("T")[0];
-};
-
 var date = new Date(), lat = 0, lng = 0, timezone = 0;
 date.setUTCDate(date.getDate());
 
@@ -1129,7 +1125,7 @@ var calendar = $('#calendar').calendar({date:date,classes:getclass}).on('click',
 	Romancalendar(date);
 });
 var update_date = function(d) {
-	date = d; var s = dateToStr(date);
+	date = d; var s = d3.time.format.iso(date).split("T")[0];
 	$('input#date').val(s);
 	calendar.data('date', s).update(date);
 	displaytimes(date, +lat, +lng);
@@ -1185,7 +1181,7 @@ if ("geolocation" in navigator) {
 update_date(date);
 
 var map, marker, input, searchBox;
-var initMap = function() {
+window.initMap = function() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: {lat: lat, lng: lng},
 		zoom: 5
