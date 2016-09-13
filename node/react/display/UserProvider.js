@@ -11,6 +11,8 @@ module.exports = createClass({
 		return {user: this.props.user};
 	},
 	render: function() {
-		return h(this.props.type || 'div', this.props, this.props.children);
+		var props = Object.assign({}, this.props);
+		delete props.user;
+		return h(this.props.type || 'div', props, this.props.children);
 	},
 });
