@@ -13,7 +13,7 @@ module.exports = {
 			h('h1#title', 'Welcome'),
 			h('span', 'Welcome to the Pantheum, quizzes and a dictionary for Latin, created by Nick Scheel.'),
 			h('div#buttons', [
-				h(MaterialUI.FlatButton, { href: '/quiz', linkButton:true }, 'Quiz')
+				h(MaterialUI.FlatButton, { href: '/quiz' }, 'Quiz')
 			])
 		]);
 	},
