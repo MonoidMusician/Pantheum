@@ -5,6 +5,8 @@ var App = require('../../app');
 var createClass = require('../../createClass');
 var fonts = require('../../style/fonts');
 
+var Quiz = require('../../quiz');
+
 var TopicSelector = require('./TopicSelector');
 
 var SelectCategories = createClass({
@@ -15,10 +17,11 @@ var SelectCategories = createClass({
 			style: {
 				display: 'flex',
 				flexFlow: 'row wrap',
-			}
+			},
+			onChange: this.props.onChange,
 		}, this.props.children.map(
 			q => h(MaterialUI.RadioButton, Object.assign({
-				onChange: event => this.props.onChange(event, q.value),
+				key: q.value,
 				style: {
 					flex: '0 0 20%',
 					display: 'inline-div',
@@ -35,7 +38,7 @@ var QuizPage = createClass({
 		return {
 			selectedTopic: 'all',
 			selectedQuiz: 'random',
-			step: 0,
+			step: 1,
 			loading: false,
 			open: true,
 		};
@@ -94,23 +97,17 @@ var QuizPage = createClass({
 					}]
 				}),
 				h(MaterialUI.RaisedButton, {
-					label: "Next",
+					label: "Quiz Me!",
 					primary: true,
 					onTouchTap: (e) => this.setState({step:1}),
-					style: {marginTop:'12px'},
+					style: {margin:'12px 0'},
 				}),
 			],
 			[
-				h(MaterialUI.RaisedButton, {
-					label: "Next",
-					primary: true,
-					onTouchTap: (e) => this.setState({step:2}),
-					style: {marginTop:'12px'},
-				}),
-				h(MaterialUI.FlatButton, {
-					label: "Back",
-					onTouchTap: (e) => this.setState({step:0}),
-					style: {marginLeft:'12px'},
+				Quiz.h({
+					quiz:this.state.selectedQuiz,
+					onFinish: e => this.setState({step:2}),
+					onBack: e => this.setState({step:0}),
 				}),
 			],
 			[
@@ -118,7 +115,7 @@ var QuizPage = createClass({
 					label: "Finish",
 					primary: true,
 					onTouchTap: (e) => this.setState({step:0}),
-					style: {marginTop:'12px'},
+					style: {margin:'12px 0'},
 				}),
 				h(MaterialUI.FlatButton, {
 					label: "Back",
@@ -129,7 +126,7 @@ var QuizPage = createClass({
 		];
 		return h('div', [
 			h('h1', 'Quiz'),
-			h(MaterialUI.Stepper, {
+			steps[this.state.step] || h(MaterialUI.Stepper, {
 				activeStep: this.state.step,
 				orientation: vertical ? 'vertical' : 'horizontal',
 			}, [
