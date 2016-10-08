@@ -26,7 +26,7 @@ module.exports = createClass({
 				floatingLabelText: this.props.floating,
 				value: this.state.value,
 				onChange: (e,value) => this.setState({value}),
-				key: this.props.key,
+				disabled: this.props.disabled,
 			});
 		}
 		return h('span', "INVALID QUESTION");

@@ -11,31 +11,28 @@ module.exports = createClass({
 	displayName: 'view.Page',
 	getInitialState() {
 		return {
-			view: this.props.view||false,
-			state: this.props.state || (this.props.data ? "loaded" : "loading"),
+			status: this.props.status || (this.props.data ? "loaded" : "loading"),
 			data: this.props.data||[],
 		};
 	},
-	toggle() {
-		if (this.state.view !== null)
-			this.setState({view: !this.state.view});
-	},
 	render: function renderApp() {
 		var actions;
-		if (false&&this.state.view) switch (this.state.state) {
+		if (false&&this.state.view) switch (this.state.status) {
 			case "loading":
-				actions = h(MaterialUI.CircularProgress);
+				actions = h(MaterialUI.CircularProgress, {key:3});
 				break;
 			case "loaded":
 				actions = h(MaterialUI.FlatButton, {
 					label: "Submit",
 					primary: true,
 					style: {margin:'12px 0'},
+					key: 3,
 				});
 				break;
 			case "scored":
 				actions = h(MaterialUI.FlatButton, {
 					label: "Next",
+					key: 3,
 				});
 		}
 		return h('div', [
@@ -48,9 +45,6 @@ module.exports = createClass({
 			}, this.props.help),
 			h('div', {
 				key: 2,
-				style: {
-					display: this.state.view ? 'block' : 'none',
-				},
 			}, this.state.data.map(q => React.isValidElement(q) ? q : Question.h(q))),
 			actions,
 		]);
