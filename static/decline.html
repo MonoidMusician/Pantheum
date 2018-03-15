@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Declension</title>
+		<style>
+			* {
+				font-family: "Linux Libertine", "Junicode", "Georgia", "Times New Roman";
+			}
+			/* Prevent the text contents of draggable elements from being selectable. */
+			[draggable] {
+				-moz-user-select: none;
+				-khtml-user-select: none;
+				-webkit-user-select: none;
+				user-select: none;
+				/* Required to make elements draggable in old WebKit */
+				-khtml-user-drag: element;
+				-webkit-user-drag: element;
+			}
+			h1 {
+				font-family: "Helvetica Neue";
+				color: #3F51B5;
+			}
+			button {
+				border: none;
+				font-family: "Helvetica Neue";
+				font-size: 16px;
+				font-weight: 200;
+				text-transform: uppercase;
+				display: inline-block;
+				margin: 4px 4px;
+				min-width: 4em;
+				padding: 1ex 1em;
+				border-radius: 2px;
+				text-align: center;
+				background-color: #3F51B5;
+				color: white;
+				transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+				box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+				outline: 0 !important;
+			}
+			button:active {
+				background-color: #3F51B5;
+			}
+			button:hover {
+				box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+			}
+			#destination {
+				box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+			}
+			table, tr, th, td {
+				text-align: left;
+				border: 1px solid lightgray;
+				border-collapse: collapse;
+				padding: 0.5ex 0.5em;
+			}
+			tr:not(:first-child) th {
+				font-weight: normal;
+				font-style: italic;
+			}
+			#destination .target {
+				min-width: 8em;
+				border: none;
+			}
+			#game {
+				padding: 2em;
+			}
+			@media screen and (max-width:400px) {
+				#game {
+					padding: 2em 0em;
+				}
+				div, table {
+					margin: 0 auto;
+				}
+				* {
+					text-align: center;
+				}
+			}
+			#bank {
+				padding-bottom: 10px;
+			}
+			#bank .form, #bank .blanktarget {
+				display: inline-block;
+				margin: 4px 4px;
+				min-width: 4em;
+				padding: 0.5ex 0.5em;
+				border-radius: 2px;
+				text-align: center;
+				background-color: #B3E5FC;
+				color: black;
+				transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+				box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+			}
+			#bank .form:hover {
+				box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+			}
+			#bank .blanktarget {
+				background-color: #E1F5FE;
+			}
+			#bank .form:hover, #destination .target:hover:not(:empty) {
+				background-color: #80D8FF;
+				color: black;
+			}
+			#bank .form.dragging {
+				background-color: #40C4FF;
+			}
+			#destination .target {
+				transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+			}
+			#destination .target.dragging {
+				background-color: #40C4FF;
+				border: 1px solid #40C4FF;
+			}
+			#bank .blanktarget.over, #destination .target.over {
+				background-color: #00B0FF;
+				color: white;
+			}
+			#destination .target:not(:empty) {
+				/*pointer-events: none;/**/
+			}
+			#destination .target:not(:empty):after {
+				content: ' ×';
+				text-align: right;
+				float: right;
+				color: #80D8FF;
+				cursor: pointer;
+				pointer-events: all;
+			}
+			#destination .target:not(:empty):hover:after {
+				color: white;
+			}
+			.correct {
+				color: black !important;
+			}
+			/*
+			.incorrect {
+				background-color: #D32F2F !important;
+				color: white !important;
+			}
+			.incorrect:hover {
+				background-color: #E57373 !important;
+				color: black !important;
+			}
+			#destination .target.incorrect:not(:empty):after {
+				color: white;
+			}
+			#destination .target.incorrect:not(:empty):hover:after {
+				color: #D50000;
+			}
+			/*/
+			#destination .target.correct:not(:empty):after {
+				color: #00C853;
+			}
+			.incorrect:not(:empty) {
+				font-weight: bold;
+				color: #D32F2F !important;
+			}
+			.incorrect:empty:after {
+				content: "";
+				display: block;
+				width: 8em;
+				height: 2px;
+				background-color: #D32F2F;
+				position: relative;
+				top: 50%;
+			}
+			.incorrect:not(:empty):hover {
+				background-color: #FFCDD2 !important;
+			}
+			#destination .target.incorrect:not(:empty):after {
+				color: #D50000;
+			}
+			#destination .target.incorrect:not(:empty):hover:after {
+				color: #D50000;
+			}
+			/**/
+		</style>
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<script>
+			// From http://stackoverflow.com/a/6274381
+			/**
+			 * Shuffles array in place.
+			 * @param {Array} a items The array containing the items.
+			 */
+			function shuffle(a) {
+				var j, x, i;
+				for (i = a.length; i; i--) {
+					j = Math.floor(Math.random() * i);
+					x = a[i - 1];
+					a[i - 1] = a[j];
+					a[j] = x;
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<h1>Decline!</h1>
+		<div id="help">Fill out the declension chart for <i>rosa, rosae, f</i>. Tap on a word bubble below to fill the first open row; click on a row to return it to the word bank. On desktop you can also use drag and drop to move words to their correct places.</div>
+		<div id="game">
+			<div id="upnext"></div>
+			<div id="bank">
+				rosa
+				rosae
+				rosae
+				rosam
+				rosā
+				rosae
+				rosārum
+				rosīs
+				rosās
+				rosīs
+			</div>
+			<table id="destination">
+				<tr><th>Number</th> <th>Case</th> <th>Form</th></tr>
+				<tr><th rowspan="5">Singular</th><th>Nominative</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th>Genitive</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th>Dative</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th>Accusative</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th>Ablative</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th rowspan="5">Plural</th><th>Nominative</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th>Genitive</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th>Dative</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th>Accusative</th><td class="target" draggable onclick="void(0)"></td></tr>
+				<tr><th>Ablative</th><td class="target" draggable onclick="void(0)"></td></tr>
+			</table>
+		</div>
+		<div>
+			<button id="check">Check</button>
+			<button id="reset">Reset</button>
+		</div>
+		<script>
+			var replaceWith;
+			function handleDragStart0(replacer) {
+				return function(e) {
+					clear(this);
+					// this / e.target is the source node.
+					this.classList.add('dragging');
+
+					replaceWith = replacer(this);
+
+					e.dataTransfer.effectAllowed = 'move';
+					e.dataTransfer.setData('text/html', this.innerHTML);
+				}
+			}
+			var handleDragStart = handleDragStart0(function(el) {
+				var text = el.innerHTML;
+				return function(innerHTML) {
+					if (!innerHTML)
+						el.parentElement.removeChild(el);
+					else el.innerHTML = innerHTML;
+					return text;
+				}
+			});
+			var handleDragStart2 = handleDragStart0(function(el) {
+				var target = document.createElement('div');
+				target.classList.add('blanktarget');
+				target.innerHTML = '&nbsp;';
+				bank.appendChild(target);
+
+				var text = el.innerHTML;
+				return function(innerHTML) {
+					if (innerHTML != target.innerHTML) {
+						bank.removeChild(target);
+						el.innerHTML = innerHTML;
+						return text;
+					} else {
+						el.innerHTML = '';
+
+						// Promote blanktarget to regular form
+						target.classList.remove('blanktarget');
+						target.classList.add('form');
+						target.draggable = true;
+						return text;
+					}
+				}
+			});
+
+			function handleDragOver(e) {
+				if (!replaceWith) return;
+				if (e.preventDefault) {
+					e.preventDefault(); // Necessary. Allows us to drop.
+				}
+
+				e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+
+				return false;
+			}
+
+			function handleDragEnter(e) {
+				if (!replaceWith) return;
+				// this / e.target is the current hover target.
+				this.classList.add('over');
+			}
+
+			function handleDragLeave(e) {
+				this.classList.remove('over');  // this / e.target is previous target element.
+			}
+
+			function handleDrop(e) {
+				// this / e.target is current target element.
+				handleDragLeave.call(this, e);
+				if (e.stopPropagation) {
+					e.stopPropagation(); // stops the browser from redirecting.
+				}
+
+				// Set the source column's HTML to the HTML of the column we dropped on.
+				if (replaceWith) {
+					this.innerHTML = replaceWith(this.innerHTML);
+					replaceWith = undefined;
+					update();
+					clear(this);
+				}
+
+				return false;
+			}
+
+			function handleDragEnd(e) {
+				// this/e.target is the source node.
+				this.classList.remove('dragging');
+				if (!replaceWith) return;
+
+				replaceWith(this.innerHTML);
+				replaceWith = undefined;
+			}
+
+			function handleRemove(e) {
+				clear(this);
+				addForm(this.innerHTML);
+				this.innerHTML = '';
+				update();
+			}
+
+			function handleAdd(e) {
+				var free = document.querySelectorAll('#destination .target:empty');
+				if (!free.length) {
+					alert("no destination avabilable");
+					return;
+				}
+				clear(free[0]);
+				free[0].innerHTML = this.innerHTML;
+				this.parentElement.removeChild(this);
+				update();
+			}
+
+			function makeForm(text) {
+				if (!text) return;
+				var target = document.createElement('div');
+				target.classList.add('form');
+				target.draggable = true;
+				target.setAttribute('onclick', 'void(0)');
+				target.innerHTML = text;
+				return target;
+			}
+			function addForm(text) {
+				if (!text) return;
+				bank.innerHTML += ' ';
+				bank.appendChild(makeForm(text));
+			}
+
+			var bank = document.getElementById('bank');
+			function bind(selector, event, listener) {
+				document.addEventListener(event, function(event) {
+					var el = event.target;
+					if (el && el.matches && el.matches(selector))
+						return listener.apply(el, arguments);
+				}, false);
+			}
+			function bindAll(selector, events) {
+				events.forEach(function(event) {
+					bind(selector, event[0], event[1]);
+				});
+			}
+			bindAll('#bank .form', [
+				['dragstart', handleDragStart],
+				['dragend', handleDragEnd],
+				['click', handleAdd],
+			]);
+			bindAll('#destination [draggable], .blanktarget', [
+				['dragstart', handleDragStart2],
+				['dragend', handleDragEnd],
+				['dragenter', handleDragEnter],
+				['dragover', handleDragOver],
+				['dragleave', handleDragLeave],
+				['drop', handleDrop],
+				['click', handleRemove],
+			]);
+			var forms = bank.innerHTML.trim().split(/\s+/g);
+			var correct = forms.slice();
+			shuffle(forms);
+			bank.innerHTML = '';
+			forms.forEach(addForm);
+			bank.style.minHeight = bank.clientHeight + 'px';
+			var answers = document.querySelectorAll('#destination .target');
+			function score(e) {
+				var incorrect = 0, unanswered = 0;
+				[].forEach.call(answers, function(answer, index) {
+					var a = answer.textContent, c = a == correct[index];
+					if (!a) unanswered += 1;
+					if (a && !c) incorrect += 1;
+					answer.classList.add(c ? 'correct' : 'incorrect');
+				});
+				update(incorrect, unanswered);
+			}
+			document.getElementById('check').addEventListener('click', score);
+			document.getElementById('reset').addEventListener('click', function(e) {
+				clear();
+				shuffle(forms);
+				bank.innerHTML = '';
+				[].forEach.call(answers, function(answer) {
+					answer.innerHTML = '';
+				});
+				forms.forEach(addForm);
+				update();
+			});
+			function clear() {
+				var list = answers;
+				if (arguments.length) {
+					list = [];
+					for (var l=arguments.length, i=0; i<l; i++)
+						list.push(arguments[i]);
+					var e = document.querySelectorAll('#destination .target.incorrect:empty');
+					for (var l=e.length, i=0; i<l; i++)
+						list.push(e[i]);
+				}
+				[].forEach.call(list, function(answer) {
+					answer.classList.remove('correct');
+					answer.classList.remove('incorrect');
+				});
+			}
+			var upnext = document.getElementById('upnext');
+			function update(incorrect, unanswered) {
+				if (arguments.length > 1) {
+					if (!unanswered && !incorrect)
+						upnext.textContent = "Good job! All done. Press ›RESET‹ to try again."
+					else if (!unanswered && incorrect == 2)
+						upnext.textContent = "Just go ahead and swap those two buggers.";
+					else if (!unanswered && incorrect >= 10)
+						upnext.textContent = "All wrong, eh? Quite impressive."
+					else if (!unanswered && incorrect >= 4 && incorrect <= 6)
+						upnext.textContent = "Sad day. "+incorrect+" wrong.";
+					else if (unanswered > 8)
+						upnext.textContent = "Fill a couple in and I’ll start counting.";
+					else if (unanswered <= 2 && !incorrect)
+						upnext.textContent = "Awh! Almost there!";
+					else if (unanswered >= 6 && !incorrect)
+						upnext.textContent = "Right so far.";
+					else if (unanswered <= 6 && !incorrect)
+						upnext.textContent = "So far so good!";
+					else if (unanswered + incorrect <= 5)
+						upnext.textContent = "Keep going, "+(unanswered+incorrect)+" left to set straight.";
+					else if (incorrect >= 5)
+						upnext.textContent = incorrect+" wrong‽ You can do better than that.";
+					else if (incorrect)
+						upnext.textContent = "Oops! Keep going!";
+					else
+						upnext.textContent = "Keep going!";
+					return;
+				}
+				var nexts = document.querySelectorAll('#destination .target:empty');
+				if (!nexts.length)
+					upnext.textContent = "All filled in!";
+				else {
+					var casus = nexts[0].previousSibling.textContent;
+					var number, pt = nexts[0].parentElement;
+					while (pt) {
+						if (pt.childElementCount > 2) {
+							number = pt.children[0].textContent;
+							break;
+						} else pt = pt.previousSibling;
+					}
+					upnext.textContent = "Click to supply the " + casus + " " + number;
+				}
+			}
+			update();
+		</script>
+	</body>
+</html>

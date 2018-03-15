@@ -1,0 +1,129 @@
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<style>
+			@font-face {
+				font-family: "Linux Libertine";
+				src: url(/Fonts/LinLibertine_R.woff);
+			}
+			@font-face {
+				font-family: "Linux Libertine";
+				src: url(/Fonts/LinLibertine_RB.woff);
+				font-weight: bold;
+			}
+			@font-face {
+				font-family: "Linux Libertine";
+				src: url(/Fonts/LinLibertine_RI.woff);
+				font-style: italic;
+			}
+			@font-face {
+				font-family: "Linux Libertine";
+				src: url(/Fonts/LinLibertine_RBI.woff);
+				font-weight: bold;
+				font-style: italic;
+			}
+			@font-face {
+				font-family: "Tengwar";
+				src: url(/Fonts/tengtelc.ttf);
+			}
+
+			body {
+				font-family: "Linux Libertine";
+			}
+			section {
+				font-size: 20pt;
+			}
+			input, textarea {
+				font: inherit;
+			}
+			#lines {
+				resize: none;
+				float: left;
+				width: 35%;
+				height: 90%;
+			}
+			.tengwar {
+				font-family: "Tengwar";
+			}
+			.syllable, .word {
+				display: inline-block;
+				line-height: 150%;
+			}
+			.word {
+				color: gray;
+			}
+			.syllable {
+				color: black;
+			}
+			.long::after {
+				content: '¯';
+			}
+			.short::after {
+				content: '˘';
+			}
+			.long::after, .short::after {
+				color: green;
+				display: block;
+				overflow: show;
+				height: 1ex;
+				transform: scale(2.2, 1.4);
+				-webkit-transform: scale(2.2, 1.4);
+				margin: auto;
+				text-align: center;
+			}
+			.long.stressed::after {
+				content: '¯́';
+			}
+			.short.stressed::after {
+				content: '˘́';
+			}
+			.enclitic {
+				color: gray;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			a ā ă
+			e ē ĕ
+		</div>
+		<textarea id="lines">Arma virumque canō, Trōiae quī prīmus ab ōrīs
+Ītaliam fātō profugus Lāvīniaque vēnit
+lītora, multum ille et terrīs iactātus et altō
+vī superum, saevae memorem Iūnōnis ob īram,
+multa quoque et bellō passus, dum conderet urbem
+īnferretque deōs Latiō; genus unde Latīnum
+Albānīque patrēs atque altae moenia Rōmae.
+Mūsa, mihī causās memorā, quō nūmine laesō
+quidve dolēns rēgīna deum tot volvere cāsūs
+īnsignem pietāte virum, tot adīre labōrēs
+impulerit. Tantaene animīs caelestibus īrae?</textarea>
+		<section id="line1">
+			<div class="word">
+				<div class="syllable"><div class="long stressed"></div><div class="text">ar</div></div><div class="syllable"><div class="short"></div><div class="text">ma</div></div>
+			</div>
+			<div class="word">
+				<div class="syllable"><div class="short"></div><div class="text">vi</div></div><div class="syllable"><div class="long"></div><div class="text">rum</div></div><div class="syllable"><div class="short"></div><div class="text">que</div></div>
+			</div>
+			<div class="word">
+				<div class="syllable"><div class="short"></div><div class="text">ca</div></div><div class="syllable"><div class="long"></div><div class="text">nō</div></div>,
+			</div>
+			<div class="word">
+				<div class="syllable"><div class="long"></div><div class="text">Trō</div></div><div class="syllable"><div class="long"></div><div class="text">jae</div></div>
+			</div>
+			<div class="word">
+				<div class="syllable"><div class="long"></div><div class="text">quī</div></div>
+			</div>
+			<div class="word">
+				<div class="syllable"><div class="long"></div><div class="text">prī</div></div><div class="syllable"><div class="short"></div><div class="text">mus</div></div>
+			</div>
+			<div class="word">
+				<div class="syllable"><div class="short"></div><div class="text">ab</div></div>
+			</div>
+			<div class="word">
+				<div class="syllable"><div class="long"></div><div class="text">ōr</div></div><div class="syllable"><div class="long"></div><div class="text">īs</div></div>
+			</div>
+		</section>
+		<section class="tengwar">&#xe030;&#xe040;   ⸱     </section>
+	</body>
+</html>
