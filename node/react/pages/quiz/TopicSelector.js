@@ -9,8 +9,10 @@ var NAME = 'quiz-category';
 var TopicSelectable = muiThemeable()(createClass({
 	render: function renderTopicSelectable() {
 		var {palette} = this.props.muiTheme;
+		var props = Object.assign({}, this.props);
+		delete props.children; delete props.muiTheme;
 		return h('span', [
-			h('input', Object.assign({}, this.props, {
+			h('input', Object.assign(props, {
 				type: 'radio',
 				style: {display:'none'},
 			})),

@@ -55,7 +55,7 @@ module.exports = createClass({
 			h(UserProvider, {user}, [
 				AppBar.h({
 					onLeftIconButtonTouchTap: this.toggleNav,
-					onRightIconButtonTouchTap: this.toggleNotifications,
+					//onRightIconButtonTouchTap: this.toggleNotifications, // FIXME
 				}),
 				Navigation.h({
 					pages: this.props.navigation || public_navigation,

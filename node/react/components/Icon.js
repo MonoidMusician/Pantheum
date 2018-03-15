@@ -1,5 +1,7 @@
+var React = require('react');
 var h = require('react-hyperscript');
 var MaterialUI = require('material-ui');
+MaterialUI.svgicons = require('material-ui/svg-icons');
 
 var createClass = require('../createClass');
 var $dom = require('../jquery-dom');
@@ -7,6 +9,9 @@ var $dom = require('../jquery-dom');
 
 var Icon = createClass({
 	displayName: 'view.Icon',
+	contextTypes: {
+		muiTheme: React.PropTypes.object,
+	},
 	getInitialState: function() {
 		return {hover:false, focus:false, active:false};
 	},
@@ -35,6 +40,43 @@ var Icon = createClass({
 		this.setState({focus:false});
 	},
 	render: function() {
+		if (0 && this.props.type in Icon.material) {
+			var size = this.props.small ? 24 : 36;
+			var iconSize = this.props.small ? 12 : 24;
+			var mprops = Object.assign({
+				tooltip: this.props.desc,
+				onTouchTap: this.props.action||this.props.onClick,
+				style: {
+					width: size,
+					height: size,
+					padding: this.props.small ? 5.3 : 5,
+					marginLeft: this.props.nospace ? 0 : (this.props.small ? 4 : 0),
+				},
+				iconStyle: {
+					width: iconSize,
+					height: iconSize,
+				}
+			}, this.props, {
+				desc: undefined,
+				action: undefined,
+				link: undefined,
+				type: undefined,
+			});
+			if (!this.props.small) {
+				mprops.style.position = 'relative';
+				mprops.style.top = 6;
+			}
+			if (this.props.link) {
+				mprops.href = this.props.link;
+				mprops.linkButton = true;
+			}
+			return h(MaterialUI.IconButton, mprops, h(
+				MaterialUI.svgicons[Icon.material[this.props.type]], {
+					color: this.context.muiTheme.palette.accent1Color,
+					//hoverColor: this.context.muiTheme.palette.accent2Color,
+				}
+			));
+		}
 		var glyph = Icon.glyphs[this.props.type];
 		var title = (s=>s[0].toUpperCase()+s.substr(1))(this.props.type);
 
@@ -119,6 +161,11 @@ Icon.glyphs = {
 	"&gt;&gt;": "media-skip-forward",
 	"visibility": "eye",
 	"add": "plus",
+};
+Icon.material = {
+	"edit": "EditorModeEdit",
+	"add": "ContentAdd",
+	"delete": "ActionDelete",
 };
 Icon.h.small = function(props, children) {
 	props = Object.assign({}, props||{}, {small:true});

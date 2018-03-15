@@ -219,6 +219,9 @@ module.exports = function(model) {
 		key_value(key) {
 			return this.map[this.mgr.key_index(key)];
 		},
+		has_value(...arg) {
+			return this.map.includes(this.mgr.resolve_alias(...arg));
+		},
 		walk(hash, create) {
 			this.validate();
 			var hash = this.resolve_hash(hash);
