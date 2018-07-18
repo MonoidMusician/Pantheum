@@ -1,5 +1,0 @@
-$mysqli->query($query);
-$M_count = $M_result->num_rows;
-$M_row = $M_result->fetch_assoc();
-$M_row = $M_result->fetch_row();
-$M_result->error;

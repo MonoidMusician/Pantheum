@@ -1,8 +1,0 @@
-SELECT form_value FROM forms WHERE word_id IN (SELECT word_id FROM words WHERE word_id IN (SELECT word_id FROM forms WHERE form_value LIKE CONCAT('%',?,'%')) AND word_lang = (?) AND word_id NOT IN (SELECT word_id FROM attributes WHERE attr_tag = (?)) AND word_id NOT IN (SELECT word_id FROM attributes WHERE attr_tag = (?)))
--- Took 21.338617086411s
-
-SELECT DISTINCT form_value FROM forms WHERE EXISTS (SELECT word_id FROM words WHERE word_id IN (SELECT word_id FROM forms WHERE form_value LIKE CONCAT('%',?,'%')) AND word_lang = (?) AND word_id NOT IN (SELECT word_id FROM attributes WHERE attr_tag = (?)) AND word_id NOT IN (SELECT word_id FROM attributes WHERE attr_tag = (?)) AND word_id = forms.word_id)
--- Took 19.594275951385s
-
-SELECT DISTINCT form_value FROM forms WHERE EXISTS (SELECT word_id FROM words WHERE word_lang = (?) AND word_id NOT IN (SELECT word_id FROM attributes WHERE attr_tag = (?)) AND word_id NOT IN (SELECT word_id FROM attributes WHERE attr_tag = (?)) AND word_id = forms.word_id) AND (form_value LIKE CONCAT('%',?,'%'))
--- Took 0.5880389213562s
