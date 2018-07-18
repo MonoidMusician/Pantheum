@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <meta charset="utf-8">
+		<title>Tools</title>
+		<link rel="stylesheet" type="text/css" href="/CSS/d3.compose.css">
+		<link rel="stylesheet" type="text/css" href="/CSS/calendar.css">
+		<link rel="stylesheet" type="text/css" href="/CSS/select2.min.css">
+		<link rel="stylesheet" type="text/css" href="/CSS/main.css">
+		<link rel="stylesheet" type="text/css" href="/CSS/interface.css">
+		<script type="text/javascript">
+    var pantheum = {
+			_private:{},
+			user:{administrator:false},
+			api_path: '/PHP5/dictionary/',
+			view: {},
+			model: {},
+			udata: null,
+		};
+    </script>
+		<script type="text/javascript" src="/JS/util.js"></script>
+    <script type="text/javascript" src="/JS/lib/jquery.js"></script>
+		<script type="text/javascript" src="/JS/lib/compat.js"></script>
+		<script type="text/javascript" src="/JS/lib/unorm.js"></script>
+		<script type="text/javascript" src="/JS/lib/la_ipa.js"></script>
+		<script type="text/javascript" src="/JS/lib/select2.min.js"></script>
+		<script type="text/javascript" src="/JS/lib/d3.min.js"></script>
+		<script type="text/javascript" src="/JS/lib/d3.chart.js"></script>
+		<script type="text/javascript" src="/JS/lib/d3.compose-all.js"></script>
+		<script type="text/javascript" src="/JS/lib/suncalc.js"></script>
+		<script type="text/javascript" src="/JS/lib/calendar.js"></script>
+	</head>
+	<body>
+		<div id="content-wrapper">
+	    <section id="content">
+        <header>
+        	<h1>Tools</h1>
+        </header>
+        <article>
+        <h2>Roman numerals</h2>
+        <br>
+        <input id="arabic-number" placeholder="Arabic Number" type="number" min="0" max="499999" value="">
+        = <input id="roman-number" placeholder="Roman Numeral">
+        <span id="output-uc"></span>
+        <span id="output-lc"></span>
+
+        <br>
+        <select id="gender" style="width: 150px;">
+        <option>masculine
+        <option>feminine
+        <option>neuter
+        </select>
+        <select id="number" style="width: 100px;">
+        <option>singular
+        <option>plural
+        </select>
+        <select id="case" style="width: 200px;">
+        <option>nominative
+        <option>accusative
+        <option>ablative
+        <option>dative
+        <option>genitive
+        <option>vocative
+        </select>
+        <br>
+        Cardinal: <span id="cardinal" class="format-word-la"></span>
+        <br>
+        Ordinal: <span id="ordinal" class="format-word-la"></span>
+        <br>
+        Distributive: <span id="distributive" class="format-word-la"></span>
+        <br>
+        Adverbial: <span id="adverbial" class="format-word-la"></span>
+        </article>
+        <article>
+        <h2>Roman time</h2>
+        <p>Roman hours split the solar day (sunrise to sunset) into 12 equal parts. Find sunrise/sunset times for a date and location.
+
+        <div>
+          <h3>Date</h3>
+          <div>
+            <span id="romandate" class="format-word-la"></span>
+          </div>
+          <div>
+            <input id="date" class="medium" type="text">
+            <button id="today">Today</button>
+            <button id="romefounding">Founding of Rome</button>
+          </div>
+          <div id="calendar" style="float: left; padding-top: 20px;"></div>
+          <div style="clear: both;"></div>
+        </div>
+
+        <div>
+          <h3>Location</h3>
+          <input id="place">
+          <style>
+            #place {
+              background-color: #fff;
+              font-family: Roboto;
+              font-size: 15px;
+              font-weight: 300;
+              margin-left: 12px;
+              padding: 0 11px 0 13px;
+              text-overflow: ellipsis;
+              width: 300px;
+              margin-top: 10px;
+              border: 1px solid transparent;
+              border-radius: 2px 0 0 2px;
+              box-sizing: border-box;
+              -moz-box-sizing: border-box;
+              height: 32px;
+              outline: none;
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            }
+
+            input#place:focus:not(.select2-search__field) {
+              border-color: #4d90fe;
+            }
+          </style>
+          <input class="medium" id="latitude" placeholder="Latitude"><input class="medium" id="longitude" placeholder="Longitude">
+          <button id="to-rome">In Rome</button>
+          <button id="to-london">In London</button>
+          <button id="hither">WhereAmI</button>
+
+          <div id="map" style="height: 300px;"></div>
+        </div>
+
+        <div>
+          <h3>Timezone</h3>
+          UTC+<input id="timezone" class="small" value="0" min="-12" max="12" type="number">
+          <button id="utc">UTC</button>
+          <button id="localtime">My Timezone</button>
+          <button id="loctime">By location</button>
+        </div>
+
+        <div>
+          <h3>Results</h3>
+          Sunrise:
+            <span id="sunrise"></span><br>
+          Solar noon:
+            <span id="noon"></span><br>
+          Sunset:
+            <span id="sunset"></span><br>
+          Roman hour: <span id="romanhour"></span> hours / <span id="romanminutes"></span> minutes
+        </div>
+
+        <br>
+
+        <div id="solarchart" style="height: 500px; width: 800px; clear: both;"></div>
+
+        <script src="JS/tools.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2kxU6e0-_Wqgaac-IJ7ZI5X1gEaG6IsE&callback=initMap&libraries=places" async defer></script>
+
+        </article>
+
+			</section>
+		</div>
+	</body>
+</html>
