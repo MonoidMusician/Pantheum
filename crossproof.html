@@ -1,0 +1,853 @@
+<!DOCTYPE HTML!>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="jquery.js" type="text/javascript"></script>
+<script src="d3.v3.min.js" type="text/javascript"></script>
+<style>
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_R.woff);
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RB.woff);
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RI.woff);
+    font-style: italic;
+}
+@font-face {
+    font-family: "Linux Libertine";
+    src: url(/Fonts/LinLibertine_RBI.woff);
+    font-weight: bold;
+    font-style: italic;
+}
+
+* {
+	font-family: "Linux Libertine";
+}
+
+#status {
+	width: 30%;
+	top: calc(4% + 2.25em);
+	left: 35%;
+	background-color: rgba(0, 204, 182, 0.7);
+	border-radius: 5px;
+	text-align: center;
+	padding: 4px 6px;
+	margin: auto;
+	color: white;
+}
+
+.determinant {
+	display: inline-block;
+	border-left: 2px solid black;
+	border-right: 2px solid black;
+}
+.hidden {
+	visibility: hidden;
+}
+.mult { color: #0000FF; }
+.plus { color: #00FF00; }
+.minus { color: #FF0000; }
+.shadow { color: gray; }
+.term, t {
+	height: 1em;
+	width: 1em;
+	text-align: center;
+}
+.term.prime {
+	width: 1.2em;
+}
+.term:not(td), t {
+	display: inline-block;
+}
+.vector {
+	font-weight: bold;
+}
+
+.vertcenter {
+	display: inline-block;
+}
+.vertcenter2 {
+	display: table-cell;
+	vertical-align: middle;
+}
+/*
+.vertcenter {
+	display: inline-block;
+	top: 50%;
+	transform: translateY(-50%);
+}
+.vertcenter0 {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}*/
+
+.frozen {
+	position: absolute;
+}
+.move, .evom {
+	position: relative;
+}
+
+#result {
+	width: 63em;
+}
+#expansion.final, #formula {
+	margin: auto;
+	width: 53em;
+	text-align: center;
+}
+#expansion.final #result {
+	width: auto;
+}
+
+#qed {
+	margin: auto;
+	font-size: 3em;
+	font-weight: bold;
+	width: 12em;
+	text-align: center;
+}
+</style>
+</head>
+<body>
+<div id="status">Welcome! Click anywhere to begin.</div>
+<div id="expansion" class="vertcenter0">
+	<div class="vertcenter" id="cross">
+		<div class="vertcenter2">
+		<t></t><t>&#x27E8;</t><span class="term a">a</span>,<span class="term b">b</span>,<span class="term c">c</span><t>&#x27E9;</t><t>&times;</t><t>&#x27E8;</t><span class="term d">d</span>,<span class="term e">e</span>,<span class="term f">f</span><t>&#x27E9;</t><t></t><t>=</t>
+		</div>
+	</div>
+	<table class="determinant">
+		<tr>
+			<td class="vector term ihat">î</td>
+			<td class="vector term jhat">j&#770;</td>
+			<td class="vector term khat">k&#770;</td>
+		</tr>
+		<tr>
+			<td class="term a">a</td>
+			<td class="term b">b</td>
+			<td class="term c">c</td>
+		</tr>
+		<tr>
+			<td class="term d">d</td>
+			<td class="term e">e</td>
+			<td class="term f">f</td>
+		</tr>
+	</table>
+	<div class="vertcenter" id="result">
+		<div class="vertcenter2">
+		<span class="term">=</span><span class="ihatpart hidden"><span class="vector term ihat">î</span><span class="term">(</span><span class="term hidden b">b</span><span class="term hidden f">f</span><span class="term">&minus;</span><span class="term hidden e">e</span><span class="term hidden c">c</span><span class="term">)</span></span><span class="jhatpart hidden"><span class="jsign term">&minus;</span><span class="vector term jhat">j&#770;</span><span class="term">(</span><span class="term hidden a move">a</span><span class="term hidden f move">f</span><span class="term">&minus;</span><span class="term hidden d evom">d</span><span class="term hidden c evom">c</span><span class="term">)</span></span><span class="khatpart hidden"><span class="term">+</span><span class="vector term khat">k&#770;</span><span class="term">(</span><span class="term hidden a">a</span><span class="term hidden e">e</span><span class="term">&minus;</span><span class="term hidden d">d</span><span class="term hidden b">b</span><span class="term">)</span></span>
+		</div>
+	</div>
+</div>
+</body>
+<script>
+jQuery.fn.reverse = [].reverse;
+</script>
+<script>
+$('.vertcenter2').each(function() {
+	var $t=$(this);
+	$t.height($t.parents('.vertcenter0').children('table').height());
+});
+var c  = function(a) {return'#cross .'+a};
+var d  = function(a) {return'.determinant .'+a};
+var r1 = function(a) {return'#result .'+a+':even'};
+var r2 = function(a) {return'#result .'+a+':odd'};
+var C = c;
+var m = function() {
+	var res = '';
+	$.each(arguments, function(_,v) {
+		if (res) res += ', ';
+		res += v;
+	});
+	return res;
+};
+var freezer = function(s) {return function() {freeze(s)}};
+var freeze = function(s) {
+	$(s).reverse().each(function() {
+		var $this = $(this), p = $this.position();
+		$this.addClass('frozen').css('left', p.left).css('top', p.top);
+	});
+};
+var relaxer = function(s,t,f) {return function() {relax(s,t)}};
+var relax = function(s,t,f) {
+	var P = [], P2 = [];
+	if (t === undefined) {
+		if ($.isNumeric(s)) {
+			t = s;
+			s = $('.frozen');
+		} else {
+			t = t1;
+		}
+	}
+	$(s).each(function() {
+		var $this = $(this);
+		P.push($this.position());
+		$this.removeClass('frozen').css('left', '').css('top', '');
+	});
+	$(s).each(function() {
+		P2.push($(this).position());
+	})
+	if (skip) {t=0;skip -= 1;}
+	if (t > 0)
+		$(s).each(function() {
+			var $this = $(this), p = P.shift(), p2 = P2.shift();
+			$this.addClass('frozen').css('left', p.left).css('top', p.top);
+			$this.animate({
+				left: p2.left,
+				top:  p2.top,
+			}, t, function() {
+				if (f !== undefined) f();
+				$this.removeClass('frozen').css('left', '').css('top', '').css('position', '');
+			});
+		});
+	else if (f !== undefined) f();
+};
+var preview = function(t) {
+	$('.addendum').addClass('hidden');
+	relax(t,undefined, function() {$('.addendum').removeClass('addendum').show()});
+	$('.addendum').removeClass('hidden').hide();
+};
+var mirror = function(noves, oldes) {
+	$(noves).each(function(_) {
+		var nove = $(this), olde = $(oldes[_]), p = olde.position();
+		$nove.addClass('frozen').css('left', p.left).css('top', p.top);
+	});
+};
+var moveevom = function(halfway,t) {return function() {
+	if (t === undefined) t = t4;
+	var a = $('.term.evom').position().left-$('.term.move').position().left;
+	a /= 3;
+	var position = function (t) {
+		return {x: a*(t+1) - a*Math.cos(t*Math.PI),
+		        y:         - a*Math.sin(t*Math.PI)};
+	};
+	var t_scale = d3.scale.linear().domain([0, t]).range([0, 1]);
+	var t0 = null;
+	var step = function (time) {
+		if (t0 === null) {
+			t0 = time;
+		} else time -= t0;
+		if (time > t_scale.domain()[1] || skip) {
+			if (halfway !== undefined) halfway();
+			if (skip) skip -= 1;
+			var a = $('.term.move').removeClass('move'), b = $('.term.evom').removeClass('evom');
+			a.css('left', '').css('top', '');
+			b.css('left', '').css('top', '');
+			$.each(a, function(_,i) {
+				var $i = $(i), $j = $(b[_]), $jj = $j.clone();
+				$j.replaceWith($i.clone());
+				$i.replaceWith($jj);
+			});
+			next();
+			return true;
+		} else
+		var t = t_scale(time), pos = position(t);
+		if (t > 0.5 && halfway !== undefined) {
+			halfway(); halfway = undefined;
+		}
+
+		$('.term.move').css('left', pos.x).css('top', -pos.y);
+		$('.term.evom').css('left', -pos.x).css('top', pos.y);
+	};
+	timer = d3.timer(step, t2);
+}};
+
+var t1 = 900, t2 = 500, t3 = 700, t4 = 1500, t5 = 300;
+//t2 /= 10; t3 /= 10; /*t1 /= 10;/**/ t4 /= 10;
+
+
+
+var stack = [{
+	_hide:'#result',
+	'hidden':'.determinant',
+	_text: {
+		'.a':'x',
+		'.b':'y',
+		'.c':'z',
+		'.d':'u',
+		'.e':'v',
+		'.f':'w',
+	},
+},{
+	_status: "Make a determinant for the cross product",
+	'hidden':'.determinant, .determinant tr:not(:first) td',
+	_fn: function() {
+		$(document).off('click');
+	},
+	_:t1,
+},
+
+// Show construction of determinant
+{
+	'mult':m(c('a'),d('a')),
+	'hidden':d('a'),
+	_:t5,
+},{
+	'mult':m(c('a'),d('a'),c('b'),d('b')),
+	'hidden':d('b'),
+	_:t5,
+},{
+	'mult':m(c('b'),d('b'),c('c'),d('c')),
+	'hidden':d('c'),
+	_:t5,
+},{
+	'mult':m(c('c'),d('c'),c('d'),d('d')),
+	'hidden':d('d'),
+	_:t5,
+},{
+	'mult':m(c('d'),d('d'),c('e'),d('e')),
+	'hidden':d('e'),
+	_:t5,
+},{
+	'mult':m(c('e'),d('e'),c('f'),d('f')),
+	'hidden':d('f')+', #result',
+	_show:'#result',
+	_fn:freezer('.determinant, #result'),
+	_:t1,
+},
+
+// Show construction of vector expansion
+{
+	'hidden':'#result',
+	'mult':m(c('f'),d('f')),
+	_hide:'#cross',
+	_fn:relaxer(t1),
+	_:t1+200,
+},{
+	_status: "Expand into î, ĵ, k̂ components",
+	'mult':a='.ihat',
+	'hidden':m(b=m('.jhat:first, .khat:first',d('a'),d('d')), '.ihatpart'),
+	_:t1,
+},{
+	'hidden':m(r1(x='b'),r1(y='f')),
+	'plus':c=m(d(x),d(y),r1(x),r1(y)),
+	_:t2,
+},{
+	'plus':c,
+	'hidden':m(r1(x='e'),r1(y='c')),
+	'minus':c=m(d(x),d(y),r1(x),r1(y)),
+	_:t3,
+},{
+	'mult':a,
+	'hidden':b,
+	'minus':c,
+	_:0,
+},
+{
+	'mult':a='.jhat',
+	'hidden':m(b=m('.ihat:first, .khat:first',d('b'),d('e')), '.jhatpart'),
+	_:t1,
+},{
+	'hidden':m(r1(x='a'),r2(y='f')),
+	'plus':c=m(d(x),d(y),r1(x),r2(y)),
+	_:t2,
+},{
+	'plus':c,
+	'hidden':m(r1(x='d'),r2(y='c')),
+	'minus':c=m(d(x),d(y),r1(x),r2(y)),
+	_:t3,
+},{
+	'mult':a,
+	'hidden':b,
+	'minus':c,
+	_:0,
+},
+{
+	'mult':a='.khat',
+	'hidden':m(b=m('.jhat:first, .ihat:first',d('c'),d('f')), '.khatpart'),
+	_:t1,
+},{
+	'hidden':m(r2(x='a'),r2(y='e')),
+	'plus':c=m(d(x),d(y),r2(x),r2(y)),
+	_:t2,
+},{
+	'plus':c,
+	'hidden':m(r2(x='d'),r2(y='b')),
+	'minus':c=m(d(x),d(y),r2(x),r2(y)),
+	_:t3,
+},{
+	'mult':a,
+	'hidden':b,
+	'minus':c,
+	_:0,
+},
+// Reverse the sign of j-hat
+{
+	_status: "Reverse the sign in front of ĵ",
+	/**/
+	_fn: moveevom(function() {$('.jsign').html('+')}),
+},{
+	_fn: function() {
+		freeze('#result');
+		$('#cross, .determinant, #result .term:first').toggle();
+		relax(t1,undefined,function() {$('#result .term:first').hide()});
+		$('#cross, .determinant, #result .term:first').toggle();
+	},
+	_:t1,
+},{
+	_hide:'.determinant',
+	_show:'#cross',
+	_fn: relaxer(t1),
+	_:t1,
+},{
+	_fn: freezer('#result .term'),
+	_:0,
+},
+
+// Make into a <>-style vector notation
+{
+	_status: "Simplify notation",
+	_html: {
+		'#result .ihat':'&#x27E8;',
+		'#result .jhat':'',
+		'#result .khat':'',
+		'#result .term:last':'&#x27E9;',
+		'#result .term:contains("+")':',',
+	},
+	'vector':'.ihat, .jhat, .khat',
+	_:0,
+},{
+	_remove: $('#result .term:not(:last)').filter(':contains("("), :contains(")")'),
+	_:0,
+},{
+	_fn: relaxer(t1),
+	_:t1*2,
+},
+
+// Take the derivative
+{
+	_status: "Take the derivative of each side",
+	_html: {
+		'#cross t:first':'(',
+		'#cross t:not(:last):last':')&prime;',
+		'#result .term:last':'&#x27E9;&prime;',
+	},
+	_:t1*2,
+},{
+	_fn: freezer('#result .term'),
+	_:0,
+},{
+	_status: "Take the derivative of each term",
+	_fn: function() {
+		var $i = $('#result .ihatpart'), $j = $('#result .jhatpart'), $k = $('#result .khatpart');
+		$k.find('.term:last').html('&#x27E9;');
+		var o = '<span class="addendum term">(</span>', c = '<span class="addendum term">)&prime;</span>';
+		$i.find('.term:first').after(o); $i.append(c);
+		$j.find('.term:eq(1)').after(o); $j.append(c);
+		$k.find('.term:eq(1)').after(o); $k.find('.term:last').before(c);
+		$('.term:contains("′")').addClass("prime");
+		preview(t1);
+	},
+	_:t1+200,
+},{
+	_fn: function() {
+		freeze('#result .term');
+	},
+	_:t2,
+},{
+	_fn: function() {
+		var $r = $('#result');
+		var o = '<span class="addendum term">(</span>', c = '<span class="addendum term">)&prime;</span>';
+		$r.find('.term:contains("−")').after(o).before(c);
+		$('.term:contains("′")').addClass("prime");
+		preview(t2);
+	},
+	_:t2+200,
+},
+
+
+// Expand using regular product rule
+{
+	_status: "Expand using product rule",
+	_fn: function() {
+		freeze('#result .term');
+		var $r = $('#result');
+		$r.find('.term:contains("("):first, .term:contains(")"):first').remove();
+		a = $r.find('.term.b:first'), b = $r.find('.term.f:first');
+		var html = a.clone().addClass('moveable')[0].outerHTML + b.clone().addClass('moveable')[0].outerHTML;
+		b.after('<span class="addendum term moveable">+</span>'+html);
+		$('.term:contains("′")').addClass("prime");
+		preview(t2);
+	},
+	_:t2,
+},{
+	_fn: function() {
+		var c = a.next().next().next(), d = b.next().next().next();
+		a.add(d).addClass('plus').each(function() {
+			var $t=$(this);
+			$t.html($t.html()+'&prime;');
+		});
+		b.add(c).addClass('minus');
+	},
+	_:0,
+},{
+	_fn: function() {
+		freeze('#result .term');
+		var $r = $('#result');
+		$r.find('.term:contains("("):first, .term:contains(")"):first').remove();
+		a = $r.find('.term.e:first'), b = $r.find('.term.c:first');
+		var html = a.clone().addClass('evomable')[0].outerHTML + b.clone().addClass('evomable')[0].outerHTML;
+		b.after('<span class="addendum term evomable">&minus;</span>'+html);
+		$('.term:contains("′")').addClass("prime");
+		preview(t2);
+	},
+	_:t2,
+},{
+	_fn: function() {
+		var c = a.next().next().next(), d = b.next().next().next();
+		a.add(d).addClass('plus').each(function() {
+			var $t=$(this);
+			$t.html($t.html()+'&prime;');
+		});
+		b.add(c).addClass('minus');
+	},
+	_:0,
+},
+{
+	_fn: function() {
+		freeze('#result .term');
+		var $r = $('#result');
+		$r.find('.term:contains("("):first, .term:contains(")"):first').remove();
+		a = $r.find('.term.d:first'), b = $r.find('.term.c:eq(2)');
+		var html = a[0].outerHTML + b[0].outerHTML;
+		b.after('<span class="addendum term">+</span>'+html);
+		preview(t2);
+	},
+	_:t2,
+},{
+	_fn: function() {
+		var c = a.next().next().next(), d = b.next().next().next();
+		a.add(d).addClass('plus').each(function() {
+			var $t=$(this);
+			$t.html($t.html()+'&prime;');
+		});
+		b.add(c).addClass('minus');
+	},
+	_:0,
+},{
+	_fn: function() {
+		freeze('#result .term');
+		var $r = $('#result');
+		$r.find('.term:contains("("):first, .term:contains(")"):first').remove();
+		a = $r.find('.term.a:first'), b = $r.find('.term.f:eq(2)');
+		var html = a[0].outerHTML + b[0].outerHTML;
+		b.after('<span class="addendum term">&minus;</span>'+html);
+		preview(t2);
+	},
+	_:t2,
+},{
+	_fn: function() {
+		var c = a.next().next().next(), d = b.next().next().next();
+		a.add(d).addClass('plus').each(function() {
+			var $t=$(this);
+			$t.html($t.html()+'&prime;');
+		});
+		b.add(c).addClass('minus');
+	},
+	_:0,
+},
+{
+	_fn: function() {
+		freeze('#result .term');
+		var $r = $('#result');
+		$r.find('.term:contains("("):first, .term:contains(")"):first').remove();
+		a = $r.find('.term.a:eq(2)'), b = $r.find('.term.e:eq(2)');
+		var html = a.clone().addClass('moveable')[0].outerHTML + b.clone().addClass('moveable')[0].outerHTML;
+		b.after('<span class="addendum term moveable">+</span>'+html);
+		preview(t2);
+	},
+	_:t2,
+},{
+	_fn: function() {
+		var c = a.next().next().next(), d = b.next().next().next();
+		a.add(d).addClass('plus').each(function() {
+			var $t=$(this);
+			$t.html($t.html()+'&prime;');
+		});
+		b.add(c).addClass('minus');
+	},
+	_:0,
+},{
+	_fn: function() {
+		freeze('#result .term');
+		var $r = $('#result');
+		$r.find('.term:contains("("):first, .term:contains(")"):first').remove();
+		a = $r.find('.term.d:eq(2)'), b = $r.find('.term.b:eq(2)');
+		var html = a.clone().addClass('evomable')[0].outerHTML + b.clone().addClass('evomable')[0].outerHTML;
+		b.after('<span class="addendum term evomable">&minus;</span>'+html);
+		preview(t2);
+	},
+	_:t2,
+},{
+	_fn: function() {
+		var c = a.next().next().next(), d = b.next().next().next();
+		a.add(d).addClass('plus').each(function() {
+			var $t=$(this);
+			$t.html($t.html()+'&prime;');
+		});
+		b.add(c).addClass('minus');
+	},
+	_:t3,
+},{
+	_status: "Gather like terms (x′, y′, z′ together; u′, v′, w′ likewise)",
+	_fn: function() {
+		freeze('#result .term');
+		$('.ihatpart').append($('.ihatpart .term:gt(2):lt(6)'));
+		relax(t3);
+	},
+	_:t3+200,
+},{
+	_fn: function() {
+		freeze('#result .term');
+		var ins = $('#result .jhatpart .term:eq(9)'), first = $('#result .jhatpart .term:first').next().next(), n = first.next(), nn = n.next();
+		ins.after(n); ins.after(first); ins.after(nn);
+		relax(t3);
+	},
+	_:t3+200,
+},{
+	_fn: function() {
+		freeze('#result .term');
+		$('.khatpart').append($('.khatpart .term:gt(3):lt(6), .khatpart .term:last'));
+		relax(t3);
+	},
+	_:t3+200,
+},
+
+
+// Split into two vectors
+{
+	_status: "Split like terms into two vectors",
+	_fn: function() {
+		var $i = $('#result .ihatpart'), $j = $('#result .jhatpart'), $k = $('#result .khatpart');
+		$('#result > div').append('<span class="term">+</span> <span class="ihatpart"><span class="ihat term">⟨</span></span><span class="jhatpart"><span style="" class="jsign term">,</span><span style="" class="term jhat"></span></span><span class="khatpart"><span style="" class="term">,</span><span style="" class="term khat"></span><span style="" class="term">⟩</span></span>');
+		freeze('#result .term');
+		var $i2 = $('#result .ihatpart:last'), $j2 = $('#result .jhatpart:last'), $k2 = $('#result .khatpart:last');
+		$i.find('span:nth-child(7)').remove();
+		$j.find('span:nth-child(8)').remove();
+		$k.find('span:nth-child(8)').remove();
+		$i2.append($i.find('span:gt(5)'));
+		$j2.append($j.find('span:gt(6)'));
+		$k2.find('.term:last').before($k.find('span:not(:last):gt(6)'));
+		preview(t1);
+	},
+	_:t1,
+},{
+	_:t1*1.5,
+},{
+	_status: "Resume î, ĵ, k̂ notation",
+	_html: {
+		'#result .ihat':'î',
+		'#result .jhat':'ĵ',
+		'#result .khat':'k̂',
+		'#result .khatpart .term:last-child':')',
+		'#result .term:contains(",")':'+',
+	},
+	_fn: function() {
+		$('#result .ihat, #result .jhat, #result .khat').after('<span class="term">(</span>');
+		$('#result .ihatpart, #result .jhatpart').append('<span class="term">)</span>');
+	},
+	_:t1*3,
+},
+{
+	_fn: function() {
+		$(m(r1('d'),r2('c'))).addClass('move');
+		$(m(r1('a'),r2('f'))).addClass('evom');
+	},
+	_:0,
+},
+{
+	_fn: moveevom(function() {$('.jsign').html('-')},t3),
+},{
+	_:t1,
+},
+{
+	_status: "Prove determinants",
+	_show: '.determinant, #result .term:first',
+	_hide: '#cross',
+	_fn: function() {
+		$('.determinant').after($('.determinant').clone());
+		$('.determinant:first').after('<div class="vertcenter"><div class="vertcenter2"><span class="term">+</span></div></div>');
+		$('.determinant:first + div.vertcenter > div.vertcenter2').height($('.determinant:first').height());
+		$('.determinant:first tr:eq(1) td, .determinant:last tr:eq(2) td').each(function() {
+			var $t = $(this);
+			$t.html($t.html()+'&prime;');
+		}).addClass('plus');
+		$('.determinant:first tr:eq(2) td, .determinant:last tr:eq(1) td').addClass('minus');
+	},
+	_:t1*1.5,
+},{
+	'plus':'.plus',
+	'minus':'.minus',
+	_:t1*1.5,
+},{
+	'mult':a='.ihat',
+	'hidden':m(d('khat'), d('jhat'),b=m(d('a'),d('d'))),
+	_:t1,
+},{
+	'plus':c=m(d(x='b'),d(y='f'),r1(x),r1(y)),
+	_:t2,
+},{
+	'plus':c,
+	'minus':c=m(d(x='e'),d(y='c'),r1(x),r1(y)),
+	_:t3,
+},{
+	'mult':a,
+	'minus':c,
+	_:0,
+},
+{
+	'mult':a='.jhat',
+	'hidden':m(b,d('ihat'), d('jhat'),b=m(d('b'),d('e'))),
+	_:t1,
+},{
+	'plus':c=m(d(x='a'),d(y='f'),r1(x),r2(y)),
+	_:t2,
+},{
+	'plus':c,
+	'minus':c=m(d(x='d'),d(y='c'),r1(x),r2(y)),
+	_:t3,
+},{
+	'mult':a,
+	'minus':c,
+	_:0,
+},
+{
+	'mult':a='.khat',
+	'hidden':m(b,d('khat'), d('jhat'),b=m(d('c'),d('f'))),
+	_:t1,
+},{
+	'plus':c=m(d(x='a'),d(y='e'),r2(x),r2(y)),
+	_:t2,
+},{
+	'plus':c,
+	'minus':c=m(d(x='d'),d(y='b'),r2(x),r2(y)),
+	_:t3,
+},{
+	'mult':'.mult',
+	'plus':'.plus',
+	'minus':'.minus',
+	'hidden':m(b,d('jhat'),d('ihat')),
+	_:0,
+},
+{
+	'mult':a='.ihat',
+	'hidden':m(d('khat'), d('jhat'),b=m(d('a'),d('d'))),
+	_:t1,
+},{
+	'plus':c=m(d(x='b'),d(y='f'),r1(x),r1(y)),
+	_:t2,
+},{
+	'plus':c,
+	'minus':c=m(d(x='e'),d(y='c'),r1(x),r1(y)),
+	_:t3,
+},{
+	'mult':a,
+	'minus':c,
+	_:0,
+},
+{
+	'mult':a='.jhat',
+	'hidden':m(b,d('ihat'), d('jhat'),b=m(d('b'),d('e'))),
+	_:t1,
+},{
+	'plus':c=m(d(x='a'),d(y='f'),r1(x),r2(y)),
+	_:t2,
+},{
+	'plus':c,
+	'minus':c=m(d(x='d'),d(y='c'),r1(x),r2(y)),
+	_:t3,
+},{
+	'mult':a,
+	'minus':c,
+	_:0,
+},
+{
+	'mult':a='.khat',
+	'hidden':m(b,d('khat'), d('jhat'),b=m(d('c'),d('f'))),
+	_:t1,
+},{
+	'plus':c=m(d(x='a'),d(y='e'),r2(x),r2(y)),
+	_:t2,
+},{
+	'plus':c,
+	'minus':c=m(d(x='d'),d(y='b'),r2(x),r2(y)),
+	_:t3,
+},
+{
+	_status: "Express determinants as cross products",
+	'mult':a,
+	'minus':c,
+	'hidden':m(b,d('jhat'),d('ihat')),
+	_fn: function() {
+		$('#result > div').html('<span class="term">=</span> <span class="ihatpart"><span class="ihat term">⟨</span><span style="" class="term a">x′</span></span><span class="jhatpart"><span style="" class="jsign term">,</span><span style="" class="term a">y′</span></span><span class="khatpart"><span style="" class="term">,</span><span style="" class="term a">z′</span><span style="" class="term">⟩</span> <span class="term">×</span> <span class="ihatpart"><span class="ihat term">⟨</span><span style="" class="term a">u</span></span><span class="jhatpart"><span style="" class="jsign term">,</span><span style="" class="term a">v</span></span><span class="khatpart"><span style="" class="term">,</span><span style="" class="term a">w</span><span style="" class="term">⟩</span> + <span class="ihatpart"><span class="ihat term">⟨</span><span style="" class="term a">x</span></span><span class="jhatpart"><span style="" class="jsign term">,</span><span style="" class="term a">y</span></span><span class="khatpart"><span style="" class="term">,</span><span style="" class="term a">z</span><span style="" class="term">⟩</span> <span class="term">×</span> <span class="ihatpart"><span class="ihat term">⟨</span><span style="" class="term a">u′</span></span><span class="jhatpart"><span style="" class="jsign term">,</span><span style="" class="term a">v′</span></span><span class="khatpart"><span style="" class="term">,</span><span style="" class="term a">w′</span><span style="" class="term">⟩</span></span></span></span></span>');
+	},
+	_:t1,
+},{
+	_fn: freezer('#result'),
+	_:t1,
+},{
+	_show: '#cross',
+	_hide: '.determinant, .determinant:first + div, #result .term:first',
+	_:0,
+},{
+	_status: "Done",
+	_fn: relaxer(t1),
+	_:t1,
+},{
+	_fn: function() {
+		$('#expansion').addClass('final');
+	},
+	_:t1,
+},{
+	_status: "Quod erat demonstrandum",
+	_fn: function() {
+		$('#status').css('font-style', 'italic');
+		$('body').append('<div id="formula" class="vertcenter0 final"><div style="display: inline-block;"><div><span class="term">(</span><t class="vector">r⃗₀</t><t>×</t><t class="vector">r⃗₁</t><span class="term prime">)′</span><t>=</t></div></div><div style="display: inline-block;"><div><span class="term vector prime">r⃗₀′</span><t>×</t><span class="term vector">r⃗₁</span><t>+</t><span class="term vector">r⃗₀</span><t>×</t><span class="term vector prime">r⃗₁′</span></div></div></div><br>');
+		$('body').append('<div id="qed">Q.E.D.</div>');
+	}
+}];
+
+var skip = 0;
+var next = function() {
+	var i = stack.shift();
+	$.each(i, function(c,k) {
+		if (c == '_' || c == '_time') {
+			if (skip) {
+				skip -= 1;
+				next();
+			} else setTimeout(next, k);
+		} else if (c == '_text') {
+			$.each(k, function(sel,txt) {
+				$(sel).text(txt);
+			});
+		} else if (c == '_html') {
+			$.each(k, function(sel,txt) {
+				$(sel).html(txt);
+			});
+		} else if (c == '_fn') {
+			k();
+		} else if (c == '_hide') {
+			$(k).hide();
+		} else if (c == '_show') {
+			$(k).show();
+		} else if (c == '_remove') {
+			$(k).remove();
+		} else if (c == '_status') {
+			$('#status').html(k);
+		} else $(k).toggleClass(c);
+	});
+	$('.term:contains(")′")').addClass("prime");
+	$('.term:not(:contains("′"))').removeClass("prime");
+};
+next();
+$(document).on('click', next);
+</script>
+</html>

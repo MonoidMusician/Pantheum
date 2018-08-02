@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+		</script>
+		<script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+		<script src="jquery.js" type="text/javascript"></script>
+		<script src="sprintf.js" type="text/javascript"></script>
+		<script src="math.js" type="text/javascript"></script>
+		<script src="d3.v3.min.js"></script>
+		<style>
+			input:not(#derivative):not(#solution) {
+				width: 40px;
+			}
+			td, th {
+				padding: 1px 8px;
+				border: 1px solid #999;
+			}
+			table {
+				border-collapse: collapse;
+				float: left;
+			}
+			#graph {
+				float: right;
+			}
+			#coords {
+				text-align: center;
+				width: 100%;
+				padding-top: 10px;
+			}
+			.result {
+				font-weight: bold;
+				color: #AA3333;
+			}
+			/* tell the SVG path to be a thin blue line without any area fill */
+			path {
+				stroke: steelblue;
+				stroke-width: 1;
+				fill: none;
+			}
+			.slope {
+				stroke: rgba(131, 187, 234, .5);
+				stroke-width: 1;
+				fill: none;
+			}
+			.solution {
+				stroke: rgba(234, 118, 118, 1);
+				stroke-width: 1;
+				fill: none;
+			}
+			.axis {
+				shape-rendering: crispEdges;
+			}
+			.x.axis line, .x.axis path, .y.axis line, .y.axis path {
+				stroke: rgb(140, 140, 140);
+			}
+			.x.axis .minor {
+				stroke-opacity: .5;
+			}
+			#show {
+				text-align: center;
+				border-bottom:1px solid #444;
+				cursor: pointer;
+			}
+			#what {
+				font-size: 12pt;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Euler's method <a id="what" href="explain.html">what?</a></h1>
+		<div id="saved"></div>
+		$dy \over dx$: <input id="derivative" placeholder="dy/dx=" value="6x^2 - 3x^2 * y">
+		$6x^2 - 3x^2 * y$
+		<br>
+		$f(x)$: <input id="solution" placeholder="f(x)=" value="2+e^(-x^3)">
+		$2 + e^{-x^3}$
+		<br>
+		$x_0$: <input id="x_0" placeholder="x_0=" value="0">
+		$y_0$: <input id="y_0" placeholder="y_0=" value="3">
+		$h$ ($\Delta x$): <input id="step" placeholder="h=" value="0.01">
+		$n$: <input id="number" placeholder="n=" value="100">
+		<button id="save">Save</button>
+		<button id="10x">10x</button>
+		<br>
+		<label><input type="checkbox" id="field" checked>Graph slope field</label>
+		<label><input type="checkbox" id="quadratic">Quadratic slope field</label>
+		<div>
+			<h2>Preview:</h2>
+			$f(x_n) \approx y_n$, where ${dy \over dx} = 6x^2 - 3x^2 * y$, $f(0)=3$, and $n = 1$<br>
+			<table id="preview">
+				<tr>
+					<th>$x$</th>
+					<th>$y$</th>
+					<th>$dy \over dx$</th>
+					<th>$d^2 y \over dx^2$</th>
+					<th>$\Delta y$</th>
+				</tr>
+			</table>
+			<div id="graph" class="aGraph">
+				<div id="coords"></div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			//alert('hi');
+			var data = {id:0};
+			var td = function(a,clss) {
+				if (typeof a === "number") a = snum(a);
+				return '<td'+(clss?' class="'+clss+'"':'')+'>'+a+'</td>';
+			};
+			var snum = function(n,digits) {
+				if (digits === undefined) digits = 3;
+				return (Math.abs(n)<1000 ? sprintf("%+."+digits+"f", n) : sprintf("%+."+digits+"e", n));
+			};
+			function slope (f, x, dx) {
+				dx = dx || 1/8192/256;
+				var dy = ((f(x+dx) - f(x)) / dx);
+				if (!dy && Math.abs(dx) < x/64) {
+					/*console.log("recalc, dx=1/"+(1/dx));
+					/*console.log("recalc");/**/
+					return slope(f,x,dx*4);
+				}
+				return dy;
+			};
+			//alert(slope(function(x) {return Math.pow(x,2)}, 3));
+			var loop;
+			var data2 = {
+				y:[],
+				x_min:null,
+				x_step:null,
+			};
+			var dydxDisplay, solutionDisplay, outputDisplay;
+			MathJax.Hub.Queue(function () {
+				dydxDisplay = MathJax.Hub.getAllJax()[1];
+				solutionDisplay = MathJax.Hub.getAllJax()[3];
+				outputDisplay = MathJax.Hub.getAllJax($('#preview').parent()[0]);
+			});
+			function echo_math(jQuery_e, MathJax_e) {
+				var tex = math.parse(jQuery_e.val()).toTex();
+				var texn = tex.replace(/([a-zA-Z_])\\mathrm\{(.*?)\}/g, '$1 $2').replace(/\\mathrm\{(.*?)\}/g, '$1');
+				//console.log(texn);
+				tex = texn;
+				MathJax.Hub.Queue(["Text",MathJax_e,tex]);
+			};
+			var update = function() {
+				if (!$('#derivative').val()) {
+					var html = $('#preview tr')[0].outerHTML;
+					$('#preview').html(html);
+					$('#graph svg').remove();
+					var tex = "";
+					MathJax.Hub.Queue(["Text",dydxDisplay,tex]);
+					var tex2 = 'f(x_n) \\approx y_n';
+					MathJax.Hub.Queue(["Text",outputDisplay[0],tex2]);
+					var tex3 = '{dy \\over dx} = ';
+					MathJax.Hub.Queue(["Text",outputDisplay[1],tex3]);
+					var tex4 = 'f(x_0) = y_0';
+					MathJax.Hub.Queue(["Text",outputDisplay[2],tex4]);
+					var tex5 = 'n = ';
+					MathJax.Hub.Queue(["Text",outputDisplay[3],tex5]);
+					return;
+				}
+				var _d = math.compile($('#derivative').val());
+				var d = function(x,y) {
+					return _d.eval({x:x,y:y});
+				};
+				var _f = $('#solution').val();
+				_f = _f ? math.compile(_f) : undefined;
+				var f = _f ? function(x) {
+					return _f.eval({x:x});
+				} : undefined;
+				var n = $('#number').val()-0;
+				var h = $('#step').val()-0;
+				var x = $('#x_0').val()-0;
+				var y = $('#y_0').val()-0;
+				var x0, y0, a = x0 = x, b = y0 = y;
+				var c = h/512;
+				var html = $('#preview tr')[0].outerHTML;
+				var di = d(x,y);
+				var dy = function(x) {
+					return d(x,y);
+				};
+				var dx = function(y) {
+					return d(x,y);
+				};
+				data2.y = [];
+				data2.f = f;
+				data2.x_min = x;
+				data2.x_step = h;
+				data2.d = d;
+				console.log("start");
+				for (var i=0; i<n; i++) {
+					data2.y.push(y);
+					var d2ydx2 = slope(dy,x)+slope(dx,y)*di; // partial dy/dx wrt x + dy/dx * partial dy/dx wrt y
+					html += '<tr>'+td(x)+td(y)+td(di)+td(d2ydx2)+td(di*h)+'</tr>';
+					y += di*h;
+					x += h;
+					di = d(x,y);
+				}
+				console.log("stop");
+				data.id += 1;
+				data.a = a;
+				data.b = b;
+				data.c = c/64;
+				data.x = x;
+				data.y = y;
+				data.d = d;
+				//alert(html);
+				for (; a<x; a+=c) {
+					b += d(a,b)*c;
+				}
+				var b0 = b; c /= 4;
+				for (a=data.a,b=data.b; a<x; a+=c) {
+					b += d(a,b)*c;
+				}
+				if (loop !== undefined) clearInterval(loop);
+				/*alert(b0);
+				alert(b);/**/
+				if (b0===b || snum(b0)===snum(b))
+				{var equal=true;}
+				else
+				{ var equal = false;
+				/*loop = setInterval(function() {
+					for (var i=0; i<30000; i+=1) {
+						data.b += data.d(data.a,data.b)*data.c;
+						data.a += data.c;
+						if (data.a >= data.x) {
+							//alert($('#error').length);
+							$('#error').text('Error = '+snum(y-data.b));
+							clearInterval(loop);
+							return;
+						}
+					}
+				}, 1);/**/
+				}
+				data2.y.push(y);
+				if (data2.y.length > 100) {
+					html += '<tr id="show"><td colspan="5">Show all data ('+(data2.y.length-2)+' items)</td></tr>';
+				}
+				html += '<tr>'+td(x)+td(y,'result')+'<td colspan="3" id="error">Error '+(equal?'= ':'≈ ')+snum(y-b)+', '+snum((y-b)/b*100,0)+'%</td></tr>';
+				$('#preview').html(html);
+				$('#preview').css('width', $('#preview').width()+'px');
+				if (data2.y.length > 100) {
+					$('#preview tr:not(#show):not(:first):not(:first):not(:last)').hide();
+					$('#preview #show').click(function() {
+						var $this=$(this), $parent=$this.parent();
+						$parent.children().show();
+						$this.remove();
+					});
+				}
+				echo_math($('#derivative'),dydxDisplay);
+				echo_math($('#solution'),solutionDisplay);
+				var tex2 = 'f('+snum(x)+') \\approx '+snum(y);
+				MathJax.Hub.Queue(["Text",outputDisplay[0],tex2]);
+				var tex3 = '{dy \\over dx} = '+tex;
+				MathJax.Hub.Queue(["Text",outputDisplay[1],tex3]);
+				var tex4 = 'f('+x0+') = '+y0;
+				MathJax.Hub.Queue(["Text",outputDisplay[2],tex4]);
+				var tex5 = 'n = '+n;
+				MathJax.Hub.Queue(["Text",outputDisplay[3],tex5]);
+				updategraph();
+			};
+			$('#derivative,#solution,#number,#step,#x_0,#y_0,#field').change(update);
+			$('#save').click(function() {
+				var src = $('#preview').html();
+				var found = !src;
+				//alert(src);
+				$('#saved table').each(function() {
+					//alert(this);
+					//alert($(this).html());
+					found = found || $(this).html()==src;
+				});
+				if (!found) $('#saved').append($('#preview').parents('div:first').clone());
+				$('#saved *').removeAttr('id');
+				$('#saved h2').remove();
+			});
+			$('#10x').click(function() {
+				$('#step')  .val($('#step')  .val() / 10);
+				$('#number').val($('#number').val() * 10).change();
+			});
+		</script>
+		<script>
+			/* implementation heavily influenced by http://bl.ocks.org/1166403 */
+			$( window ).resize(updategraph);
+			var mmm;
+			function updategraph() {
+				$('#graph svg').remove();
+				//console.log();
+				// define dimensions of graph
+				var m = [8, 30, 20, 90]; // margins: top, right, bottom, left
+				var w = $(window).width()-$('#preview').width() - 40 - m[1] - m[3]; // width
+				var h = ($(window).width()-$('#preview').width() - 40)/4 - m[0] - m[2]; // height
+
+				// X scale will fit all values from data[] within pixels 0-w
+				data2.x_max = data2.x_min+data2.x_step*(data2.y.length-1);
+				var x = d3.scale.linear().domain([data2.x_min, data2.x_max]).range([0, w]);
+				var n = d3.scale.linear().domain([data2.x_min, data2.x_max]).range([0, data2.y.length-1]);
+				mmm=n;
+				// graph of the exact solution curve (100pts)
+				var solution_pts = (function() {
+					var r = [];
+					var step = (data2.x_max - data2.x_min)/100;
+					for (var i=data2.x_min; i<data2.x_max; i+=step) {
+						r.push(i);
+					}
+					r.push(data2.x_max);
+					return r;
+				})();
+				var y2 = [];
+				if (data2.f) {
+					y2 = $.map(
+						data2.y,
+						function(_,i) {
+							return data2.f(n.invert(i));
+						}
+					);
+				}
+				data2.y_min = d3.min(data2.y.concat(y2));
+				data2.y_max = d3.max(data2.y.concat(y2));
+				// Y scale will fit values from 0-10 within pixels h-0 (Note the inverted domain for the y-scale: bigger is up!)
+				var y = d3.scale.linear().domain([data2.y_min, data2.y_max]).range([h, 0]);
+
+
+				// create a line function that can convert data[] into x and y points
+				var line = d3.svg.line()
+					// assign the X function to plot our line as we wish
+					.x(function(d,i) {
+						// verbose logging to show what's actually being done
+						//console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
+						// return the X coordinate where we want to plot this datapoint
+						return x(n.invert(i));
+					})
+					.y(function(d) {
+						// verbose logging to show what's actually being done
+						//console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
+						// return the Y coordinate where we want to plot this datapoint
+						return y(d);
+					});
+
+				var solution = d3.svg.line()
+					// assign the X function to plot our line as we wish
+					.x(function(d) {
+						// verbose logging to show what's actually being done
+						//console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
+						// return the X coordinate where we want to plot this datapoint
+						return x(d);
+					})
+					.y(function(d,i) {
+						// verbose logging to show what's actually being done
+						//console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
+						// return the Y coordinate where we want to plot this datapoint
+						return y(data2.f(d));
+					});
+
+				// Add an SVG element with the desired dimensions and margin.
+				var svg, graph = (svg = d3.select("#graph").insert("svg:svg", "#coords"))
+				      .attr("width", w + m[1] + m[3])
+				      .attr("height", h + m[0] + m[2])
+				    .append("svg:g")
+				      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+
+				// hack for mouse events:
+				svg.append("rect")
+				      .attr("x", m[1])
+				      .attr("y", m[2])
+				      .attr("width", w + m[1] + m[3])
+				      .attr("height", h + m[0] + m[2])
+				      .attr("fill", "rgba(0,0,0,0)");
+
+				// Slope field
+				if ($('#field:checked').length) {
+					var slopefield = graph.append("svg:g").attr("class", "slopefield");
+					var step = data2.x_step*data2.y.length / 30, xi, yi;
+					for (var xi=data2.x_min; xi<data2.x_max; xi+=step) {
+						for (var yi=data2.y_min; yi<data2.y_max; yi+=step) {
+							var plot = d3.svg.line()
+								// assign the X function to plot our line as we wish
+								.x(function(d) {
+									// verbose logging to show what's actually being done
+									//console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
+									// return the X coordinate where we want to plot this datapoint
+									return x(d.x);
+								})
+								.y(function(d) {
+									// verbose logging to show what's actually being done
+									//console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
+									// return the Y coordinate where we want to plot this datapoint
+									return y(d.y);
+								});
+							var slope = data2.d(xi,yi), points;
+							var box = step*0.8;
+							if (Math.abs(slope) == Infinity)
+								points = [{x:xi,y:yi-step/2},{x:xi,y:yi+step/2}];
+							else if (Math.abs(slope) <= 1)
+								points = [{x:xi-box/2,y:yi-box*slope/2},{x:xi+box/2,y:yi+box*slope/2}];
+							else
+								points = [{x:xi-box/2/slope,y:yi-box/2},{x:xi+box/2/slope,y:yi+box/2}];
+							slopefield.append("svg:path").attr("d", plot(points)).attr("class", "slope");
+						}
+					}
+				}
+
+				// create yAxis
+				var xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true).tickFormat(d3.format(".3g"));
+				// Add the x-axis.
+				graph.append("svg:g")
+				      .attr("class", "x axis")
+				      .attr("transform", "translate(0," + h + ")")
+				      .call(xAxis);
+
+
+				// create left yAxis
+				var yAxisLeft = d3.svg.axis().scale(y).ticks(4).tickSize(-w).tickFormat(d3.format(".3g")).orient("left");
+				// Add the y-axis to the left
+				graph.append("svg:g")
+				      .attr("class", "y axis")
+				      .attr("transform", "translate(0,0)")
+				      .call(yAxisLeft);
+
+				// Add the precise solution first
+				if (data2.f)
+					graph.append("svg:path").attr("d", solution(solution_pts)).attr("class", "solution");
+
+				// Add the line by appending an svg:path element with the data line we created above
+				// do this AFTER the axes above so that the line is above the tick-lines
+				graph.append("svg:path").attr("d", line(data2.y));
+
+				var marker = graph.append('circle')
+					.attr('r', 7)
+					.style('display', 'none')
+					.style('fill', '#FFFFFF')
+					.style('pointer-events', 'none')
+					.style('stroke', '#FB5050')
+					.style('stroke-width', '3px');
+					// Add event listeners/handlers
+
+				// Create custom bisector
+				var bisect = d3.bisector(function(datum) {
+					return datum;
+				}).right;
+
+				var mousein = false;
+				var toggle = function(display) {
+					display = display && display !== 'none' ? 'inherit' : 'none';
+					marker.style('display', display);
+					$('#coords').css('display', display);
+				};
+				svg.on('mouseover', function() {
+					toggle(true);
+					mousein = true;
+					//console.log('over');
+				}).on('mouseout', function() {
+					toggle(false);
+					mousein = false;
+					//console.log('out');
+				}).on('mousemove', function() {
+					//console.log('move');
+					var mouse = d3.mouse(graph[0][0]);
+					marker.attr('cx', mouse[0]);
+					var xn = x.invert(mouse[0]),
+						index = Math.floor(n(xn));
+					if (index >= data2.y.length-1 || index < 0) {
+						// out of range values
+						toggle(false);
+						return;
+					} else if (mousein) toggle(true);
+					//console.log(index, xn, n(xn), n(xn) - index);
+					var startDatum = data2.y[index],
+						endDatum = data2.y[index + 1],
+						interpolate = d3.interpolateNumber(startDatum, endDatum),
+						range = 1,
+						valueY = interpolate(n(xn) - index);
+					marker.attr('cy', y(valueY));
+					update_coords(xn, valueY, (endDatum-startDatum)/data2.x_step);
+				});
+			};
+			function update_coords(x,y,x_) {
+				var snumy = snum(y);
+				var slope = snum(x_);
+				if (data2.f) {
+					snumy += ', '+snum(data2.f(x));
+				}
+				var text = '('+snum(x)+', '+snumy+'), slope: '+slope;
+				$('#coords').text(text);
+			}
+			MathJax.Hub.Queue(update);
+		</script>
+	</body>
+</html>
